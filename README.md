@@ -13,8 +13,8 @@ folder for full detail on the usage of each available plugins.
 Downloads
 ---------
 
-Go to the [DOWLOADS](https://github.com/purtuga/SPWidgets/downloads) page to get 
-access the pre-built package.
+Go to the **[DOWLOADS](https://github.com/purtuga/SPWidgets/downloads)** page to get 
+access the pre-built package (Look at the area labeled 'Download Packages')
 
 Files in source would need to be built using Apache Ant, Google Closure compiler 
 and Markdown perl script.

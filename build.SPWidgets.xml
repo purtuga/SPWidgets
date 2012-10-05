@@ -368,7 +368,7 @@
         
     	
         <!-- Define the zipfile name and create it. -->
-        <zip destfile="${build.dist}${/}${ant.project.name}.${build.version}.${DSTAMP}.${TSTAMP}.zip">
+        <zip destfile="${build.dist}${/}${ant.project.name}.v${build.version}.${DSTAMP}.${TSTAMP}.zip">
             <fileset refid="fileset.dist.all" />
         </zip>
         
