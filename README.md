@@ -2,31 +2,22 @@ SPWidgets
 =========
 
 Sharepoint Custom UI Widgets that make building custom User Interfaces easier.
-It includes:
 
-- An Upload Plugin
-- A User selection plugin
-
-
-Upload Plugin
+Documentation
 -------------
 
-The upload plugin allows a user to upload a file via "ajax" without leaving 
-the page that they are currently on. This plugin has only one required 
-input parameter: the Document library to where the document should be uploaded. 
-Other optional parameters are available to fine tune its usage. 
+See the markdown files under the [Documentation](https://github.com/purtuga/SPWidgets/tree/master/documentation/)
+folder for full detail on the usage of each available plugins.
 
 
-Pick User Plugin
-----------------
+Downloads
+---------
 
-Given an input field, this method will display an interface that allows the 
-users to select one or more users from SharePoint and store the selected user 
-information into the input field in the format expected when making an update 
-via webservices. The input field will be hidden in its current position and a UI 
-will be displayed instead. As the user picks or removes users, the input field 
-will be updated at the same time, thus it will always be ready to be submitted 
-as part of an update to the server.
+Go to the [DOWLOADS](https://github.com/purtuga/SPWidgets/downloads) page to get 
+access the pre-built package.
+
+Files in source would need to be built using Apache Ant, Google Closure compiler 
+and Markdown perl script.
 
 
 License
@@ -39,3 +30,23 @@ Dual License support
 
 User can pick whichever one applies best for their project
 and does'nt not have to contact me.
+
+
+Developer Notes
+---------------
+
+This project has been developed in Eclipse using the Aptana plugin.
+The project is built using Apached Ant.  In addition to have Ant installed,
+Google Closure compiler (for minification) and Markdown.pl is needed. Perl
+is required in order to turn Markdown.pl.
+
+The tools should be downloaded and placed under:
+
+BUILD/Tools/google-closure-compiler/
+BUILD/Tools/markdown/
+
+The project also allows you to "deploy" to a live sharepoint site by doing
+a file copy from the development BUILD folder to a sharepoint folder. In order
+to do, the target location (the sharepoint location) must be setup in the me.build.properties
+file. this file is automatically created the first time the build file is ran.
+

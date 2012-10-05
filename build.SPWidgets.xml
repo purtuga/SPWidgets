@@ -17,15 +17,11 @@
     <property name="build.dist"     location="${build.base}${/}dist" />
     <property name="build.tmp"      location="${build.base}${/}tmp" />
     <property name="build.demo"     location="${build.base}${/}demo" />
-    <property name="build.doc"      location="${build.base}${/}doc" />
+    <property name="build.doc"      location="${build.base}${/}documentation" />
     <property name="build.tools"    location="${build}${/}tools" />
     
     <property name="build.prop.file"            location="${basedir}${/}my.build.properties" />
     <property name="build.prop.file.template"   location="${basedir}${/}BUILD${/}my.build.properties.template" />
-    
-    <property name="build.tools"                location="${build.base}${/}tools" />
-    <property name="cmd.NaturalDocs"            location="q:${/}ProgramFiles${/}NaturalDocs${/}NaturalDocs" />
-    <property name="cmd.jsminifier"             location="${build.tools}${/}jsminifier.pl" />
     
 	<!-- SRC: Location of SP webpart xml file.
 	       used to locate files under the Source folder -->
@@ -37,17 +33,19 @@
 	<property name="build.dev.webpartName"     value="dev.test.SPWidgets.webpart" />
 	<property name="build.dist.baseFileName"   value="jquery.SPWidgets" />
     
+    <property name="build.tools"                location="${build.base}${/}tools" />
+	<property name="tool.Markdown"              location="${build.tools}${/}Markdown${/}Markdown.pl" />
+
 	<property name="tool.jsdoc.base"       location="${build.tools}${/}jsdoc-toolkit" />
 	<property name="tool.jsdoc.jar"        location="${tool.jsdoc.base}${/}jsrun.jar" />
 	<property name="tool.jscompiler.jar"   location="${build.tools}${/}google-closure-compiler${/}compiler.jar" />
-	
-	
 	
     <!-- FILESET: patternset.sourceFiles
            All files that can be packaged. -->
     <patternset id="patternset.sourceFiles">
         <include name="src${/}**${/}*"/>
         <include name="demo${/}**${/}*"/>
+        <include name="documentation${/}**${/}*"/>
     </patternset>
     
 	<!-- DEPLOY PATTERN SET
@@ -67,7 +65,7 @@
 	<fileset dir="${build.base}" id="fileset.dist.all">
         <include name="demo${/}**${/}*.webpart*" />
         <include name="src${/}${build.dist.baseFileName}*" />
-        <include name="doc${/}**${/}*" />
+        <include name="documentation${/}*.html" />
 		
 		<exclude name="demo${/}**${/}dev.*"/>
     </fileset>
@@ -82,6 +80,15 @@
 		<exclude name="jquery.SPWidgets.js"/>
     </fileset>
 
+	<!-- ++++++ FILE LISTS ++++++ -->
+    <filelist id="filelist.build.doc.html" 
+        dir="${build.doc}${file.separator}html">
+        <file name="SPWidgets.md.html"/>
+        <file name="SPWidgets.pickSPUser.md.html"/>
+        <file name="SPWidgets.SPControlUpload.md.html"/>
+    </filelist>
+    
+	
 	
 	<!--*******************************************
             TARGET: init
@@ -151,6 +158,8 @@
                 <include name="**${/}*${build.dist.baseFileName}*"/>
             </fileset>
         </delete>
+
+        <delete file="${build.doc}/SPWidgets.html" verbose="true" />
         
         <echo message="INIT ------------------------------ [END]" />
     </target>
@@ -246,6 +255,13 @@
         <antcall target="embedCssTemplates" inheritall="true" />
         <antcall target="embedHtmlTemplates" inheritall="true" />
         <echo message="embed targets Done!" />
+    	
+    	<!-- Create minified version of plugin file -->
+    	<echo message="Building MINIFIED version" />
+    	<antcall target="minify" inheritall="true" />
+    	<echo message="MINIFY Done!" />
+    	
+    	
     	
     	<!-- BUILD the webparts -->
     	<echo message="Building Demo" />
@@ -418,30 +434,6 @@
     </target>
 
 
-    <!-- - - - - - - - - - - - - - - - - - 
-          target: packJavascriptFiles                      
-         - - - - - - - - - - - - - - - - - -->
-    <target name="packJavascriptFiles">
-        <!-- Define fileset for use in property below -->
-        <fileset dir="${build.src}" id="built.files.js.pack">
-            <patternset refid="files.pack.js.set"/>
-        </fileset>
-        <pathconvert pathsep="${line.separator}" 
-            property="jsMinifier.files" 
-            refid="built.files.js.pack"/>
-        <echo file="${build.tmp}${/}js.minify.files.txt">${jsMinifier.files}</echo>
-        
-        <echo message="Calling jsminifier.pl...(this may take a while)"/>        
-        <exec executable="perl" outputproperty="jsminifierStatus">
-            <arg line="${cmd.jsminifier} "/>
-            <arg line="${build.tmp}${/}js.minify.files.txt "/>
-        </exec>
-        <echo message="${jsminifierStatus}" />
-        
-        <!-- delete temp file -->
-        <delete file="${build.tmp}${/}js.minify.files.txt" />
-        <echo message="Done!" />
-    </target>
 
 	<!-- ================================= 
           target: doc              
@@ -460,36 +452,36 @@
     		<arg value="-t=${tool.jsdoc.base}${/}templates${/}jsdoc" />
     		<arg value="-d=${build.doc}${/}src${/}" />
     	</java>
+    	
+    	<mkdir dir="${build.doc}${/}html" />
+    	<apply executable="perl" addsourcefile="true">
+            <arg line="${tool.Markdown}"/>
+            <!-- Collect the md-files -->
+            <fileset dir="${build.doc}" includes="*.md"/>
+            <redirector>
+                <!-- redirect STDOUT to file in doc/html/ -->
+                <outputmapper id="out" type="glob" 
+                    from="*.md" 
+                    to="${build.doc}${/}html${/}*.md.html"/>
+            </redirector>
+        </apply>
+        
+        <!-- Concatenate all help files and added it to the html file -->
+        <concat destfile="${build.tmp}${/}all.doc.md.html" append="false">
+            <filelist refid="filelist.build.doc.html" />
+        </concat>
+        <loadfile property="build.doc.out" srcfile="${build.tmp}${/}all.doc.md.html" />
+        <replace
+            casesensitive="true"
+            file="${build.doc}/SPWidgets.html"
+            token="_BUILD_INCLUDE_DOCUMENTATION_"
+            value="${build.doc.out}"
+            />
+        
+    	
         <echo message="DOC ---------------------- [END]" />
     </target>
 	
-    <!-- - - - - - - - - - - - - - - - - - 
-        target: doc
-        updates the documentation for all the modules
-        in leaguestat. This build developer documenation
-        not end user.
-        - - - - - - - - - - - - - - - - - -->
-    <target name="docNaturalDocs">
-        
-        <echo>
-           
-        ************************************************
-        *    
-        *    NOTE: DOCUMENATION IS SAVED TO:
-        *    ${basedir}${/}doc${/}html
-        *
-        ************************************************            
-        </echo>
-        <exec executable="perl">
-            <arg line="${cmd.NaturalDocs} --documented-only "/>
-            <arg line="-xi CVS -xi t -xi zPerf -xi _tmp -xi build -xi .settings " />
-            <arg line="-o FramedHTML ${basedir}${/}doc${/}html " />
-            <arg line="-p ${basedir}${/}doc${/}proj -i ${basedir}${/}src"/>
-        </exec>
-        <echo message="Done: Building documentation"/>
-        
-    </target> <!-- END target name="doc" -->
-    
     
     <!-- ================================= 
           target: deploy              
@@ -619,7 +611,7 @@
 	<!-- ================================= 
           target: minify              
          ================================= -->
-    <target name="minify" depends="build" description="Minifies files">
+    <target name="minify" depends="" description="Minifies files">
     	<echo message="MINIFY ---------------------- [START]" />
         
         <!-- Build SRC documentation -->
