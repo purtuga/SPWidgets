@@ -1,0 +1,671 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="SPWidgets" default="build" basedir=".">
+    <description>Build file for the Sharepoint Widgets project.</description>
+    <!-- Create the time stamp -->
+    <tstamp/>
+    
+    <!-- Use -debug or -d to print debugging information -->
+    
+    <!-- set global properties for this build -->
+    <property name="/"                value="${file.separator}" />
+    
+    <property name="src.base"       location="${basedir}" />
+    <property name="src.demo"       location="${basedir}${/}demo" />	
+    <property name="build"          location="${basedir}${/}BUILD" />
+    <property name="build.base"     location="${basedir}${/}BUILD${/}${ant.project.name}" />
+    <property name="build.src"      location="${build.base}${/}src" />
+    <property name="build.dist"     location="${build.base}${/}dist" />
+    <property name="build.tmp"      location="${build.base}${/}tmp" />
+    <property name="build.demo"     location="${build.base}${/}demo" />
+    <property name="build.doc"      location="${build.base}${/}doc" />
+    <property name="build.tools"    location="${build}${/}tools" />
+    
+    <property name="build.prop.file"            location="${basedir}${/}my.build.properties" />
+    <property name="build.prop.file.template"   location="${basedir}${/}BUILD${/}my.build.properties.template" />
+    
+    <property name="build.tools"                location="${build.base}${/}tools" />
+    <property name="cmd.NaturalDocs"            location="q:${/}ProgramFiles${/}NaturalDocs${/}NaturalDocs" />
+    <property name="cmd.jsminifier"             location="${build.tools}${/}jsminifier.pl" />
+    
+	<!-- SRC: Location of SP webpart xml file.
+	       used to locate files under the Source folder -->
+	<property name="src.demo.webpartName"      value="demo.SPWidgets.webpart" />
+	<property name="src.dev.webpartName"       value="demo.SPWidgets.webpart" />
+	
+	<!-- BUILD: Name of files when creating a build. -->
+	<property name="build.demo.webpartName"    value="demo.SPWidgets.webpart" />
+	<property name="build.dev.webpartName"     value="dev.test.SPWidgets.webpart" />
+	<property name="build.dist.baseFileName"   value="jquery.SPWidgets" />
+    
+	<property name="tool.jsdoc.base"       location="${build.tools}${/}jsdoc-toolkit" />
+	<property name="tool.jsdoc.jar"        location="${tool.jsdoc.base}${/}jsrun.jar" />
+	<property name="tool.jscompiler.jar"   location="${build.tools}${/}google-closure-compiler${/}compiler.jar" />
+	
+	
+	
+    <!-- FILESET: patternset.sourceFiles
+           All files that can be packaged. -->
+    <patternset id="patternset.sourceFiles">
+        <include name="src${/}**${/}*"/>
+        <include name="demo${/}**${/}*"/>
+    </patternset>
+    
+	<!-- DEPLOY PATTERN SET
+	        Only Files that are deposited into a folder on SP and for which
+	        a CEWP links to. -->
+    <patternset id="patternset.deploy">
+        <include name="src${/}*.js" />
+        <include name="demo${/}*.js" />
+        <include name="demo${/}dev.test.SPWidgets.webpart.html" />
+    </patternset>
+    
+    <!-- FILESET: All source files -->
+    <fileset dir="${src.base}" id="fileset.src.all">
+        <patternset refid="patternset.sourceFiles"/>
+    </fileset>
+
+	<fileset dir="${build.base}" id="fileset.dist.all">
+        <include name="demo${/}**${/}*.webpart*" />
+        <include name="src${/}${build.dist.baseFileName}*" />
+        <include name="doc${/}**${/}*" />
+		
+		<exclude name="demo${/}**${/}dev.*"/>
+    </fileset>
+    
+    <!-- FILESET: fileset.build.pluginFiles
+            List of files that will be concatenated and inserted
+            into the plugin file
+    -->
+	<fileset dir="${build.src}" id="fileset.build.pluginFiles"
+		  description="List of files that will be concatenated into plugin file.">
+        <include name="**${/}*.js" />
+		<exclude name="jquery.SPWidgets.js"/>
+    </fileset>
+
+	
+	<!--*******************************************
+            TARGET: init
+        ******************************************* -->
+    <target name="init">
+        <echo message="INIT ------------------------------ [END]" />
+    	<echo message="Initiating build. ANT v${ant.version}${line.separator}${ant.file}"/>
+        
+        <!-- if no build.properties then error -->
+        <fail message="ERROR: ${line.separator}
+            Missing ${build.prop.file}. You must first create this file ${line.separator}
+            before running build targets. Use the following file to create your${line.separator}
+            user specific file: ${build.prop.file.template}${line.separator}">
+            <condition>
+                <not>
+                    <available file="${build.prop.file}" property="build.prop.file.exists" />
+                </not>
+            </condition>
+        </fail>
+        
+        <!-- Load the properties file -->
+        <loadproperties srcfile="${build.prop.file}" />
+        <echo message="User specific properties file loaded!" />
+        
+        <!-- Create the build, dist and tmp directories directory -->
+        <mkdir dir="${build.base}"/>
+        <mkdir dir="${build.src}"/>
+        <mkdir dir="${build.demo}"/>
+        <mkdir dir="${build.tmp}"/>
+        <mkdir dir="${build.dist}"/>
+        <mkdir dir="${build.doc}"/>
+        <mkdir dir="${build.doc}${/}src" />
+        
+        <!-- Set the property that indicates if a force copy
+             of certain css files should be done. Property feeds
+             the doCssForceCopy target -->
+        <condition property="forceCssCopyNotNeeded">
+            <and>
+                <uptodate 
+                    srcfile="${src.base}${/}src${/}css.SPControlUpload.css"
+                    targetfile="${build.src}${/}css.SPControlUpload.css" />
+                <uptodate 
+                    srcfile="${src.base}${/}src${/}css.SPControlPickUser.css"
+                    targetfile="${build.src}${/}css.SPControlPickUser.css" />
+            </and>
+        </condition>
+        <echo message="forceCssCopyNotNeeded set to: ${forceCssCopyNotNeeded}" />
+
+    	<condition property="forceHtmlCopyNotNeeded">
+            <and>
+                <uptodate 
+                    srcfile="${src.base}${/}src${/}html.SPControlPickUser.html"
+                    targetfile="${build.src}${/}html.SPControlPickUser.html" />
+                <uptodate 
+                    srcfile="${src.base}${/}demo${/}demo.body.html"
+                    targetfile="${build.demo}${/}demo.body.html" />
+            </and>
+        </condition>
+        <echo message="forceHtmlCopyNotNeeded set to: ${forceHtmlCopyNotNeeded}" />
+        
+    	<!--
+    	   Delete the jquery.SPWidgets files from the build folder. These
+    	   are ALWAYS recreated.
+    	-->
+    	<delete verbose="yes">
+            <fileset dir="${build.src}">
+                <include name="**${/}*${build.dist.baseFileName}*"/>
+            </fileset>
+        </delete>
+        
+        <echo message="INIT ------------------------------ [END]" />
+    </target>
+
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: doForceCopy
+          Call all the other "*forceCopy" targets.
+         - - - - - - - - - - - - - - - - - -->
+    <target name="doForceCopy">     
+        <echo message="DOFORCECOPY ------------------------------ [START]" />
+        
+        <antcall target="doCssForceCopy" inheritall="true" />
+        <antcall target="doHtmlForceCopy" inheritall="true" />
+        
+        <echo message="DOFORCECOPY -------------------------------- [END]" />
+    </target>
+    
+    <!-- - - - - - - - - - - - - - - - - - 
+        target: doCssForceCopy
+        Deletes css files from the BUILD folder so that they can
+        be rebuilt. This Target runs only if the $forceCssCopyNotNeeded
+        parameter is set... that parameter is set in the init Target.
+         - - - - - - - - - - - - - - - - - -->
+    <target name="doCssForceCopy" unless="forceCssCopyNotNeeded">
+        <echo message="doCssForceCopy ------------------------------ [START]" />
+        <delete verbose="yes">
+            <fileset dir="${build.src}">
+                <contains text="//_HAS_PICKSPUSER_CSS_TEMPLATE_" casesensitive="yes"/>
+            </fileset>
+            <fileset dir="${build.src}">
+                <contains text="//_HAS_SPUPLOAD_CSS_TEMPLATE_" casesensitive="yes"/>
+            </fileset>
+        </delete>
+        <echo message="doCssForceCopy -------------------------------- [END]" />
+    </target>
+    
+    <!-- - - - - - - - - - - - - - - - - - 
+        target: doHtmlForceCopy
+        Deletes HTML files from the BUILD folder so that they can
+        be rebuilt. This Target runs only if the $forceHtmlCopyNotNeeded
+        parameter is set... that parameter is set in the init Target.
+         - - - - - - - - - - - - - - - - - -->
+    <target name="doHtmlForceCopy" unless="forceHtmlCopyNotNeeded">
+        <echo message="doHtmlForceCopy ------------------------------ [START]" />
+        <delete verbose="yes">
+            <fileset dir="${build.src}">
+                <contains text="//_HAS_PICKSPUSER_HTML_TEMPLATE_" casesensitive="yes"/>
+            </fileset>
+            <fileset dir="${build.demo}">
+                <contains text="//_HAS_DEMO_BODY_TEMPLATE_" casesensitive="yes"/>
+            </fileset>
+        </delete>
+        <echo message="doHtmlForceCopy -------------------------------- [END]" />
+    </target>
+    
+	
+    <!--*******************************************
+                TARGET: build
+        ******************************************* -->
+    <target name="build" depends="init,setBuildVersionDate,doForceCopy" description="build the source " >
+        <echo message="BUILD ------------------------------ [START]" />
+        
+    	<!--   Set version (if not yet done). When creaing a zip file
+    	       (dist target) this parameter will be already set. -->
+    	<tstamp>
+            <format property="build.version" pattern="yyyyMMddhhmmss" />
+        </tstamp>
+    	
+    	
+        <!-- get all changed files from the src folder -->
+        <echo message="Updating files in ${build.base}" />
+        <copy todir="${build.base}" verbose="true" preservelastmodified="true">
+            <fileset refid="fileset.src.all" />
+        </copy>
+        <echo message="Update done!" />
+    	
+    	<!-- Create the SPWidget's plugin file by concatenating
+    	       the individual plugin files together into the 
+    	       jquery.SPWidgets file -->
+    	<concat destfile="${build.src}${/}${build.dist.baseFileName}.concat.tmp" 
+    		  append="false">
+            <fileset refid="fileset.build.pluginFiles" />
+        </concat>
+    	<loadfile property="js.plugin" 
+    	    srcfile="${build.src}${/}${build.dist.baseFileName}.concat.tmp" />
+    	<replace file="${build.src}${/}${build.dist.baseFileName}.js" 
+            token='//_SPWIDGETS_PLUGINS_'
+            value="${js.plugin}"
+            summary="Yes" />
+    	<delete file="${build.src}${/}${build.dist.baseFileName}.concat.tmp" verbose="true" />
+        
+        <echo message="Calling embed targets..." />
+        <antcall target="embedCssTemplates" inheritall="true" />
+        <antcall target="embedHtmlTemplates" inheritall="true" />
+        <echo message="embed targets Done!" />
+    	
+    	<!-- BUILD the webparts -->
+    	<echo message="Building Demo" />
+    	<antcall target="createWebparts" inheritall="true" />
+    	<echo message="Building Demo Done!" />
+    	
+    	<!-- update the build date variable -->
+        <echo message="Updating Version date to ${build.date}" />
+    	<replace dir="${build.demo}" 
+            token='_BUILD_VERSION_DATE_'
+            value="${build.date}"
+            summary="Yes" />
+    	<replace dir="${build.src}" 
+            token='_BUILD_VERSION_DATE_'
+            value="${build.date}"
+            summary="Yes" />
+    	
+    	<!-- update the build VERSION variable -->
+        <echo message="Updating Version date to ${build.version}" />
+    	<replace dir="${build.demo}" 
+            token='_BUILD_VERSION_'
+            value="${build.version}"
+            summary="Yes" />
+    	<replace dir="${build.src}" 
+            token='_BUILD_VERSION_'
+            value="${build.version}"
+            summary="Yes" />
+    	
+        <echo message="BUILD -------------------------------- [END]" />
+    
+    </target> <!-- target name="build" -->
+
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: embedCssTemplates                      
+         - - - - - - - - - - - - - - - - - -->
+    <target name="embedCssTemplates">
+        <echo message="embedCssTemplates ------------------------------ [START]" />
+        
+        <!-- Load SPControlUpload CSS file and convert it to a javascript string -->
+        <getFileAsJsString file="${build.src}${/}css.SPControlUpload.css" 
+    		   property="css.SPUpload"/>
+        <replace dir="${build.src}" 
+                token='"_INCLUDE_SPUPLOAD_CSS_TEMPLATE_";'
+                value="${css.SPUpload};${line.separator}//_HAS_SPUPLOAD_CSS_TEMPLATE_"
+                summary="Yes">
+        </replace>
+    	
+    	<!-- Load the SPControlPickUser CSS File and replaced where its toke appears -->
+    	<getFileAsJsString file="${build.src}${/}css.SPControlPickUser.css" 
+    		   property="css.SPPickUser"/>
+        <replace dir="${build.src}" 
+                token='"_INCLUDE_PICKSPUSER_CSS_TEMPLATE_";'
+                value="${css.SPPickUser};${line.separator}//_HAS_PICKSPUSER_CSS_TEMPLATE_"
+                summary="Yes">
+        </replace>
+    	
+        
+        <echo message="embedCssTemplates -------------------------------- [END]" />       
+    </target>
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: embedHtmlTemplates                      
+         - - - - - - - - - - - - - - - - - -->
+    <target name="embedHtmlTemplates">
+        <echo message="embedHtmlTemplates ------------------------------ [START]" />
+        
+        <!-- Load the SPControlPickUser HTML File and replaced where its token appears -->
+    	<getFileAsJsString file="${build.src}${/}html.SPControlPickUser.html" 
+    		   property="html.SPPickUser"/>
+        <replace dir="${build.src}" 
+                token='"_INCLUDE_PICKSPUSER_HTML_TEMPLATE_";'
+                value="${html.SPPickUser};${line.separator}//_HAS_PICKSPUSER_HTML_TEMPLATE_"
+                summary="Yes">
+        </replace>
+    	
+        <echo message="embedHtmlTemplates -------------------------------- [END]" />       
+    </target>
+    
+    
+    <!--*******************************************
+        TARGET: dist
+            -   Version is set here prior to calling
+                build target.
+        ******************************************* -->
+    <target name="dist" depends="init,setVersionNumber,build,doc" 
+            description="generate the distribution" >
+        <echo message="DIST ------------------------------ [START]" />
+        <echo>
+        	*** WAS CHANGE LOG UPDATE???
+        </echo>
+        
+    	<!-- Make sure that no console.log() statement exist -->
+        <fileset dir="${build.base}" id="fileset.filesUsingConsole">
+        	<patternset refid="patternset.sourceFiles"/>
+        	<containsregexp expression="^\s*?console\."/>
+        </fileset>
+        <pathconvert pathsep="${line.separator}" property="prop.filesUsingConsole" refid="fileset.filesUsingConsole"/>
+        <fail message="FAIL: javasript 'console' statements found:${line.separator} ${prop.filesUsingConsole} ${line.separator}">
+            <condition>
+                <resourcecount property="count.filesUsingConsole" when="greater" count="0">
+                    <fileset refid="fileset.filesUsingConsole"/>
+                </resourcecount>
+            </condition>
+        </fail>
+        
+    	
+        <!-- Define the zipfile name and create it. -->
+        <zip destfile="${build.dist}${/}${ant.project.name}.${build.version}.${DSTAMP}.${TSTAMP}.zip">
+            <fileset refid="fileset.dist.all" />
+        </zip>
+        
+        <echo message="DIST -------------------------------- [END]" />
+    </target>
+
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: setVersionNumber                      
+         - - - - - - - - - - - - - - - - - -->
+    <target name="setVersionNumber">
+    	<input
+            message="What is the Version Number?"
+    		defaultvalue="0.0"
+            addproperty="build.version"
+        />
+    </target>
+
+	
+    <!--*******************************************
+                TARGET: setBuildVersionDate
+        ******************************************* -->
+    <target name="setBuildVersionDate"  
+            description="Sets the Build date to not have Time stamp. Only Date" >
+        <echo message="setBuildVersionDate ------------------------------ [START]" />
+        <!-- Create time stamp formated for inclusion in the version file -->
+        <tstamp>
+            <format property="build.date" pattern="MMMM dd, yyyy - hh:mm aa" />
+        </tstamp>
+        <echo message="setBuildVersionDate -------------[${build.date}]-- [END]" />
+    </target>
+    
+    <!--*******************************************
+                TARGET: setDevVersionDate
+        ******************************************* -->
+    <target name="setDevVersionDate"  
+            description="Sets the Build date to not have Time stamp. Only Date" >
+        <echo message="setDevVersionDate ------------------------------ [START]" />
+        <!-- Create time stamp formated for inclusion in the version file -->
+        <tstamp>
+            <format property="thisDevVersionDate" pattern="MMMM dd, yyyy hh:mm aa" />
+        </tstamp>
+        
+        <!-- Set the version user name -->
+        <property name="build.date" value="${user.name}:${thisDevVersionDate}" />
+        
+        <echo message="setDevVersionDate -------------[${build.date}]-- [END]" />
+    </target>
+    
+    <!--*******************************************
+                TARGET: clean
+        ******************************************* -->
+    <target name="clean" description="clean up" >
+        <!-- Delete the ${build.src} and ${build.dist} directory trees -->
+        <delete dir="${build.base}"/>
+        <echo>
+        *--------------------------------------------------------
+        |
+        |     DONE. BUILD directory cleaned up.
+        |
+        *--------------------------------------------------------
+        </echo>
+        
+    </target>
+
+
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: packJavascriptFiles                      
+         - - - - - - - - - - - - - - - - - -->
+    <target name="packJavascriptFiles">
+        <!-- Define fileset for use in property below -->
+        <fileset dir="${build.src}" id="built.files.js.pack">
+            <patternset refid="files.pack.js.set"/>
+        </fileset>
+        <pathconvert pathsep="${line.separator}" 
+            property="jsMinifier.files" 
+            refid="built.files.js.pack"/>
+        <echo file="${build.tmp}${/}js.minify.files.txt">${jsMinifier.files}</echo>
+        
+        <echo message="Calling jsminifier.pl...(this may take a while)"/>        
+        <exec executable="perl" outputproperty="jsminifierStatus">
+            <arg line="${cmd.jsminifier} "/>
+            <arg line="${build.tmp}${/}js.minify.files.txt "/>
+        </exec>
+        <echo message="${jsminifierStatus}" />
+        
+        <!-- delete temp file -->
+        <delete file="${build.tmp}${/}js.minify.files.txt" />
+        <echo message="Done!" />
+    </target>
+
+	<!-- ================================= 
+          target: doc              
+         ================================= -->
+    <target name="doc" depends="build" description="builds the documentation.">
+        <echo message="DOC ---------------------- [START]" />
+    	
+    	<!-- Build SRC documentation -->
+    	<delete verbose="true">
+    		<fileset dir="${build.doc}${/}src" includes="**${/}*"/>
+    	</delete>
+    	<java jar="${tool.jsdoc.jar}" fork="true" dir="${build.src}${/}">
+    		<arg value="${tool.jsdoc.base}${/}app${/}run.js" />
+    		<arg value="${build.src}${/}" />
+    		<arg value='-E=".*jquery\.SPWidgets\.js.*"' />
+    		<arg value="-t=${tool.jsdoc.base}${/}templates${/}jsdoc" />
+    		<arg value="-d=${build.doc}${/}src${/}" />
+    	</java>
+        <echo message="DOC ---------------------- [END]" />
+    </target>
+	
+    <!-- - - - - - - - - - - - - - - - - - 
+        target: doc
+        updates the documentation for all the modules
+        in leaguestat. This build developer documenation
+        not end user.
+        - - - - - - - - - - - - - - - - - -->
+    <target name="docNaturalDocs">
+        
+        <echo>
+           
+        ************************************************
+        *    
+        *    NOTE: DOCUMENATION IS SAVED TO:
+        *    ${basedir}${/}doc${/}html
+        *
+        ************************************************            
+        </echo>
+        <exec executable="perl">
+            <arg line="${cmd.NaturalDocs} --documented-only "/>
+            <arg line="-xi CVS -xi t -xi zPerf -xi _tmp -xi build -xi .settings " />
+            <arg line="-o FramedHTML ${basedir}${/}doc${/}html " />
+            <arg line="-p ${basedir}${/}doc${/}proj -i ${basedir}${/}src"/>
+        </exec>
+        <echo message="Done: Building documentation"/>
+        
+    </target> <!-- END target name="doc" -->
+    
+    
+    <!-- ================================= 
+          target: deploy              
+         ================================= -->
+    <target name="deploy" depends="setDevVersionDate,build" 
+            description="Deploys the latest version of the source 
+                        files to the live development site.">
+        
+        <!-- Make sure we have the properties defined that we need -->
+        <fail message="${build.prop.file} missing [me.deploy.location] property or not set!">
+            <condition>
+                <and>
+                    <not>
+                        <isset property="${me.deploy.location}" />
+                    </not>
+                    <length string="${me.deploy.location}" trim="true" length="0" />
+                </and>
+            </condition>
+        </fail>
+        
+        <!-- Make sure the deployment location exists -->
+        <fail message="${build.prop.file} :: property [me.deploy.location] location not found [${me.deploy.location}]!">
+            <condition>
+                <not>
+                    <available file="${me.deploy.location}" type="dir" property="me.deploy.location.exists" />
+                </not>
+            </condition>
+        </fail>
+        
+        <echo message="Initiating deploy. Copying Files to: ${me.deploy.location}" />
+        
+        <copy todir="${me.deploy.location}" flatten="true" verbose="true" preservelastmodified="true">
+            <fileset dir="${build.base}">
+                <patternset refid="patternset.deploy" />
+                <modified>
+                    <param name="cache.cachefile" value="${build.base}${/}localdev.cache"/>
+                </modified>
+            </fileset>
+        </copy>
+        
+        <echo message="deploy complete!."/>
+    </target> <!-- END target name="deploy" -->
+
+   <!-- ================================= 
+          target: createWebparts              
+         ================================= -->
+    <target name="createWebparts" depends="" description="creates the webparts">
+        
+        <echo message="createWebparts ------------------------------ [START]" />
+        
+    	<!-- Delete current webparts and copy over new 	-->
+    	<delete verbose="true">
+            <fileset dir="${build.demo}" includes="**/*.webpart,**/*.webpart.*"/>
+        </delete>
+        <copy file="${src.demo}${/}${src.demo.webpartName}" 
+        	tofile="${build.demo}${/}${build.demo.webpartName}" verbose="true" />
+        <copy file="${src.demo}${/}${src.dev.webpartName}" 
+        	tofile="${build.demo}${/}${build.dev.webpartName}" verbose="true" />
+    	
+    	<!-- Embed HTML into the demo js code -->
+        <getFileAsJsString file="${build.demo}${/}demo.body.html" 
+               property="html.demoBody"/>
+        <replace dir="${build.demo}" 
+                token='"_INCLUDE_DEMO_BODY_TEMPLATE_";'
+                value="${html.demoBody};${line.separator}//_HAS_DEMO_BODY_TEMPLATE_"
+                summary="Yes">
+        </replace>
+    	
+    	<!-- Create the .html files that represent the Webpart code -->
+        <concat destfile="${build.demo}${/}${build.demo.webpartName}.html" append="false">
+            <!-- fileset refid="fileset.build.demo.webpart" / -->
+        	<filelist dir="${build.demo}"  
+        	    files="demo.SPWidgets.html
+        		       demo.script.open.tag.html" />
+        	<filelist dir="${build.src}"
+        		files="jquery.SPWidgets.js" />
+        	<filelist dir="${build.demo}" 
+        		files="demo.code.js
+        		       demo.script.close.tag.html"/>
+        </concat>
+        <concat destfile="${build.demo}${/}${build.dev.webpartName}.html" append="false">
+            <filelist dir="${build.demo}" 
+                files="demo.SPWidgets.html
+            	       dev.test.SPWidgets.html" />
+        </concat>
+    	
+    	<!-- Create the Webparts -->
+    	<loadfile property="html.demoCode" 
+    		srcfile="${build.demo}${/}${build.demo.webpartName}.html" />
+        <replace file="${build.demo}${/}${build.demo.webpartName}" 
+                token='&lt;!--_BUILD_CODE_HERE_--&gt;'
+                value="${html.demoCode}"
+                summary="Yes">
+        </replace>
+    	<replace dir="${build.demo}" 
+                token='_BUILD_WEBPART_TITLE_'
+                value="SPControlUpload Widget Demo"
+                summary="Yes">
+        </replace>
+    	
+    	<loadfile property="html.devTestCode" 
+    		srcfile="${build.demo}${/}${build.dev.webpartName}.html" />
+        <replace file="${build.demo}${/}${build.dev.webpartName}" 
+                token='&lt;!--_BUILD_CODE_HERE_--&gt;'
+                value="${html.devTestCode}"
+                summary="Yes">
+        </replace>
+    	<replace dir="${build.demo}" 
+    		    token='_BUILD_WEBPART_TITLE_'
+                value="DEVELOPMENT TEST - SPControlUpload Widget"
+                summary="Yes">
+        </replace>
+    	
+    	<!-- Update DEV weparts with user specific DEV url -->
+    	<replace dir="${build.demo}" 
+    		    token='[me.deploy.locationUrl]'
+                value="${me.deploy.locationUrl}"
+                summary="Yes">
+        </replace>
+    	
+    	
+        <echo message="createWebparts ------------------------------ [END]" />
+        
+    </target><!-- END: target: createWebparts -->
+	
+	
+	<!-- ================================= 
+          target: minify              
+         ================================= -->
+    <target name="minify" depends="build" description="Minifies files">
+    	<echo message="MINIFY ---------------------- [START]" />
+        
+        <!-- Build SRC documentation -->
+        <delete verbose="true">
+            <fileset dir="${build.src}" includes="**${/}*.min.*"/>
+        </delete>
+        <java jar="${tool.jscompiler.jar}" fork="true" dir="${build.src}${/}">
+            <arg value="--js='${build.src}${/}${build.dist.baseFileName}.js'" />
+            <arg value="--js_output_file='${build.src}${/}${build.dist.baseFileName}.min.js'" />
+        </java>
+        <echo message="MINIFY ---------------------- [END]" />
+    </target><!-- End: target = minify -->
+	 
+	
+	
+	<!-- = = = = = = = = = = = = = = = = =
+          macrodef: getFileAsJsString
+            Reads a file and saves it to a Property as a javascript
+            string. Macro does:
+            1) escapes all double quotes,
+            2) Adds double quotes to start and end of each line
+            3) add plus sign to begining of each line (except first
+               line of file)
+            File content can then be retrieved via the property that
+            was given at input.
+         = = = = = = = = = = = = = = = = = -->
+    <macrodef name="getFileAsJsString">
+        <attribute name="file" />
+    	<attribute name="property"/>
+        <sequential>
+        	<loadfile property="@{property}" srcfile="@{file}">
+	            <filterchain>
+	                <replacestring from='"' to='\"' />
+	                <prefixlines prefix='+ "' />
+	                <replaceregex pattern="$" replace='\\\\n"' />
+	                <tokenfilter>
+	                    <filetokenizer/>
+	                    <replaceregex pattern='^\+ \"' replace='"' />
+	                    <replaceregex pattern='\"${line.separator}$' replace='"' />
+	                    <replaceregex pattern='\"\r\n$' replace='"' />
+	                    <replaceregex pattern='\"\r$' replace='"' />
+	                    <replaceregex pattern='\"\n$' replace='"' />
+	                </tokenfilter>
+	            </filterchain>
+	        </loadfile>
+        </sequential>
+    </macrodef>
+
+</project>

@@ -1,0 +1,52 @@
+<div style="padding:1em;margin:.5em;" class="ui-state-active">
+    <h1>Demo of SPWidgets</h1>
+    <p>SPWidgets is a set of Sharepoint widgets meant to facilitate the 
+        building of custom UI's. This webpart contains demos of the widgets 
+        that are included and serves to only scratch at the possibilities 
+        of what can be accomplished with them.</p> 
+</div>
+<div id="ptTabsCntr" style="display: none;">
+    <ul>
+        <li><a href="#SPControlUploadDemo"><span>Upload</span></a></li>
+        <li><a href="#SPControlPickUserDemo"><span>People Picker</span></a></li>
+    </ul>
+    <div id="SPControlUploadDemo">
+        <h2>Upload Plugin</h2>
+        <div style="padding: 1em;margin: 3em auto;" class="ui-state-highlight">
+            Once an existing Document Library is selected, you will be presented 
+            with an upload button that will allow you to upload files to the 
+            root of the library selected.
+        </div>
+        <div>
+            <div id="sp_control_library_name"></div>
+            <div id="sp_control_file_list" style="margin-bottom:2em;padding:.5em;padding-left:1.5em;"></div>
+        </div>
+        <hr/>
+        <h3>Upload New File</h3>
+        <div id="sp_control_upload_file">
+            <div>
+                <button type="button" name="upload" value="">Upload</button>
+            </div>
+            <div id="sp_upload_widget"></div>
+        </div>
+    </div>
+    
+    <div id="SPControlPickUserDemo">
+        <h2>People Picker</h2>
+        <div style="min-height: 300px;">
+            <div style="padding: 1em;margin: 3em auto;" class="ui-state-highlight">
+                Start typing the user\'s name (last or first) and a list of
+                suggested selections will be displayed. Because it is using jQuery
+                UI, mouse or keyboard shortcuts can be used to select a user. The
+                input field that was used to bind this plugin will be populated with
+                the selected user\'s information in the formta expected for update to
+                the sharepoing list (ID;#userName)
+            </div>
+            <label>User Name</label>
+            <input type="text" name="spuserdemo" value="" />
+            <div id="sp_control_pick_user_detail" style="margin-top: 1em;padding:1em;"></div>
+        </div>
+    </div>
+    
+</div>
+

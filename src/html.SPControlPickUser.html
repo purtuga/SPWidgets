@@ -1,0 +1,37 @@
+<!--
+    Html Templates for the PickSPUser plugin.
+    
+    |
+    |   $Author$
+    | $Revision$
+    |     $Date$
+    |       $Id$
+    |
+-->
+<div>
+    <div class="pt-pickSPUser">
+        <div class="pt-pickSPUser-selected">
+            None Selected!
+        </div>
+        <div style="clear:both"></div>
+        <div class="pt-pickSPUser-input" 
+                title="Type user name above to vew search results.">
+            <input name="pickSPUserInputField" value="" />
+        </div>
+    </div>
+    
+    <div class="pt-pickSPUser-person">
+        <div class="pt-pickSPUser-person-cntr ui-state-default ui-corner-all">
+            <span class="pt-person-name"></span>
+            <div class="pt-pickSPUser-person-actions">
+                <div class="tt-record-item-action-links">
+                    <a class="tt-delete-icon" href="javascript:" onclick="jQuery.pt.pickSPUser.removeUser(this);">
+                        <img style="border: medium none; margin-right: 2px;" alt="Delete" src="/_layouts/images/delitem.gif">
+                    </a>
+                    <div style="clear:both;"></div>
+                </div>
+                <div style="clear:both;"></div>
+            </div>
+        </div>
+    </div>
+</div>
