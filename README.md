@@ -42,9 +42,8 @@ is required in order to turn Markdown.pl.
 
 The tools should be downloaded and placed under:
 
-BUILD/Tools/google-closure-compiler/
-
-BUILD/Tools/markdown/
+- BUILD/Tools/google-closure-compiler/
+- BUILD/Tools/markdown/
 
 The project also allows you to "deploy" to a live sharepoint site by doing
 a file copy from the development BUILD folder to a sharepoint folder. In order
