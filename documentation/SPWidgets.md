@@ -3,6 +3,8 @@ About
 
 SPWidgets is a jQuery plugin that provides SharePoint Widgets that can be used for creating customized User Interfaces (UI) on the SharePoint platform using Client Side scripting (javascript).
 
+For the latest information on this plugin, see the [project page on GIT](http://purtuga.github.com/SPWidgets/).
+
 
 Dependencies
 ------------
@@ -53,7 +55,8 @@ Author
 ------
 
 <span id="ptAuthorInfo">
-[Paul Tavares](http://paultavares.wordpress.com)
+[Paul Tavares](http://paultavares.wordpress.com) @purtuga
+
 Follow me at Twitter [@paul_tavares](https://twitter.com/paul_tavares) 
 </span>
 

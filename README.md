@@ -6,8 +6,8 @@ Sharepoint Custom UI Widgets that make building custom User Interfaces easier.
 Documentation
 -------------
 
-See the markdown files under the [Documentation](https://github.com/purtuga/SPWidgets/tree/master/documentation/)
-folder for full detail on the usage of each available plugins.
+See the [project page](http://purtuga.github.com/SPWidgets/) folder for full 
+detail on the usage of each available plugins.
 
 
 Downloads
