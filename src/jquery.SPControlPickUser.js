@@ -5,7 +5,7 @@
  * on jQuery UI's Autocomplete and SPServices library.
  *      
  *  
- * @version _BUILD_VERSION_NUMBER_
+ * @version _BUILD_VERSION_NUMBER_NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 

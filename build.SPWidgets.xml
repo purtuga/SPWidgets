@@ -66,6 +66,7 @@
         <include name="demo${/}**${/}*.webpart*" />
         <include name="src${/}${build.dist.baseFileName}*" />
         <include name="documentation${/}*.html" />
+        <include name="documentation${/}web${/}**${/}*" />
 		
 		<exclude name="demo${/}**${/}dev.*"/>
     </fileset>
@@ -219,7 +220,8 @@
     <!--*******************************************
                 TARGET: build
         ******************************************* -->
-    <target name="build" depends="init,setBuildVersionDate,doForceCopy" description="build the source " >
+    <target name="build" depends="init,setBuildVersionDate,doForceCopy" 
+    	description="build the source " >
         <echo message="BUILD ------------------------------ [START]" />
         
     	<!--   Set version (if not yet done). When creaing a zip file
@@ -269,26 +271,20 @@
     	<echo message="Building Demo Done!" />
     	
     	<!-- update the build date variable -->
-        <echo message="Updating Version date to ${build.date}" />
-    	<replace dir="${build.demo}" 
-            token='_BUILD_VERSION_DATE_'
-            value="${build.date}"
-            summary="Yes" />
-    	<replace dir="${build.src}" 
-            token='_BUILD_VERSION_DATE_'
-            value="${build.date}"
-            summary="Yes" />
+        <echo message="Updating Version date to ${build.date}" />    	
+        <replace token="_BUILD_VERSION_DATE_" value="${build.date}">
+            <fileset dir="${build.base}" id="">
+            	<patternset id="fileset.dist.all" />
+    		</fileset>
+    	</replace>
     	
     	<!-- update the build VERSION variable -->
         <echo message="Updating Version date to ${build.version}" />
-    	<replace dir="${build.demo}" 
-            token='_BUILD_VERSION_'
-            value="${build.version}"
-            summary="Yes" />
-    	<replace dir="${build.src}" 
-            token='_BUILD_VERSION_'
-            value="${build.version}"
-            summary="Yes" />
+        <replace token="_BUILD_VERSION_NUMBER_" value="${build.version}">
+            <fileset dir="${build.base}" id="">
+            	<patternset id="fileset.dist.all" />
+    		</fileset>
+    	</replace>
     	
         <echo message="BUILD -------------------------------- [END]" />
     

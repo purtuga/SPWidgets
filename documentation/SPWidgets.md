@@ -1,9 +1,7 @@
 About
 -----
 
-SPWidgets is a jQuery plugin that provides Sharepoint Widgets 
-that can be used for creating customized User Interfaces (UI) on
-the Sharepoint platform using Client Side scripting (javascript).
+SPWidgets is a jQuery plugin that provides SharePoint Widgets that can be used for creating customized User Interfaces (UI) on the SharePoint platform using Client Side scripting (javascript).
 
 
 Dependencies
@@ -19,8 +17,7 @@ SPWidgets has the following dependencies:
 Usage
 -----
 
-The following is an example that loads the required libraries from CDN's and 
-then initiates the People Picker plugin on a input field inside a jQuery UI dialog.
+The following is an example that loads the required libraries from CDN's, the SPWidgets from the local site and then initiates the People Picker plugin on an input field inside a jQuery UI dialog.
 
 
     <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/themes/redmond/jquery-ui.css" />
@@ -55,11 +52,14 @@ and does'nt not have to contact me.
 Author
 ------
 
+<span id="ptAuthorInfo">
 [Paul Tavares](http://paultavares.wordpress.com)
 Follow me at Twitter [@paul_tavares](https://twitter.com/paul_tavares) 
+</span>
 
 Version
 -------
 
-Version: _BUILD_VERSION_
-Date: _BUILD_VERSION_DATE_
+-   Version: _BUILD_VERSION_NUMBER_
+-   Build Date: _BUILD_VERSION_DATE_
+

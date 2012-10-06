@@ -3,7 +3,7 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *  
- * @version _BUILD_VERSION_
+ * @version _BUILD_VERSION_NUMBER_
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     https://github.com/purtuga/SPWidgets
  * 
@@ -12,7 +12,7 @@
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
  * Build Date:  _BUILD_VERSION_DATE_
- * Version:     _BUILD_VERSION_
+ * Version:     _BUILD_VERSION_NUMBER_
  * 
  */
 ;(function($){
@@ -38,7 +38,7 @@
         jQuery.pt._cache = {};
     }
     jQuery.SPWidgets = {},
-    jQuery.SPWidgets.version = "_BUILD_VERSION_";
+    jQuery.SPWidgets.version = "_BUILD_VERSION_NUMBER_";
     
     
 //_SPWIDGETS_PLUGINS_

@@ -4,10 +4,11 @@
  * Look for the SPControlUpload() call below to see how it
  * is being used.
  * 
- * @version _BUILD_VERSION_NUMBER_
+ * @version _BUILD_VERSION_NUMBER_NUMBER_
  * 
  */
  $(document).ready(function(){
+    
     var ui = $("#sp_control_upload_demo_cntr")
                 .css({
                     padding:    '1em',

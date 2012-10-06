@@ -7,7 +7,7 @@
  * through the many SP pages and without having to leave the user's current page.
  *      
  *  
- * @version _BUILD_VERSION_NUMBER_
+ * @version _BUILD_VERSION_NUMBER_NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
