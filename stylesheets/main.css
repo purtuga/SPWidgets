@@ -1,0 +1,14 @@
+/**
+ * Paul Tavares
+ */
+.pt-author-cntr {
+    position: relative;
+}
+
+.pt-author-cntr .pt-left-col {
+    position: absolute;
+    width: 20%;
+}
+.pt-author-cntr .pt-right-col {
+    padding-left: 22%;
+}
