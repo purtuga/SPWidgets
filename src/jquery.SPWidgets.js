@@ -24,21 +24,21 @@
      * @memberOf    jQuery
      */
     try {
-        if (!jQuery.pt) {
-            jQuery.pt = {};
+        if (!$.pt) {
+            $.pt = {};
         }
     } catch (e) {
-        jQuery.pt = {};
+        $.pt = {};
     }
-    if (jQuery.pt._cache === undefined) {
+    if ($.pt._cache === undefined) {
         /**
          * Local cache of data that is unlikely to change during
          * the live of the page.
          */
-        jQuery.pt._cache = {};
+        $.pt._cache = {};
     }
-    jQuery.SPWidgets = {},
-    jQuery.SPWidgets.version = "_BUILD_VERSION_NUMBER_";
+    $.SPWidgets = {},
+    $.SPWidgets.version = "_BUILD_VERSION_NUMBER_";
     
     
 //_SPWIDGETS_PLUGINS_

@@ -23,7 +23,7 @@
  * @class       Namespace for pickSPUser plugin
  * @memberOf    jQuery.pt
  */
-jQuery.pt.pickSPUser = {
+$.pt.pickSPUser = {
     _isPickSPUserCssDone: false
 };
 
@@ -68,13 +68,13 @@ jQuery.pt.pickSPUser = {
  * $().pickSPUser("method", "clear")    -   Clears the currently selected users.
  * 
  */
-jQuery.fn.pickSPUser = function(options) {
+$.fn.pickSPUser = function(options) {
     
     // if the global styles have not yet been inserted into the page, do it now
-    if (!jQuery.pt.pickSPUser._isPickSPUserCssDone) {
-        jQuery.pt.pickSPUser._isPickSPUserCssDone = true;
+    if (!$.pt.pickSPUser._isPickSPUserCssDone) {
+        $.pt.pickSPUser._isPickSPUserCssDone = true;
         $('<style type="text/css">' + "\n\n" +
-                jQuery.pt.pickSPUser.styleSheet +
+                $.pt.pickSPUser.styleSheet +
                 "\n\n</style>")
             .prependTo("head");
     }
@@ -120,7 +120,7 @@ jQuery.fn.pickSPUser = function(options) {
         // TODO: Clean up
         // var cntr        = $(o.htmlTemplateSelector + " .pt-pickSPUser")
                             // .clone(1).insertAfter(ele);
-        var cntr        = $(jQuery.pt.pickSPUser.htmlTemplate)
+        var cntr        = $($.pt.pickSPUser.htmlTemplate)
                             .find(".pt-pickSPUser").clone(1).insertAfter(ele);
         o.eleSelected   = cntr.find("div.pt-pickSPUser-selected").empty();
         
@@ -143,7 +143,7 @@ jQuery.fn.pickSPUser = function(options) {
                 var user    = curUsers[i];
                 o.eleSelected.append($.pt.pickSPUser.getUserHtmlElement(o, id, user));
             }
-            jQuery.pt.addHoverEffect(
+            $.pt.addHoverEffect(
                 o.eleSelected.find("div.pt-pickSPUser-person-cntr") );
         
             // if we don't allow multiple, then hide the input area
@@ -209,8 +209,8 @@ jQuery.fn.pickSPUser = function(options) {
                     o.eleSelected.append(
                         $.pt.pickSPUser.getUserHtmlElement(
                             o, u.item.accountId, u.item.displayName));
-                    jQuery.pt.pickSPUser.storeListOfUsers(cntr);
-                    jQuery.pt.addHoverEffect(
+                    $.pt.pickSPUser.storeListOfUsers(cntr);
+                    $.pt.addHoverEffect(
                         cntr.find("div.pt-pickSPUser-person-cntr") );
                     // clear out the autocomplete box
                     setTimeout(function(){ev.target.value = "";}, 50);
@@ -234,7 +234,7 @@ jQuery.fn.pickSPUser = function(options) {
     
     return this;
     
-};// jQuery.fn.pickSPUser()
+};// $.fn.pickSPUser()
 
 /**
  * Builds the html element that surrounds a user for display on the page.
@@ -246,10 +246,10 @@ jQuery.fn.pickSPUser = function(options) {
  * @return {jQuery} Html element
  * 
  */
-jQuery.pt.pickSPUser.getUserHtmlElement = function(opt, id, name){
+$.pt.pickSPUser.getUserHtmlElement = function(opt, id, name){
     // TODO: clean up
     // var ele = $(opt.htmlTemplateSelector + " .pt-pickSPUser-person").clone(1);
-    var ele = $(jQuery.pt.pickSPUser.htmlTemplate)
+    var ele = $($.pt.pickSPUser.htmlTemplate)
                 .find(".pt-pickSPUser-person").clone(1);
     ele.attr("data-pickSPUserID", id);
     ele.find("span.pt-person-name")
@@ -258,7 +258,7 @@ jQuery.pt.pickSPUser.getUserHtmlElement = function(opt, id, name){
         .attr("data-pickSPUserNAME", name);
     return ele;    
     
-};// jQuery.pt.pickSPUser.getUserHtmlElement()
+};// $.pt.pickSPUser.getUserHtmlElement()
 
 
 /**
@@ -276,7 +276,7 @@ jQuery.pt.pickSPUser.getUserHtmlElement = function(opt, id, name){
  * @return {undefined}
  * 
  */
-jQuery.pt.pickSPUser.removeUser = function(ele){
+$.pt.pickSPUser.removeUser = function(ele){
     
     var cntr    = $(ele).closest("div.pt-pickSPUser");
     var o       = cntr.data("pickSPUserContainerOpt");
@@ -284,7 +284,7 @@ jQuery.pt.pickSPUser.removeUser = function(ele){
     // remove user from the view
     $(ele).closest("div.pt-pickSPUser-person").fadeOut('fast', function(){
         $(this).remove();
-        jQuery.pt.pickSPUser.storeListOfUsers(cntr);
+        $.pt.pickSPUser.storeListOfUsers(cntr);
     });
     
     // if AllowMultiple is false, then make the picker input visible
@@ -295,7 +295,7 @@ jQuery.pt.pickSPUser.removeUser = function(ele){
     }
     
     return;
-};// jQuery.pt.pickSPUser.removeUser()
+};// $.pt.pickSPUser.removeUser()
 
 
 /**
@@ -313,7 +313,7 @@ jQuery.pt.pickSPUser.removeUser = function(ele){
  * @return {undefined}
  * 
  */
-jQuery.pt.pickSPUser.storeListOfUsers = function(ele){
+$.pt.pickSPUser.storeListOfUsers = function(ele){
     
     var cntr    = $(ele).closest("div.pt-pickSPUser"),
         opt     = cntr.data("pickSPUserContainerOpt"),
@@ -336,7 +336,7 @@ jQuery.pt.pickSPUser.storeListOfUsers = function(ele){
     opt.eleUserInput.val(newVal);
     
     return;
-};// jQuery.pt.pickSPUser.storeListOfUsers()
+};// $.pt.pickSPUser.storeListOfUsers()
 
 /**
  * Handles method actions given to $().pickSPUser()
@@ -348,7 +348,7 @@ jQuery.pt.pickSPUser.storeListOfUsers = function(ele){
  * @return {this}
  * 
  */
-jQuery.pt.pickSPUser.handleAction = function(type, action, options) {
+$.pt.pickSPUser.handleAction = function(type, action, options) {
     
     type    = String(type).toLowerCase();
     action  = String(action).toLowerCase();
@@ -367,7 +367,7 @@ jQuery.pt.pickSPUser.handleAction = function(type, action, options) {
     }//end:type===method
     
     return this;
-};// jQuery.pt.pickSPUser.handleAction() 
+};// $.pt.pickSPUser.handleAction() 
 
 
 /**
@@ -377,7 +377,7 @@ jQuery.pt.pickSPUser.handleAction = function(type, action, options) {
  * Value is set at build time.
  * 
  */
-jQuery.pt.pickSPUser.styleSheet = "_INCLUDE_PICKSPUSER_CSS_TEMPLATE_";
+$.pt.pickSPUser.styleSheet = "_INCLUDE_PICKSPUSER_CSS_TEMPLATE_";
 
 
 /**
@@ -386,7 +386,7 @@ jQuery.pt.pickSPUser.styleSheet = "_INCLUDE_PICKSPUSER_CSS_TEMPLATE_";
  * Value is set at build time.
  * 
  */
-jQuery.pt.pickSPUser.htmlTemplate = "_INCLUDE_PICKSPUSER_HTML_TEMPLATE_";
+$.pt.pickSPUser.htmlTemplate = "_INCLUDE_PICKSPUSER_HTML_TEMPLATE_";
 
 /**
  * Given a list of elements, this will add a hover affect to 
@@ -405,7 +405,7 @@ jQuery.pt.pickSPUser.htmlTemplate = "_INCLUDE_PICKSPUSER_HTML_TEMPLATE_";
  *      $(".container a").addHoverEffect();
  * 
  */
-jQuery.pt.addHoverEffect = function(ele){
+$.pt.addHoverEffect = function(ele){
     return $(ele).each(function(){
             if ($(this).hasClass("addHoverEffectDone")) {
                 return;
@@ -416,7 +416,7 @@ jQuery.pt.addHoverEffect = function(ele){
             $(e).mouseenter(function(){$(e).toggleClass("ui-state-hover");});
             $(e).mouseleave(function(){$(e).toggleClass("ui-state-hover");});
         });
-};// jQuery.pt.addHoverEffect()
+};// $.pt.addHoverEffect()
 
 
 

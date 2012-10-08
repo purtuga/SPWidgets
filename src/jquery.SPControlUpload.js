@@ -37,7 +37,7 @@
 /**
  * Tracks if the CSS injection into the page has been done.
  */
-jQuery.pt._isSPUploadCssDone = false;
+$.pt._isSPUploadCssDone = false;
 
 
 /**
@@ -116,7 +116,7 @@ jQuery.pt._isSPUploadCssDone = false;
  * 
  * 
  */
-jQuery.fn.SPControlUpload = function (options) {
+$.fn.SPControlUpload = function (options) {
     var o = $.extend({}, {
                 listName:       '',
                 folderPath:     '',
@@ -131,15 +131,15 @@ jQuery.fn.SPControlUpload = function (options) {
             }, options);
     
     // if the global styles have not yet been inserted into the page, do it now
-    if (!jQuery.pt._isSPUploadCssDone) {
-        jQuery.pt._isSPUploadCssDone = true;
+    if (!$.pt._isSPUploadCssDone) {
+        $.pt._isSPUploadCssDone = true;
         $('<style type="text/css">' + "\n\n" +
-        jQuery.pt.SPUploadStyleSheet + "\n\n</style>").prependTo("head");
+        $.pt.SPUploadStyleSheet + "\n\n</style>").prependTo("head");
     }
     
     // If list Name is not the UID, then get it now
     if (o.listName && o.listName.indexOf("{") != 0) {
-        o.listName = jQuery.pt.getListUID(o.listName);
+        o.listName = $.pt.getListUID(o.listName);
     }
     // If list name is not defined - error
     if (!o.listName) {
@@ -170,19 +170,19 @@ jQuery.fn.SPControlUpload = function (options) {
     
     // Create additional non-overridable options
     o.uploadPage    = o.uploadPage + "?List=" + 
-                      jQuery.pt.getEscapedUrl(o.listName) + "&RootFolder=" +
-                      jQuery.pt.getEscapedUrl(o.folderPath) + "&Source=" +
-                      jQuery.pt.getEscapedUrl(o.uploadDonePage) + "&" + o.uploadUrlOpt;
+                      $.pt.getEscapedUrl(o.listName) + "&RootFolder=" +
+                      $.pt.getEscapedUrl(o.folderPath) + "&Source=" +
+                      $.pt.getEscapedUrl(o.uploadDonePage) + "&" + o.uploadUrlOpt;
     o._lastError    = "";
     o._reloadCount  = 0;
    
     /** 
      * @name SPControlLoadEvent
      * Event object that is given as input to the function defined in the
-     * jQuery.fn.SPControlUpload-onPageChange parameter.
+     * $.fn.SPControlUpload-onPageChange parameter.
      * 
      * @event
-     * @memberof jQuery.fn.SPControlUpload
+     * @memberof $.fn.SPControlUpload
      * 
      * @param {SPControlLoadEvent} ev
      * 
@@ -267,7 +267,7 @@ jQuery.fn.SPControlUpload = function (options) {
             .find("iframe")
                 .css("height", h)
                 .load(function(ev){
-                    jQuery.pt._onIFramePageChange(e.find(".SPControlUploadUI"));
+                    $.pt._onIFramePageChange(e.find(".SPControlUploadUI"));
                 })
                 .attr("src", o.uploadPage)
                 .end()
@@ -280,10 +280,10 @@ jQuery.fn.SPControlUpload = function (options) {
 
     return this;
     
-};// jQuery.fn.SPControlUpload
+};// $.fn.SPControlUpload
     
 /**
- * FUNCTION: jQuery.pt._onUpload()
+ * FUNCTION: $.pt._onUpload()
  * 
  *  Submits the upload form that is loaded in the iframe window.
  *  Also calls any callback function defined by the user.
@@ -298,7 +298,7 @@ jQuery.fn.SPControlUpload = function (options) {
  *  @return {undefined} Nothing.
  *
  */
-jQuery.pt._onUpload = function(ele){
+$.pt._onUpload = function(ele){
     var e       = $(ele).closest(".SPControlUploadUI");
     var page    = e.find("iframe").contents();
     var msgs    = page.find("input[type='file']").closest("tr").siblings().find("span");
@@ -315,7 +315,7 @@ jQuery.pt._onUpload = function(ele){
     }
     
     // Set the event info
-    // TODO: Look into building the event with jQuery.Event("ev name here")
+    // TODO: Look into building the event with $.Event("ev name here")
     ev.state    = 2;
     ev.action   = "preLoad";
     
@@ -351,11 +351,11 @@ jQuery.pt._onUpload = function(ele){
                 }
             });
     
-};//* jQuery.pt._onUpload()
+};//* $.pt._onUpload()
 
 
 /**
- * FUNTION: jQuery.pt._onIFramePageChange()
+ * FUNTION: $.pt._onIFramePageChange()
  * 
  *  Called when ever the iframe is "load"ed. Function is bound to
  *  the iframe html element's _load event so that it is called each
@@ -371,7 +371,7 @@ jQuery.pt._onUpload = function(ele){
  *  @return {undefined} nothing.
  * 
  */
-jQuery.pt._onIFramePageChange = function(ele){
+$.pt._onIFramePageChange = function(ele){
     
     var e       = $(ele).closest(".SPControlUploadUI"),
         page    = e.find("iframe").contents(),
@@ -381,7 +381,7 @@ jQuery.pt._onIFramePageChange = function(ele){
     ev.pageUrl  = page[0].location.href;
     ev.page     = page;
     
-//    console.debug("jQuery.pt._onIFramePageChange(): In...");
+//    console.debug("$.pt._onIFramePageChange(): In...");
     
     // Because just about every browser differs on how the load() event
     // is triggered, we do all our work in a function that is triggered
@@ -395,8 +395,8 @@ jQuery.pt._onIFramePageChange = function(ele){
             // initial load of the page or an error has occured...
             // Hide the page and show only the upload form element.
             if ($.pt.isSameUrlpage(
-                    jQuery.pt.getUnEscapedUrl(ev.pageUrl),
-                    jQuery.pt.getUnEscapedUrl(opt.uploadPage))
+                    $.pt.getUnEscapedUrl(ev.pageUrl),
+                    $.pt.getUnEscapedUrl(opt.uploadPage))
             ) {
 //                console.debug("_onIFramePageChange() URL is the same as the one originally requested.");
                 
@@ -501,7 +501,7 @@ jQuery.pt._onIFramePageChange = function(ele){
                 // If the current page is the 'uploadDonePage', then set
                 // flag in the event, set flag to not hide the overlay
                 // and insert message indicating upload is done.
-                if (jQuery.pt.isSameUrlpage(ev.pageUrl, opt.uploadDonePage)) {
+                if ($.pt.isSameUrlpage(ev.pageUrl, opt.uploadDonePage)) {
                     ev.isUploadDone = true;
                     ev.hideOverlay  = false;
                     e.find(".loadingOverlay")
@@ -513,7 +513,7 @@ jQuery.pt._onIFramePageChange = function(ele){
 //                console.debug("_onIFramePageChange(): Binding function to form!");
                 
                 // SP seems to have a good hold of the Form, because
-                // we are unable o bind an event via jQuery. Thus:
+                // we are unable o bind an event via $. Thus:
                 // The form's onsubmit has to be overriden with our
                 // own function... The original function was captured
                 // above, thus it will triggered... but we now control
@@ -586,7 +586,7 @@ jQuery.pt._onIFramePageChange = function(ele){
         },
         500);//end:setTimeout()
 
-};// jQuery.pt._onIFramePageChange
+};// $.pt._onIFramePageChange
 
 /**
  * Determines whether two URLs are the same page. URLs could be the same page, but
@@ -599,7 +599,7 @@ jQuery.pt._onIFramePageChange = function(ele){
  * @memberOf jQuery.pt
  *
  */
-jQuery.pt.isSameUrlpage = function(u1, u2) {
+$.pt.isSameUrlpage = function(u1, u2) {
     if (!u1 || !u2) { return false; }
     var matchString = u1;
     if (u1.indexOf("?") > -1) {
@@ -610,20 +610,20 @@ jQuery.pt.isSameUrlpage = function(u1, u2) {
     } else {
         return false;
     }
-};// jQuery.pt.isSameUrlpage()
+};// $.pt.isSameUrlpage()
 
 
 /**
  * Uses sharepoint default function for escaping urls.
  * @function
  */
-jQuery.pt.getEscapedUrl = escapeProperly;
+$.pt.getEscapedUrl = escapeProperly;
 
 /**
  * Uses sharepoint default function to un-escape urls.
  * @function
  */
-jQuery.pt.getUnEscapedUrl = unescapeProperly;
+$.pt.getUnEscapedUrl = unescapeProperly;
 
 
 /**
@@ -635,13 +635,13 @@ jQuery.pt.getUnEscapedUrl = unescapeProperly;
  * @memberOf jQuery.pt
  *
  */
-jQuery.pt.getListUID = function(listName) {
+$.pt.getListUID = function(listName) {
     if (!listName) {
         return "";
     }
     var id = "";
-    if (jQuery.pt._cache["getListUID:" + listName]) {
-        id = jQuery.pt._cache["getListUID:" + listName];
+    if ($.pt._cache["getListUID:" + listName]) {
+        id = $.pt._cache["getListUID:" + listName];
         return id;
     }
     $().SPServices({
@@ -653,11 +653,11 @@ jQuery.pt.getListUID = function(listName) {
         }
     });
     if (id) {
-        jQuery.pt._cache["getListUID:" + listName] = id;
+        $.pt._cache["getListUID:" + listName] = id;
     }
     return id;
     
-};// jQuery.pt.getListUID()
+};// $.pt.getListUID()
 
 /**
  * @property
@@ -666,4 +666,4 @@ jQuery.pt.getListUID = function(listName) {
  * Value is set at build time.
  * 
  */
-jQuery.pt.SPUploadStyleSheet = "_INCLUDE_SPUPLOAD_CSS_TEMPLATE_";
+$.pt.SPUploadStyleSheet = "_INCLUDE_SPUPLOAD_CSS_TEMPLATE_";

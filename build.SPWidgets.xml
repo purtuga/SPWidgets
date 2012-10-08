@@ -274,7 +274,7 @@
         <echo message="Updating Version date to ${build.date}" />    	
         <replace token="_BUILD_VERSION_DATE_" value="${build.date}">
             <fileset dir="${build.base}" id="">
-            	<patternset id="fileset.dist.all" />
+            	<patternset refid="patternset.sourceFiles" />
     		</fileset>
     	</replace>
     	
@@ -282,7 +282,7 @@
         <echo message="Updating Version date to ${build.version}" />
         <replace token="_BUILD_VERSION_NUMBER_" value="${build.version}">
             <fileset dir="${build.base}" id="">
-            	<patternset id="fileset.dist.all" />
+            	<patternset refid="patternset.sourceFiles" />
     		</fileset>
     	</replace>
     	
