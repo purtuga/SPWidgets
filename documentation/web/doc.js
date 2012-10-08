@@ -45,6 +45,10 @@ $(document).ready(function(){
             '">' + $(this).text() + '</a>';
         i++;
     });
-    $("nav").append(nav);
+    $(".ptNav")
+        .sticky({
+            topSpacing: 10
+        })
+        .append(nav);
     
 });

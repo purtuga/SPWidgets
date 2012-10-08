@@ -287,7 +287,6 @@ nav {
     display: block;
     float: left;
     width: 20%;
-    position: fixed;
 }
 nav a {
     display:block;
