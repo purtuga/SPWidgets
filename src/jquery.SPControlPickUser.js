@@ -364,6 +364,15 @@ jQuery.pt.pickSPUser.handleAction = function(type, action, options) {
                 o.elePickInput.show();
             }
         }
+        if (action === "destroy"){
+            if ( $(this).hasClass('hasPickSPUser')) {
+                $(this).removeClass('hasPickSPUser')
+                        .next('.pt-pickSPUser').remove()
+                        .show()
+                        .trigger('change'); //trigger is for knockoutJS.
+            }
+
+        }
     }//end:type===method
     
     return this;
