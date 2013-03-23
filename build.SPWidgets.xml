@@ -134,6 +134,9 @@
                 <uptodate 
                     srcfile="${src.base}${/}src${/}css.SPControlPickUser.css"
                     targetfile="${build.src}${/}css.SPControlPickUser.css" />
+                <uptodate 
+                    srcfile="${src.base}${/}src${/}css.SPControlBoard.css"
+                    targetfile="${build.src}${/}css.SPControlBoard.css" />
             </and>
         </condition>
         <echo message="forceCssCopyNotNeeded set to: ${forceCssCopyNotNeeded}" />
@@ -143,6 +146,9 @@
                 <uptodate 
                     srcfile="${src.base}${/}src${/}html.SPControlPickUser.html"
                     targetfile="${build.src}${/}html.SPControlPickUser.html" />
+                <uptodate 
+                    srcfile="${src.base}${/}src${/}html.SPControlBoard.html"
+                    targetfile="${build.src}${/}html.SPControlBoard.html" />
                 <uptodate 
                     srcfile="${src.base}${/}demo${/}demo.body.html"
                     targetfile="${build.demo}${/}demo.body.html" />
@@ -193,6 +199,9 @@
             <fileset dir="${build.src}">
                 <contains text="//_HAS_SPUPLOAD_CSS_TEMPLATE_" casesensitive="yes"/>
             </fileset>
+            <fileset dir="${build.src}">
+                <contains text="//_HAS_BOARD_CSS_TEMPLATE_" casesensitive="yes"/>
+            </fileset>
         </delete>
         <echo message="doCssForceCopy -------------------------------- [END]" />
     </target>
@@ -208,6 +217,9 @@
         <delete verbose="yes">
             <fileset dir="${build.src}">
                 <contains text="//_HAS_PICKSPUSER_HTML_TEMPLATE_" casesensitive="yes"/>
+            </fileset>
+            <fileset dir="${build.src}">
+                <contains text="//_HAS_BOARD_HTML_TEMPLATE_" casesensitive="yes"/>
             </fileset>
             <fileset dir="${build.demo}">
                 <contains text="//_HAS_DEMO_BODY_TEMPLATE_" casesensitive="yes"/>
@@ -314,6 +326,15 @@
                 summary="Yes">
         </replace>
     	
+    	<!-- Load the SPControlBoard File and replaced where its toke appears -->
+    	<getFileAsJsString file="${build.src}${/}css.SPControlBoard.css" 
+    		   property="css.SPBoard"/>
+        <replace dir="${build.src}" 
+                token='"_INCLUDE_BOARD_CSS_TEMPLATE_";'
+                value="${css.SPBoard};${line.separator}//_HAS_BOARD_CSS_TEMPLATE_"
+                summary="Yes">
+        </replace>
+    	
         
         <echo message="embedCssTemplates -------------------------------- [END]" />       
     </target>
@@ -329,6 +350,15 @@
         <replace dir="${build.src}" 
                 token='"_INCLUDE_PICKSPUSER_HTML_TEMPLATE_";'
                 value="${html.SPPickUser};${line.separator}//_HAS_PICKSPUSER_HTML_TEMPLATE_"
+                summary="Yes">
+        </replace>
+    	
+        <!-- Load the SPControlBoard HTML File and replaced where its token appears -->
+    	<getFileAsJsString file="${build.src}${/}html.SPControlBoard.html" 
+    		   property="html.SPBoard"/>
+        <replace dir="${build.src}" 
+                token='"_INCLUDE_BOARD_HTML_TEMPLATE_";'
+                value="${html.SPBoard};${line.separator}//_HAS_BOARD_HTML_TEMPLATE_"
                 summary="Yes">
         </replace>
     	
@@ -362,7 +392,6 @@
             </condition>
         </fail>
         
-    	
         <!-- Define the zipfile name and create it. -->
         <zip destfile="${build.dist}${/}${ant.project.name}.v${build.version}.${DSTAMP}.${TSTAMP}.zip">
             <fileset refid="fileset.dist.all" />

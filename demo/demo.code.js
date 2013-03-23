@@ -20,7 +20,20 @@
     ui.html(uiContentTemplate);
     
     // Create TABs and make ui visible
-    ui.find("#ptTabsCntr").tabs().fadeIn("slow");
+    ui.find("#ptTabsCntr")
+        .tabs({
+            activate: function(ev,ui){
+                
+                if (ui.newPanel.is("#SPControlBoardDemo")) {
+                    
+                    $("#SPControlBoardDemo div.spwidget-board")
+                        .SPShowBoard("redraw");
+                        
+                }
+                
+            }
+        })
+        .fadeIn("slow");
     
     
     var uiFileList      = ui.find("#sp_control_file_list"),
@@ -209,5 +222,14 @@
                 );
         }
     });
+    
+    
+    // Kan-Ban Board
+    $("#SPControlBoardDemo div.spwidget-board")
+        .SPShowBoard({
+            list:   "Tasks",
+            field:  "Status"
+        });
+    
     
 });//end .ready()
