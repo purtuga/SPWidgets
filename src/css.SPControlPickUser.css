@@ -44,3 +44,10 @@
     display:block;
     float: right;
 }
+
+/* autocomplete busy image */
+.ui-autocomplete-loading {
+    background: white url('/_layouts/images/loading.gif') right center no-repeat;
+}
+
+
