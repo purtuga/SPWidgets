@@ -137,6 +137,9 @@
                 <uptodate 
                     srcfile="${src.base}${/}src${/}css.SPControlBoard.css"
                     targetfile="${build.src}${/}css.SPControlBoard.css" />
+                <uptodate 
+                    srcfile="${src.base}${/}src${/}css.SPControlLookupField.css"
+                    targetfile="${build.src}${/}css.SPControlLookupField.css" />
             </and>
         </condition>
         <echo message="forceCssCopyNotNeeded set to: ${forceCssCopyNotNeeded}" />
@@ -149,6 +152,9 @@
                 <uptodate 
                     srcfile="${src.base}${/}src${/}html.SPControlBoard.html"
                     targetfile="${build.src}${/}html.SPControlBoard.html" />
+                <uptodate 
+                    srcfile="${src.base}${/}src${/}html.SPControlLookupField.html"
+                    targetfile="${build.src}${/}html.SPControlLookupField.html" />
                 <uptodate 
                     srcfile="${src.base}${/}demo${/}demo.body.html"
                     targetfile="${build.demo}${/}demo.body.html" />
@@ -202,6 +208,9 @@
             <fileset dir="${build.src}">
                 <contains text="//_HAS_BOARD_CSS_TEMPLATE_" casesensitive="yes"/>
             </fileset>
+            <fileset dir="${build.src}">
+                <contains text="//_HAS_LOOKUP_CSS_TEMPLATE_" casesensitive="yes"/>
+            </fileset>
         </delete>
         <echo message="doCssForceCopy -------------------------------- [END]" />
     </target>
@@ -220,6 +229,9 @@
             </fileset>
             <fileset dir="${build.src}">
                 <contains text="//_HAS_BOARD_HTML_TEMPLATE_" casesensitive="yes"/>
+            </fileset>
+            <fileset dir="${build.demo}">
+                <contains text="//_HAS_LOOKUP_HTML_TEMPLATE_" casesensitive="yes"/>
             </fileset>
             <fileset dir="${build.demo}">
                 <contains text="//_HAS_DEMO_BODY_TEMPLATE_" casesensitive="yes"/>
@@ -335,6 +347,15 @@
                 summary="Yes">
         </replace>
     	
+    	<!-- Load the SPControlLookupField File and replaced where its toke appears -->
+    	<getFileAsJsString file="${build.src}${/}css.SPControlLookupField.css" 
+    		   property="css.SPLookup"/>
+        <replace dir="${build.src}" 
+                token='"_INCLUDE_LOOKUP_CSS_TEMPLATE_";'
+                value="${css.SPLookup};${line.separator}//_HAS_LOOKUP_CSS_TEMPLATE_"
+                summary="Yes">
+        </replace>
+    	
         
         <echo message="embedCssTemplates -------------------------------- [END]" />       
     </target>
@@ -359,6 +380,15 @@
         <replace dir="${build.src}" 
                 token='"_INCLUDE_BOARD_HTML_TEMPLATE_";'
                 value="${html.SPBoard};${line.separator}//_HAS_BOARD_HTML_TEMPLATE_"
+                summary="Yes">
+        </replace>
+    	
+        <!-- Load the SPControlLookupField HTML File and replaced where its token appears -->
+    	<getFileAsJsString file="${build.src}${/}html.SPControlLookupField.html" 
+    		   property="html.SPLookup"/>
+        <replace dir="${build.src}" 
+                token='"_INCLUDE_LOOKUP_HTML_TEMPLATE_";'
+                value="${html.SPLookup};${line.separator}//_HAS_LOOKUP_HTML_TEMPLATE_"
                 summary="Yes">
         </replace>
     	
