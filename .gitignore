@@ -31,7 +31,7 @@ _$*
 .settings*
 my.*
 .project*
-
+BUILD*
 BUILD/SPWidgets
 #*
 *$
@@ -63,3 +63,4 @@ RCS
 RCSLOG
 SCCS
 _$*
+
