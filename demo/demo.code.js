@@ -26,7 +26,7 @@
                 
                 if (ui.newPanel.is("#SPControlBoardDemo")) {
                     
-                    $("#SPControlBoardDemo div.spwidget-board")
+                    $("#SPControlBoardDemo div.spwidget-board-demo-cntr")
                         .SPShowBoard("redraw");
                         
                 }
@@ -225,11 +225,36 @@
     
     
     // Kan-Ban Board
-    $("#SPControlBoardDemo div.spwidget-board")
+    $("#SPControlBoardDemo div.spwidget-board-demo-cntr")
         .SPShowBoard({
             list:   "Tasks",
             field:  "Status"
         });
+    
+    
+    // DEMO: Lookup Field widget
+    $("#SPControlLookupFieldDemo").each(function(){
+        
+        var $ele = $(this);
+        
+        $ele
+            .find("input[name='State']")
+                .SPLookupField({
+                    list: "states",
+                    allowMultiples: false
+                })
+                .end()
+            .find("input[name='State2']")
+                .SPLookupField({
+                    list: "states",
+                    allowMultiples: true
+                })
+                .end();
+        
+        
+        
+        return false;
+    });
     
     
 });//end .ready()
