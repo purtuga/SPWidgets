@@ -1,0 +1,58 @@
+/**
+ * Stylesheet for the Lookup Field widget.
+ * 
+ */
+
+.spwidgets-lookup-cntr {
+    position: relative;
+    display: inline-block;
+    zoom: 1; /* IE7 hack */
+    *display: inline; /* IE7 hack */
+}
+.spwidgets-lookup-cntr .spwidgets-lookup-selected {
+    -moz-appearance: textfield;
+    -webkit-appearance: textfield;
+    background-color: white;
+    background-color: -moz-field;
+    border: 1px solid  darkgray;
+    box-shadow: 1px 1px 1px 0 lightgray inset;  
+    font: -moz-field;
+    font: -webkit-small-control;
+    margin-top: 5px;
+    padding: 2px 5px; 
+}
+
+.spwidgets-lookup-cntr  .spwidgets-lookup-selected .spwidgets-item {
+    display: inline-block;
+    margin-left: .5em;
+}
+.spwidgets-lookup-cntr .spwidgets-item:first-child {
+    margin-left: 0px;
+}
+.spwidgets-lookup-cntr .spwidgets-item-remove {
+    color: red;
+    cursor: pointer;
+}
+
+.spwidgets-lookup-cntr .spwidgets-lookup-input {
+    margin: .2em 0em;
+    position: relative;
+}
+.spwidgets-lookup-cntr .ptLookupSPFieldSelector {
+    height: 16px;
+    width: 16px;
+    text-indent: -99999px;
+    background-repeat: no-repeat;
+    background-image: url("/_layouts/images/ARRDOWNI.GIF");
+    display: inline-block;
+}
+.spwidgets-lookup-cntr .ptLookupSPFieldSelectorCntr {
+    display: none;
+    position: absolute;
+    height: 150px;
+    width: 98%;
+    left: 0px;
+    overflow: auto;
+    z-index: 2000;
+}
+

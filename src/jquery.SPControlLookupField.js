@@ -1,0 +1,874 @@
+/**
+ * Widget that turn an input field into a lookup field. The
+ * field will store only the ID's (one or more) for the items
+ * that the user picks.
+ * THe user, however, is presented with the existing items
+ * and has the ability to Remove them and add new ones.
+ * 
+ * BUILD: _BUILD_VERSION_DATE_
+ * 
+ */
+
+;(function($){
+    
+    "use strict";
+    /*jslint nomen: true, plusplus: true */
+    /*global SPWidgets */
+    
+    
+    // Default options
+    $.SPWidgets.defaults.LookupField = {
+        list:               '',
+        allowMultiples:     true,
+        inputLabel:         '',
+        inputPlaceholder:   'Type and Pick',
+        readOnly:           false,
+        exactMatch:         true,
+        uiContainer:        null,
+        selectFields:       ['Title'],
+        filter:             '',
+        filterFields:       ['Title'],
+        template:           '<div>{{Title}} [<span class="spwidgets-item-remove">x</span>]</div>',
+        listTemplate:       '{{Title}}',
+        onItemAdd:          null,
+        onItemRemove:       null,
+        onReady:            null,
+        msgNoItems:         "",
+        maxResults:         50,
+        minLength:          2,
+        hideInput:          true,
+        padDelimeter:       false,
+        showSelector:       false
+    };
+    
+    /**
+     * Namespace for pickSPUser specific methods.
+     * @name        Lookup
+     * @class       Namespace for lookup Field plugin
+     */
+    var Lookup = {
+        _islookupFieldCssDone: false
+    };
+    
+    // $(function(){
+        // $("body").on("click", function(ev){
+            // var selectors = $("div.ptLookupSPFieldSelectorCntr:visible");
+            // if (selectors.length > 0) {
+                // if ($(ev.target).closest("div.spwidgets-lookup-cntr").length == 0) {
+                    // selectors.css("display", "none");
+//                 
+                // } else {
+                    // selectors.each(function(){
+                        // if ($(this).closest("div.spwidgets-lookup-cntr").find(ev.target).length < 1) {
+                            // selectors.css("display", "none");
+                        // }
+                    // });
+//                     
+//                     
+                // // FIXME: @@@@@@ working here: 2012.11.8
+//                     
+//                     
+                // }
+            // }
+//             
+        // })
+    // });
+    
+
+    /**
+     * 
+     * Converts the selection into a Sharepoint Lookup Field.
+     * 
+     * @param {Object} options
+     * 
+     * @param {String} options.list
+     *              List name from where lookup will be done.
+     * 
+     * @param {Boolean} [options.allowMultiples=true]
+     *              Set to false if wanting only 1 item to be referenced.
+     * 
+     * @param {String} [options.inputLabel=""]
+     *              The label for the input field.
+     * 
+     * @param {String} [options.inputPlaceholder="Type and Pick"]
+     *              The value to be used in the Input Field placeholder
+     *              attribute (HTML5 attribute)
+     * 
+     * @param {Boolean} [options.exactMatch=true]
+     *              If set to false, then the text entered by the user will
+     *              be parsed into individual keywords and a search will be
+     *              done on those instead.
+     * 
+     * @param {Boolean} [options.readOnly=false]
+     *              If true, field is displayed as readonly.
+     * 
+     * @param {Selector|Object} [options.uiContainer=null]
+     *              The container where the UI widget should be inserted.
+     *              Default is directly after the input field
+     * 
+     * @param {Array} options.selectFields=["Title"]
+     *              Array of field names (internal names) that should be
+     *              returned. ID is also used when the input value by the
+     *              user is an integer.
+     * 
+     * @param {String} [options.filter=""]
+     *              Any additional filter criteria (in CAML format) to be
+     *              added to the query when retrieving the Lookup values
+     *              from the list.
+     *              Example:
+     *                  <Contains>
+     *                      <FieldRef Name="Title" />\
+     *                      <Value Type="Text">New</Value>
+     *                  </Contains>
+     * 
+     * @param {Array} [options.filterFields=["Title"]]
+     *              Array of fields name (internal names) that will be used
+     *              to filter data against.
+     *              Example: 
+     *                  options.filterFields=[
+     *                      "Title",
+     *                      "Description",
+     *                      "Notes"
+     *                  ]  
+     * 
+     * @param {String} [options.template="..."]
+     *              The template to be used for displaying the item once selected.
+     *              Use the following format for item Field placeholders
+     *              {{fieldInternalName}}. When defining HTML, an element containing
+     *              a call of 'spwidgets-item-remove' will be used to remove the item
+     *              from the selected list.
+     *              Example:
+     *                  options.template='<div>{{Title}} [<span class="spwidgets-item-remove">x</span>]</div>',
+     * 
+     * @param {String} [options.listTemplate="..."]
+     *              The template to be used for displaying the items displayed as
+     *              suggestion (autocomplete values).
+     *              Use the following format for item Field placeholders
+     *              {{fieldInternalName}}. Example: {{Title}}
+     * 
+     * @param {Boolean} [options.padDelimeter=false]
+     *              If true, then an extra delimeter (;#) will be inserted at
+     *              the begining of the stored value.
+     *              Example: ;#;#5;#  (normal would be: 5;#)
+     * 
+     * @param {Function} [options.onReady=null]
+     *              Triggered after the LookupField has been setup. This is
+     *              triggered either after completing the UI setup, or if the
+     *              field already had pre-defined values, after retrieving that
+     *              data and displaying it.
+     *              Function will be given a scope of the original selector
+     *              (the field) as well as the following input params:
+     *              1) widget container (jQuery)
+     *              Example:
+     *                  onReady: function(widgetCntr){
+     *                      //this=original selector to where the widget was bound
+     *                  } 
+     * 
+     * @param {Function} [options.onItemAdd=null]
+     *              Function that will be called when adding a new item reference
+     *              to the list of currently picked item. This method could, if 
+     *              necessary remove the new item from the UI (ex. due to some
+     *              custom validation rule). 
+     *              The function will be given a scope of the bound area (the 
+     *              input field) as well as two input parameters:
+     *              1) A jQuery object representing the new item
+     *              on the UI and
+     *              2) An object with the item's information
+     *              Example:
+     *                  onItemAdd: function($newItemSelection, itemObject, widgetCntr){
+     *                      //this=original selector to where the widget was bound
+     *                  }
+     * 
+     * @param {String} [options.msgNoItems=""]
+     *              Message to be displayed when no items are selected. Set this
+     *              top null/blank if wanting nothing to be displayed, which will
+     *              result in only the input field being displayed.
+     * 
+     * @param {Integer} [options.maxResults=50]
+     *              Max number of results to be returned as the user types the filter
+     * 
+     * @param {Integer} [options.minLength=2]
+     *              The minimum length before the autocomplete search is triggered.
+     * 
+     * @param {Boolean} [options.hideInput=true]
+     *              Option used only when allowMultiples is false. It will hide
+     *              the input field once a value has been selected. Only way to
+     *              get it displayed again is to remove existing selected item.
+     * 
+     * @param {Boolean} [options.hideInput=false]
+     *              If true, then an icon will be displayed to the right of the
+     *              selection input field that displays a popup displaysing all
+     *              values currently in the lookup List.
+     * 
+     * @return {jQuery} Selection
+     * 
+     * 
+     * 
+     * Methods:
+     * 
+     * jQuery(ele).SPLookupField("method", <action>, <options>)
+     * 
+     * clear    Clears all items currently reference.
+     *          Usage:
+     *              $(ele).SPLookupField("method", "clear"); // clears all
+     *              $(ele).SPLookupField("method", "clear", { id: 5 }); // clear ID=5
+     *              $(ele).SPLookupField("method", "clear", { id: [5, 123455] }); // clear ID=5 and 123455
+     * 
+     * 
+     * 
+     */
+    $.fn.SPLookupField = function(options) {
+        
+        // if the global styles have not yet been inserted into the page, do it now
+        if (!Lookup._islookupFieldCssDone) {
+            Lookup._islookupFieldCssDone = true;
+            $('<style type="text/css">' + "\n\n" +
+                    Lookup.styleSheet +
+                    "\n\n</style>")
+                .prependTo("head");
+        }
+        
+        // Store the arguments given to this function. Used later if the
+        // user is trying to execute a method of this plugin.
+        var arg = arguments;
+        
+        // Initiate each selection as a Lookup element
+        this.each(function(){
+            
+            var ele = $(this);
+            
+            // TODO: may need to change code below if going to bind to other types of fields (like select)
+            // FIXME: when allowing textarea, need to ensure that its definition is textonly (no HTML)
+            
+            if (    ( !ele.is("input") && !ele.is("textarea") )
+                ||  ele.hasClass("hasLookupSPFiled")
+            ){
+                // if the first argument is a string, and this is an input
+                // field, then process methods
+                if (typeof options === "string" && ele.is("input")) {
+                    
+                    var o = ele.data("SPWidgetLookupFieldUI").data("SPWidgetLookupFieldOpt"); 
+                    
+                    // METHOD
+                    if (options.toLowerCase() === 'method') {
+
+                        var cmd     = String(arg[1] || '').toLowerCase();
+                        var cmdOpt  = arg[2] || {};
+                        
+                        // ACTION: clear
+                        if (cmd === "clear") {
+                            if (cmdOpt.id === undefined) {
+                                o._cntr.find("div.spwidgets-lookup-selected")
+                                    .css("display", "none")
+                                    .empty();
+                                o._ele.val("");
+                                
+                                // Make sure input is visible
+                                o._cntr.find("div.spwidgets-lookup-input").css("display", "");
+                                
+                            } else {
+                                alert("TBD... Delete individual ID's");
+                            }
+                        }                        
+                    }//end: options === method
+                }
+                
+                // Exit
+                return this;
+            }
+            
+            
+            // CREATE THE WIDGET ON THE PAGE.
+            
+            // Options for this element
+            var o = $.extend(
+                    {},
+                    $.SPWidgets.defaults.LookupField,
+                    options, 
+                    {
+                        _ele: ele.css("display", "none").addClass("hasLookupSPFiled") 
+                    }
+                );
+            
+            
+            /**
+             * Displays items selected by the user on the UI.
+             * 
+             * @params {Array|Object} items
+             *          An object or array of object wiht the items
+             *          to be shown as slected
+             * @params {Boolean} [doNotStoreIds=false]
+             *          If true, then the IDs of the items that will be
+             *          shown as selected will not be added to the input
+             *          field. Good for when initially displaying data
+             *          that is defined in the intput field
+             *          (ex. when the widget is first bound)
+             * 
+             */
+            o.showSelectedItems = function(items, doNotStoreIds) {
+                
+                var itemCntr    = o._selectedItemsCntr.css("display", ""),
+                    itemList    = [];
+                
+                // If this is the first item, empty container
+                if (    !itemCntr.find("div.spwidgets-item").length
+                    ||  o.allowMultiples === false
+                ) {
+                    
+                    itemCntr.empty();
+                    
+                }
+                
+                // If input is an array, then use that to iterate over.
+                if ( $.isArray(items) ) {
+                    
+                    itemList = items;
+                    
+                // Else, the input must not be an array (assume single object)
+                // Add it as an item in the defiend array.
+                } else {
+                    
+                    itemList.push(items);
+                    
+                }
+                
+                // Loop through each item to be shown as selected
+                $.each(itemList, function(i, item){
+                    
+                    // If this item is not yet displayed, then add it now
+                    if (!itemCntr.find("div.spwidgets-item-id-" + item.ID).length) {
+                        
+                        // Create the new item UI and append it to the
+                        // display area.
+                        var thisItemUI = 
+                                $('<div class="spwidgets-item spwidgets-item-id-' + item.ID + 
+                                        '" data-spid="' + item.ID + '" style="display:none">' + 
+                                        $.SPWidgets.fillTemplate(o.template, item) +
+                                        '</div>'
+                                    )
+                                    .find(".spwidgets-item-remove")
+                                        .on("click.SPWidgets", function(ev){
+                                            
+                                            Lookup.removeItem(o,this);
+                                            
+                                        })
+                                        .end()
+                                    .appendTo( itemCntr );
+                        
+                        // If an onAddItem event was defined, then run it now
+                        // TODO: in future, need to trigger/bubble event as well
+                        if ($.isFunction(o.onItemAdd)) {
+                            
+                            o.onItemAdd.call(o._ele, thisItemUI, item, o._cntr);
+                            
+                        }
+                        
+                        // If item is still present in the selction list
+                        // then continue on to add its ID to the input field
+                        // which is used to store it in the DB.
+                        // We check  this here because the .onItemAdd() event
+                        // could have removed it from the UI
+                        if ( itemCntr.find("div.spwidgets-item-id-" + item.ID).length > 0 ) {
+                            
+                            // Show the new item on the page. 
+                            thisItemUI.fadeIn("slow").promise().then(function(){
+                                
+                                $(this).css("display", "");
+                                
+                            });
+                            
+                            // Store this item's ID in the input field
+                            if (doNotStoreIds !== true) {
+                                
+                                o.storeItemIDs(item.ID, true);
+                                
+                            }
+                            
+                            // If allowMultiples is false, then check if the input field
+                            // should be hidden
+                            if (o.allowMultiples === false && o.hideInput === true) {
+                                
+                                o._lookupInputEleCntr.css("display", "none");
+                                
+                            }
+                            
+                        } //end: if() is item still in the UI (after .onItemAdd())
+                        
+                    } //end: if(): item already displayed?
+                
+                });//end: .each() item
+                
+            };//end: o.showSelectedItems()
+            
+            
+            /**
+             * Stores the ID's of the selected items in the
+             * input field that this widget was bound to.
+             * 
+             * @param {Array|String} ids
+             * @param {Boolean} [append=false]
+             * 
+             */
+            o.storeItemIDs = function(ids, append) {
+                
+                // Store item in input field, by appending this new
+                // item to the end of the existing data in the input.
+                var newItemValue    = $.trim( o._ele.val() ),
+                    isPadDone       = false;
+                
+                // If ID's not an array, then converted to one and
+                // assign its value to the new array.
+                if ( !$.isArray(ids) ) {
+                    
+                    ids = [ ids ];
+                    
+                }
+                
+                // If append is not true, then erase whatever
+                // data might be there now.
+                if (append !== true) {
+                    
+                    newItemValue = "";
+                    
+                }
+                
+                // Loop through all element and add them to the string
+                // that will be used to update the input field.
+                $.each( ids, function( i, thisID ){
+                    
+                    if (thisID){
+                        
+                        // If existing input is blank and padDelimeter is
+                        // true, then add an extra delimeter to the begening of the
+                        // string.
+                        if (newItemValue.length < 1 && o.padDelimeter === true && !isPadDone ) {
+                            
+                            newItemValue   += ";#";
+                            isPadDone       = true;
+                            
+                        }
+                        
+                        // If data is already in the input field, then add
+                        // delimeter to end of the data.
+                        if (newItemValue.length > 0) {
+                            
+                            newItemValue += ";#";
+                        
+                        }
+                        
+                        newItemValue += thisID + ";#";
+                        
+                        // TODO: Support for having the Title also be saved - similar to SP
+                        // Does the .Title value need to be escaped
+                        
+                    }
+                    
+                });
+                
+                // Store the values back on the input element.
+                o._ele.val(newItemValue);
+                
+            };//end: o.storeItemIDs()
+            
+
+            // Create the UI container and store the options object in the input field
+            o._cntr                 = $(Lookup.htmlTemplate)
+                                        .find(".spwidgets-lookup-cntr").clone(1);
+            o._selectedItemsCntr    = o._cntr.find("div.spwidgets-lookup-selected");
+            o._lookupInputEleCntr    = o._cntr.find("div.spwidgets-lookup-input");
+            
+            o._cntr.data("SPWidgetLookupFieldOpt", o);
+            o._ele.data("SPWidgetLookupFieldUI", o._cntr);
+            
+            
+            // Insert the widget container into the UI
+            if (o.uiContainer === null) {
+                
+                o._cntr.insertAfter(o._ele);
+                
+            } else {
+                
+                o._cntr.appendTo($(o.uiContainer));
+                
+            }
+            
+            // If showSelector is false, remove the option from the UI...
+            // FIXME: maybe we realy want to hide it? case the option is changed later?
+            if (!o.showSelector){
+                
+                o._cntr.find('.ptLookupSPFieldSelectorCntr,.ptLookupSPFieldSelector').remove();
+            
+            // Else, bind methods for handling the selector.
+            } else {
+                
+                var selectorCntr = o._cntr.find("div.ptLookupSPFieldSelectorCntr");
+                
+                o._cntr.find(".ptLookupSPFieldSelector")
+                    .on("click", function(ev){
+                        
+                        if (selectorCntr.is(":visible")) {
+                            
+                            selectorCntr.css("display", "none");
+                            
+                        } else {
+                            
+                            selectorCntr.css("display", "block");
+                            
+                        }
+                        
+                    });
+                
+            } //end: else()
+            
+            // If an input label was defined, then set it, else, remove input label
+            if (o.inputLabel) {
+                
+                o._cntr.find("div.spwidgets-lookup-input label")
+                    .empty()
+                    .append(o.inputLabel);
+                    
+            } else {
+                
+                o._cntr.find("div.spwidgets-lookup-input label").remove();
+                
+            }
+            
+            // insert placeholder
+            if (o.inputPlaceholder) {
+                o._lookupInputEleCntr
+                    .find("input")
+                        .attr("placeholder", o.inputPlaceholder);
+            }
+            
+            // Hide the ADD input field if we're in readonly mode
+            if (o.readOnly === true) {
+                
+                o._lookupInputEleCntr.css("display", "none");
+                
+            }
+            
+            // Convert the list of fields to CAML
+            o._selectFields = "";
+            $.each(o.selectFields, function(i, f){
+                
+                o._selectFields += "<FieldRef Name='" + f + "'/>";
+                
+            });
+            
+            // Get the token names from the text template
+            o._templateTokens = String(o.template).match(/(\$\{.*?\})/g);
+            
+            if (o._templateTokens == null) {
+                o._templateTokens = [];
+            }
+            
+            $.each(o._templateTokens, function(i, thisToken){
+
+                o._templateTokens[i] = thisToken.replace(/[\$\{\}]/g, "");
+                
+            });
+            
+            // Bind an Autocomplete to the ADD input of the Lookup widget
+            var cache = {};
+            o._cntr.find("div.spwidgets-lookup-input input")
+                .autocomplete({
+                    minLength:  3,
+                    appendTo:   o._cntr,
+                    
+                    /**
+                     * Add format to the pick options. 
+                     */
+                    open:       function(ev, ui){
+                        $(this).autocomplete("widget")
+                            .find("a")
+                            .addClass("tt-border-all");
+                    },
+                    
+                    /**
+                     * Searches for the data to be displayed in the autocomplete choices. 
+                     */
+                    source:     function(request, response){
+                        
+                        request.term = $.trim(request.term);
+                        
+                        // If search term is in cache, return it now
+                        var termCacheName = String($.trim(request.term)).toUpperCase();
+                        if (termCacheName in cache) {
+                            response(cache[termCacheName]);
+                            return;
+                        }
+                        cache[termCacheName] = [];
+                        
+                        var filterItems = [];
+                        
+                        // If search term contains only digits, then do a search on ID
+                        var term = String(request.term);
+                        if (    term.match(/\D/) === null 
+                            &&  term.match(/\d/) !== null) {
+                            
+                            filterItems.push(
+                                "<Eq><FieldRef Name='ID'/>" +
+                                "<Value Type='Counter'>" + 
+                                term + "</Value></Eq>" );
+                            
+                            
+                        // Else, search all Fields defined by the caller for the term
+                        } else {
+                            
+                            var keywords = [request.term];
+                            if (!o.exactMatch) {
+                                keywords = String(request.term).split(/ /);
+                            }
+                            // For each search field, build the search using AND logical
+                            for (var n=0,m=o.filterFields.length; n<m; n++){
+                                var fieldFilters = [];
+                                for (var i=0,j=keywords.length; i<j; i++){
+                                    if (!(/^(of|and|a|an|to|by|the|or)$/i).test(keywords[i])) {
+                                        fieldFilters.push(
+                                            "<Contains><FieldRef Name='" +  o.filterFields[n] + "'/>" +
+                                            "<Value Type='Text'>" + keywords[i] + "</Value></Contains>" );
+                                    }
+                                }
+                                filterItems.push($.SPWidgets.getCamlLogical({
+                                    values: fieldFilters,
+                                    type:   "AND"
+                                }));
+                            }
+                        }
+                        
+                        // Build the query using OR statements
+                        var camlFilter = $.SPWidgets.getCamlLogical({
+                                            values: filterItems,
+                                            type:   "OR"
+                                        });
+                                
+                        // If caller defined extra REQUIRED criteria, then
+                        // build it into the query.
+                        if (o.filter) {
+                            camlFilter = $.SPWidgets.getCamlLogical({
+                                values: [camlFilter, o.filter],
+                                type:   "AND"
+                            });
+                        }
+                        
+                        // Find the items based on the user's input
+                        $().SPServices({
+                            operation:      "GetListItems",
+                            listName:       o.list,
+                            async:          true,
+                            CAMLQuery:      '<Query><Where>' + camlFilter + '</Where></Query>',
+                            CAMLRowLimit:   o.maxResults,
+                            CAMLViewFields: "<ViewFields>" + o._selectFields + "</ViewFields>",
+                            completefunc:   function(xData, status){
+                                $(xData.responseXML).SPFilterNode("z:row").each(function(){
+                                    var thisEle = $(this);
+                                    var thisDt  = thisEle.SPXmlToJson({includeAllAttrs: true})[0];
+                                    thisDt.value = "";
+                                    thisDt.label = $.SPWidgets.fillTemplate(o.listTemplate, thisDt );
+                                    
+                                    // Add to cache
+                                    cache[termCacheName].push(thisDt);
+                                    
+                                });
+                                
+                                // Return response
+                                response(cache[termCacheName]);
+                            }
+                        });
+                    },//end:source()
+                    /**
+                     * Event bound to an autocomplete suggestion.
+                     * 
+                     * @param {jQuery} ev   -   jQuery event.
+                     * @param {Object} u    -   An object containing the element generated above
+                     *                          by the <source> method that represents the item
+                     *                          that was selected.
+                     */
+                    select: function(ev, u){
+                        
+                        o.showSelectedItems(u.item);
+                        
+                    }//end: event: select()
+                    
+                })//end:autocomplete
+                
+                /**
+                 * ON enter key, if value is less than the minLength, then
+                 * Force a search. We pad the query string with spaces so
+                 * that it gets pass the autocomplete options set during setup.
+                 */
+                .on("keyup.SPWidgets", function(ev){
+                    if (ev.which != 13 ) { return; }
+                    var v = $(ev.target).val();
+                    if (v) {
+                        if (String(v).length < o.minLength) {
+                            $(ev.target).autocomplete("search", v + "    ");
+                        }
+                    }
+                }); 
+            
+            // If the input field has values, then parse them and display them
+            var items = $.SPWidgets.parseLookupFieldValue(o._ele.val());
+            if (items.length) {
+                
+                $().SPServices({
+                    operation: "GetListItems",
+                    async:      true,
+                    listName:   o.list,
+                    CAMLQuery:  '<Query><Where>' +
+                            $.SPWidgets.getCamlLogical({
+                                type:   'OR',
+                                values: items,
+                                onEachValue: function(n){
+                                    var s = "";
+                                    if (n.id) {
+                                        s = "<Eq><FieldRef Name='ID'/>" +
+                                            "<Value Type='Counter'>" + 
+                                            n.id + "</Value></Eq>";
+                                    }
+                                    return s;
+                                }
+                            }) +
+                            '</Where></Query>',
+                    CAMLViewFields: "<ViewFields>" + 
+                            o._selectFields + "</ViewFields>",
+                    CAMLRowLimit: 0,
+                    completefunc: function(xData, Status) {
+                        
+                        // Display the items.
+                        var arrayOfCurrentItems = $(xData.responseXML)
+                                        .SPFilterNode("z:row")
+                                        .SPXmlToJson({
+                                            includeAllAttrs:    true,
+                                            removeOws:          true
+                                        });
+                        
+                        o.showSelectedItems( arrayOfCurrentItems, true );
+                        
+                        // Call onReady function if one was defined. 
+                        if ($.isFunction(o.onReady)) {
+                    
+                            o.onReady.call(o._ele, o._cntr);
+                        
+                        }
+                        
+                        return this;
+                        
+                    }//end: completefunc()
+                });
+                
+            // ELSE, input was blank. Trigger onReady if applicable.
+            } else {
+                
+                if ($.isFunction(o.onReady)) {
+                    
+                    o.onReady.call(o._ele, o._cntr);
+                
+                }
+                
+            } // end: if()
+            
+            return this;
+            
+        });
+        
+        return this;
+        
+    };//end: $.fn.SPLookupField()
+    
+    
+    /**
+     * @memberOf Lookup.lookupField
+     * Removes an item association. The html element is removed from
+     * UI and the input element is updated to not contain that ID
+     * 
+     * @return {Object} Lookup
+     */
+    Lookup.removeItem = function(o, htmlEle) {
+        
+        var e       = $(htmlEle).closest('div.spwidgets-item'),
+            cntr    = e.closest("div.spwidgets-lookup-selected"),
+            id      = e.data("spid"),
+            items   = $.SPWidgets.parseLookupFieldValue( o._ele.val() ),
+            store   = [],
+            i       = 0,
+            j       = 0;
+        
+        // FIXME: this method does not consider the padDelimeter param.
+        
+        // Hide the item the user removed from the UI
+        e.fadeOut("fast").promise().then(function(){
+            
+            e.remove();
+            
+            // If AllowMultiple is false and msgNoItem is false
+            // then hide the selected items container
+            if ( o.allowMultiples === false && !o.msgNoItems ) {
+                
+                cntr.css("display", "none");
+                
+            }
+            
+            // If allowMultiples is false, and hideInput is true, then make sure
+            // it is visible again
+            if ( o.allowMultiples === false && o.hideInput === true ) {
+                
+                o._lookupInputEleCntr.css("display", "");
+                
+            }
+            
+            // If a message was defined for no items selected,
+            // then show it now.
+            if ( cntr.find("div.spwidgets-item").length < 1 && o.msgNoItems ) {
+                
+                cntr.append("<div>" + o.msgNoItems + "</div>");
+                
+            }
+            
+        });
+        
+        // Remove the deleted ID from the array and
+        // store the remainder of the ID back into the
+        // input field.
+        for( i=0,j=items.length; i<j; i++ ){
+            
+            if ( items[i].id != id ) {
+                
+                store.push( items[i].id );
+                
+            }
+            
+        };  
+        
+        o.storeItemIDs( store );
+        
+        // Focus on the autocomplete field.
+        o._lookupInputEleCntr.find("input").focus();
+        
+        return Lookup;
+        
+    };//end:Lookup.removeItem() 
+    
+    
+    /**
+     * @property
+     * @memberOf    Lookup.lookupField
+     * Stores the Style sheet that is inserted into the page the first
+     * time lookupField is called.
+     * Value is set at build time.
+     * 
+     */
+    Lookup.styleSheet = "_INCLUDE_LOOKUP_CSS_TEMPLATE_";;
+    
+    
+    /**
+     * @property
+     * @memberOf    Lookup.lookupField
+     * Stores the HTML template for each lookup field.
+     * Value is set at build time.
+     * 
+     */
+    Lookup.htmlTemplate = "_INCLUDE_LOOKUP_HTML_TEMPLATE_";
+    
+
+})(jQuery);
