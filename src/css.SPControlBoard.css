@@ -20,8 +20,14 @@ div.spwidget-board div.spwidget-board-state {
     margin: .1%;
     padding: .2%;
 }
+
+div.spwidget-board div.spwidget-board-headers-cntr {
+    border: none;
+}
 div.spwidget-board div.spwidget-board-headers-cntr div.spwidget-board-state {
     text-align: center;
+    font-weight: bold;
+    font-size: 1.1em;
 }
 div.spwidget-board div.spwidget-board-states div.spwidget-board-state {
     margin-bottom: 1em;
@@ -38,6 +44,9 @@ div.spwidget-board div.spwidget-board-state div.spwidget-board-state-item {
 div.spwidget-board div.spwidget-board-state-item div.spwidget-board-item-actions{
     margin-top: .5em;
     padding: .2em .5em;
+    width: 25%;
+    overflow: hidden;
+    text-align: center;
 }
 div.spwidget-board div.spwidget-board-state-item .spwidget-board-handle {
     
