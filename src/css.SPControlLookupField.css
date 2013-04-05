@@ -9,6 +9,8 @@
     zoom: 1; /* IE7 hack */
     *display: inline; /* IE7 hack */
 }
+
+
 .spwidgets-lookup-cntr .spwidgets-lookup-selected {
     -moz-appearance: textfield;
     -webkit-appearance: textfield;
@@ -55,4 +57,6 @@
     overflow: auto;
     z-index: 2000;
 }
-
+.spwidgets-lookup-cntr ul.ui-autocomplete {
+    overflow: auto;
+}
