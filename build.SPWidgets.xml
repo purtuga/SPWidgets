@@ -566,13 +566,24 @@
             </condition>
         </fail>
         
-        <echo message="Initiating deploy. Copying Files to: ${me.deploy.location}" />
+        <echo>
+*****************************
+DEPLOYING TO: ${me.deploy.location}
+*****************************
+</echo>
         
-        <copy todir="${me.deploy.location}" flatten="true" verbose="true" preservelastmodified="true">
+        <replaceChr property="deploy.cache.id" 
+        	   value="${me.deploy.location}" 
+        	   regexFind="[\W]"
+        	   replaceValue="" />
+
+        <echo message="Deploy ID: ${deploy.cache.id}" />
+        
+        <copy todir="${me.deploy.location}" verbose="true" preservelastmodified="true">
             <fileset dir="${build.base}">
                 <patternset refid="patternset.deploy" />
                 <modified>
-                    <param name="cache.cachefile" value="${build.base}${/}localdev.cache"/>
+                    <param name="cache.cachefile" value="${build.base}${/}deploy.cache.${deploy.cache.id}"/>
                 </modified>
             </fileset>
         </copy>
@@ -679,7 +690,6 @@
         </java>
         <echo message="MINIFY ---------------------- [END]" />
     </target><!-- End: target = minify -->
-	 
 	
 	
 	<!-- = = = = = = = = = = = = = = = = =
@@ -715,4 +725,40 @@
         </sequential>
     </macrodef>
 
+    <!-- = = = = = = = = = = = = = = = = =
+          macrodef: replaceChr
+          Replaces characters in a values and returns
+          (by assigning result to a propertye) the changed
+          string.
+          INPUT:
+            property        -   Property name where value will be stored
+            value           -   Value to be manipulated
+            regexFind       -   Regular expression for finding.
+            replaceValue    -   The replace value
+            
+          EXAMPLE:
+          
+            <replaceChr property="" value="" regexFind="" replaceValue="" />
+            
+         = = = = = = = = = = = = = = = = = -->
+    <macrodef name="replaceChr">
+        <attribute name="property" />
+        <attribute name="value" default="" />
+        <attribute name="regexFind" default="/" />
+        <attribute name="replaceValue" default="-" />
+        
+        <sequential>
+            <echo message="@{value}" file="${build.tmp}${/}macro.replaceChr.tmp" />
+            <loadfile property="@{property}" srcFile="${build.tmp}/macro.replaceChr.tmp">
+                <filterchain>
+                    <tokenfilter>
+                        <replaceregex pattern="@{regexFind}" replace="@{replaceValue}" flags="g"/>
+                    </tokenfilter>
+                </filterchain>
+            </loadfile>
+            <delete file="${build.tmp}${/}macro.replaceChr.tmp" />
+        </sequential>
+    </macrodef>
+	
+	
 </project>
