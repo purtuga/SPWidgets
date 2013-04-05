@@ -273,9 +273,9 @@
             if ( hasBoard && !isMethod ) {
                 
                 return this;
-                
+            
             // Handle METHODS
-            } else if (isMethod && hasBoard) {
+            } else if (isMethod && hasBoard && !ele.hasClass("loadingSPShowBoard")) {
                 
                 method  = options.toLowerCase();
                 board   = ele.data("SPShowBoardOptions");
@@ -299,6 +299,14 @@
                 
             }//end: if()
             
+            // If this element is already loading the UI, exit now
+            if (ele.hasClass("loadingSPShowBoard")) {
+            
+                return this;
+            
+            }
+            
+            // Define this Widget instance
             opt = $.extend({},
                 $.SPWidgets.defaults.board,
                 options,
@@ -315,83 +323,94 @@
 
                     /**
                      * Populates the opt.stats and opt.statesMap by 
-                     * pulling info. from the List definition.
+                     * pulling info. from the List definition
                      * 
+                     * @return {jQuery.Promise}
                      * 
                      */
                     getBoardStates:     function(){
                         
-                        // Get List information (use cached if already done in prior calls)
-                        // and get list of States to build
-                        $().SPServices({
-                            operation:  "GetList",
-                            listName:   opt.list,
-                            cacheXML:   true,
-                            async:      false,
-                            webURL:     opt.webURL,
-                            completefunc : function(xData, Status) {
-    
-                                // FIXME: need to handle errors
-                                // if (resp.hasSPError()) {
-                                    // spAgile.logMsg({
-                                        // type:   "error",
-                                        // msg:    resp.getSPError()
-                                    // });
-                                    // return null;
-                                // }
+                        return $.Deferred(function(dfd){
                                 
-                                var resp    = $(xData.responseXML),
-                                    f       = resp.find("Fields Field[StaticName='" + opt.field + "']");
-                                
-                                // If we did not find the field by internal name, try external.
-                                if (!f.length) {
+                            // Get List information (use cached if already done in prior calls)
+                            // and get list of States to build
+                            $().SPServices({
+                                operation:  "GetList",
+                                listName:   opt.list,
+                                cacheXML:   true,
+                                async:      false,
+                                webURL:     opt.webURL,
+                                completefunc : function(xData, status) {
+        
+                                    // FIXME: need to handle errors
+                                    // if (resp.hasSPError()) {
+                                        // spAgile.logMsg({
+                                            // type:   "error",
+                                            // msg:    resp.getSPError()
+                                        // });
+                                        // return null;
+                                    // }
                                     
-                                    f = resp.find("Fields Field[DisplayName='" + opt.field + "']");
-                                
-                                }
-                                
-                                switch(f.attr("Type").toLowerCase()) {
-                                    // CHOICE COLUMNS
-                                    case "choice":
+                                    var resp    = $(xData.responseXML),
+                                        f       = resp.find("Fields Field[StaticName='" + opt.field + "']");
+                                    
+                                    // If we did not find the field by internal name, try external.
+                                    if (!f.length) {
                                         
-                                        if (opt.fieldFilter) {
-                                            opt.fieldFilter = opt.fieldFilter.split(/\,/);
-                                        }
-                                        
-                                        f.find("CHOICES CHOICE").each(function(){
-                                            var thisChoice = $(this).text();
+                                        f = resp.find("Fields Field[DisplayName='" + opt.field + "']");
+                                    
+                                    }
+                                    
+                                    switch(f.attr("Type").toLowerCase()) {
+                                        // CHOICE COLUMNS
+                                        case "choice":
                                             
-                                            // if there i sa filter and this column
-                                            // is not part of it, exit now
                                             if (opt.fieldFilter) {
-                                                if (!$.grep(opt.fieldFilter, function(e){ return (e === thisChoice); }).length) {
-                                                    return;
-                                                }
+                                                opt.fieldFilter = opt.fieldFilter.split(/\,/);
                                             }
                                             
-                                            opt.states.push({
-                                                type:   'choice',
-                                                title:  thisChoice,
-                                                name:   thisChoice
+                                            f.find("CHOICES CHOICE").each(function(){
+                                                var thisChoice = $(this).text();
+                                                
+                                                // if there i sa filter and this column
+                                                // is not part of it, exit now
+                                                if (opt.fieldFilter) {
+                                                    if (!$.grep(opt.fieldFilter, function(e){ return (e === thisChoice); }).length) {
+                                                        return;
+                                                    }
+                                                }
+                                                
+                                                opt.states.push({
+                                                    type:   'choice',
+                                                    title:  thisChoice,
+                                                    name:   thisChoice
+                                                });
+                                                
+                                                // Store State value in mapper (use internal name)
+                                                opt.statesMap[thisChoice] = opt.states[opt.states.length - 1];
+                                                
                                             });
                                             
-                                            // Store State value in mapper (use internal name)
-                                            opt.statesMap[thisChoice] = opt.states[opt.states.length - 1];
+                                            break;
                                             
-                                        });
+                                        // LOOKUP COLUMNS
+                                        case "lookup":
+                                            
+                                            // FIXME: finish up code for type=lookup
+                                            
+                                            break;
+                                            
+                                    }
+                                    
+                                    dfd.resolveWith(opt, [xData, status]);
                                         
-                                        break;
-                                        
-                                    // LOOKUP COLUMNS
-                                    case "lookup":
-                                        
-                                        // FIXME: finish up code for type=lookup
-                                        
-                                        break;
-                                }
-                                
-                            }//end: completefunc()
-                        });//end: spservices 
+                                    return;
+                                    
+                                }//end: completefunc()
+                            });//end: spservices 
+                            
+                        })
+                        .promise();
                         
                     }, //end: getBoardStates()
                     
@@ -512,137 +531,310 @@
                     }, //end: _getListItems()
                     
                     /**
+                     * Given an ID, this method will return the data object
+                     * for that item - the element retrieved during for
+                     * display on the board.
+                     * 
+                     * @param {String|Interger}
+                     * 
+                     * @return {Object} Item Object
+                     * 
+                     */
+                    getBoardItemDataObject: function(itemId){
+                        
+                        var itemObject = null,
+                            x,y,id;
+                        
+                        if (itemId) {
+                            
+                            itemId = String(itemId);
+                            
+                            for(x=0,y=opt.listItems.length; x<y; x++){
+                                
+                                id = opt.listItems[x].ID;
+                                
+                                if ($.isFunction(id)) {
+                                    
+                                    id = opt.listItems[x].ID();
+                                    
+                                }
+                                
+                                id = String(id);
+                                
+                                if (itemId === id) {
+                                    
+                                    itemObject = opt.listItems[x];
+                                    x = y + y;
+                                    
+                                }
+                                
+                            }
+                            
+                        }
+                        
+                        return itemObject;
+                        
+                    }, // end: pageSetup.getBoardItemDataObject
+                    
+                    
+                    /**
                      * Shows the List items on the board. 
                      * 
                      * @param {Object} [options]
                      * 
                      * @param {Array} [options.rows=opt.listItems]
+                     *              The rows to display on tehe board. Default
+                     *              to list stored in opt.listItems.
+                     * 
                      * @param {Boolean} [options.refresh=false]
+                     *              If true, then items currently on the board
+                     *              will not be erased; only new items will be
+                     *              added and invalid item will be removed.
+                     * 
+                     * @param {Boolean} [options.doBoardInsert=true]
+                     *              When true, the items created will be inserted
+                     *              into the board widget. Set to false if doing it
+                     *              elsewhere.
+                     * 
+                     * @return {Object} itemsForBoard
+                     *              An object with state=string of html for
+                     *              insertion into the Board.
                      * 
                      */
                     showItemsOnBoard:   function(options){
                         
-                        var thisOpt     = $.extend({}, {
-                                            rows:       opt.listItems,
-                                            refresh:    false
-                                        }, options),
-                            newItems    = [],
-                            delItems    = [],
-                            chgItems    = [],
-                            evData      = null,
+        // console.time("Board.ShowItemsOnBoard()");
+                        
+                        
+                        var thisOpt         = $.extend({}, {
+                                                rows:           opt.listItems,
+                                                refresh:        false,
+                                                doBoardInsert:  true
+                                            }, options),
+                            newItems        = [],
+                            delItems        = [],
+                            chgItems        = [],
+                            itemsForBoard   = {}, // each state as the key... string of html as value
+                            boardItemStr    = "",
+                            boardItemCntr   = null,
+                            thisRowState    = null,
+                            thisRowID       = null,
+                            evData          = null,
+                            thisListRow     = null,
                             x,y;
                         
-                        // If refresh is false, then erase all items
-                        // currently in the board.
-                        if (!thisOpt.refresh) {
-                            
-                            for(x=0,y=opt.states.length; x<y; x++){
-                                opt.states[x].headerTotalEle.html("0");
-                                opt.states[x].dataEle.empty();
-                            }
-                            
-                        }
                         
-                        // Populate each row into its respective column
-                        $.each(thisOpt.rows, function(i, thisListRow){
+                        /**
+                         * Creates a new items using the given template
+                         * and returns a string of that new items.
+                         *  
+                         * @param {Object} itemDataObj  -   The item's object.
+                         * @param {jQUery} $uiELe       -   The UI container.
+                         * 
+                         * @return {String} new item html
+                         * 
+                         */
+                        function createNewItem(itemDataObj, $uiEle) {
                             
-                            // Get this row's State and ID. 
-                            // Accomodate possible knockout objects
-                            var thisRowState    = thisListRow[opt.field],
-                                thisRowID       = thisListRow.ID,
-                                boardItemCntr   = null,
-                                callerTemplate  = null,
-                                thisItemTitle   = null;
-                                
-                            if ($.isFunction(thisRowState)) {
-                                thisRowState = thisListRow[opt.field]();
-                            }
-                            if ($.isFunction(thisRowID)) {
-                                thisRowID = thisRowID();
-                            }
+                            var newItem     = "",
+                                itemId      = null,
+                                css         = "";
                             
-                            // Try to find this row in the board
-                            boardItemCntr = opt.statesCntr
-                                    .find( "div[data-id='" + thisRowID + "']" );
-                            
-                            // if row was not found in the board, then create it
-                            if (!boardItemCntr.length) {
-                                
-                                // if INIT is done, then capture this as a new
-                                // item on the board
-                                if (opt.initDone) {
-                                    newItems.push(thisListRow);
-                                }
-                                
-                                // create the container for the item
-                                boardItemCntr = $('<div class="spwidget-board-state-item ui-state-default ' + 
-                                        'ui-corner-all" data-id="' + 
-                                        thisRowID + '"></div>'
-                                    )
-                                    .appendTo(opt.statesMap[thisRowState].dataEle);
-                            
-                            
-                            // ELSE, item is already in the board...
-                            // Check to see if it should move to a new status
-                            } else if (boardItemCntr.closest("div.spwidget-board-state").data("boardstate") !== thisRowState) {
-                                
-                                boardItemCntr.appendTo(opt.statesMap[thisRowState].dataEle);
-                                chgItems.push(thisListRow);
-                                
-                            }
-                            
-                            boardItemCntr.data("spboardlistitem", thisListRow);
-                                    
                             // Caller defined a function for item template?
                             if ($.isFunction(opt.template)) {
                                 
-                                callerTemplate = opt.template.call(boardItemCntr, thisListRow, ele);
+                                newItem = opt.template.call(
+                                            ele, itemDataObj, $uiEle);
                                 
-                                if (callerTemplate) {
-                                
-                                    boardItemCntr.html(callerTemplate);
-                                
+                                if (newItem) {
+                                    
+                                    newItem = String(newItem);
+                                    
                                 }
+                                
                                 
                             // ELSE: Caller did not define function for template
                             } else {
                                 
+                                newItem = $.SPWidgets.fillTemplate(opt.template, thisListRow );
+    
+                            }
+                            
+                            // If we have a UI element already and a new item was created
+                            // insert it directly into the UI element.
+                            if ($uiEle !== undefined && newItem !== "") {
+                                
+                                $uiEle.html(newItem);
+                                
+                            // Else, we have no UI Element... If the new Item is not
+                            // blank, then create a new item for insertion.
+                            } else if (newItem !== "") {
+                                
                                 // Accomodate possible knockout objects
-                                thisItemTitle = thisListRow.Title;
+                                itemId = itemDataObj.ID;
                                 
-                                if ($.isFunction(thisListRow.Title)) {
-                                
-                                    thisItemTitle = thisListRow.Title();
-                                
+                                if ($.isFunction(itemDataObj.ID)) {
+                                    
+                                    itemId = itemDataObj.ID();
+                                    
                                 }
                                 
-                                boardItemCntr
-                                    .empty()
-                                    .append(
-                                        $.SPWidgets.fillTemplate(
-                                            opt.template,
-                                            thisListRow
-                                        )
-                                    );
-    
-                                        // $(opt.template)
-                                            // .clone()
-                                            // .wrapInner(thisListRow.Title)
-                            
-                            }
-                            
-                            // If init is done and Refresh is set, then add 
-                            // temporary class so that we can quickly filter on 
-                            // items that were already in the board, but not 
-                            // on the refresh
-                            if (opt.initDone && thisOpt.refresh) {
+                                // Store this item to be added to the board in bulk
+                                if ( itemsForBoard[thisRowState] === undefined ) {
+                                    
+                                    itemsForBoard[thisRowState] = "";
+                                    
+                                }
                                 
-                                boardItemCntr.addClass("spwidget-temp");
+                                if (opt.initDone && thisOpt.refresh) {
+                                    
+                                    css += " spwidget-temp";
+                                    
+                                }
+                                
+                                itemsForBoard[thisRowState] += 
+                                    '<div class="spwidget-board-state-item ui-state-default ui-corner-all' +
+                                    css + '" data-id="' + itemId + '">' + newItem + '</div>';
                                 
                             }
                             
-                        });//end: .each()
+                            return newItem;
+                            
+                        } //end: ------> createNewItem()
                         
+                        
+                        // If refresh is false, then erase all items
+                        // currently in the board
+                        if (!thisOpt.refresh) {
+                            
+                            for(x=0,y=opt.states.length; x<y; x++){
+                                
+                                opt.states[x].headerTotalEle.html("0");
+                                opt.states[x].dataEle.empty();
+                                
+                            }
+                            
+                        }
+                        
+         
+         // console.time("Board.ShowItemsOnBoard().each(rows)");
+         
+                        // Populate each row into its respective column
+                        for(x=0,y=thisOpt.rows.length; x<y; x++){
+                            
+                            thisListRow = thisOpt.rows[x];
+                            
+                            // Get this row's State and ID. 
+                            // Accomodate possible knockout objects
+                            thisRowState = thisListRow[opt.field];
+                            thisRowID    = thisListRow.ID;
+                            
+                            if ($.isFunction(thisRowState)) {
+                                
+                                thisRowState = thisListRow[opt.field]();
+                                
+                            }
+                            
+                            if ($.isFunction(thisRowID)) {
+                                
+                                thisRowID = thisRowID();
+                                
+                            }
+    
+                            // If not a refresh, then the entire UI is being
+                            // rebuilt. We'll be working with Strings. 
+                            if (thisOpt.refresh === false) {
+                                
+                                // if INIT is done (true), then capture this as a new
+                                // item on the board (for events)
+                                if (opt.initDone) {
+                                    
+                                    newItems.push(thisListRow);
+                                    
+                                }
+                                
+                                createNewItem(thisListRow);
+                                
+                            // ELSE, must be doing a Refresh and these
+                            // items could already exist on the board.
+                            } else {
+                                
+                                // Try to find this row in the board
+                                boardItemCntr = opt.statesCntr
+                                        .find( "div[data-id='" + thisRowID + "']" );
+                            
+                                // If item was NOT found on the board, then
+                                // we're adding it now.
+                                if ( !boardItemCntr.length ) {
+                                    
+                                    // if INIT is done (true), then capture this as a new
+                                    // item on the board (for events)
+                                    if (opt.initDone) {
+                                        
+                                        newItems.push(thisListRow);
+                                        
+                                    }
+                                    
+                                    createNewItem(thisListRow);
+                                    
+                                // Else, item was found on the Board.
+                                } else {
+                                    
+                                    // Add a temporary class to the item, so that we
+                                    // know a little later (below) that this is still
+                                    // a valid item
+                                    boardItemCntr.addClass("spwidget-temp");
+                                    
+                                    // Check if it should be moved to a new STate (column)
+                                    if (boardItemCntr.closest("div.spwidget-board-state")
+                                            .data("boardstate") !== thisRowState
+                                    ) {
+                                        
+                                        boardItemCntr.appendTo(opt.statesMap[thisRowState].dataEle);
+                                        chgItems.push(thisListRow);
+                                        
+                                    }
+                                    
+                                    // Refresh the UI for the item with the new data
+                                    createNewItem(thisListRow, boardItemCntr);
+                                    
+                                }
+                                
+                            } //end: if(): is it refresh?
+                            
+                        } //end: for() - each thisOpt.rows[]
+                        
+         // console.timeEnd("Board.ShowItemsOnBoard().each(rows)");
+         
+                        // should we update the board?
+                        if (thisOpt.doBoardInsert) {
+                            
+         
+         // console.time("Board.ShowItemsOnBoard().InsertIntoDOM");
+         
+         
+                            for (x in itemsForBoard) {
+                                
+                                if ( itemsForBoard.hasOwnProperty(x) && itemsForBoard[x] !== "" ) {
+                                    
+                                    opt.statesMap[x].dataEle.append( itemsForBoard[x] );
+                                    
+                                }
+                                
+                            }
+                            
+                            // Update the board headers with the totals
+                            opt.updBoardHeaders();
+                            
+                            // Add the mouseover hover affect.
+                            $.pt.addHoverEffect(ele.find(".spwidget-board-state-item"));
+                            
+         
+         // console.timeEnd("Board.ShowItemsOnBoard().InsertIntoDOM");
+         
+         
+                        } 
+         
                         // If initialization is done and board is being 
                         // refreshed, then check to see if any items are
                         // no longer valid
@@ -650,16 +842,18 @@
                             
                             opt.statesCntr.find("div.spwidget-board-state-item")
                                     .not("div.spwidget-temp").each(function(){
-                                        delItems.push( $(this).data("spboardlistitem") );
+                                        
+                                        delItems.push( 
+                                            opt.getBoardItemDataObject( $(this).data("id") )
+                                        );
+                                        
                                         $(this).remove();
+                                        
                                     })
                                     .end()
                                 .removeClass("spwidget-temp");
                                 
                         }
-                        
-                        opt.updBoardHeaders();
-                        $.pt.addHoverEffect(ele.find(".spwidget-board-state-item"));
                         
                         // If initialization was done already, then 
                         // trigger events and refresh jQuery UI widget
@@ -673,6 +867,7 @@
                                 
                             Board.makeSameHeight( opt.statesCntr.find("div.spwidget-board-state"), 20 );
     
+                            // Get a new event object
                             evData = opt.getEventObject();
                             
                             // Trigger events if init has already been done
@@ -680,7 +875,7 @@
                                 
                                 evData.itemsModified.length = 0;
                                 evData.itemsModified.push(newItems);
-                                $(ele).trigger(
+                                ele.trigger(
                                     "spwidget:boarditemadd",
                                     [ ele, $.extend( {}, evData ) ] );
                                 
@@ -690,7 +885,7 @@
                                 
                                 evData.itemsModified.length = 0;
                                 evData.itemsModified.push(delItems);
-                                $(ele).trigger(
+                                ele.trigger(
                                     "spwidget:boarditemremove",
                                     [ ele, $.extend( {}, evData ) ] );
                                 
@@ -705,12 +900,18 @@
                             // Trigger event if anything has changed.
                             if (evData.itemsModified.length) {
                                 
-                                $(ele).trigger("spwidget:boardchange", [ ele, evData ]);
+                                ele.trigger("spwidget:boardchange", [ ele, evData ]);
                                 
                             }
                             
                         }//end: if(): initDone == true
                         
+         
+         
+         // console.timeEnd("Board.ShowItemsOnBoard()");
+         
+                        return itemsForBoard;
+                            
                     }, //end: opt.showItemsOnBoard()
                     
                     /**
@@ -778,7 +979,7 @@
                                                     .data("boardstate"),
                                 
                                 /** @property {Object} evObj.itemObj    The individual board item data */
-                                itemObj:        ( uiItemEle.data("spboardlistitem") || {} ),
+                                itemObj:        ( opt.getBoardItemDataObject( uiItemEle.data("id") ) || {} ),
                                 
                                 /** @property {Array} evObj.itemsModified   The list of objects representing the modified items */
                                 itemsModified: []
@@ -854,263 +1055,276 @@
                         
                     } // end: opt.getListFormUrl()
                     
-                    
             });//end: $.extend() set opt
             
-            ele.addClass("hasSPShowBoard").data("SPShowBoardOptions", opt);
+            // Check for Required params
+            if ( !opt.list || !opt.field ) {
+                
+                ele.html("<div>SPWidgets:Board [ERROR] Missing required input parameters!</div>");
+                return this;
+                
+            }
+            
+            // Store instance object and mark element "loading"
+            ele.addClass("loadingSPShowBoard").data("SPShowBoardOptions", opt);
+            
             
             // get board states from the table definition
-            opt.getBoardStates();
-            
-            // Populate the element with the board template
-            ele.html($(Board.htmlTemplate).filter("div.spwidget-board"));
-            
-            // Get a copy of the state column for both headers and values
-            opt.tmpltHeader  = $("<div/>")
-                                .append(
-                                    ele.find("div.spwidget-board-headers-cntr div.spwidget-board-state").clone()
-                                ).html();
-                            
-            opt.tmpltState   = $("<div/>")
-                            .append(
-                                ele.find("div.spwidget-board-states-cntr div.spwidget-board-state")
-                            )
-                            .html();
-                        
-            // Get pointers to the containers in the UI
-            opt.statesCntr  = ele.find("div.spwidget-board-states-cntr")
-                            .addClass("spwidget-states-" + opt.states.length)
-                            .empty();
-                            
-            opt.headersCntr = ele.find("div.spwidget-board-headers-cntr")
-                            .addClass("spwidget-states-" + opt.states.length)
-                            .empty();
-            
-            // Build the board columns
-            $.each(opt.states, function(i,v){
+            opt.getBoardStates().then(function(){
                 
-                v.headerEle = $(opt.tmpltHeader).appendTo(opt.headersCntr)
-                                .attr("data-boardstate", v.name)
-                                .attr("data-boardindex", i)
-                                .html(v.title);
+                ele.removeClass("loadingSPShowBoard").addClass("hasSPShowBoard");
+                
+                // Populate the element with the board template
+                ele.html($(Board.htmlTemplate).filter("div.spwidget-board"));
+                
+                // Get a copy of the state column for both headers and values
+                opt.tmpltHeader  = $("<div/>")
+                                    .append(
+                                        ele.find("div.spwidget-board-headers-cntr div.spwidget-board-state").clone()
+                                    ).html();
                                 
-                v.dataEle = $(opt.tmpltState).appendTo(opt.statesCntr)
-                                .attr("data-boardindex", i)
-                                .attr("data-boardstate", v.name);
-                
-                // Create the header element that holds the total
-                v.headerTotalEle = $('<span>&nbsp;[<span class="spwidget-state-item-total">0</span>]</span>')
-                                    .appendTo(v.headerEle)
-                                    .find("span.spwidget-state-item-total");
-                
-            });
-            
-            $(opt.headersCntr,opt.statesCntr)
-                .append('<div style="clear:both;"></div>');
-
-            // Create listeners on the board.
-            ele
-                // Bind function to sortable events so that headers stay updated
-                .on("sortreceive sortremove", function(ev, ui){
-                
-                    opt.updBoardHeaders();
-                    $(ui.item).removeClass("ui-state-hover");
-                    
-                })
-                
-                // On Sortcreate: update headers
-                // On Sortreceive: update item
-                .on("sortreceive sortcreate", function(ev, ui){
-                    
-                    var evData = opt.getEventObject(ui.item),
-                        dfd, itemId;
-                    
-                    // Sortcreate
-                    if (ev.type === "sortcreate") {
-                        
-                        if ($.isFunction(opt.onBoardCreate)) {
+                opt.tmpltState   = $("<div/>")
+                                .append(
+                                    ele.find("div.spwidget-board-states-cntr div.spwidget-board-state")
+                                )
+                                .html();
                             
-                            opt.onBoardCreate.call(ele, evData);
-                            
-                        }
-                        
-                        $(ev.target).trigger("spwidget:boardcreate", [ ele, evData ]);                                
+                // Get pointers to the containers in the UI
+                opt.statesCntr  = ele.find("div.spwidget-board-states-cntr")
+                                .addClass("spwidget-states-" + opt.states.length)
+                                .empty();
+                                
+                opt.headersCntr = ele.find("div.spwidget-board-headers-cntr")
+                                .addClass("spwidget-states-" + opt.states.length)
+                                .empty();
+                
+                // Build the board columns
+                $.each(opt.states, function(i,v){
                     
-                    // sortreceive
-                    } else {
+                    v.headerEle = $(opt.tmpltHeader).appendTo(opt.headersCntr)
+                                    .attr("data-boardstate", v.name)
+                                    .attr("data-boardindex", i)
+                                    .html(v.title);
+                                    
+                    v.dataEle = $(opt.tmpltState).appendTo(opt.statesCntr)
+                                    .attr("data-boardindex", i)
+                                    .attr("data-boardstate", v.name);
+                    
+                    // Create the header element that holds the total
+                    v.headerTotalEle = $('<span>&nbsp;[<span class="spwidget-state-item-total">0</span>]</span>')
+                                        .appendTo(v.headerEle)
+                                        .find("span.spwidget-state-item-total");
+                    
+                });
+                
+                $(opt.headersCntr,opt.statesCntr)
+                    .append('<div style="clear:both;"></div>');
+    
+                // Create listeners on the board.
+                ele
+                    // Bind function to sortable events so that headers stay updated
+                    .on("sortreceive sortremove", function(ev, ui){
+                    
+                        opt.updBoardHeaders();
+                        $(ui.item).removeClass("ui-state-hover");
                         
-                        dfd     = $.Deferred();
-                        itemId  = '';
+                    })
+                    
+                    // On Sortcreate: update headers
+                    // On Sortreceive: update item
+                    .on("sortreceive sortcreate", function(ev, ui){
                         
-                        // Handle possibly the itemObject being a knockout object
-                        if ($.isFunction(evData.itemObj.ID)) {
+                        var evData = opt.getEventObject(ui.item),
+                            dfd, itemId;
+                        
+                        // Sortcreate
+                        if (ev.type === "sortcreate") {
                             
-                            itemId = evData.itemObj.ID();
+                            if ($.isFunction(opt.onBoardCreate)) {
+                                
+                                opt.onBoardCreate.call(ele, evData);
+                                
+                            }
                             
+                            $(ev.target).trigger("spwidget:boardcreate", [ ele, evData ]);                                
+                        
+                        // sortreceive
                         } else {
                             
-                            itemId = evData.itemObj.ID;
+                            dfd     = $.Deferred();
+                            itemId  = '';
                             
-                        }
-                        
-                        // Make the update to the state in SP
-                        evData.updates       = []; // Format = SPService UpdateListItems
-                        evData.updatePromise = dfd.promise();
-                        evData.updates.push([ opt.field, evData.currentState ]);
-                        
-                        // TODO: need to normalize evData by adding values to itemsModified
-                        
-                        // Call any onPreUpdate event. If TRUE (boolean) is returned,
-                        // update is canceled. Note that the UI is not updated to 
-                        // reflect a canceled update (ex. item is not moved back to
-                        // original position)
-                        if ($.isFunction(opt.onPreUpdate)) {
+                            // Handle possibly the itemObject being a knockout object
+                            if ($.isFunction(evData.itemObj.ID)) {
+                                
+                                itemId = evData.itemObj.ID();
+                                
+                            } else {
+                                
+                                itemId = evData.itemObj.ID;
+                                
+                            }
                             
-                            if (opt.onPreUpdate.call(ev.target, ui.item, evData) === true) {
+                            // Make the update to the state in SP
+                            evData.updates       = []; // Format = SPService UpdateListItems
+                            evData.updatePromise = dfd.promise();
+                            evData.updates.push([ opt.field, evData.currentState ]);
+                            
+                            // TODO: need to normalize evData by adding values to itemsModified
+                            
+                            // Call any onPreUpdate event. If TRUE (boolean) is returned,
+                            // update is canceled. Note that the UI is not updated to 
+                            // reflect a canceled update (ex. item is not moved back to
+                            // original position)
+                            if ($.isFunction(opt.onPreUpdate)) {
+                                
+                                if (opt.onPreUpdate.call(ev.target, ui.item, evData) === true) {
+                                    
+                                    return this;
+                                    
+                                }
+                                
+                            }
+                            
+                            // If no updates to make, exit here.
+                            if (!evData.updates.length) {
                                 
                                 return this;
                                 
                             }
                             
-                        }
-                        
-                        // If no updates to make, exit here.
-                        if (!evData.updates.length) {
+                            // Make update to SP item
+                            $().SPServices({
+                                operation:      "UpdateListItems",
+                                listName:       opt.list,
+                                async:          true,
+                                ID:             itemId,
+                                valuepairs:     evData.updates,
+                                completefunc:   function(xData, status){
+                                    
+                                    // Process Errors
+                                    if (status === "error") {
+                                        
+                                        dfd.rejectWith(
+                                                ele,
+                                                [ 'Communications Error!', xData, status ]);
+                                        
+                                        return;
+                                        
+                                    }
+                                    
+                                    var resp = $(xData.responseXML),
+                                        row  = null;
+                                    
+                                    if ( resp.SPMsgHasError() ) {
+                                         
+                                         dfd.rejectWith(
+                                                ele,
+                                                [ resp.SPGetMsgError(), xData, status ]);
+                                        
+                                        return;
+                                        
+                                    }
+                                    
+                                    row = $(xData.responseXML).SPFilterNode("z:row")
+                                                .SPXmlToJson({includeAllAttrs: true});
+                                    
+                                    $(ev.target).trigger(
+                                        "spwidget:boardchange", [ ui.item, evData ] );
+                                    
+                                    dfd.resolveWith(ev.target, [evData.itemObj, xData]);
+                                    
+                                }//end: completefunc()
+                            });
                             
-                            return this;
-                            
-                        }
+                        }//end: if()
                         
-                        // Make update to SP item
-                        $().SPServices({
-                            operation:      "UpdateListItems",
-                            listName:       opt.list,
-                            async:          true,
-                            ID:             itemId,
-                            valuepairs:     evData.updates,
-                            completefunc:   function(xData, status){
+                    }) // end: ele.on("sortreceive sortcreate")
+                    
+                    // Buind event to catch board actions
+                    .on("click", "a.spwidgets-board-action", function(ev){
+                        
+                        var $actionEle  = $(ev.currentTarget),
+                            action      = String(
+                                                $actionEle
+                                                    .data("spwidgets_board_action")
+                                            )
+                                            .toLowerCase(),
+                            gotoUrl     = "",
+                            thisPageUrl = $.pt.getEscapedUrl(window.location.href); 
+                        
+                        // TODO: enhance to open item in dialog (SP2010) if that feature is on
+                        
+                        switch (action) {
+                            
+                            case "edit-item": 
                                 
-                                // Process Errors
-                                if (status === "error") {
+                                gotoUrl = opt.getListFormUrl("EditForm");
+                                
+                                break;
+    
+                            case "view-item": 
+                                
+                                gotoUrl = opt.getListFormUrl("DisplayForm");
+                                
+                                break;
+                            
+                            
+                        } //end: switch()
+                        
+                        window.location.href = gotoUrl + 
+                            "?ID=" + $actionEle.data("spwidgets_id") +
+                            "&Source=" + thisPageUrl;
+                            
+                        return this;
+                            
+                    }); //end: ele.on()
+                    
+                // If no template was defined, use default
+                if (opt.template === null) {
+                    
+                    opt.template = $( Board.htmlTemplate )
+                                    .filter("div.spwidget-item-template");
+                    
+                }
+                
+                // Retrieve the items from the List and then
+                // Display items retrieved on the board
+                opt._getListItems()
+                    .then(function(){
+                        
+                        opt.showItemsOnBoard();
+                        
+                        // Make the columns "sortable"
+                        opt.statesCntr.find("div.spwidget-board-state").each(function(){
+                            var thisState = $(this);
+                            thisState.sortable({
+                                connectWith:    thisState.siblings(),
+                                containment:    ele,
+                                cursor:         "move",
+                                tolerance:      "pointer",
+                                opacity:        ".80",
+                                remove:         function(ev, ui){
                                     
-                                    dfd.rejectWith(
-                                            ele,
-                                            [ 'Communications Error!', xData, status ]);
+                                    Board.makeSameHeight(
+                                        opt.statesCntr
+                                            .find("div.spwidget-board-state"), 20 );
                                     
-                                    return;
-                                    
-                                }
-                                
-                                var resp = $(xData.responseXML),
-                                    row  = null;
-                                
-                                if ( resp.SPMsgHasError() ) {
-                                     
-                                     dfd.rejectWith(
-                                            ele,
-                                            [ resp.SPGetMsgError(), xData, status ]);
-                                    
-                                    return;
-                                    
-                                }
-                                
-                                row = $(xData.responseXML).SPFilterNode("z:row")
-                                            .SPXmlToJson({includeAllAttrs: true});
-                                
-                                $(ev.target).trigger(
-                                    "spwidget:boardchange", [ ui.item, evData ] );
-                                
-                                dfd.resolveWith(ev.target, [evData.itemObj, xData]);
-                                
-                            }//end: completefunc()
+                                }//end: remove()
+                            });
+                            
                         });
                         
-                    }//end: if()
-                    
-                }) // end: ele.on("sortreceive sortcreate")
-                
-                // Buind event to catch board actions
-                .on("click", "a.spwidgets-board-action", function(ev){
-                    
-                    var $actionEle  = $(ev.currentTarget),
-                        action      = String(
-                                            $actionEle
-                                                .data("spwidgets_board_action")
-                                        )
-                                        .toLowerCase(),
-                        gotoUrl     = "",
-                        thisPageUrl = $.pt.getEscapedUrl(window.location.href); 
-                    
-                    // TODO: enhance to open item in dialog (SP2010) if that feature is on
-                    
-                    switch (action) {
+                        // Make text inside the states container un-selectable.
+                        opt.statesCntr.disableSelection();
                         
-                        case "edit-item": 
-                            
-                            gotoUrl = opt.getListFormUrl("EditForm");
-                            
-                            break;
-
-                        case "view-item": 
-                            
-                            gotoUrl = opt.getListFormUrl("DisplayForm");
-                            
-                            break;
+                        opt.initDone = true;
                         
-                        
-                    } //end: switch()
-                    
-                    window.location.href = gotoUrl + 
-                        "?ID=" + $actionEle.data("spwidgets_id") +
-                        "&Source=" + thisPageUrl;
-                        
-                    return this;
-                        
-                }); //end: ele.on()
-                
-            // If no template was defined, use default
-            if (opt.template === null) {
-                
-                opt.template = $( Board.htmlTemplate )
-                                .filter("div.spwidget-item-template");
-                
-            }
-            
-            // Retrieve the items from the List and then
-            // Display items retrieved on the board
-            opt._getListItems()
-                .then(function(){
-                    
-                    opt.showItemsOnBoard();
-                    
-                    // Make the columns "sortable"
-                    opt.statesCntr.find("div.spwidget-board-state").each(function(){
-                        var thisState = $(this);
-                        thisState.sortable({
-                            connectWith:    thisState.siblings(),
-                            containment:    ele,
-                            cursor:         "move",
-                            tolerance:      "pointer",
-                            opacity:        ".80",
-                            remove:         function(ev, ui){
-                                
-                                Board.makeSameHeight(
-                                    opt.statesCntr
-                                        .find("div.spwidget-board-state"), 20 );
-                                
-                            }//end: remove()
-                        });
+                        Board.makeSameHeight( opt.statesCntr.find("div.spwidget-board-state"), 20 );
                         
                     });
-                    
-                    // Make text inside the states container un-selectable.
-                    opt.statesCntr.disableSelection();
-                    
-                    opt.initDone = true;
-                    
-                    Board.makeSameHeight( opt.statesCntr.find("div.spwidget-board-state"), 20 );
-                    
-                });
+            
+            }); //end: .then()
             
             return this;
             
