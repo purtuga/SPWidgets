@@ -5,7 +5,7 @@
  * THe user, however, is presented with the existing items
  * and has the ability to Remove them and add new ones.
  * 
- * BUILD: March 25, 2013 - 05:28 PM
+ * BUILD: _BUILD_VERSION_DATE_
  * 
  */
 
