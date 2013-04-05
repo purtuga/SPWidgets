@@ -6,6 +6,8 @@
  * 
  *  -   jQuery-UI Draggable
  * 
+ * 
+ * BUILD: _BUILD_VERSION_DATE_
  */
 
 ;(function($){
