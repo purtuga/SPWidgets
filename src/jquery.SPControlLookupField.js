@@ -5,7 +5,7 @@
  * THe user, however, is presented with the existing items
  * and has the ability to Remove them and add new ones.
  * 
- * BUILD: _BUILD_VERSION_DATE_
+ * BUILD: March 25, 2013 - 05:28 PM
  * 
  */
 
@@ -15,6 +15,15 @@
     /*jslint nomen: true, plusplus: true */
     /*global SPWidgets */
     
+    
+    /**
+     * Namespace for pickSPUser specific methods.
+     * @name        Lookup
+     * @class       Namespace for lookup Field plugin
+     */
+    var Lookup = {
+        _islookupFieldCssDone: false
+    };
     
     // Default options
     $.SPWidgets.defaults.LookupField = {
@@ -30,6 +39,7 @@
         filterFields:       ['Title'],
         template:           '<div>{{Title}} [<span class="spwidgets-item-remove">x</span>]</div>',
         listTemplate:       '{{Title}}',
+        listHeight:         0,
         onItemAdd:          null,
         onItemRemove:       null,
         onReady:            null,
@@ -39,15 +49,6 @@
         hideInput:          true,
         padDelimeter:       false,
         showSelector:       false
-    };
-    
-    /**
-     * Namespace for pickSPUser specific methods.
-     * @name        Lookup
-     * @class       Namespace for lookup Field plugin
-     */
-    var Lookup = {
-        _islookupFieldCssDone: false
     };
     
     // $(function(){
@@ -146,6 +147,11 @@
      *              Use the following format for item Field placeholders
      *              {{fieldInternalName}}. Example: {{Title}}
      * 
+     * @param {Number} [options.listHeight=0]
+     *              The height to be set on the Autocomplete suggesion box.
+     *              Use this value when there is a chance for allot of values
+     *              to be returned on a query.
+     * 
      * @param {Boolean} [options.padDelimeter=false]
      *              If true, then an extra delimeter (;#) will be inserted at
      *              the begining of the stored value.
@@ -181,8 +187,8 @@
      * 
      * @param {String} [options.msgNoItems=""]
      *              Message to be displayed when no items are selected. Set this
-     *              top null/blank if wanting nothing to be displayed, which will
-     *              result in only the input field being displayed.
+     *              to null/blank if wanting nothing to be displayed, which will
+     *              result in only the input selection field being displayed.
      * 
      * @param {Integer} [options.maxResults=50]
      *              Max number of results to be returned as the user types the filter
@@ -199,6 +205,7 @@
      *              If true, then an icon will be displayed to the right of the
      *              selection input field that displays a popup displaysing all
      *              values currently in the lookup List.
+     * 
      * 
      * @return {jQuery} Selection
      * 
@@ -292,7 +299,8 @@
             
             
             /**
-             * Displays items selected by the user on the UI.
+             * Displays items selected by the user on the UI and updates
+             * the original input element if necessary.
              * 
              * @params {Array|Object} items
              *          An object or array of object wiht the items
@@ -308,7 +316,8 @@
             o.showSelectedItems = function(items, doNotStoreIds) {
                 
                 var itemCntr    = o._selectedItemsCntr.css("display", ""),
-                    itemList    = [];
+                    itemList    = [],
+                    wasUpdated  = false;
                 
                 // If this is the first item, empty container
                 if (    !itemCntr.find("div.spwidgets-item").length
@@ -337,6 +346,7 @@
                     
                     // If this item is not yet displayed, then add it now
                     if (!itemCntr.find("div.spwidgets-item-id-" + item.ID).length) {
+                        
                         
                         // Create the new item UI and append it to the
                         // display area.
@@ -370,6 +380,8 @@
                         // could have removed it from the UI
                         if ( itemCntr.find("div.spwidgets-item-id-" + item.ID).length > 0 ) {
                             
+                            wasUpdated = true;
+                            
                             // Show the new item on the page. 
                             thisItemUI.fadeIn("slow").promise().then(function(){
                                 
@@ -380,7 +392,7 @@
                             // Store this item's ID in the input field
                             if (doNotStoreIds !== true) {
                                 
-                                o.storeItemIDs(item.ID, true);
+                                o.storeItemIDs(item.ID, o.allowMultiples);
                                 
                             }
                             
@@ -397,6 +409,14 @@
                     } //end: if(): item already displayed?
                 
                 });//end: .each() item
+                
+                // if an update was made, then trigger the change() event on the
+                // original input element.
+                if (wasUpdated) {
+                    
+                    o._ele.trigger("change");
+                    
+                }
                 
             };//end: o.showSelectedItems()
             
@@ -572,16 +592,31 @@
             var cache = {};
             o._cntr.find("div.spwidgets-lookup-input input")
                 .autocomplete({
-                    minLength:  3,
+                    minLength:  2,
                     appendTo:   o._cntr,
                     
                     /**
-                     * Add format to the pick options. 
+                     * Add format to the pick options and set height
+                     * if it was defined on input.
                      */
                     open:       function(ev, ui){
+                        
                         $(this).autocomplete("widget")
-                            .find("a")
-                            .addClass("tt-border-all");
+                            .each(function(){
+                                
+                                if (o.listHeight > 0) {
+                                    
+                                    $(this).css("height", o.listHeight + "px");
+                                    
+                                }
+                                
+                                return false;
+                                
+                            });
+                            
+                            // TODO: need to create a class to place a border around suggestion.
+                            //        then, add to the above: .find("a").addClass("classname here")
+                            
                     },
                     
                     /**
@@ -803,7 +838,13 @@
             
             // If AllowMultiple is false and msgNoItem is false
             // then hide the selected items container
-            if ( o.allowMultiples === false && !o.msgNoItems ) {
+            if (    !o.msgNoItems
+                &&  (   o.allowMultiples === false
+                    ||  (   o.allowMultiples === true 
+                        && cntr.find("div.spwidgets-item").length < 1
+                        )
+                    )
+            ) {
                 
                 cntr.css("display", "none");
                 
