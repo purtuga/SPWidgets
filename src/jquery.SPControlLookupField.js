@@ -37,7 +37,7 @@
         selectFields:       ['Title'],
         filter:             '',
         filterFields:       ['Title'],
-        template:           '<div>{{Title}} [<span class="spwidgets-item-remove">x</span>]</div>',
+        template:           '<div>{{Title}} <span class="spwidgets-item-remove">[x]</span></div>',
         listTemplate:       '{{Title}}',
         listHeight:         0,
         onItemAdd:          null,
@@ -248,7 +248,7 @@
             // FIXME: when allowing textarea, need to ensure that its definition is textonly (no HTML)
             
             if (    ( !ele.is("input") && !ele.is("textarea") )
-                ||  ele.hasClass("hasLookupSPFiled")
+                ||  ele.hasClass("hasLookupSPField")
             ){
                 // if the first argument is a string, and this is an input
                 // field, then process methods
@@ -293,7 +293,7 @@
                     $.SPWidgets.defaults.LookupField,
                     options, 
                     {
-                        _ele: ele.css("display", "none").addClass("hasLookupSPFiled") 
+                        _ele: ele.css("display", "none").addClass("hasLookupSPField") 
                     }
                 );
             
@@ -565,6 +565,9 @@
                 
                 o._lookupInputEleCntr.css("display", "none");
                 
+                o._cntr.find("div.spwidget-lookup")
+                    .addClass("spwidget-lookup-readyonly");
+                
             }
             
             // Convert the list of fields to CAML
@@ -779,6 +782,14 @@
                                         });
                         
                         o.showSelectedItems( arrayOfCurrentItems, true );
+                        
+                        // If readOnly = true, then remove the "delete item"
+                        // link from the elements
+                        if (o.readOnly) {
+                            
+                            o._cntr.find(".spwidgets-item-remove").remove();
+                            
+                        }
                         
                         // Call onReady function if one was defined. 
                         if ($.isFunction(o.onReady)) {
