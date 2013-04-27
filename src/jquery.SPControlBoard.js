@@ -29,9 +29,10 @@
     $.SPWidgets.defaults.board = {
         list:           '',
         field:          '',
-        CAMLQuery:      '',
+        CAMLQuery:      '<Query></Query>',
         CAMLViewFields: '',
         fieldFilter:    null,
+        optionalLabel:  '(none)',
         template:       null,
         webURL:         $().SPServices.SPGetCurrentSite(),
         onGetListItems: null,
@@ -80,13 +81,19 @@
      * 
      * @param {String} [options.CAMLViewFields=""]
      *                  String in CAML format with list of fields to be
-     *                  returned from the list. Example: 
+     *                  returned from the list when retrieving the rows
+     *                  to be displayed on the board. 
      * 
      * @param {String} [options.fieldFilter=""]
      *                  A string with either a comma delimetered list of
      *                  column values to show if field is of CHOICE type;
      *                  or a string with a CAML query to filter field values,
      *                  if field is of type Lookup
+     *  
+     * @param {String} [options.optionalLabel="(none)"]
+     *                  The string to be used as the State column header when
+     *                  field from where Board was built is optional in the
+     *                  List. 
      * 
      * @param {String|Function|Element|jQuery} [options.template="<div></div>"]
      *                  The HTML template that will be used to for displaying
@@ -293,7 +300,7 @@
                 } else if (method === "redraw") {
                     
                     board.statesCntr.find("div.spwidget-board-state").sortable("refresh");
-                    Board.makeSameHeight( board.statesCntr.find("div.spwidget-board-state"), 20 );
+                    $.SPWidgets.makeSameHeight( board.statesCntr.find("div.spwidget-board-state"), 20 );
 
                 }//end: if(): methods
                 
@@ -313,16 +320,16 @@
                 $.SPWidgets.defaults.board,
                 options,
                 {
-                    states:         [], // List of states
-                    statesMap:      {}, // Map of State->object in states[]
-                    tmpltHeader:    '', // Header template
-                    tmpltState:     '', // State item template
-                    statesCntr:     '', // DOM element where rows are located
-                    headersCntr:    '', // DOM element where headers are located
-                    listItems:      [], // Array with items from the list.
-                    initDone:       false,
-                    formUrls:       null, // Object with url's to form. Used by opt.getListFormUrl()
-
+                    states:             [], // List of states
+                    statesMap:          {}, // Map of State->object in states[]
+                    tmpltHeader:        '', // Header template
+                    tmpltState:         '', // State item template
+                    statesCntr:         '', // DOM element where rows are located
+                    headersCntr:        '', // DOM element where headers are located
+                    listItems:          [], // Array with items from the list.
+                    initDone:           false,
+                    formUrls:           null, // Object with url's to form. Used by opt.getListFormUrl()
+                    isStateRequired:    true,
                     /**
                      * Populates the opt.stats and opt.statesMap by 
                      * pulling info. from the List definition
@@ -363,12 +370,34 @@
                                     
                                     }
                                     
+                                    // store if field is required
+                                    if ( f.attr("Required") === "FALSE" ) {
+                                        
+                                        opt.isStateRequired = false;
+                                        
+                                    }
+                                    
                                     switch(f.attr("Type").toLowerCase()) {
                                         // CHOICE COLUMNS
                                         case "choice":
                                             
+                                            // Should there be a blank column?
+                                            if ( !opt.isStateRequired ) {
+                                                
+                                                opt.states.push({
+                                                    type:   'choice',
+                                                    title:  opt.optionalLabel,
+                                                    name:   opt.optionalLabel
+                                                });
+                                                
+                                                opt.statesMap[""] = opt.states[opt.states.length - 1];
+                                                
+                                            }
+                                            
                                             if (opt.fieldFilter) {
+                                                
                                                 opt.fieldFilter = opt.fieldFilter.split(/\,/);
+                                            
                                             }
                                             
                                             f.find("CHOICES CHOICE").each(function(){
@@ -384,8 +413,8 @@
                                                 
                                                 opt.states.push({
                                                     type:   'choice',
-                                                    title:  thisChoice,
-                                                    name:   thisChoice
+                                                    title:  thisChoice, // extenal visible
+                                                    name:   thisChoice  // internal name
                                                 });
                                                 
                                                 // Store State value in mapper (use internal name)
@@ -393,19 +422,104 @@
                                                 
                                             });
                                             
+                                            dfd.resolveWith(opt, [xData, status]);
+                                            
                                             break;
                                             
                                         // LOOKUP COLUMNS
                                         case "lookup":
                                             
-                                            // FIXME: finish up code for type=lookup
+                                            if ( !opt.fieldFilter ) {
+                                                
+                                                opt.fieldFilter = "<Query></Query>";
+                                                
+                                            }
+                                            
+                                            // Query the lookup table and get the rows that
+                                            // should be used to build the states
+                                            $().SPServices({
+                                                operation:      "GetListItems",
+                                                listName:       f.attr("List"),
+                                                async:          true,
+                                                cacheXML:       true,
+                                                CAMLQuery:      opt.fieldFilter,
+                                                CAMLRowLimit:   0,
+                                                CAMLViewFields: 
+                                                    '<ViewFields>' +
+                                                        '<FieldRef Name="' + 
+                                                            f.attr("ShowField") + '" />' +
+                                                    '</ViewFields>',
+                                                completefunc:   function(xData, status){
+                                                    
+                                                    // Process Errors
+                                                    if (status === "error") {
+                                                        
+                                                        dfd.rejectWith(
+                                                                ele,
+                                                                [ 'Communications Error!', xData, status ]);
+                                                        
+                                                        return;
+                                                        
+                                                    }
+                                                    
+                                                    var resp = $(xData.responseXML);
+                                                    
+                                                    if ( resp.SPMsgHasError() ) {
+                                                         
+                                                         dfd.rejectWith(
+                                                                ele,
+                                                                [ resp.SPGetMsgError(), xData, status ]);
+                                                        
+                                                        return;
+                                                        
+                                                    }
+                                                    
+                                                    // Should there be a blank column?
+                                                    if ( !opt.isStateRequired ) {
+                                                        
+                                                        opt.states.push({
+                                                            type:   'lookup',
+                                                            title:  opt.optionalLabel,  // extenal visible
+                                                            name:   ""                  // internal name
+                                                        });
+                                                        
+                                                        opt.statesMap[""] = opt.states[opt.states.length - 1];
+                                                        
+                                                    }
+                                                    
+                                                    // Loop thorugh all rows and build the
+                                                    // array of states.
+                                                    resp.SPFilterNode("z:row").each(function(){
+                                                        
+                                                        var thisRow     = $(this),
+                                                            thisId      = thisRow.attr("ows_ID"),
+                                                            thisTitle   = thisRow.attr( "ows_" + f.attr("ShowField") ),
+                                                            thisName    = thisId + ";#" + thisTitle; 
+                                                            
+                                                        
+                                                        opt.states.push({
+                                                            type:   'lookup',
+                                                            title:  thisTitle,  // Extenal visible
+                                                            name:   thisName    // internal name
+                                                        });
+                                                        
+                                                        // Store State value in mapper (use internal name)
+                                                        opt.statesMap[thisName] = opt.states[opt.states.length - 1];
+                                                        
+                                                    });
+                                                    
+                                                    
+                                                    dfd.resolveWith(opt, [xData, status]);
+                                                    
+                                                    return;
+                                                    
+                                                } //end: completefunc
+                                            });
                                             
                                             break;
                                             
                                     }
                                     
-                                    dfd.resolveWith(opt, [xData, status]);
-                                        
                                     return;
                                     
                                 }//end: completefunc()
@@ -728,7 +842,7 @@
                             
                             // Get this row's State and ID. 
                             // Accomodate possible knockout objects
-                            thisRowState = thisListRow[opt.field];
+                            thisRowState = thisListRow[opt.field] || "";
                             thisRowID    = thisListRow.ID;
                             
                             if ($.isFunction(thisRowState)) {
@@ -867,7 +981,7 @@
                                     .end()
                                 .disableSelection();
                                 
-                            Board.makeSameHeight( opt.statesCntr.find("div.spwidget-board-state"), 20 );
+                            $.SPWidgets.makeSameHeight( opt.statesCntr.find("div.spwidget-board-state"), 20 );
     
                             // Get a new event object
                             evData = opt.getEventObject();
@@ -991,7 +1105,7 @@
                         // Build totals
                         for( x=0,j=opt.states.length; x<j; x++ ){
                             
-                            evObj.itemTotal += evObj.stateTotals[opt.states[x].name] = opt.states[x].headerTotalEle.text();
+                            evObj.itemTotal += evObj.stateTotals[opt.states[x].name] = Number( opt.states[x].headerTotalEle.text() );
                             
                         }
                         
@@ -1180,7 +1294,7 @@
                             // original position)
                             if ($.isFunction(opt.onPreUpdate)) {
                                 
-                                if (opt.onPreUpdate.call(ev.target, ui.item, evData) === true) {
+                                if (opt.onPreUpdate.call(ui.item, ev, ui.item, evData) === true) {
                                     
                                     return this;
                                     
@@ -1308,7 +1422,7 @@
                                 opacity:        ".80",
                                 remove:         function(ev, ui){
                                     
-                                    Board.makeSameHeight(
+                                    $.SPWidgets.makeSameHeight(
                                         opt.statesCntr
                                             .find("div.spwidget-board-state"), 20 );
                                     
@@ -1322,7 +1436,7 @@
                         
                         opt.initDone = true;
                         
-                        Board.makeSameHeight( opt.statesCntr.find("div.spwidget-board-state"), 20 );
+                        $.SPWidgets.makeSameHeight( opt.statesCntr.find("div.spwidget-board-state"), 20 );
                         
                     });
             
@@ -1333,48 +1447,6 @@
         });//end: return .each()
         
     };//end: $.fn.SPShowBoard()
-    
-    /**
-     * Make a set of element the same height by taking the height of
-     * the longest element. 
-     * 
-     * @param {HTMLElement|Selector|jQuery} ele - Set of elements
-     * @param {Interger} [pad=0]                - Number of pixels to add on to the height
-     * 
-     * @return
-     * 
-     */
-    Board.makeSameHeight = function(ele, pad) {
-            
-        var h = 0,
-            e = $(ele);
-        e.each(function(){
-            
-            var thisEle = $(this).css("height", "");
-            
-            if (h < thisEle.outerHeight(true)) {
-                
-                h = thisEle.outerHeight(true);
-                
-            }
-            
-        });
-        
-        if (h > 0) {
-            
-            if (pad) {
-                
-                h += pad;
-                
-            }
-            
-            e.height(h);
-            
-        }
-        
-        return ele;
-        
-    }; // end: Board.MakeSameHeight()
     
     /**
      * @property
