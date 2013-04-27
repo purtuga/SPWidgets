@@ -393,6 +393,49 @@
                 
     }; //end: $.SPWidgets.SPGetDateString()
     
+    /**
+     * Make a set of element the same height by taking the height of
+     * the longest element. 
+     * 
+     * @param {HTMLElement|Selector|jQuery} ele - Set of elements
+     * @param {Interger} [pad=0]                - Number of pixels to add on to the height
+     * 
+     * @return
+     * 
+     */
+    $.SPWidgets.makeSameHeight = function(ele, pad) {
+            
+        var h = 0,
+            e = $(ele);
+        e.each(function(){
+            
+            var thisEle = $(this).css("height", "");
+            
+            if (h < thisEle.outerHeight(true)) {
+                
+                h = thisEle.outerHeight(true);
+                
+            }
+            
+        });
+        
+        if (h > 0) {
+            
+            if (pad) {
+                
+                h += pad;
+                
+            }
+            
+            e.height(h);
+            
+        }
+        
+        return ele;
+        
+    }; // end: Board.MakeSameHeight()
+    
+    
 //_SPWIDGETS_PLUGINS_
 
 })(jQuery);
