@@ -58,7 +58,7 @@
      *                  be built from. This field should be either of type
      *                  CHOICE or LOOKUP.
      * 
-     * @param {String|Function} [options.CAMLQuery=""]
+     * @param {String|Function} [options.CAMLQuery="<Query></Query>"]
      *                  String with CAML query to be used against the list
      *                  to filter what is displayed or a function that will
      *                  provide the list of items (an array). If defining
