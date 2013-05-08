@@ -58,27 +58,35 @@
      */
     $.fn.SPMsgHasError = function() {
         
-        var spErrCode = $(this).find("ErrorCode:first");
+        var spErrCode   = $(this).find("ErrorCode"),
+            response    = false;
         
-        if (    spErrCode.size()
-            &&  spErrCode.text() !== "0x00000000"
-        ) {
+        if ( !spErrCode.length ) {
             
-            return true;
-            
-        } else {
-        
-            spErrCode = $(this).find("faultcode");
-        
-            if (spErrCode.size()) {
-        
+            if ( $(this).find("faultcode").length ) {
+                
                 return true;
+                
+            } else {
+                
+                return false;
+                
+            }
+            
+        } 
         
-            }      
+        spErrCode.each(function(){
+            
+            if ( $(this).text() !== "0x00000000" ) {
+                
+                response = true;
+                return false;
+                
+            }
+            
+        });
         
-        }
-        
-        return false;
+        return response;
         
     }; /* $.fn.SPMsgHasError() */
     
@@ -400,7 +408,7 @@
      * @param {HTMLElement|Selector|jQuery} ele - Set of elements
      * @param {Interger} [pad=0]                - Number of pixels to add on to the height
      * 
-     * @return
+     * @return {Object} ele (input param) is returned
      * 
      */
     $.SPWidgets.makeSameHeight = function(ele, pad) {
