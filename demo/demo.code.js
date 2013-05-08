@@ -4,18 +4,26 @@
  * Look for the SPControlUpload() call below to see how it
  * is being used.
  * 
- * @version _BUILD_VERSION_NUMBER_NUMBER_
+ * @version _BUILD_VERSION_NUMBER_
  * 
  */
  $(document).ready(function(){
     
     var ui = $("#sp_control_upload_demo_cntr")
-                .css({
-                    padding:    '1em',
-                    minHeight:  '400px'
-                });
-    // Inserted at build time from demo.body.html
-    var uiContentTemplate = "_INCLUDE_DEMO_BODY_TEMPLATE_";
+            .css({
+                padding:    '1em',
+                minHeight:  '400px'
+            })
+            .on("keyup", function(ev){
+                
+                if (ev.which === 13) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                }
+                
+            }),
+        // Inserted at build time from demo.body.html
+        uiContentTemplate = "_INCLUDE_DEMO_BODY_TEMPLATE_";
     
     ui.html(uiContentTemplate);
     
