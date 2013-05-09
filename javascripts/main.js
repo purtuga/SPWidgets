@@ -4,21 +4,7 @@
 try { if (!pt){ pt = {}; } } catch(e){pt = {};}
 
 $(document).ready(function(){
-    $.getJSON("https://api.github.com/repos/purtuga/SPWidgets/downloads?callback=?")
-        .then(function(downloads){
-            var file = downloads.data[0];
-            if (file !== undefined) {
-                var v = String(file.description).match(/\d+\.\d+(?:\.\d+)*/);
-                if (v === null) {
-                    v = ["Latest"]
-                }
-                
-                $("#ptLatestDownload").html(
-                    '<a href="' + file.html_url +'">Download <strong>' + 
-                    v[0] + '</strong></a>');
-            }
-        });
-        
+    
     $.getJSON("http://www.gravatar.com/8fed973012499e7ab4bb3dad481a899d.json?callback=?")
         .then(function(info){
             var me      = info.entry[0],

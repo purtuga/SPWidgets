@@ -19,16 +19,17 @@
     <div class="wrapper">
       <header>
         <h1>SPWidgets</h1>
-        <p>Sharepoint Custom UI Widgets</p>
+        <p>SharePoint Custom UI Widgets</p>
 
         <p class="view"><a href="https://github.com/purtuga/SPWidgets">View the Project on GitHub <small>purtuga/SPWidgets</small></a></p>
 
 
         <ul>
-          <li id="ptLatestDownload"><a href="https://github.com/downloads/purtuga/SPWidgets/SPWidgets.v1.0.zip">Download <strong>v??????</strong></a></li>
-          <li><a href="https://github.com/purtuga/SPWidgets/zipball/master">Download <strong>Source</strong></a></li>
+          <li id="ptLatestDownload"><a href="https://github.com/purtuga/SPWidgets/archive/v2.0.zip">Download <strong>v2.0</strong></a></li>
+          <li><a href="https://github.com/purtuga/SPWidgets/tags">Download <strong>Other</strong></a></li>
           <li><a href="https://github.com/purtuga/SPWidgets">View On <strong>GitHub</strong></a></li>
         </ul>
+        
       </header>
       <section>
         
@@ -92,9 +93,11 @@ and does'nt not have to contact me.</p>
 <h2>Version</h2>
 
 <ul>
-<li>Version: 1.0</li>
-<li>Build Date: October 07, 2012 - 07:46 PM</li>
+<li>Version: 2.0, May 9, 2013</li>
 </ul>
+
+<!-- ===============[[ doc below ]]================ --> 
+
 <h1>pickSPUser Widget</h1>
 
 <p>Given an input field, this method will display an interface that allows the users to select one or more users from SharePoint and stores the selected user information into the input field in the format expected when making an update via webservices.</p>
@@ -399,7 +402,506 @@ set of node, thus maintaining chainability.</p>
         }//end: onPageChange()
     });
 </code></pre>
-        
+<h1>SPShowBoard Widget</h1>
+
+<p>Given a selector (an html element), this method will insert a Kan-Ban board inside of it based on one of the columns from the desired List.  The column must be of type Lookup or Choice, and whose values will be used by this widget to build the Board columns.
+The widget support both columns set as Required or Optional and has input parameters available to filter the list of columns created. </p>
+
+<h2>Usage</h2>
+
+<pre><code>$("#board").SPShowBoard({
+    list: "Tasks",
+    field: "Status"
+});
+</code></pre>
+
+<h2>Input Parameters</h2>
+
+<p>This method takes as input an object containing the supported options:</p>
+
+<pre><code>    $("#board").SPShowBoard({
+        list:           '',
+        field:          '',
+        CAMLQuery:      '&lt;Query&gt;&lt;/Query&gt;',
+        CAMLViewFields: '',
+        fieldFilter:    null,
+        optionalLabel:  '(none)',
+        template:       null,
+        webURL:         $().SPServices.SPGetCurrentSite(),
+        onGetListItems: null,
+        onPreUpdate:    null,
+        onBoardCreate:  null
+    });
+</code></pre>
+
+<p>The default options for this widget can be manipulated/set via the following object:</p>
+
+<pre><code>    $.SPWidgets.defaults.board = {}
+</code></pre>
+
+<h3>Options</h3>
+
+<ul>
+<li><p><strong>list</strong>      :   <em>String. Required.</em> <br />
+The list name or UID.</p></li>
+<li><p><strong>field</strong>     :   <em>String. Required.</em> <br />
+The field from the List from where the board should
+be built from. This field should be either of type
+CHOICE or LOOKUP.</p></li>
+<li><p><strong>CAMLQuery</strong> :   <em>String|Function. Optional. Default=&lt;Query&gt;&lt;/Query&gt;</em> </br />
+String with CAML query to be used against the list to filter what is displayed or a function that will provide the list of items (an array).
+If defining a Function, it will be given two input parameter:</p>
+
+<ol>
+<li><p>a function that must be called and be given the
+array of items.</p></li>
+<li><p>The options defined on input to this widget.
+The user defined function will be given a scope
+(this keyword) of the html element it was bound to.</p>
+
+<p>Example:</p>
+
+<p>options.CAMLQuery = '&lt;Query&gt;&lt;Where&gt;' + 
+    '&lt;FieldRef Name="Project" /&gt;' +
+        '&lt;Value Type="Text"&gt;Latin America&lt;/Value&gt;' +
+        '&lt;/Where&gt;&lt;/Query&gt;';</p>
+
+<p>--or--</p>
+
+<p>options.CAMLQuery = function(sendResults) {
+    //get items from DB
+    sendResults([...]);
+}</p></li>
+</ol></li>
+<li><p><strong>CAMLViewFields</strong>    :   <em>String. Optional. Default=""</em> </br />
+String in CAML format with list of fields to be
+returned from the list when retrieving the rows
+to be displayed on the board. </p></li>
+<li><p><strong>fieldFilter</strong>       :   <em>String. Optional. Default=""</em> </br />
+A string with either a comma delimetered list of
+column values to show if field is of CHOICE type;
+or a string with a CAML query to filter field values,
+if field is of type Lookup</p></li>
+<li><p><strong>optionalLabel</strong>     :   <em>String. Optional. Default="(none)"</em> </br />
+The string to be used as the State column header when
+field from where Board was built is optional in the
+List. </p></li>
+<li><p><strong>template</strong>          :   <em>String|Function|Element|jQuery. Optional. Default="&lt;div/&gt;"</em> </br />
+The HTML template that will be used to for displaying
+items on the board. The HTML will be used with jQuery's
+.wrapInner() method and will use the Title field to
+populate the inner nodes.
+When defining a Function, it will be called with
+a context of the item container on board that
+should receive the content and be given two
+input parameters: an object with the list item
+and the original element that the board was bound
+to.
+Example:</p>
+
+<pre><code>function(listItem, boardItemEle){
+    // this = jQuery - List Item container within the board.
+}
+</code></pre></li>
+<li><p><strong>webURL</strong>     :   <em>String. Optional. Default=current site</em> </br />
+The WebURL for the list.</p></li>
+<li><p><strong>onGetListItems</strong>     :  <em>Function. Optional. Default=null</em> </br />
+Callback function to be called after data has been
+retrieved from the 'list'. Function will be given a
+scope (this) of the selection they used on input to
+this method and two input parameters: 
+An Array of Objects with the list of rows returned
+from the List, and
+A jQuery object representing the entire xml document
+response.  Example:</p>
+
+<pre><code>onGetListItems: function(items, xmlResponse){
+    //this = jQuery element container selction
+}
+</code></pre></li>
+<li><p><strong>onPreUpdate</strong>     :   <em>Function. Optional. Default=null</em> </br />
+Callback function to be called just prior to a List Item
+update. The function should return a boolean indicating whether the
+update should be canceled. True will cancel the update.
+The callback will have a scope of the item being updated and be
+given 3 parameters:</p>
+
+<ol>
+<li><p>the event object</p></li>
+<li><p>the item (DOM element) that triggered the event and</p></li>
+<li><p>a data object with information/methods for the current
+item/widget binding. The object will include two
+attributes that will impact the updates that will be done:</br />
+data.updates</br />
+An array of updates that will be made.
+The array will have, to start, the update to the
+state that was triggered by the move in the board.
+Additional updates can be added.
+Format will be identical to what SPServices uses:
+["field", "value"]. Example:</p>
+
+<pre><code>data.updates.push(["Title", "New title here"]);
+</code></pre>
+
+<p>data.updatePromise</br />
+A jQuery.Promise that represents
+the update that will be made. This can be used to
+bind on additional functionality. The queued functions
+will be given the List Item object as well as the
+xml resposne returned from the update. The context of
+object will be the HTML element from where the update
+was triggered.</p>
+
+<p>The function should return a boolean indicating whether the
+update should be canceled. True will cancel the update.
+Example:</p>
+
+<p>onPreUpdate: function(ev, item, data){
+    //this = jQuery element container selction</p>
+
+<pre><code>data.updates.push(["Title", "Update was made!"]);
+
+
+data.updatePromise.done(function(){ alert("udpate done!"); });
+</code></pre>
+
+<p>} </p></li>
+</ol></li>
+<li><p><strong>onBoardCreate</strong>     :   <em>Function. Optional. Default=null</em> </br />
+Function triggered after board is initially created.
+See spwidget:boardcreate event for parameters that
+will be given to function.</p></li>
+</ul>
+
+<h2>Return Value</h2>
+
+<p>This plugin will return a jQuery object that contains the initially selected
+set of nodes (selector), thus maintaining chainability.</p>
+
+<h2>Methods</h2>
+
+<ul>
+<li><p><strong>refresh</strong></br />
+Refreshes the data in the Board by retrieving the data
+from the list again. During a refresh, existing board
+items (the html element in DOM) is not actually deleted
+and recreated if it already exists, but re-used. It is
+important to note this specially if a custom template
+function was defined as an input param.
+Usage:</p>
+
+<pre><code>$("#board").SPShowBoard("refresh");
+</code></pre></li>
+<li><p><strong>redraw</strong></br />
+Redraws the board without pulling in data from the list.
+Column heights will be normalized and jQuery UI's sortable
+widget will be refreshed.</p>
+
+<pre><code>$("#board").SPShowBoard("redraw");
+</code></pre></li>
+</ul>
+
+<h2>Events</h2>
+
+<p>This widget triggers several events that can be used to perform additional actions from those experienced in the board. In addition to the events below specific to this widget, events are also fired by the jQuery UI sortable interaction.</p>
+
+<ul>
+<li><p><strong>spwidget:boardchange</strong></br />
+Event is triggered anytime a change happens in the board 
+The function scope (this variable) will point to the column element that received the new item and is given 3 input parameters:</p>
+
+<ol>
+<li><p>A jQuery event object - the one generated by the jQuery UI's sortable interaction</p></li>
+<li><p>the item (DOM element) that triggered the event</p></li>
+<li><p>A data object with information/methods for the current item/widget binding.  The objects updates attribute will contain an array of array's with the updates that will be made to the item.</p></li>
+</ol>
+
+<p>Example:</p>
+
+<pre><code>$("body").on("spwidget:boardchange", function(ev, item, data){
+    // this = column that received item;
+})
+</code></pre></li>
+<li><p><strong>spwidget:boardcreate</strong></br />
+Event is triggered when the board is first created. It has the same scope and input elements as teh spwidget:boardchange event, above.</p></li>
+<li><p><strong>spwidget:boarditemadd</strong></br />
+Event triggered when new items are added to the board (ex. from a refresh). Event will be given the following input params:</p>
+
+<ol>
+<li><p>the event object (jquery)</p></li>
+<li><p>the item (DOM element) that triggered the event</p></li>
+<li><p>a data object with information/methods for the current item/widget binding.  The objects's .itemsModified attribute will contain an array of Objects  that were added.</p></li>
+</ol></li>
+<li><p><strong>spwidget:boarditemremove</strong></br />
+Event triggered when items are removed from the board (ex. from a refresh). Event will be given the following input params:</p>
+
+<ol>
+<li><p>the event object (jquery)</p></li>
+<li><p>the board container (DOM element)</p></li>
+<li><p>a data object with information/methods for the current item/widget binding.  The objects's .itemsModified attribute will contain an array of Objects that were removed.</p></li>
+</ol></li>
+</ul>
+
+<h2>Examples</h2>
+
+<h3>Example 1</h3>
+
+<pre><code>$("&lt;div/&gt;").append("body")
+    .SPShowBoard({
+        list:   "Tasks",
+        field:  "Status"
+    });
+</code></pre>
+
+<h3>Example 2</h3>
+<h1>Common Utilities</h1>
+
+<p>The following is a list of common utilities created internally for the widgets, but built generically and accessible externally.</p>
+
+<h2>$.SPWidgets.fillTemplate</h2>
+
+<p>A simple templating engine. Meant primarily for use internally by the widgets provided in this library. It simply replaces tokens in a string having a format of {{tokenName}} with the tokeName found in the data to be used to fill out the template.
+(Since v. 2.0) </p>
+
+<h3>Input Parameters</h3>
+
+<p>The method accepts as input an Object containing the options below.</p>
+
+<h4>Options</h4>
+
+<ul>
+<li><p><strong>tmplt</strong> :   <em>String|jQuery|Selector. Required.</em> <br />
+The template to be used for the data.</p></li>
+<li><p><strong>data</strong> :   <em>Object|Array. Required.</em> <br />
+The object containing the data to be used in populating the template. This value can also be an Array of object, in which case, each array item will be used to build the return string.</p></li>
+</ul>
+
+<h3>Return Value</h3>
+
+<p>This method will return a String with the template filled out with the data.</p>
+
+<h3>Example</h3>
+
+<pre><code>$.SPWidgets.fillTemplate({
+    tmplt: '&lt;div&gt;{{Title}}&lt;/div&gt;',
+    data: [
+        { Title: "Record number 1" },
+        { Title: "Record number 2" },
+        { Title: "Record number 3" },
+        { Title: "Record number 4" }
+    ]
+});
+</code></pre>
+
+<h2>$.SPWidgets.getCamlLogical</h2>
+
+<p>Given an array of individual CAML filters, this method will wrap them all in a Logical condition (&lt;And&gt;&lt;/And&gt; or a &lt;Or&gt;&lt;/Or&gt;). The result (a string) will be returned to the caller. This method takes care of building the proper format required by the CAML conditional aggregates.
+(Since v. 2.0) </p>
+
+<h3>Input Parameters</h3>
+
+<p>The method accepts as input an Object containing the options below.</p>
+
+<h4>Options</h4>
+
+<ul>
+<li><p><strong>values</strong> :   <em>Array. Required</em> <br />
+The array of String elements that will be join into caml Logical condition.</p></li>
+<li><p><strong>type</strong> :   <em>String. Optional. Default="AND"</em> <br />
+Static String. The type of logical condition that the <em>values</em> should be wrapped in. Possible values are <em>AND</em> or <em>OR</em>.  Default is 'AND'.</p></li>
+<li><p><strong>onEachValue</strong> :   <em>Function. Optional. Default=null</em> <br />
+A function to process each items in the <em>values</em> array. Function must return the value that should be used in the logial concatenation. 
+Function is given 1 input param - the item currently being processed (from the <em>values</em> input param).</p></li>
+</ul>
+
+<h3>Return Value</h3>
+
+<p>This method return a String containing the concatenated filter values in the appropriate AND or OR logical aggregate. </p>
+
+<h3>Example 1</h3>
+
+<pre><code>$.SPWidgets.getCamlLogical({
+    type: "or",
+    values: [
+        "&lt;Eq&gt;&lt;FieldRef Name='Title' /&gt;&lt;Value Type='Text'&gt;Test&lt;/Value&gt;&lt;/Eq&gt;",
+        "&lt;Eq&gt;&lt;FieldRef Name='Title' /&gt;&lt;Value Type='Text'&gt;Test1&lt;/Value&gt;&lt;/Eq&gt;",
+        "&lt;Eq&gt;&lt;FieldRef Name='Title' /&gt;&lt;Value Type='Text'&gt;Test2&lt;/Value&gt;&lt;/Eq&gt;",
+        "&lt;Eq&gt;&lt;FieldRef Name='Title' /&gt;&lt;Value Type='Text'&gt;Test3&lt;/Value&gt;&lt;/Eq&gt;",
+        "&lt;Eq&gt;&lt;FieldRef Name='Title' /&gt;&lt;Value Type='Text'&gt;Test4&lt;/Value&gt;&lt;/Eq&gt;"
+    ]
+})
+</code></pre>
+
+<h3>Example 2</h3>
+
+<pre><code>$.SPWidgets.getCamlLogical({
+    type: "and",
+    values: [
+        "west",
+        "east"
+    ],
+    onEachValue: function(loc){
+
+        return "&lt;Neq&gt;&lt;FieldRef Name='Region'/&gt;" +
+                "&lt;Value Type='Text'&gt;" + loc + "&lt;/Value&gt;&lt;/Neq&gt;";
+
+    }
+})
+</code></pre>
+
+<h2>$.SPWidgets.makeSameHeight</h2>
+
+<p>Given a group of elements, this plugin will set their css <em>height</em> attribute to be at least equal to the tallest item among them.
+(Since v. 2.0) </p>
+
+<h3>Input Parameters</h3>
+
+<ul>
+<li><p><strong>ele</strong> :   <em>HTMLElement|Selector|jQuery. Required.</em> <br />
+The set of elements whose height will be adjusted.</p></li>
+<li><p><strong>pad</strong> :   <em>Integer. Optional. Default=0</em> <br />
+Number of pixels to add on to the height. Value will be added to the calculated height of the tallest element. </p></li>
+</ul>
+
+<h3>Return Value</h3>
+
+<p>The <em>ele</em> input parameters is returned to the caller. </p>
+
+<h3>Example</h3>
+
+<p>Given the following html markup:</p>
+
+<pre><code>&lt;div class="spwidgets-demo" style="height: 30px;" /&gt;
+&lt;div class="spwidgets-demo" style="height: 100px;" /&gt;
+&lt;div class="spwidgets-demo" style="height: 50px;" /&gt;
+&lt;div class="spwidgets-demo" style="height: 102px;" /&gt;
+</code></pre>
+
+<p>The above elements height would be set to 102px by the following:</p>
+
+<pre><code>$.SPWidgets.makeSameHeight( $("div.spwidgets-demo") );
+</code></pre>
+
+<h2>$.SPWidgets.parseLookupFieldValue </h2>
+
+<p>Parses a SharePoint lookup values as returned by webservices (id;#title;#id;#Title) into an array of objects where each object contains the lookup item data (ID and TITLE).
+(Since v. 2.0) </p>
+
+<h3>Input Parameters</h3>
+
+<ul>
+<li><strong>value</strong> :   <em>String. Required.</em> <br />
+The column value that is returned by SharePoint's webservices for a Lookup column (normally in the format of ID;#Title) </li>
+</ul>
+
+<h3>Return Value</h3>
+
+<p>An array of objects will be returned where each object has two keys; title and id of the lookup item that was parsed. Example:</p>
+
+<pre><code>[
+    {
+        id: "1",
+        title: "Title of lookup item 1"
+    },
+    {
+        id: "2",
+        title: "Title of lookup item 2"
+    },
+    {
+        id: "3",
+        title: "Title of lookup item 3"
+    }
+]
+</code></pre>
+
+<h3>Example</h3>
+
+<pre><code>$.SPWidgets.parseLookupFieldValue("1;#Title of lookup item 1;#2;#Title of lookup item 2");
+</code></pre>
+
+<h2>$.SPWidgets.SPGetDateString</h2>
+
+<p>Returns a date string in the format expected by SharePoint Date/time fields. Useful when wanting to obtain a date/time string for use in CAML Queries.
+(Since v. 2.0) </p>
+
+<p><em>Credit:  Matt <a href="https://twitter.com/iOnline247">twitter @iOnline247</a> in this <a href="http://spservices.codeplex.com/discussions/349356">SPServices post</a></em></p>
+
+<h3>Input Parameters</h3>
+
+<ul>
+<li><p><strong>dateObj</strong> :   <em>Date. Optional. Default=Date()</em> <br />
+The date object to use in generating the Date string.</p></li>
+<li><p><strong>formatType</strong> :   <em>String. Optional. Default="local"</em> <br />
+What format to use in creating the date string. Supported values are <em>local</em> for local time and <em>utc</em> for UTC time.</p></li>
+</ul>
+
+<h3>Return Value</h3>
+
+<p>A string is returned with the date formatted in the appropriate locale.</p>
+
+<h3>Example</h3>
+
+<pre><code>// Return today's date formatted in local time
+// Result example: 2013-05-06T13:08:10
+$.SPWidgets.SPGetDateString();
+
+// Return date formatted in UTC time
+// Result example: 2013-05-06T17:09:19Z
+$.SPWidgets.SPGetDateString(null, "utc");
+</code></pre>
+
+<h2>$().SPGetMsgError</h2>
+
+<p>A jQuery method (extension of $.fn) that given a SharePoint webservices response object, will look to see if it contains an error and return that error formatted as a string. The XML response object will be checked for errors that might be returned in the following XML elements:</p>
+
+<pre><code>&lt;ErrorCode /&gt;
+&lt;faultcode /&gt;
+</code></pre>
+
+<p>(Since v. 2.0) </p>
+
+<h3>Input Parameters</h3>
+
+<p>None.</p>
+
+<h3>Return Value</h3>
+
+<p>A string with the first error found in the XML message.</p>
+
+<h3>Example</h3>
+
+<pre><code>alert( $(xData.responseXML).SPGetMsgError() );
+</code></pre>
+
+<h2>$.fn.SPMsgHasError</h2>
+
+<p>A jQuery method (extension of $.fn) that given a SharePoint webservices response object, that given an XML message as returned by the SharePoint WebServices API, will check if it contains an error and return a Boolean indicating that. The XML response object will be checked for errors that might be returned in the following XML elements:</p>
+
+<pre><code>&lt;ErrorCode /&gt;
+&lt;faultcode /&gt;
+</code></pre>
+
+<p>(Since v. 2.0) </p>
+
+<h3>Input Parameters</h3>
+
+<p>None.</p>
+
+<h3>Return Value</h3>
+
+<p>A Boolean will be returned indicating whether the XML message has an error (true) or not (false).</p>
+
+<h3>Example</h3>
+
+<pre><code>if ( $(xData.responseXML).SPMsgHasError() ) {
+
+    alert("error in xml message.");
+
+}
+</code></pre>
+
+
+<!-- ===============[[ doc above ]]=========================== --> 
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/purtuga">purtuga</a></p>
