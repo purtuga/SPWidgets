@@ -11,6 +11,7 @@
     
     <property name="src.base"       location="${basedir}" />
     <property name="src.demo"       location="${basedir}${/}demo" />	
+    <property name="src.pluginDir"  location="${basedir}${/}plugin${/}" />	
     <property name="build"          location="${basedir}${/}BUILD" />
     <property name="build.base"     location="${basedir}${/}BUILD${/}${ant.project.name}" />
     <property name="build.src"      location="${build.base}${/}src" />
@@ -311,6 +312,17 @@
             	<patternset refid="patternset.sourceFiles" />
     		</fileset>
     	</replace>
+    	
+    	<!-- Update the plugin files in the source root -->
+    	<echo message="Copying plugin files to SRC: ${src.pluginDir}" />
+        <copy todir="${src.pluginDir}" verbose="true" 
+        	   preservelastmodified="true" flatten="true">
+        	<fileset dir="${build.base}">
+    	        <include name="src${/}${build.dist.baseFileName}*" />
+    	    </fileset>
+        </copy>
+        <echo message="Update done!" />
+        
     	
         <echo message="BUILD -------------------------------- [END]" />
     
