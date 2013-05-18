@@ -158,6 +158,10 @@ $.fn.SPControlUpload = function (options) {
             s = "";
         }
         o.uploadPage = o.siteUrl + s + o.uploadPage;
+        
+        // Define SP2010 alternate upload form
+        o.uploadPage2 = o.siteUrl + "/_layouts/UploadEx.aspx";
+        
     }
     // Set the uploadDonePage url
     if (String(o.uploadDonePage).toLowerCase().indexOf("http") == -1) {
@@ -169,10 +173,12 @@ $.fn.SPControlUpload = function (options) {
     }
     
     // Create additional non-overridable options
-    o.uploadPage    = o.uploadPage + "?List=" + 
+    o._uploadUrlParams  = "?List=" + 
                       $.pt.getEscapedUrl(o.listName) + "&RootFolder=" +
                       $.pt.getEscapedUrl(o.folderPath) + "&Source=" +
                       $.pt.getEscapedUrl(o.uploadDonePage) + "&" + o.uploadUrlOpt;
+    o.uploadPage    = o.uploadPage + o._uploadUrlParams;
+    o.uploadPage2   = o.uploadPage2 + o._uploadUrlParams;
     o._lastError    = "";
     o._reloadCount  = 0;
    
@@ -394,9 +400,13 @@ $.pt._onIFramePageChange = function(ele){
             // upload page then this is either the
             // initial load of the page or an error has occured...
             // Hide the page and show only the upload form element.
-            if ($.pt.isSameUrlpage(
-                    $.pt.getUnEscapedUrl(ev.pageUrl),
-                    $.pt.getUnEscapedUrl(opt.uploadPage))
+            if (
+                    $.pt.isSameUrlpage(
+                        $.pt.getUnEscapedUrl(ev.pageUrl),
+                        $.pt.getUnEscapedUrl(opt.uploadPage))
+                ||  $.pt.isSameUrlpage(
+                        $.pt.getUnEscapedUrl(ev.pageUrl),
+                        $.pt.getUnEscapedUrl(opt.uploadPage2))
             ) {
 //                console.debug("_onIFramePageChange() URL is the same as the one originally requested.");
                 
