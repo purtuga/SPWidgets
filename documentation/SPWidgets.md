@@ -26,7 +26,7 @@ The following is an example that loads the required libraries from CDN's, the SP
     <script type="text/javascript" src='https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js'></script>
     <script type="text/javascript" src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js'></script>
     <script type="text/javascript" src='http://cdnjs.cloudflare.com/ajax/libs/jquery.SPServices/0.7.1a/jquery.SPServices-0.7.1a.min.js'></script>
-    <script type="text/javascript" src='yoursite/path/to/SPWidgets.js'></script>
+    <script type="text/javascript" src='yoursite/path/to/jquery.SPWidgets.js'></script>
     <script type="text/javascript">
         $(document).ready(function(){
             $("<div> <input name="users" value="" /> </div>")
@@ -65,4 +65,21 @@ Version
 
 -   Version: _BUILD_VERSION_NUMBER_
 -   Build Date: _BUILD_VERSION_DATE_
+
+
+Install
+-------
+
+SPWidgets requires jQuery, jQuery UI and SPServices libraries. These should be included or loaded first. There is only 1 SPWidgets file required to be included in the page. This file can be located in the plugin folder of the downloaded archive (zip, tar). There are two versions of it:
+
+-   _jquery.SPWidgets.js_<br/>
+    The un-minified version of SPWidgets, normally used for debugging during development cycle.
+-   _jquery.SPWidgets.min.js_<br/>
+    The minified version of SPWidgets, usually the preferred version for production environments. 
+
+
+Include only one of the above reference files:
+
+    <script type="text/javascript" src='yoursite/path/to/jquery.SPWidgets.min.js'></script>
+    
 
