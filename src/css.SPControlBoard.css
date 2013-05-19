@@ -20,6 +20,7 @@ div.spwidget-board div.spwidget-board-state {
     float: left;
     margin: .1%;
     padding: .2%;
+    overflow: auto;
 }
 
 div.spwidget-board div.spwidget-board-headers-cntr {
