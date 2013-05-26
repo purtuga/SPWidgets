@@ -96,15 +96,9 @@
         }; /* $.fn.SPMsgHasError() */
         
         /**
-         *  Given a sharepoint webservices response, this method will
-         *  look to see if it contains an error and return that error
-         *  formated as a string.
-         * 
-         * PARAMS:
-         * 
-         *  -   none.
-         * 
-         * RETURN:
+         * Given a sharepoint webservices response, this method will
+         * look to see if it contains an error and return that error
+         * formated as a string.
          * 
          * @return {String} errorMessage
          * 
@@ -112,23 +106,37 @@
         $.fn.SPGetMsgError = function(){
             
             var xMsg  = $(this),
-                error = "ERROR: Call to Sharepoint Web Services failed.";
+                error = "",
+                spErr = xMsg.find("ErrorCode"),
+                count = 0;
             
-            if (xMsg.find("ErrorCode").length) {
+            if (!spErr.length) {
                 
-                error += "\n" + xMsg.find("ErrorCode:first").text() +
-                        ": " + xMsg.find("ErrorText").text();
-            
-            } else if (xMsg.find("faultcode").length) {
-                
-                error += xMsg.find("faultstring").text() + 
-                        "\n" + xMsg.find("errorstring").text();
-                
-            } else {
-                
-                error = "";
+                spErr = xMsg.find("faultcode");
                 
             }
+            
+            if (!spErr.length) {
+                
+                return "";
+                
+            }
+            
+            // Loop through and get all errors.
+            spErr.each(function(){
+                
+                var thisErr = $(this);
+                if ( thisErr.text() !== "0x00000000" ) {
+                    
+                    count += 1;
+                    error += "(" + count + ") " + thisErr.text() + ": " + 
+                        thisErr.parent().children().not(thisErr).text() + "\n";
+                    
+                }
+                
+            });
+            
+            error = count + " error(s) encountered! \n" + error;
             
             return error;
             
