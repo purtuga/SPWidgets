@@ -101,7 +101,7 @@
                     +   "</ViewFields>",
             CAMLRowLimit: 0,
             completefunc: function(xData, Status) {
-                var r = $(xData.responseXML).find("[nodeName='z:row']"),
+                var r = $(xData.responseXML).SPFilterNode("z:row"),
                     s = "";
                 uiFileList.empty();
                 if (!r.length) {
