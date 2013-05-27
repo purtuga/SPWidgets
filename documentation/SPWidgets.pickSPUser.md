@@ -33,6 +33,10 @@ This method takes as input an object containing the following options
                                 information about the selection made by the user. This
                                 object will contain data returned by the SharePoint's
                                 webservice.
+                                
+-   **inputPlaceholder**    :   *String. Optional. Default=Type and Pick.* <br />
+                                The text to appear in the HTML5 placeholder attribute
+                                of the input field.  Since v2.1.
 
 
 Return Value
