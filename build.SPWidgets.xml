@@ -89,6 +89,8 @@
         <file name="SPWidgets.pickSPUser.md.html"/>
         <file name="SPWidgets.SPControlUpload.md.html"/>
         <file name="SPWidgets.SPControlBoard.md.html"/>
+        <file name="SPWidgets.SPControlLookupField.md.html"/>
+        <file name="SPWidgets.SPFilterPanel.md.html"/>
         <file name="SPWidgets.Utilities.md.html"/>
     </filelist>
     
@@ -143,6 +145,9 @@
                 <uptodate 
                     srcfile="${src.base}${/}src${/}css.SPControlLookupField.css"
                     targetfile="${build.src}${/}css.SPControlLookupField.css" />
+                <uptodate 
+                    srcfile="${src.base}${/}src${/}css.SPFilterPanel.css"
+                    targetfile="${build.src}${/}css.SPFilterPanel.css" />
             </and>
         </condition>
         <echo message="forceCssCopyNotNeeded set to: ${forceCssCopyNotNeeded}" />
@@ -159,6 +164,11 @@
                     srcfile="${src.base}${/}src${/}html.SPControlLookupField.html"
                     targetfile="${build.src}${/}html.SPControlLookupField.html" />
                 <uptodate 
+                    srcfile="${src.base}${/}src${/}html.SPFilterPanel.html"
+                    targetfile="${build.src}${/}html.SPFilterPanel.html" />
+                
+            	
+            	<uptodate 
                     srcfile="${src.base}${/}demo${/}demo.body.html"
                     targetfile="${build.demo}${/}demo.body.html" />
             </and>
@@ -212,6 +222,9 @@
                 <contains text="//_HAS_BOARD_CSS_TEMPLATE_" casesensitive="yes"/>
             </fileset>
             <fileset dir="${build.src}">
+                <contains text="//_HAS_FILTER_CSS_TEMPLATE_" casesensitive="yes"/>
+            </fileset>
+            <fileset dir="${build.src}">
                 <contains text="//_HAS_LOOKUP_CSS_TEMPLATE_" casesensitive="yes"/>
             </fileset>
         </delete>
@@ -233,9 +246,14 @@
             <fileset dir="${build.src}">
                 <contains text="//_HAS_BOARD_HTML_TEMPLATE_" casesensitive="yes"/>
             </fileset>
-            <fileset dir="${build.demo}">
+            <fileset dir="${build.src}">
                 <contains text="//_HAS_LOOKUP_HTML_TEMPLATE_" casesensitive="yes"/>
             </fileset>
+            <fileset dir="${build.src}">
+                <contains text="//_HAS_FILTER_HTML_TEMPLATE_" casesensitive="yes"/>
+            </fileset>
+        	
+        	
             <fileset dir="${build.demo}">
                 <contains text="//_HAS_DEMO_BODY_TEMPLATE_" casesensitive="yes"/>
             </fileset>
@@ -370,6 +388,15 @@
                 summary="Yes">
         </replace>
     	
+    	<!-- Load the SPFilterPanel File and replaced where its token appears -->
+    	<getFileAsJsString file="${build.src}${/}css.SPFilterPanel.css" 
+    		   property="css.SPFilter"/>
+        <replace dir="${build.src}" 
+                token='"_INCLUDE_FILTER_CSS_TEMPLATE_";'
+                value="${css.SPFilter};${line.separator}//_HAS_FILTER_CSS_TEMPLATE_"
+                summary="Yes">
+        </replace>
+    	
         
         <echo message="embedCssTemplates -------------------------------- [END]" />       
     </target>
@@ -403,6 +430,15 @@
         <replace dir="${build.src}" 
                 token='"_INCLUDE_LOOKUP_HTML_TEMPLATE_";'
                 value="${html.SPLookup};${line.separator}//_HAS_LOOKUP_HTML_TEMPLATE_"
+                summary="Yes">
+        </replace>
+    	
+        <!-- Load the SPFilterPanel HTML File and replaced where its token appears -->
+    	<getFileAsJsString file="${build.src}${/}html.SPFilterPanel.html" 
+    		   property="html.SPFilter"/>
+        <replace dir="${build.src}" 
+                token='"_INCLUDE_FILTER_HTML_TEMPLATE_";'
+                value="${html.SPFilter};${line.separator}//_HAS_FILTER_HTML_TEMPLATE_"
                 summary="Yes">
         </replace>
     	
