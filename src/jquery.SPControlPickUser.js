@@ -52,12 +52,16 @@ $.pt.pickSPUser = {
  * @param {Interger} [options.maxSearchResults=50]
  *                      The max number of results to be returned from the
  *                      server.
- * @param {Function} [onPickUser]
+ * @param {Function} [onPickUser=null]
  *                      Function that is called when user makes a selection.
  *                      Function will have a context (this keyword) of the
  *                      input field to which this plugin is called on, and
  *                      will be given one input param; an object containing
- *                      information about the selected user.  
+ *                      information about the selected user.
+ *   
+ * @param {Function} [inputPlaceholder="Type and Pick"]
+ *                      The text to appear in the HTML5 placeholder attribute
+ *                      of the input field. 
  * 
  * @return {jQuery} selection
  * 
@@ -106,7 +110,8 @@ $.fn.pickSPUser = function(options) {
                 {
                     allowMultiples:     true,
                     maxSearchResults:   50,
-                    onPickUser:         null
+                    onPickUser:         null,
+                    inputPlaceholder:   "Type and Pick"
                 },
                 options, 
                 {
@@ -157,6 +162,7 @@ $.fn.pickSPUser = function(options) {
         
         // Add the AutoComplete functionality to the input field
         o.elePickInput.find("input[name='pickSPUserInputField']")
+            .attr("placeholder", o.inputPlaceholder)
             .autocomplete({
                 minLength: 3,
                 source: function(request, response){
