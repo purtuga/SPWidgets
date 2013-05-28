@@ -3,7 +3,7 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *  
- * @version 20130509071217
+ * @version 20130527100409
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  * 
@@ -11,438 +11,511 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date:  May 09, 2013 - 07:12 PM
- * Version:     20130509071217
+ * Build Date:  May 27, 2013 - 10:04 PM
+ * Version:     20130527100409
  * 
  */
 ;(function($){
     
-    "use strict";
-    /*jslint nomen: true, plusplus: true */
-   
-    /**
-     * Namespace for all properties and methods
-     * @name        pt
-     * @namespace   pt
-     * @memberOf    jQuery
-     */
-    try {
-        if (!$.pt) {
+    // Local pointer to jQuery given on input
+    var jQuery = $;
+    
+    (function(){
+        
+        "use strict";
+        /*jslint nomen: true, plusplus: true */
+       
+        /**
+         * Namespace for all properties and methods
+         * @name        pt
+         * @namespace   pt
+         * @memberOf    jQuery
+         */
+        try {
+            if (!$.pt) {
+                $.pt = {};
+            }
+        } catch (e) {
             $.pt = {};
         }
-    } catch (e) {
-        $.pt = {};
-    }
-    
-    if ($.pt._cache === undefined) {
-    
+        
+        if ($.pt._cache === undefined) {
+        
+            /**
+             * Local cache of data that is unlikely to change during
+             * the live of the page.
+             */
+            $.pt._cache = {};
+        
+        }
+        
+        $.SPWidgets             = {};
+        $.SPWidgets.version     = "20130527100409";
+        $.SPWidgets.defaults    = {};
+        
         /**
-         * Local cache of data that is unlikely to change during
-         * the live of the page.
+         * Given an XML message as returned by the Sharepoint WebServices API,
+         * this method will check if it contains an error and return a boolean
+         * indicating that. 
+         * 
+         *  @return {Boolean} true|false
+         * 
          */
-        $.pt._cache = {};
-    
-    }
-    
-    $.SPWidgets             = {};
-    $.SPWidgets.version     = "20130509071217";
-    $.SPWidgets.defaults    = {};
-    
-    /**
-     * Given an XML message as returned by the Sharepoint WebServices API,
-     * this method will check if it contains an error and return a boolean
-     * indicating that. 
-     * 
-     *  @return {Boolean} true|false
-     * 
-     */
-    $.fn.SPMsgHasError = function() {
-        
-        var spErrCode   = $(this).find("ErrorCode"),
-            response    = false;
-        
-        if ( !spErrCode.length ) {
+        $.fn.SPMsgHasError = function() {
             
-            if ( $(this).find("faultcode").length ) {
+            var spErrCode   = $(this).find("ErrorCode"),
+                response    = false;
+            
+            if ( !spErrCode.length ) {
                 
-                return true;
-                
-            } else {
-                
-                return false;
-                
-            }
-            
-        } 
-        
-        spErrCode.each(function(){
-            
-            if ( $(this).text() !== "0x00000000" ) {
-                
-                response = true;
-                return false;
-                
-            }
-            
-        });
-        
-        return response;
-        
-    }; /* $.fn.SPMsgHasError() */
-    
-    /**
-     *  Given a sharepoint webservices response, this method will
-     *  look to see if it contains an error and return that error
-     *  formated as a string.
-     * 
-     * PARAMS:
-     * 
-     *  -   none.
-     * 
-     * RETURN:
-     * 
-     * @return {String} errorMessage
-     * 
-     */
-    $.fn.SPGetMsgError = function(){
-        
-        var xMsg  = $(this),
-            error = "ERROR: Call to Sharepoint Web Services failed.";
-        
-        if (xMsg.find("ErrorCode").length) {
-            
-            error += "\n" + xMsg.find("ErrorCode:first").text() +
-                    ": " + xMsg.find("ErrorText").text();
-        
-        } else if (xMsg.find("faultcode").length) {
-            
-            error += xMsg.find("faultstring").text() + 
-                    "\n" + xMsg.find("errorstring").text();
-            
-        } else {
-            
-            error = "";
-            
-        }
-        
-        return error;
-        
-    }; /* $.fn.SPGetMsgError() */
-    
-    /**
-     * An extreemly lightweight template engine for replacing
-     * tokens in the form of {{name}} with values from an object
-     * or a list (array) of objects
-     * 
-     * @param {Object} tmplt
-     * @param {Object} data
-     * 
-     * @return {String} templated filled out
-     * 
-     */
-    $.SPWidgets.fillTemplate = function(tmplt, data) {
-        
-        var opt = {},i,j,x,y,item;
-        
-        opt.response    = "";
-        opt.template    = String($("<div/>").append(tmplt).html());
-        opt.tokens      = opt.template.match(/(\{\{.*?\}\})/g);
-        
-        if (!$.isArray(data)) {
-            
-            data = [ data ];
-            
-        }
-        
-        if (opt.tokens !== null) {
-            
-            for(x=0,y=data.length; x<y; x++){
-                
-                item = opt.template;
-                
-                for(i=0,j=opt.tokens.length; i<j; i++){
+                if ( $(this).find("faultcode").length ) {
                     
-                    opt.tokens[i]   = opt.tokens[i].replace(/[\{\{\}\}]/g, "");
-                    item            = item.replace(
-                                        "{{" + opt.tokens[i] + "}}",
-                                        data[x][ opt.tokens[i] ] );
-                                    
+                    return true;
+                    
+                } else {
+                    
+                    return false;
+                    
                 }
                 
-                opt.response += item;
+            } 
+            
+            spErrCode.each(function(){
+                
+                if ( $(this).text() !== "0x00000000" ) {
+                    
+                    response = true;
+                    return false;
+                    
+                }
+                
+            });
+            
+            return response;
+            
+        }; /* $.fn.SPMsgHasError() */
+        
+        /**
+         * Given a sharepoint webservices response, this method will
+         * look to see if it contains an error and return that error
+         * formated as a string.
+         * 
+         * @return {String} errorMessage
+         * 
+         */
+        $.fn.SPGetMsgError = function(){
+            
+            var xMsg  = $(this),
+                error = "",
+                spErr = xMsg.find("ErrorCode"),
+                count = 0;
+            
+            if (!spErr.length) {
+                
+                spErr = xMsg.find("faultcode");
                 
             }
+            
+            if (!spErr.length) {
+                
+                return "";
+                
+            }
+            
+            // Loop through and get all errors.
+            spErr.each(function(){
+                
+                var thisErr = $(this);
+                if ( thisErr.text() !== "0x00000000" ) {
+                    
+                    count += 1;
+                    error += "(" + count + ") " + thisErr.text() + ": " + 
+                        thisErr.parent().children().not(thisErr).text() + "\n";
+                    
+                }
+                
+            });
+            
+            error = count + " error(s) encountered! \n" + error;
+            
+            return error;
+            
+        }; /* $.fn.SPGetMsgError() */
         
-        }
+        /**
+         * An extreemly lightweight template engine for replacing
+         * tokens in the form of {{name}} with values from an object
+         * or a list (array) of objects
+         * 
+         * @param {Object} tmplt
+         * @param {Object} data
+         * 
+         * @return {String} templated filled out
+         * 
+         */
+        $.SPWidgets.fillTemplate = function(tmplt, data) {
+            
+            var opt = {},i,j,x,y,item;
+            
+            opt.response    = "";
+            opt.template    = String($("<div/>").append(tmplt).html());
+            opt.tokens      = opt.template.match(/(\{\{.*?\}\})/g);
+            
+            if (!$.isArray(data)) {
+                
+                data = [ data ];
+                
+            }
+            
+            if (opt.tokens !== null) {
+                
+                for(x=0,y=data.length; x<y; x++){
+                    
+                    item = opt.template;
+                    
+                    for(i=0,j=opt.tokens.length; i<j; i++){
+                        
+                        opt.tokens[i]   = opt.tokens[i].replace(/[\{\{\}\}]/g, "");
+                        item            = item.replace(
+                                            "{{" + opt.tokens[i] + "}}",
+                                            data[x][ opt.tokens[i] ] );
+                                        
+                    }
+                    
+                    opt.response += item;
+                    
+                }
+            
+            }
+            
+            return opt.response;
+            
+        }; //end: $.SPWidgets.fillTemplate()
         
-        return opt.response;
         
-    }; //end: $.SPWidgets.fillTemplate()
-    
-    
-    /**
-     * Parses a Sharepoint lookup values as returned by webservices
-     * (id;#title;#id;#Title) into an array of objects.
-     * 
-     * @param {String} v
-     *          Lookup items string as returned by SP webservices.
-     * 
-     * @return {Array}
-     *          Array of objects. Each object has two keys; title and id 
-     */
-    $.SPWidgets.parseLookupFieldValue = function(v) {
-        
-        var r       = [],
-            a       = String(v).split(';#'), 
-            total   = a.length,
-            i, n, t;
-        
-        if (v === undefined) {
+        /**
+         * Parses a Sharepoint lookup values as returned by webservices
+         * (id;#title;#id;#Title) into an array of objects.
+         * 
+         * @param {String} v
+         *          Lookup items string as returned by SP webservices.
+         * 
+         * @return {Array}
+         *          Array of objects. Each object has two keys; title and id 
+         */
+        $.SPWidgets.parseLookupFieldValue = function(v) {
+            
+            var r       = [],
+                a       = String(v).split(';#'), 
+                total   = a.length,
+                i, n, t;
+            
+            if (v === undefined) {
+                
+                return r;
+                
+            }
+            
+            for (i=0; i<total; i++){
+                
+                n = a[i];
+                i++;
+                t = a[i];
+                
+                if (n || t) {
+                
+                    r.push({ id: n, title: t });
+                
+                }
+                
+            }
             
             return r;
             
-        }
+        }; //end: $.SPWidgets.parseLookupFieldValue
         
-        for (i=0; i<total; i++){
+        
+        /**
+         * Given an array of CAML matches, this method will wrap them all in a
+         * Logical condition (<And></And> or a <Or></Or>). 
+         * 
+         * @param {Object}  options
+         *              Options for the call. See below.
+         * @param {String}  options.type
+         *              Static String. The type of logical condition that
+         *              the 'values' should be wrapped in. Possible values
+         *              are 'AND' or 'OR'.  Default is 'AND'.
+         * @param {Array options.values
+         *              The array of String elements that will be
+         *              join into caml Logical condition.
+         * @param {Function} [options.onEachValue=null]
+         *              A function to process each items in the 'values'
+         *              array. Function must return the value that should
+         *              be used instead of the one found in the array. Use
+         *              it to define the xml around each value
+         *              (ex. <Eq><FieldRef>...</Eq>).
+         *              Function is given 1 input param - the item currently
+         *              being processed (from the 'values' input param).
+         * 
+         * @return {String} logical Query as a single string.
+         * 
+         * @example
+         *   $.SPWidgets.getCamlLogical({
+         *        type: "or",
+         *        values: [
+         *           "<Eq><FieldRef Name='Title' /><Value Type='Text'>Test</Value></Eq>",
+         *           "<Eq><FieldRef Name='Title' /><Value Type='Text'>Test1</Value></Eq>",
+         *           "<Eq><FieldRef Name='Title' /><Value Type='Text'>Test2</Value></Eq>",
+         *           "<Eq><FieldRef Name='Title' /><Value Type='Text'>Test3</Value></Eq>",
+         *           "<Eq><FieldRef Name='Title' /><Value Type='Text'>Test4</Value></Eq>"
+         *        ]
+         *      })
+         *   
+         *   
+         *     Concatenate multiple calls to getCamlLogical():
+         *   
+         *     $.SPWidgets.getCamlLogical({
+         *        type: "or",
+         *        values: [
+         *           "<Eq><FieldRef Name='ID' /><Value Type='Text'>10</Value></Eq>",
+         *           "<Eq><FieldRef Name='ID' /><Value Type='Text'>15</Value></Eq>",
+         *           $.SPWidgets.getCamlLogical({
+         *              type: "and",
+         *              values: [
+         *                 "west",
+         *                 "east"
+         *              ],
+         *              onEachValue: function(loc){
+         *                 return "<Neq><FieldRef Name='Region'/><Value Type='Text'>" +
+         *                         loc + "</Value></Neq>";
+         *              }
+         *          })
+         *        ]
+         *      })
+         *   
+         */
+        $.SPWidgets.getCamlLogical = function(options){
             
-            n = a[i];
-            i++;
-            t = a[i];
+            // FIXME: BUG: getCamlLogical() currently alters values array given on input.
             
-            if (n || t) {
+            var o = $.extend(
+                        {},
+                        {   type:           "AND",
+                            values:         [],
+                            onEachValue:    null
+                        },
+                        options),
+                tagOpen     = "<And>",
+                tagClose    = "</And>",
+                logical     = "",
+                total       = 0,
+                last        = 0,
+                haveFn      = false,
+                i;
             
-                r.push({ id: n, title: t });
+            o.type = String(o.type).toUpperCase();
             
+            if (!$.isArray(o.values)) {
+                
+                o.values = [o.values];
+                
             }
             
-        }
+            if (o.type !== "AND") {
+                
+                tagOpen     = "<Or>";
+                tagClose    = "</Or>";
+                
+            }
+            
+            logical = tagOpen;
+            total   = o.values.length;
+            last    = (total - 1);
+            haveFn  = $.isFunction(o.onEachValue);
+            
+            if (total < 2){
+                
+                logical = "";
+                
+            }
+            
+            for ( i=0; i<total; i++){
+                if (haveFn) {
+                    logical += String(o.onEachValue(o.values[i])).toString();
+                } else {
+                    logical += String(o.values[i]).toString();
+                }
+                if ((last - i) > 1){
+                    logical += $.SPWidgets.getCamlLogical(
+                                $.extend({}, o, {
+                                    values: o.values.splice((i + 1), (total - i))
+                                })
+                            );
+                    break;
+                }
+            }
+            
+            if (total > 1){
+                logical += tagClose;
+            }
         
-        return r;
+            return logical;
+            
+        };// $.SPWidgets.getCamlLogical()
         
-    }; //end: $.SPWidgets.parseLookupFieldValue
+        /**
+         * Returns a date string in the format expected by Sharepoint
+         * Date/time fields. Usefaul in doing filtering queries.
+         * 
+         * Credit:  Matt (twitter @iOnline247)
+         *          {@see http://spservices.codeplex.com/discussions/349356}
+         * 
+         * @param {Date} [dateObj=Date()]
+         * @param {String} [formatType='local']
+         *              Possible formats: local, utc
+         * 
+         * @return {String} a date string.
+         * 
+         */
+        $.SPWidgets.SPGetDateString = function( dateObj, formatType ) {
+            
+            formatType  = String(formatType || "local").toLowerCase();
+            dateObj     = dateObj || new Date();
+        
+            function pad( n ) {
+                
+                return n < 10 ? '0' + n : n;
+                
+            }
+            
+            var ret = '';
+            
+            if (formatType === 'utc') {
+                
+                ret = dateObj.getUTCFullYear() + '-' +
+                        pad( dateObj.getUTCMonth() + 1 ) + '-' +
+                        pad( dateObj.getUTCDate() ) + 'T' +
+                        pad( dateObj.getUTCHours() ) + ':' +
+                        pad( dateObj.getUTCMinutes() )+ ':' +
+                        pad( dateObj.getUTCSeconds() )+ 'Z';
     
-    
-    /**
-     * Given an array of CAML matches, this method will wrap them all in a
-     * Logical condition (<And></And> or a <Or></Or>). 
-     * 
-     * @param {Object}  options
-     *              Options for the call. See below.
-     * @param {String}  options.type
-     *              Static String. The type of logical condition that
-     *              the 'values' should be wrapped in. Possible values
-     *              are 'AND' or 'OR'.  Default is 'AND'.
-     * @param {Array options.values
-     *              The array of String elements that will be
-     *              join into caml Logical condition.
-     * @param {Function} [options.onEachValue=null]
-     *              A function to process each items in the 'values'
-     *              array. Function must return the value that should
-     *              be used instead of the one found in the array. Use
-     *              it to define the xml around each value
-     *              (ex. <Eq><FieldRef>...</Eq>).
-     *              Function is given 1 input param - the item currently
-     *              being processed (from the 'values' input param).
-     * 
-     * @return {String} logical Query as a single string.
-     * 
-     * @example
-     *   $.SPWidgets.getCamlLogical({
-     *        type: "or",
-     *        values: [
-     *           "<Eq><FieldRef Name='Title' /><Value Type='Text'>Test</Value></Eq>",
-     *           "<Eq><FieldRef Name='Title' /><Value Type='Text'>Test1</Value></Eq>",
-     *           "<Eq><FieldRef Name='Title' /><Value Type='Text'>Test2</Value></Eq>",
-     *           "<Eq><FieldRef Name='Title' /><Value Type='Text'>Test3</Value></Eq>",
-     *           "<Eq><FieldRef Name='Title' /><Value Type='Text'>Test4</Value></Eq>"
-     *        ]
-     *      })
-     *   
-     *   
-     *     Concatenate multiple calls to getCamlLogical():
-     *   
-     *     $.SPWidgets.getCamlLogical({
-     *        type: "or",
-     *        values: [
-     *           "<Eq><FieldRef Name='ID' /><Value Type='Text'>10</Value></Eq>",
-     *           "<Eq><FieldRef Name='ID' /><Value Type='Text'>15</Value></Eq>",
-     *           $.SPWidgets.getCamlLogical({
-     *              type: "and",
-     *              values: [
-     *                 "west",
-     *                 "east"
-     *              ],
-     *              onEachValue: function(loc){
-     *                 return "<Neq><FieldRef Name='Region'/><Value Type='Text'>" +
-     *                         loc + "</Value></Neq>";
-     *              }
-     *          })
-     *        ]
-     *      })
-     *   
-     */
-    $.SPWidgets.getCamlLogical = function(options){
-        
-        // FIXME: BUG: getCamlLogical() currently alters values array given on input.
-        
-        var o = $.extend(
-                    {},
-                    {   type:           "AND",
-                        values:         [],
-                        onEachValue:    null
-                    },
-                    options),
-            tagOpen     = "<And>",
-            tagClose    = "</And>",
-            logical     = "",
-            total       = 0,
-            last        = 0,
-            haveFn      = false,
-            i;
-        
-        o.type = String(o.type).toUpperCase();
-        
-        if (!$.isArray(o.values)) {
-            
-            o.values = [o.values];
-            
-        }
-        
-        if (o.type !== "AND") {
-            
-            tagOpen     = "<Or>";
-            tagClose    = "</Or>";
-            
-        }
-        
-        logical = tagOpen;
-        total   = o.values.length;
-        last    = (total - 1);
-        haveFn  = $.isFunction(o.onEachValue);
-        
-        if (total < 2){
-            
-            logical = "";
-            
-        }
-        
-        for ( i=0; i<total; i++){
-            if (haveFn) {
-                logical += String(o.onEachValue(o.values[i])).toString();
             } else {
-                logical += String(o.values[i]).toString();
-            }
-            if ((last - i) > 1){
-                logical += $.SPWidgets.getCamlLogical(
-                            $.extend({}, o, {
-                                values: o.values.splice((i + 1), (total - i))
-                            })
-                        );
-                break;
-            }
-        }
-        
-        if (total > 1){
-            logical += tagClose;
-        }
-    
-        return logical;
-        
-    };// $.SPWidgets.getCamlLogical()
-    
-    /**
-     * Returns a date string in the format expected by Sharepoint
-     * Date/time fields. Usefaul in doing filtering queries.
-     * 
-     * Credit:  Matt (twitter @iOnline247)
-     *          {@see http://spservices.codeplex.com/discussions/349356}
-     * 
-     * @param {Date} [dateObj=Date()]
-     * @param {String} [formatType='local']
-     *              Possible formats: local, utc
-     * 
-     * @return {String} a date string.
-     * 
-     */
-    $.SPWidgets.SPGetDateString = function( dateObj, formatType ) {
-        
-        formatType  = String(formatType || "local").toLowerCase();
-        dateObj     = dateObj || new Date();
-    
-        function pad( n ) {
-            
-            return n < 10 ? '0' + n : n;
-            
-        }
-        
-        var ret = '';
-        
-        if (formatType === 'utc') {
-            
-            ret = dateObj.getUTCFullYear() + '-' +
-                    pad( dateObj.getUTCMonth() + 1 ) + '-' +
-                    pad( dateObj.getUTCDate() ) + 'T' +
-                    pad( dateObj.getUTCHours() ) + ':' +
-                    pad( dateObj.getUTCMinutes() )+ ':' +
-                    pad( dateObj.getUTCSeconds() )+ 'Z';
-
-        } else {
-            
-            ret = dateObj.getFullYear() + '-' +
-                    pad( dateObj.getMonth() + 1 ) + '-' +
-                    pad( dateObj.getDate() ) + 'T' +
-                    pad( dateObj.getHours() ) + ':' +
-                    pad( dateObj.getMinutes() )+ ':' +
-                    pad( dateObj.getSeconds() );
-            
-        }
-        
-        return ret;
                 
-    }; //end: $.SPWidgets.SPGetDateString()
-    
-    /**
-     * Make a set of element the same height by taking the height of
-     * the longest element. 
-     * 
-     * @param {HTMLElement|Selector|jQuery} ele - Set of elements
-     * @param {Interger} [pad=0]                - Number of pixels to add on to the height
-     * 
-     * @return {Object} ele (input param) is returned
-     * 
-     */
-    $.SPWidgets.makeSameHeight = function(ele, pad) {
-            
-        var h = 0,
-            e = $(ele);
-        e.each(function(){
-            
-            var thisEle = $(this).css("height", "");
-            
-            if (h < thisEle.outerHeight(true)) {
-                
-                h = thisEle.outerHeight(true);
+                ret = dateObj.getFullYear() + '-' +
+                        pad( dateObj.getMonth() + 1 ) + '-' +
+                        pad( dateObj.getDate() ) + 'T' +
+                        pad( dateObj.getHours() ) + ':' +
+                        pad( dateObj.getMinutes() )+ ':' +
+                        pad( dateObj.getSeconds() );
                 
             }
             
-        });
+            return ret;
+                    
+        }; //end: $.SPWidgets.SPGetDateString()
         
-        if (h > 0) {
-            
-            if (pad) {
+        /**
+         * Make a set of element the same height by taking the height of
+         * the longest element. 
+         * 
+         * @param {HTMLElement|Selector|jQuery} ele - Set of elements
+         * @param {Interger} [pad=0]                - Number of pixels to add on to the height
+         * 
+         * @return {Object} ele (input param) is returned
+         * 
+         */
+        $.SPWidgets.makeSameHeight = function(ele, pad) {
                 
-                h += pad;
+            var h = 0,
+                e = $(ele);
+            e.each(function(){
+                
+                var thisEle = $(this).css("height", "");
+                
+                if (h < thisEle.outerHeight(true)) {
+                    
+                    h = thisEle.outerHeight(true);
+                    
+                }
+                
+            });
+            
+            if (h > 0) {
+                
+                if (pad) {
+                    
+                    h += pad;
+                    
+                }
+                
+                e.height(h);
                 
             }
             
-            e.height(h);
+            return ele;
             
-        }
+        }; // end: $.SPWidgets.MakeSameHeight()
         
-        return ele;
+        /**
+         * Escapes html code. Characters that are escaped include
+         * <, > and &. These are converted to the HTML safe
+         * characters.  This method can also be used to escape XML.
+         * 
+         * @param {Object} xmlString
+         *          The html code to be escaped.
+         * 
+         * @return {String}
+         *          html escaped
+         * 
+         */
+        $.SPWidgets.escapeXML = function(xmlString) {
+            
+            if ( typeof xmlString !== "string" ) {
+                
+                return "";
+                
+            }
+            
+            return xmlString
+                    .replace(/&/g,'&amp;')
+                    .replace(/</g,'&lt;')
+                    .replace(/>/g,'&gt;')
+                    .replace(/'/g,"&apos;")
+                    .replace(/"/g,"&quot;");
+            
+        }/* $.SPWidgets.escapeXML() */
         
-    }; // end: Board.MakeSameHeight()
-    
+        /**
+         * Un-escapes html code. Characters that are un-escaped include
+         * "&lt;", "&gt;" "&apos;", "&quot;" and "&amp;". These are 
+         * converted to <, >, ', " and & 
+         * 
+         * @param {Object} xmlString
+         *          The html code to be un-escaped.
+         * 
+         * @return {String}
+         *          html string escaped.
+         * 
+         */
+        $.SPWidgets.unEscapeXML = function(xmlString){
+            
+            if ( typeof xmlString !== "string" ) {
+                
+                return "";
+                
+            }
+            
+            return xmlString
+                    .replace(/&lt;/g,'<')
+                    .replace(/&gt;/g,'>')
+                    .replace(/&amp;/g,'&')
+                    .replace(/&apos;/g,"'")
+                    .replace(/&quot;/g,'"');
+                    
+        }/* $.SPWidgets.unEscapeXML() */
+        
+        
+    })(jQuery); /** *********** END: $.SPWidgets common */
     
 /**
  * Displays data from a list in Kan-Ban board using a specific column from
@@ -453,7 +526,7 @@
  *  -   jQuery-UI Draggable
  * 
  * 
- * BUILD: May 09, 2013 - 06:51 PM
+ * BUILD: Paul:May 27, 2013 09:41 PM
  */
 
 ;(function($){
@@ -1903,7 +1976,7 @@
     Board.styleSheet = "/** \n"
 + " * Stylesheet for the Board widget\n"
 + " * \n"
-+ " * BUILD: May 09, 2013 - 06:51 PM\n"
++ " * BUILD: Paul:May 26, 2013 09:24 PM\n"
 + " */\n"
 + "div.spwidget-board {\n"
 + "    width: 100%;\n"
@@ -1922,6 +1995,7 @@
 + "    float: left;\n"
 + "    margin: .1%;\n"
 + "    padding: .2%;\n"
++ "    overflow: auto;\n"
 + "}\n"
 + "\n"
 + "div.spwidget-board div.spwidget-board-headers-cntr {\n"
@@ -1934,7 +2008,7 @@
 + "}\n"
 + "div.spwidget-board div.spwidget-board-states div.spwidget-board-state {\n"
 + "    margin-bottom: 1em;\n"
-+ "    min-height: 5em;\n"
++ "    min-height: 10em;\n"
 + "}\n"
 + "\n"
 + "div.spwidget-board div.spwidget-board-state div.spwidget-board-state-item {\n"
@@ -2026,7 +2100,7 @@
  * THe user, however, is presented with the existing items
  * and has the ability to Remove them and add new ones.
  * 
- * BUILD: May 09, 2013 - 06:51 PM
+ * BUILD: Paul:May 27, 2013 09:41 PM
  * 
  */
 
@@ -3044,7 +3118,7 @@
  * on jQuery UI's Autocomplete and SPServices library.
  *      
  *  
- * @version 20130509065100NUMBER_
+ * @version 20130527094135NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
@@ -3052,7 +3126,7 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date May 09, 2013 - 06:51 PM
+ * Build Date Paul:May 27, 2013 09:41 PM
  * 
  */
 
@@ -3091,12 +3165,16 @@ $.pt.pickSPUser = {
  * @param {Interger} [options.maxSearchResults=50]
  *                      The max number of results to be returned from the
  *                      server.
- * @param {Function} [onPickUser]
+ * @param {Function} [onPickUser=null]
  *                      Function that is called when user makes a selection.
  *                      Function will have a context (this keyword) of the
  *                      input field to which this plugin is called on, and
  *                      will be given one input param; an object containing
- *                      information about the selected user.  
+ *                      information about the selected user.
+ *   
+ * @param {Function} [inputPlaceholder="Type and Pick"]
+ *                      The text to appear in the HTML5 placeholder attribute
+ *                      of the input field. 
  * 
  * @return {jQuery} selection
  * 
@@ -3145,7 +3223,8 @@ $.fn.pickSPUser = function(options) {
                 {
                     allowMultiples:     true,
                     maxSearchResults:   50,
-                    onPickUser:         null
+                    onPickUser:         null,
+                    inputPlaceholder:   "Type and Pick"
                 },
                 options, 
                 {
@@ -3196,6 +3275,7 @@ $.fn.pickSPUser = function(options) {
         
         // Add the AutoComplete functionality to the input field
         o.elePickInput.find("input[name='pickSPUserInputField']")
+            .attr("placeholder", o.inputPlaceholder)
             .autocomplete({
                 minLength: 3,
                 source: function(request, response){
@@ -3372,7 +3452,7 @@ $.pt.pickSPUser.storeListOfUsers = function(ele){
             newVal += ";#";
             newVal += $(this).attr("data-pickSPUserNAME");
         });
-    opt.eleUserInput.val(newVal);
+    opt.eleUserInput.val(newVal).change();
     
     return;
 };// $.pt.pickSPUser.storeListOfUsers()
@@ -3505,7 +3585,7 @@ $.pt.pickSPUser.htmlTemplate = "<!--\n"
 + "        <div style=\"clear:both\"></div>\n"
 + "        <div class=\"pt-pickSPUser-input\" \n"
 + "                title=\"Type user name above to view search results.\">\n"
-+ "            <input name=\"pickSPUserInputField\" value=\"\" />\n"
++ "            <input name=\"pickSPUserInputField\" value=\"\" type=\"text\"/>\n"
 + "        </div>\n"
 + "    </div>\n"
 + "    \n"
@@ -3567,7 +3647,7 @@ $.pt.addHoverEffect = function(ele){
  * through the many SP pages and without having to leave the user's current page.
  *      
  *  
- * @version 20130509065100NUMBER_
+ * @version 20130527035401NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
@@ -3575,7 +3655,7 @@ $.pt.addHoverEffect = function(ele){
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date May 09, 2013 - 06:51 PM
+ * Build Date Paul:May 27, 2013 03:54 PM
  * 
  */
 
@@ -3718,6 +3798,10 @@ $.fn.SPControlUpload = function (options) {
             s = "";
         }
         o.uploadPage = o.siteUrl + s + o.uploadPage;
+        
+        // Define SP2010 alternate upload form
+        o.uploadPage2 = o.siteUrl + "/_layouts/UploadEx.aspx";
+        
     }
     // Set the uploadDonePage url
     if (String(o.uploadDonePage).toLowerCase().indexOf("http") == -1) {
@@ -3729,10 +3813,12 @@ $.fn.SPControlUpload = function (options) {
     }
     
     // Create additional non-overridable options
-    o.uploadPage    = o.uploadPage + "?List=" + 
+    o._uploadUrlParams  = "?List=" + 
                       $.pt.getEscapedUrl(o.listName) + "&RootFolder=" +
                       $.pt.getEscapedUrl(o.folderPath) + "&Source=" +
                       $.pt.getEscapedUrl(o.uploadDonePage) + "&" + o.uploadUrlOpt;
+    o.uploadPage    = o.uploadPage + o._uploadUrlParams;
+    o.uploadPage2   = o.uploadPage2 + o._uploadUrlParams;
     o._lastError    = "";
     o._reloadCount  = 0;
    
@@ -3954,9 +4040,13 @@ $.pt._onIFramePageChange = function(ele){
             // upload page then this is either the
             // initial load of the page or an error has occured...
             // Hide the page and show only the upload form element.
-            if ($.pt.isSameUrlpage(
-                    $.pt.getUnEscapedUrl(ev.pageUrl),
-                    $.pt.getUnEscapedUrl(opt.uploadPage))
+            if (
+                    $.pt.isSameUrlpage(
+                        $.pt.getUnEscapedUrl(ev.pageUrl),
+                        $.pt.getUnEscapedUrl(opt.uploadPage))
+                ||  $.pt.isSameUrlpage(
+                        $.pt.getUnEscapedUrl(ev.pageUrl),
+                        $.pt.getUnEscapedUrl(opt.uploadPage2))
             ) {
 //                console.debug("_onIFramePageChange() URL is the same as the one originally requested.");
                 
@@ -4264,6 +4354,945 @@ $.pt.SPUploadStyleSheet = "/**\n"
 + "}\n"
 + "\n";
 //_HAS_SPUPLOAD_CSS_TEMPLATE_
+/**
+ * @fileOverview - List filter panel widget
+ * 
+ * BUILD: Paul:May 27, 2013 09:41 PM
+ * 
+ */
+(function($){
+    
+    "use strict";
+    /*jslint nomen: true, plusplus: true */
+    /*global SPWidgets */
+    
+    /**
+     * @class Filter
+     */
+    var Filter  = {};
+    
+    /** @property {Boolean} Is initialization done */
+    Filter.isInitDone = false;
+    
+    /** @property {jQuery} jQuery object with templates. Loaded from Filter.htmlTemplate during initialization */
+    Filter.templates = null; 
+    
+    /**
+     * Default options. 
+     */
+    $.SPWidgets.defaults.filter = {
+        list:               '',
+        webURL:             $().SPServices.SPGetCurrentSite(),
+        columns:            ['Title'],
+        textFieldTooltip:   'Use a semicolon to delimiter multiple keywords.',
+        showFilterButton:   true,
+        filterButtonLabel:  "Filter",
+        onFilterClick:      null,
+        onReady:            null,
+        ignoreKeywords:     /^(of|and|a|an|to|by|the|or|from)$/i
+    };
+    
+    /**
+     * Given a container, this jQuery plugin will attach a user interface
+     * that allows the user to define filter criteria for a list.
+     * 
+     * @param {Object}  options
+     * @param {String}  options.list
+     * @param {String}  [options.webURL=current site]
+     * @param {Array}   [options.columns=['title']]
+     * @param {String}  [options.textFieldTooltip='']
+     * @param {Boolean} [options.showFilterButton=true]
+     * @param {String}  [options.filterButtonLabel='Fitler']
+     * @param {String}  [options.onFilterClick=null]
+     * @param {String}  [options.onReady=null]
+     * @param {String}  [options.ignoreKeywords=RegEx]
+     * 
+     * @return {jQuery} this
+     * 
+     * METHODS
+     * 
+     *  All methods must be executed on single element. 
+     * 
+     *  $(ele).SPFilterPanel("getFilter");
+     * 
+     *      Returns an object with the filter information entered by the user.
+     * 
+     * $(ele).SPFilterPanel("destroy");
+     * 
+     *      Removes the widget from the page.
+     * 
+     */
+    $.fn.SPFilterPanel = function(options){
+        
+        // If initialization is not yet done, then do it now
+        if ( !Filter.isInitDone ) {
+            
+            Filter.isInitDone = true;
+            
+            if ( Filter.styleSheet !== "" ) {
+                
+                $('<style type="text/css">' + "\n\n" +
+                        Filter.styleSheet + "\n\n</style>" )
+                    .prependTo("head");
+                
+            }
+            
+            Filter.templates = $( Filter.htmlTemplate );
+            
+        }
+        
+        // If input was a string, then must be a method.
+        if (typeof options === "string") {
+            
+            if (!this.eq(0).hasClass("hasSPFilterPanel")) {
+                
+                return;
+                
+            }
+            
+            return (function(ele){
+                
+                // Get the instance object
+                var Inst        = ele.eq(0)
+                                    .find("div.spwidget-filter")
+                                    .data("SPFilterPanelInst"),
+                    method      = options.toLowerCase(),
+                    response    = Inst.$ele;
+                
+                switch (method) {
+                    
+                    // METHOD----------> getFilter
+                    case "getfilter":
+                        
+                        response = Filter.getFilterValues(Inst);
+                        
+                        break;
+                        
+                    // METHOD----------> destroy
+                    case "destroy":
+                        
+                        Inst.$ele
+                            .removeClass("hasSPFilterPanel")
+                            .empty();
+                        
+                        break;
+                        
+                } //end: switch()
+                
+                return response;
+                
+            })(this);
+            
+        } //end: if(): options === string
+        
+        // --------------------------------
+        // Build the plugin on each element
+        // --------------------------------
+        return this.each(function(){
+            
+            var opt     = $.extend({}, $.SPWidgets.defaults.filter, options),
+                /**
+                 * @class Inst
+                 * Widget instance
+                 */
+                Inst    = {
+                    $ele:   $(this),
+                    $ui:    null,
+                    opt:    opt
+                };
+            
+            /**
+             * Retrieves the list definition.
+             * 
+             * @return {jQuery.Deferred}
+             *      Deferred is resolved with a scope of the jQuery message
+             *      object and given 2 parameters - xData and status
+             * 
+             */
+            Inst.getListDefinition = function() {
+                
+                return $.Deferred(function(dfd){
+                    
+                    // Get List Definition
+                    $().SPServices({
+                        operation:      "GetList",
+                        listName:       opt.list,
+                        cacheXML:       true,
+                        async:          true,
+                        webURL:         opt.webURL,
+                        completefunc:   function(xData, status) {
+                            
+                            var $msg    = $(xData.responseXML);
+                            
+                            if (status === "error") {
+                                
+                                dfd.rejectWith($msg, [xData, status]);
+                                return;
+                                
+                            }
+                            
+                            if ($msg.SPMsgHasError()) {
+                                
+                                dfd.rejectWith($msg, [xData, status]);
+                                return;
+                                
+                            }
+                            
+                            dfd.resolveWith($msg, [xData, status]);
+                            
+                        } //end: completefunc
+                    });
+                    
+                }).promise();
+                
+            }; //end: getListDefinition
+            
+            /**
+             * Builds the widget in the container element.
+             * 
+             * @return {jQuery.Deferred}
+             */
+            Inst.buildWidget = function() {
+                
+                return $.Deferred(function(dfd){
+                    
+                    Inst.getListDefinition().then(function(xData, status){
+                        
+                        var $list   = this,
+                            columns = '',
+                            colUI   = Filter.templates.filter("#filter_column").html();
+                        
+                        // Insert the UI into the page and set 
+                        // pointer ($ui) to it.
+                        Inst.$ui = $(
+                                Filter.templates
+                                    .filter("#filter_main_ui").html()
+                            )
+                            .appendTo( 
+                                Inst.$ele
+                                    .empty()
+                                    .addClass("hasSPFilterPanel")
+                            );
+                        
+                        // Store list definition
+                        Inst.$list = $list;
+                        
+                        // Loop through list of columns to display and
+                        // build the UI for them.
+                        $.each(Inst.opt.columns, function(i,v){
+                            
+                            // find column in the list definition
+                            var $thisCol = $list
+                                            .find(
+                                                "Field[DisplayName='" + 
+                                                v + "']" ),
+                                thisColUI = colUI,
+                                inputUI   = '',
+                                values    = null,
+                                model     = {
+                                    type:   null
+                                };
+                            
+                            if (!$thisCol.length) {
+                                
+                                $thisCol = $list
+                                            .find("Field[Name='" + v + "']");
+                                
+                            }
+                            
+                            if (!$thisCol.length){
+                                
+                                return;
+                                
+                            }
+                            
+                            // Build the column ui based on its type
+                            switch ($thisCol.attr("Type")) {
+                                
+                                // CHOICE: Show checkboxes allowing user to select multiple
+                                case "Choice":
+                                    
+                                    $thisCol.find("CHOICES CHOICE").each(function(i,v){
+                                        
+                                        inputUI += $.SPWidgets.fillTemplate(
+                                                Filter.templates
+                                                    .filter("#filter_choice_field")
+                                                        .html(),
+                                                {
+                                                    DisplayName:    $thisCol.attr("DisplayName"),
+                                                    Name:           $thisCol.attr("Name"),
+                                                    value:          $(v).text()
+                                                }
+                                            );
+                                        
+                                    });
+                                    
+                                    thisColUI = thisColUI.replace(/__COLUMN__UI__/, inputUI);
+                                    
+                                    thisColUI = $.SPWidgets.fillTemplate(
+                                        thisColUI,
+                                        {
+                                            DisplayName: $thisCol.attr("DisplayName"),
+                                            type:        'choice'
+                                        }
+                                    );
+                                    
+                                    break;
+                                
+                                // From here until DEFAUL, we only set the type.
+                                case "Lookup":
+                                case "LookupMulti":
+                                    
+                                    model.type = 'lookup';
+                                    model.list = $thisCol.attr("List");
+                                    
+                                    if ( model.list === "Self") {
+                                        
+                                        model.list = $list.find("List").attr("Title");
+                                        
+                                    }
+                                    
+                                
+                                case "User":
+                                case "UserMulti":
+                                    
+                                    if (model.type === null) {
+                                        
+                                        model.type = 'people';
+                                        
+                                    }
+                                    
+                                // DEFAULT: Show as a text field
+                                default:
+                                    
+                                    if (model.type === null) {
+                                        
+                                        model.type = 'text';
+                                        
+                                    }
+                                    
+                                    inputUI = Filter.templates
+                                                .filter("#filter_text_field")
+                                                    .html();
+                                    
+                                    thisColUI = thisColUI.replace(/__COLUMN__UI__/, inputUI);
+                                    
+                                    thisColUI = $.SPWidgets.fillTemplate(
+                                            thisColUI,
+                                            $.extend(
+                                                model,
+                                                {
+                                                    DisplayName:    $thisCol.attr("DisplayName"),
+                                                    Name:           $thisCol.attr("Name"),
+                                                    tooltip:        Inst.opt.textFieldTooltip
+                                                })
+                                        );
+                                    
+                                    break;
+                                
+                            } //end: switch()
+                            
+                            // Add Column UI to list of columns
+                            columns += thisColUI;
+                            
+                        }); //end: .each() - column
+                        
+                        // Insert the columns into the UI
+                        Inst.$ele
+                            .find("div.spwidget-filter-column-cntr")
+                            .html(columns);
+                        
+                        // Setup Lookup field
+                        Inst.$ele.find("div.spwidget-type-lookup input")
+                            .each(function(){
+                                
+                                var $field = $(this);
+                                
+                                $field.SPLookupField({
+                                    list: $field.data("spwidget_list")
+                                });
+                                
+                                $field.parent().find(".spwidget-tooltip").remove();
+                                
+                            });
+                        
+                        // Setup PEOPLE fields
+                        Inst.$ele.find("div.spwidget-type-people input")
+                            .each(function(){
+                                
+                                var $field = $(this);
+                                
+                                $field.pickSPUser({ allowMultiple: true });
+                                    
+                                $field.parent().find(".spwidget-tooltip").remove();
+                                
+                            });
+                        
+                        // Setup the Button on the UI (if applicable)
+                        if (Inst.opt.showFilterButton) {
+                            
+                            Inst.$ui
+                                .find("div.spwidget-filter-button-cntr button")
+                                    .button({
+                                        icons: {
+                                            primary: "ui-icon-search"
+                                        },
+                                        label: Inst.opt.filterButtonLabel
+                                    })
+                                    .on("click", Filter.onFilterButtonClick);
+                            
+                        // Else, remove button container
+                        } else {
+                            
+                            Inst.$ui
+                                .find("div.spwidget-filter-button-cntr")
+                                    .remove();
+                            
+                        }
+                        
+                        // Bind event
+                        Inst.$ui
+                            // Filter type change()
+                            .on(
+                                "change.SPWigets.SPFilterPanel",
+                                "select.spwidget-filter-type", 
+                                Filter.onFilterTypeChange
+                            );
+                        
+                        // If a onReady callback was defined, then
+                        // execute it now
+                        if ($.isFunction(Inst.opt.onReady)) {
+                            
+                            Inst.opt.onReady.call(Inst.$ele, options);
+                            
+                        }
+                        
+                        // Make the UI visible
+                        Inst.$ui
+                            .fadeIn().promise().then(function(){
+                                
+                                $(this).css("display", "");
+                                
+                                dfd.resolve();
+                                
+                            });
+                        
+                        // Store the Widget Inst object in the UI
+                        Inst.$ui
+                            .data("SPFilterPanelInst", Inst);
+                        
+                        
+                    }) //end: .then()
+                    // IF getting the List definition fails, then display error
+                    // in the widget container element.
+                    .fail(function(xData, status){
+                        
+                        var $msg = this;
+                        
+                        Inst.$ele
+                            .html(
+                                '<div class="ui-state-error">Unable to retrieve list information. ' +
+                                $msg.SPGetMsgError() + '</div>' );
+                        
+                        dfd.reject();
+                        
+                    });
+                    
+                     
+                }).promise();
+                
+            }; //end: Inst.buildWidget()
+            
+            // A few validations
+            
+            if (    Inst.opt.ignoreKeywords 
+                &&  !Inst.opt.ignoreKeywords instanceof RegExp
+            ) {
+                
+                Inst.opt.ignoreKeywords = /Inst.opt.ignoreKeywords/i;
+                
+            }
+            
+            // build the widget
+            Inst.buildWidget();
+            
+            return this;
+            
+        }); //end: return()
+        
+    }; //end: $.fn.SPFilterPanel()
+    
+    /**
+     * Bound to the $ui. Listen for changes in the filter type
+     * select element.
+     * 
+     * @param {jQuery.Event} ev
+     * 
+     * return {jQuery} this
+     */
+    Filter.onFilterTypeChange = function(ev) {
+        
+        var $ele        = $(this),
+            $colValCntr = $ele
+                            .closest("div.spwidget-column")
+                            .find("div.spwidget-filter-value-cntr"),
+            $colInput   = $colValCntr.find(".spwidget-input"),
+            eleValue    = $ele.val();
+        
+        if (eleValue === "IsNull" || eleValue === "IsNotNull") {
+            
+            $colValCntr.addClass("spwidget-disabled");
+            $colInput.attr("disabled", "disabled");
+            
+        } else {
+            
+            $colValCntr.removeClass("spwidget-disabled");
+            $colInput.removeAttr("disabled", "disabled");
+            
+        }
+        
+        return this;
+        
+    }; //end: Filter.onFilterTypeChange()
+    
+    /**
+     * Calls the user defined function when user clicks the filter button.
+     * 
+     * @param {jQuery.Event} ev
+     * 
+     * @return {HTMLElement} this
+     */
+    Filter.onFilterButtonClick = function(ev) {
+        
+        var Inst    = $(this)
+                        .closest("div.spwidget-filter")
+                        .data("SPFilterPanelInst"),
+            filters = null;
+        
+        if ( $.isFunction( Inst.opt.onFilterClick ) ) {
+            
+            filters = Filter.getFilterValues(Inst);
+            
+            Inst.opt.onFilterClick.call( Inst.$ele, filters );
+            
+        }
+        
+        return this;
+        
+    }; //end: Filter.onFilterButtonClick()
+    
+    /**
+     * Generates the filters from the values entered by the user.
+     * 
+     * @param {SPFilterPanel.Instance} Inst
+     *      The Instance object generated by the $().SPFilterPanel()
+     * 
+     * @return {Object}
+     *      An object with the filter information. See below for the
+     *      structured of the object
+     * 
+     * @example
+     * 
+     *      Filter.getFilterValues(instObject);
+     * 
+     *      {
+     *          CAMLQuery: 'string with query wrapped in an <And> aggregate',
+     *          filters: {
+     *              columnInternalName: {
+     *                  matchType: 'Eq',
+     *                  values: [
+     *                      'filter value 1',
+     *                      'filter value 2',
+     *                      etc...
+     *                  ],
+     *                  CAMLQuery: 'string with query wrapped in an <Or> aggregate',
+     *                  count: 0
+     *              }
+     *          },
+     *          count: 2 // number of filters created
+     *      }
+     * 
+     * 
+     */
+    Filter.getFilterValues = function(Inst) {
+        
+        var filters = {
+                CAMLQuery:  '',
+                filters:    {},
+                count:      0
+            },
+            $cols       = Inst.$ui.find("div.spwidget-column"),
+            colFilters  = [];
+        
+        /**
+         * Returns a CAMLQuery for the set of individual column filters.
+         * USed in fields of type Choice or Text.
+         * 
+         * @param {Object} colFilterObj
+         *          The object for the individual column
+         * 
+         * @return {String} caml query
+         * 
+         */
+        function getColumnCAMLQuery(colFilterObj) {
+            
+            return $.SPWidgets.getCamlLogical({
+                    type:           'OR',
+                    values:         colFilterObj.values,
+                    onEachValue:    function(filterVal){
+                        
+                        return "<" + colFilterObj.matchType + 
+                                "><FieldRef Name='" + colFilterObj.columnName + 
+                                "' /><Value Type='Text'>" +
+                                $.SPWidgets.escapeXML(filterVal) + 
+                                "</Value></" + colFilterObj.matchType + ">";
+                        
+                    }
+                });
+            
+        } //end: getColumnCAMLQuery()
+        
+        // Loop through each column and build the data 
+        $cols.each(function(i,v){
+            
+            var $thisCol        = $(v),
+                $input          = $thisCol.find(".spwidget-input"),
+                colName         = $input.attr("name"),
+                thisColFilter   = {
+                        columnName: colName,
+                        matchType:  $thisCol
+                                        .find("select.spwidget-filter-type")
+                                            .val(),
+                        values:     [],
+                        count:      0,
+                        CAMLQuery:  ''
+                    },
+                colFilterWasSet = false,
+                colType         = $thisCol.data("spwidget_column_type");
+            
+            // If the match type is IsNull or IsNotNull, then
+            // build the match now... don't need to know which type
+            // of column for these.
+            if (    thisColFilter.matchType === "IsNull"
+                ||  thisColFilter.matchType === "IsNotNull"
+            ) {
+                
+                thisColFilter.CAMLQuery = 
+                    "<" + thisColFilter.matchType + "><FieldRef Name='" + 
+                    colName + "' /></" + thisColFilter.matchType + ">";
+                
+                thisColFilter.count += 1;
+                
+            // ELSE, process the column type    
+            } else {
+                
+                // Process column type user input
+                switch(colType) {
+                    
+                    // -------------------- CHOICE COLUMNS
+                    case "choice":
+                        
+                        $input.each(function(){
+                            
+                            var $checkbox   = $(this),
+                                checkboxVal = $checkbox.val();
+                                
+                            if ($checkbox.is(":checked")) {
+                                
+                                thisColFilter.values.push(checkboxVal);
+                                
+                            }
+                            
+                        });
+                        
+                        if (thisColFilter.values.length) {
+                            
+                            thisColFilter.count = thisColFilter.values.length;
+                            thisColFilter.CAMLQuery = getColumnCAMLQuery(thisColFilter);
+                            
+                        }
+                        
+                        break;
+                    
+                    // -------------------- LOOKUP COLUMNS
+                    // -------------------- PEOPLE COLUMNS
+                    case "lookup":
+                    case "people":
+                        
+                        (function(){
+                            
+                            var lookupIDs = [];
+                            
+                            $input.each(function(){
+                                
+                                
+                                var $lookup     = $(this),
+                                    lookupVals  = $.SPWidgets
+                                                    .parseLookupFieldValue(
+                                                        $lookup.val()
+                                                    ),
+                                    i,j;
+                                
+                                for(i=0,j=lookupVals.length; i<j; i++){
+                                    
+                                    if (lookupVals[i].id) {
+                                        
+                                        thisColFilter.values
+                                            .push(
+                                                lookupVals[i].id + ";#" + 
+                                                lookupVals[i].title
+                                            );
+                                        
+                                        lookupIDs.push(lookupVals[i].id);
+                                         
+                                    }
+                                    
+                                };
+                                
+                            });
+                            
+                            if (thisColFilter.values.length) {
+                                
+                                thisColFilter.count     = thisColFilter.values.length;
+                                thisColFilter.CAMLQuery = $.SPWidgets.getCamlLogical({
+                                        type:           'OR',
+                                        values:         lookupIDs,
+                                        onEachValue:    function(filterVal){
+                                            
+                                            return "<" + thisColFilter.matchType + 
+                                                    "><FieldRef Name='" + thisColFilter.columnName + 
+                                                    "' LookupId='True'/><Value Type='Lookup'>" +
+                                                    filterVal + "</Value></" + thisColFilter.matchType + ">";
+                                            
+                                        }
+                                    });
+                                
+                            }
+                            
+                            
+                        })();
+                        
+                        break;
+                    
+                    // -------------------- TEXT COLUMNS
+                    case "text":
+                        
+                        // ELSE, if user entered text, then parse it
+                        if ( String( $.trim( $input.val() ) ).length ) {
+                            
+                            (function(){
+                                
+                                var keywords = $input.val().split(';'),
+                                    i,j,
+                                    thisKeyword;
+                                
+                                // Loop thorugh all keywords. 
+                                for( i=0,j=keywords.length; i<j; i++ ){
+                                    
+                                    thisKeyword = $.trim(keywords[i]);
+                                    
+                                    if (    !Inst.opt.ignoreKeywords.test(thisKeyword)
+                                        &&  thisKeyword
+                                    ) {
+                                        
+                                        thisColFilter.values.push(thisKeyword);
+                                        
+                                    }
+                                };
+                                
+                                thisColFilter.CAMLQuery = getColumnCAMLQuery(thisColFilter);
+                                
+                                thisColFilter.count = thisColFilter.values.length;
+                                
+                            })();
+                            
+                        }
+                        
+                        break;
+                    
+                } //end: switch() - type of column
+                
+            } //end if()
+            
+            // If filters where built for this column, then add it to the
+            // list of column that the user entered values for.
+            if (thisColFilter.count > 0) {
+                
+                colFilters.push(thisColFilter.CAMLQuery);
+            
+                filters.count           += thisColFilter.count;
+                filters.filters[colName] = thisColFilter;
+                
+            }
+            
+            
+        });
+        
+        // Build the CAMLQuery
+        if (filters.count > 1) {
+            
+            filters.CAMLQuery = $.SPWidgets.getCamlLogical({
+                                    type:   'AND',
+                                    values: colFilters,
+                                });
+            
+        } else if (filters.count === 1 ) {
+            
+            filters.CAMLQuery = colFilters[0];
+            
+        } 
+        
+        return filters;
+        
+    }; // Filter.getFilterValues()
+    
+    /**
+     * @property
+     * Stores the Style sheet that is inserted into the page the first
+     * time SPFilterPanel() is called.
+     * Value is set at build time.
+     */
+    Filter.styleSheet = "/** \n"
++ " * Stylesheet for the Board widget\n"
++ " * \n"
++ " * BUILD: Paul:May 27, 2013 03:54 PM\n"
++ " */\n"
++ "div.spwidget-filter {\n"
++ "    width: 100%;\n"
++ "    position: relative;\n"
++ "}\n"
++ "div.spwidget-filter .spwidgets-lookup-cntr {\n"
++ "    display: block;\n"
++ "}\n"
++ "div.spwidget-filter input[type='text'] {\n"
++ "    width: 97%;\n"
++ "}\n"
++ "div.spwidget-filter div.spwidget-column {\n"
++ "    padding: 1em;\n"
++ "    margin: .5em;\n"
++ "    border-bottom: 1px solid  darkgray;\n"
++ "    box-shadow: 1px 1px 1px 0 lightgray inset;\n"
++ "}\n"
++ "div.spwidget-filter div.spwidget-filter-type-cntr > label,\n"
++ "div.spwidget-filter div.spwidget-filter-value-cntr > label {\n"
++ "    display: block;\n"
++ "    padding: .2em;\n"
++ "}\n"
++ "div.spwidget-filter div.spwidget-filter-value-cntr > label {\n"
++ "    font-size: 1.1em;\n"
++ "    font-weight: bold;\n"
++ "}\n"
++ "div.spwidget-filter .spwidget-tooltip {\n"
++ "    display: block;\n"
++ "    font-size: .8em;\n"
++ "    font-style: italic;\n"
++ "}\n"
++ "\n"
++ "div.spwidget-filter div.spwidget-column:before,\n"
++ "div.spwidget-filter div.spwidget-column:after {\n"
++ "    content: \"\";\n"
++ "    display: table;\n"
++ "    line-height: 0;\n"
++ "}\n"
++ "div.spwidget-filter div.spwidget-column:after {\n"
++ "    clear: both;\n"
++ "}\n"
++ "\n"
++ "/* Make the type and value stand next to eachother */\n"
++ "div.spwidget-filter div.spwidget-filter-type-cntr,\n"
++ "div.spwidget-filter div.spwidget-filter-value-cntr {\n"
++ "    float: left;\n"
++ "}\n"
++ "div.spwidget-filter div.spwidget-filter-type-cntr {\n"
++ "    width: 20%;\n"
++ "    text-align: right;\n"
++ "    margin-right: .2em;\n"
++ "}\n"
++ "div.spwidget-filter div.spwidget-filter-value-cntr {\n"
++ "    width: 78%;\n"
++ "}\n"
++ "/* CHOICE FIELDS */\n"
++ "div.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input {\n"
++ "    max-height: 6em;\n"
++ "    overflow: auto;\n"
++ "    -moz-appearance: textfield;\n"
++ "    -webkit-appearance: textfield;\n"
++ "    background-color: white;\n"
++ "    background-color: -moz-field;\n"
++ "    border: 1px solid  darkgray;\n"
++ "    box-shadow: 1px 1px 1px 0 lightgray inset;\n"
++ "    font: -moz-field;\n"
++ "    font: -webkit-small-control;\n"
++ "    padding: 2px 5px;\n"
++ "}\n"
++ "div.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input > label {\n"
++ "    display: block;\n"
++ "    padding: .2em;\n"
++ "}\n"
++ "\n"
++ "/** DISABLED COLUMN VALUE CONTAINER */\n"
++ "div.spwidget-filter .spwidget-disabled {\n"
++ "    -ms-filter: \"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)\";\n"
++ "    filter: alpha(opacity=50);\n"
++ "    opacity: 0.5;\n"
++ "}\n"
++ "\n"
++ "/** Button container */\n"
++ "div.spwidget-filter div.spwidget-filter-button-cntr {\n"
++ "    padding: .5em 4em;\n"
++ "    margin-top: .5em;\n"
++ "    text-align: right;\n"
++ "}\n";
+//_HAS_FILTER_CSS_TEMPLATE_
+    
+    /**
+     * @property
+     * Stores the HTML template for each Filter widget.
+     * Value is set at build time.
+     */
+    Filter.htmlTemplate = "<script type=\"text/html\" id=\"filter_main_ui\">\n"
++ "    <div class=\"spwidget-filter\" style=\"display: none;\">\n"
++ "    \n"
++ "        <div class=\"spwidget-filter-column-cntr\">\n"
++ "        </div>\n"
++ "        <div class=\"spwidget-filter-button-cntr\">\n"
++ "            <button type=\"button\" class=\"spwidget-button\">Filter</button>\n"
++ "        </div>\n"
++ "    </div>\n"
++ "</script>\n"
++ "<script type=\"text/html\" id=\"filter_column\">\n"
++ "    <div class=\"spwidget-column spwidget-type-{{type}}\" data-spwidget_column_type=\"{{type}}\">\n"
++ "        <div class=\"spwidget-filter-type-cntr\">\n"
++ "            <label>Match Type</label>\n"
++ "            <select name=\"spwidget_type\" class=\"spwidget-filter-type\" tabindex=\"-1\">\n"
++ "                <option value=\"Contains\" selected=\"selected\">Contains</option>\n"
++ "                <option value=\"Eq\">Equal</option>\n"
++ "                <option value=\"Neq\">Not Equal</option>\n"
++ "                <option value=\"IsNull\">Is Blank</option> \n"
++ "                <option value=\"IsNotNull\">Is Not Blank</option> \n"
++ "            </select>\n"
++ "        </div>\n"
++ "        <div class=\"spwidget-filter-value-cntr\">\n"
++ "            <label>{{DisplayName}}</label>\n"
++ "            <div class=\"spwidget-filter-value-input\">\n"
++ "                __COLUMN__UI__\n"
++ "            </div>\n"
++ "        </div>\n"
++ "    </div>\n"
++ "</script>\n"
++ "<script type=\"text/html\" id=\"filter_text_field\">\n"
++ "    <input name=\"{{Name}}\" title=\"{{DisplayName}}\" type=\"text\" value=\"\" data-spwidget_list=\"{{list}}\" class=\"spwidget-input\" />\n"
++ "    <span class=\"spwidget-tooltip\">{{tooltip}}</span>\n"
++ "</script>\n"
++ "<script type=\"text/html\" id=\"filter_choice_field\">\n"
++ "    <label>\n"
++ "        <input name=\"{{Name}}\" title=\"{{DisplayName}}\" type=\"checkbox\" value=\"{{value}}\" class=\"spwidget-input\" />\n"
++ "        {{value}}\n"
++ "    </label>\n"
++ "</script>\n";
+//_HAS_FILTER_HTML_TEMPLATE_
+    
+})(jQuery); /***** End of module: jquery.SPFilterPanel.js */
 
 
 })(jQuery);
