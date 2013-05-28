@@ -339,7 +339,7 @@ $.pt.pickSPUser.storeListOfUsers = function(ele){
             newVal += ";#";
             newVal += $(this).attr("data-pickSPUserNAME");
         });
-    opt.eleUserInput.val(newVal);
+    opt.eleUserInput.val(newVal).change();
     
     return;
 };// $.pt.pickSPUser.storeListOfUsers()
