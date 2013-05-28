@@ -304,7 +304,7 @@ div.ptNav a.h1link {
 }
 #pt_documentation {
     display: block;
-    padding-left: 26%;
+    margin-left: 26%;
     position: absolute;
     top: 5em;
 }

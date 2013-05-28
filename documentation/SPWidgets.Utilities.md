@@ -233,7 +233,7 @@ A string with the first error found in the XML message.
 
 
 
-$.fn.SPMsgHasError
+$().SPMsgHasError
 -------------------------
 
 A jQuery method (extension of $.fn) that given a SharePoint webservices response object, that given an XML message as returned by the SharePoint WebServices API, will check if it contains an error and return a Boolean indicating that. The XML response object will be checked for errors that might be returned in the following XML elements:

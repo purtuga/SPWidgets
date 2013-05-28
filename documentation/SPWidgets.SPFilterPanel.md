@@ -1,5 +1,5 @@
-SPShowBoard Widget
-==================
+SPFilterPanel Widget
+====================
 
 Given a selector (an html element), this method will insert a UI that allows the user to enter filter criteria for a list. The widgets generates CAML filters from that data that can then be used by the hosting application to do further processing (ex. retrieve data). 
 
