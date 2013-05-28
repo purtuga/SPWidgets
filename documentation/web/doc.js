@@ -45,10 +45,11 @@ $(document).ready(function(){
             '">' + $(this).text() + '</a>';
         i++;
     });
-    $(".ptNav")
+    
+    $("div.ptNav")
+        .append(nav)
         .sticky({
             topSpacing: 10
-        })
-        .append(nav);
+        });
     
 });

@@ -7,7 +7,6 @@ body{
     font-family: Georgia, Palatino, serif;
     color: #444444;
     line-height: 1;
-    max-width: 960px;
     padding: 30px;
 }
 h1, h2, h3, h4 {
@@ -283,24 +282,31 @@ code {
     background-color: rgb(243,245,230);
 }
 
-nav {
+div.ptNav {
     display: block;
     float: left;
     width: 20%;
+    height: 40em;
+    overflow: auto;
 }
-nav a {
+div.ptNav a {
     display:block;
     line-height: 1.5em;
 }
-nav a.h2link {
+div.ptNav a.h2link {
     padding-left: 1.5em;
 }
-nav a.h1link {
+div.ptNav a.h1link {
     margin-top: 1em;
+}
+.ptDocContainer {
+    position: relative;
 }
 #pt_documentation {
     display: block;
-    padding-left: 26%
+    padding-left: 26%;
+    position: absolute;
+    top: 5em;
 }
 span#ptAuthorInfo {
     display: block;
