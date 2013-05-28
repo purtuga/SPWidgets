@@ -1,5 +1,7 @@
 /**
- * @fileOverview    List filter panel widget
+ * @fileOverview - List filter panel widget
+ * 
+ * BUILD: _BUILD_VERSION_DATE_
  * 
  */
 (function($){
@@ -18,9 +20,6 @@
     
     /** @property {jQuery} jQuery object with templates. Loaded from Filter.htmlTemplate during initialization */
     Filter.templates = null; 
-    
-    /** @property {Object} CACHE Object with cached data by key */
-    Filter.CACHE = {};
     
     /**
      * Default options. 
@@ -41,16 +40,16 @@
      * Given a container, this jQuery plugin will attach a user interface
      * that allows the user to define filter criteria for a list.
      * 
-     * @param {Object} options
-     * @param {String} options.list
-     * @param {String} [options.webURL=current site]
-     * @param {Array} [options.columns=['title']]
-     * @param {String} [options.textFieldTooltip='']
+     * @param {Object}  options
+     * @param {String}  options.list
+     * @param {String}  [options.webURL=current site]
+     * @param {Array}   [options.columns=['title']]
+     * @param {String}  [options.textFieldTooltip='']
      * @param {Boolean} [options.showFilterButton=true]
-     * @param {String} [options.filterButtonLabel='Fitler']
-     * @param {String} [options.onFilterClick=null]
-     * @param {String} [options.onReady=null]
-     * @param {String} [options.ignoreKeywords=RegEx]
+     * @param {String}  [options.filterButtonLabel='Fitler']
+     * @param {String}  [options.onFilterClick=null]
+     * @param {String}  [options.onReady=null]
+     * @param {String}  [options.ignoreKeywords=RegEx]
      * 
      * @return {jQuery} this
      * 
