@@ -1,0 +1,91 @@
+/** 
+ * Stylesheet for the Board widget
+ * 
+ * BUILD: _BUILD_VERSION_DATE_
+ */
+div.spwidget-filter {
+    width: 100%;
+    position: relative;
+}
+div.spwidget-filter .spwidgets-lookup-cntr {
+    display: block;
+}
+div.spwidget-filter input[type='text'] {
+    width: 97%;
+}
+div.spwidget-filter div.spwidget-column {
+    padding: 1em;
+    margin: .5em;
+    border-bottom: 1px solid  darkgray;
+    box-shadow: 1px 1px 1px 0 lightgray inset;
+}
+div.spwidget-filter div.spwidget-filter-type-cntr > label,
+div.spwidget-filter div.spwidget-filter-value-cntr > label {
+    display: block;
+    padding: .2em;
+}
+div.spwidget-filter div.spwidget-filter-value-cntr > label {
+    font-size: 1.1em;
+    font-weight: bold;
+}
+div.spwidget-filter .spwidget-tooltip {
+    display: block;
+    font-size: .8em;
+    font-style: italic;
+}
+
+div.spwidget-filter div.spwidget-column:before,
+div.spwidget-filter div.spwidget-column:after {
+    content: "";
+    display: table;
+    line-height: 0;
+}
+div.spwidget-filter div.spwidget-column:after {
+    clear: both;
+}
+
+/* Make the type and value stand next to eachother */
+div.spwidget-filter div.spwidget-filter-type-cntr,
+div.spwidget-filter div.spwidget-filter-value-cntr {
+    float: left;
+}
+div.spwidget-filter div.spwidget-filter-type-cntr {
+    width: 20%;
+    text-align: right;
+    margin-right: .2em;
+}
+div.spwidget-filter div.spwidget-filter-value-cntr {
+    width: 78%;
+}
+/* CHOICE FIELDS */
+div.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input {
+    max-height: 6em;
+    overflow: auto;
+    -moz-appearance: textfield;
+    -webkit-appearance: textfield;
+    background-color: white;
+    background-color: -moz-field;
+    border: 1px solid  darkgray;
+    box-shadow: 1px 1px 1px 0 lightgray inset;
+    font: -moz-field;
+    font: -webkit-small-control;
+    padding: 2px 5px;
+}
+div.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input > label {
+    display: block;
+    padding: .2em;
+}
+
+/** DISABLED COLUMN VALUE CONTAINER */
+div.spwidget-filter .spwidget-disabled {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+    filter: alpha(opacity=50);
+    opacity: 0.5;
+}
+
+/** Button container */
+div.spwidget-filter div.spwidget-filter-button-cntr {
+    padding: .5em 4em;
+    margin-top: .5em;
+    text-align: right;
+}
