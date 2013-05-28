@@ -261,3 +261,51 @@ A Boolean will be returned indicating whether the XML message has an error (true
     }
 
 
+$.SPWidgets.escapeXML
+---------------------
+
+Given a XML or HTML string, this utility will escape the special characters that can impact rendering when displayed as html or xml. 
+(Since v2.1)
+
+### Input Parameters
+
+-   **xmlString**      :   *String. Required* <br />
+    The string to be escaped.
+ 
+### Return Value
+
+-   String. The input parameter is returned with XML characters escaped.
+
+### Example
+    
+    $.SPWidgets.escapeXML("This is <text>.");
+    
+    returns:
+    
+    "This is &lt;text&gt;."
+
+
+$.SPWidgets.unEscapeXML
+-----------------------
+
+Given a string, this utility will un-escape any special characters that were escaped by $.SPWigets.escapeXML. 
+(Since v2.1)
+
+### Input Parameters
+
+-   **xmlString**      :   *String. Required* <br />
+    The string to be un-escaped.
+ 
+### Return Value
+
+-   String. The input parameter is returned with XML characters un-escaped.
+
+### Example
+    
+    $.SPWidgets.escapeXML("This is &lt;text&gt;.");
+    
+    returns:
+    
+    "This is <text>."
+
+
