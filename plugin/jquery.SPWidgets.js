@@ -3,7 +3,7 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *  
- * @version 20130527100409
+ * @version 20130528064928
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  * 
@@ -11,8 +11,8 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date:  May 27, 2013 - 10:04 PM
- * Version:     20130527100409
+ * Build Date:  Paul:May 28, 2013 06:49 PM
+ * Version:     20130528064928
  * 
  */
 ;(function($){
@@ -50,7 +50,7 @@
         }
         
         $.SPWidgets             = {};
-        $.SPWidgets.version     = "20130527100409";
+        $.SPWidgets.version     = "20130528064928";
         $.SPWidgets.defaults    = {};
         
         /**
@@ -526,7 +526,7 @@
  *  -   jQuery-UI Draggable
  * 
  * 
- * BUILD: Paul:May 27, 2013 09:41 PM
+ * BUILD: Paul:May 28, 2013 06:49 PM
  */
 
 ;(function($){
@@ -2100,7 +2100,7 @@
  * THe user, however, is presented with the existing items
  * and has the ability to Remove them and add new ones.
  * 
- * BUILD: Paul:May 27, 2013 09:41 PM
+ * BUILD: Paul:May 28, 2013 06:49 PM
  * 
  */
 
@@ -3118,7 +3118,7 @@
  * on jQuery UI's Autocomplete and SPServices library.
  *      
  *  
- * @version 20130527094135NUMBER_
+ * @version 20130528064928NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
@@ -3126,7 +3126,7 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date Paul:May 27, 2013 09:41 PM
+ * Build Date Paul:May 28, 2013 06:49 PM
  * 
  */
 
@@ -3647,7 +3647,7 @@ $.pt.addHoverEffect = function(ele){
  * through the many SP pages and without having to leave the user's current page.
  *      
  *  
- * @version 20130527035401NUMBER_
+ * @version 20130528064928NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
@@ -3655,7 +3655,7 @@ $.pt.addHoverEffect = function(ele){
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date Paul:May 27, 2013 03:54 PM
+ * Build Date Paul:May 28, 2013 06:49 PM
  * 
  */
 
@@ -4357,7 +4357,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
 /**
  * @fileOverview - List filter panel widget
  * 
- * BUILD: Paul:May 27, 2013 09:41 PM
+ * BUILD: Paul:May 28, 2013 06:49 PM
  * 
  */
 (function($){
@@ -4386,6 +4386,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
         columns:            ['Title'],
         textFieldTooltip:   'Use a semicolon to delimiter multiple keywords.',
         showFilterButton:   true,
+        showStackedUI:      false,
         filterButtonLabel:  "Filter",
         onFilterClick:      null,
         onReady:            null,
@@ -4402,6 +4403,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
      * @param {Array}   [options.columns=['title']]
      * @param {String}  [options.textFieldTooltip='']
      * @param {Boolean} [options.showFilterButton=true]
+     * @param {Boolean} [options.showStackedUI=false]
      * @param {String}  [options.filterButtonLabel='Fitler']
      * @param {String}  [options.onFilterClick=null]
      * @param {String}  [options.onReady=null]
@@ -4573,6 +4575,16 @@ $.pt.SPUploadStyleSheet = "/**\n"
                                     .empty()
                                     .addClass("hasSPFilterPanel")
                             );
+                        
+                        // If showStackedUI is true, then add class that will
+                        // cause the UI to be vertical.
+                        if (Inst.opt.showStackedUI) {
+                            
+                            Inst.$ui
+                                .find("div.spwidget-filter-column-cntr")
+                                .addClass("spwidget-filter-fmt-stacked");
+                            
+                        }
                         
                         // Store list definition
                         Inst.$list = $list;
@@ -5155,7 +5167,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
     Filter.styleSheet = "/** \n"
 + " * Stylesheet for the Board widget\n"
 + " * \n"
-+ " * BUILD: Paul:May 27, 2013 03:54 PM\n"
++ " * BUILD: Paul:May 28, 2013 06:49 PM\n"
 + " */\n"
 + "div.spwidget-filter {\n"
 + "    width: 100%;\n"
@@ -5242,6 +5254,14 @@ $.pt.SPUploadStyleSheet = "/**\n"
 + "    padding: .5em 4em;\n"
 + "    margin-top: .5em;\n"
 + "    text-align: right;\n"
++ "}\n"
++ "\n"
++ "/** Format: stacked */\n"
++ "div.spwidget-filter div.spwidget-filter-fmt-stacked div.spwidget-filter-type-cntr,\n"
++ "div.spwidget-filter div.spwidget-filter-fmt-stacked div.spwidget-filter-value-cntr {\n"
++ "    clear: both;\n"
++ "    width: 100%;\n"
++ "    text-align: left;\n"
 + "}\n";
 //_HAS_FILTER_CSS_TEMPLATE_
     

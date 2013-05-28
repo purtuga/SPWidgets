@@ -30,6 +30,7 @@
         columns:            ['Title'],
         textFieldTooltip:   'Use a semicolon to delimiter multiple keywords.',
         showFilterButton:   true,
+        showStackedUI:      false,
         filterButtonLabel:  "Filter",
         onFilterClick:      null,
         onReady:            null,
@@ -46,6 +47,7 @@
      * @param {Array}   [options.columns=['title']]
      * @param {String}  [options.textFieldTooltip='']
      * @param {Boolean} [options.showFilterButton=true]
+     * @param {Boolean} [options.showStackedUI=false]
      * @param {String}  [options.filterButtonLabel='Fitler']
      * @param {String}  [options.onFilterClick=null]
      * @param {String}  [options.onReady=null]
@@ -217,6 +219,16 @@
                                     .empty()
                                     .addClass("hasSPFilterPanel")
                             );
+                        
+                        // If showStackedUI is true, then add class that will
+                        // cause the UI to be vertical.
+                        if (Inst.opt.showStackedUI) {
+                            
+                            Inst.$ui
+                                .find("div.spwidget-filter-column-cntr")
+                                .addClass("spwidget-filter-fmt-stacked");
+                            
+                        }
                         
                         // Store list definition
                         Inst.$list = $list;

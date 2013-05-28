@@ -72,6 +72,9 @@ The default options for this widget can be manipulated/set via the following obj
 -   **showFilterButton**    :   *Boolean. Optional. Default=true* <br />
     True or false whether a button should be displayed at the bottom of the widget. Default is true. See _filterButtonLabel_ and _onFilterClick_ options for more on the use of this button.
 
+-   **showStackedUI**    :   *Boolean. Optional. Default=false* <br />
+    By default, the UI for each column is to place the Match type to the left of the area where the user defines the filters for the column. Setting this option to true will cause the UI to be presented stacked; where the match type is displayed above the column filter area. Use this options when displaying the Filter Panel in narrow container.
+
 -   **filterButtonLabel**   :   *String. Optional. Default='Filter'* <br />
     The text that will be used in the button at the bottom of the filter panel. Used only when _showFilterButton_ is set to true. If a _onFilterClick_ function is not set, a click event can be set on _button.spwidget-button_
     

@@ -89,3 +89,11 @@ div.spwidget-filter div.spwidget-filter-button-cntr {
     margin-top: .5em;
     text-align: right;
 }
+
+/** Format: stacked */
+div.spwidget-filter div.spwidget-filter-fmt-stacked div.spwidget-filter-type-cntr,
+div.spwidget-filter div.spwidget-filter-fmt-stacked div.spwidget-filter-value-cntr {
+    clear: both;
+    width: 100%;
+    text-align: left;
+}
