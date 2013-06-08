@@ -12,3 +12,11 @@
 .pt-author-cntr .pt-right-col {
     padding-left: 22%;
 }
+
+.pt-widget-menu {
+    max-height: 10em;
+    overflow: auto;
+}
+.pt-widget-menu > a {
+    display: block;
+}
