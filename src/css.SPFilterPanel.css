@@ -50,9 +50,9 @@ div.spwidget-filter div.spwidget-filter-value-cntr {
     float: left;
 }
 div.spwidget-filter div.spwidget-filter-type-cntr {
-    width: 20%;
+    width: 19%;
     text-align: right;
-    margin-right: .2em;
+    margin-right: .5em;
 }
 div.spwidget-filter div.spwidget-filter-value-cntr {
     width: 78%;
