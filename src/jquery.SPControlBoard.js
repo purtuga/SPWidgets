@@ -856,32 +856,14 @@
                                 thisRowID = thisRowID();
                                 
                             }
-    
-                            // If not a refresh, then the entire UI is being
-                            // rebuilt. We'll be working with Strings. 
-                            if (thisOpt.refresh === false) {
-                                
-                                // if INIT is done (true), then capture this as a new
-                                // item on the board (for events)
-                                if (opt.initDone) {
-                                    
-                                    newItems.push(thisListRow);
-                                    
-                                }
-                                
-                                createNewItem(thisListRow);
-                                
-                            // ELSE, must be doing a Refresh and these
-                            // items could already exist on the board.
-                            } else {
-                                
-                                // Try to find this row in the board
-                                boardItemCntr = opt.statesCntr
-                                        .find( "div[data-id='" + thisRowID + "']" );
                             
-                                // If item was NOT found on the board, then
-                                // we're adding it now.
-                                if ( !boardItemCntr.length ) {
+                            // If this state value is on the board (as a column),
+                            // Then proced to build the item into the board.
+                            if (opt.statesMap[thisRowState]) {
+                                
+                                // If not a refresh, then the entire UI is being
+                                // rebuilt. We'll be working with Strings. 
+                                if (thisOpt.refresh === false) {
                                     
                                     // if INIT is done (true), then capture this as a new
                                     // item on the board (for events)
@@ -893,31 +875,55 @@
                                     
                                     createNewItem(thisListRow);
                                     
-                                // Else, item was found on the Board.
+                                // ELSE, must be doing a Refresh and these
+                                // items could already exist on the board.
                                 } else {
                                     
-                                    // Add a temporary class to the item, so that we
-                                    // know a little later (below) that this is still
-                                    // a valid item
-                                    boardItemCntr.addClass("spwidget-temp");
-                                    
-                                    // Check if it should be moved to a new STate (column)
-                                    if (boardItemCntr.closest("div.spwidget-board-state")
-                                            .data("boardstate") !== thisRowState
-                                    ) {
+                                    // Try to find this row in the board
+                                    boardItemCntr = opt.statesCntr
+                                            .find( "div[data-id='" + thisRowID + "']" );
+                                
+                                    // If item was NOT found on the board, then
+                                    // we're adding it now.
+                                    if ( !boardItemCntr.length ) {
                                         
-                                        boardItemCntr.appendTo(opt.statesMap[thisRowState].dataEle);
-                                        chgItems.push(thisListRow);
+                                        // if INIT is done (true), then capture this as a new
+                                        // item on the board (for events)
+                                        if (opt.initDone) {
+                                            
+                                            newItems.push(thisListRow);
+                                            
+                                        }
+                                        
+                                        createNewItem(thisListRow);
+                                        
+                                    // Else, item was found on the Board.
+                                    } else {
+                                        
+                                        // Add a temporary class to the item, so that we
+                                        // know a little later (below) that this is still
+                                        // a valid item
+                                        boardItemCntr.addClass("spwidget-temp");
+                                        
+                                        // Check if it should be moved to a new STate (column)
+                                        if (boardItemCntr.closest("div.spwidget-board-state")
+                                                .data("boardstate") !== thisRowState
+                                        ) {
+                                            
+                                            boardItemCntr.appendTo(opt.statesMap[thisRowState].dataEle);
+                                            chgItems.push(thisListRow);
+                                            
+                                        }
+                                        
+                                        // Refresh the UI for the item with the new data
+                                        createNewItem(thisListRow, boardItemCntr);
                                         
                                     }
                                     
-                                    // Refresh the UI for the item with the new data
-                                    createNewItem(thisListRow, boardItemCntr);
-                                    
-                                }
+                                } //end: if(): is it refresh?
                                 
-                            } //end: if(): is it refresh?
-                            
+                            } //end: if(): Does the state appear on the board?
+                                                    
                         } //end: for() - each thisOpt.rows[]
                         
          // console.timeEnd("Board.ShowItemsOnBoard().each(rows)");
