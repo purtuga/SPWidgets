@@ -25,7 +25,7 @@ This method takes as input an object containing the following options
     The max number of results to be returned from the server.
 
 -   **webURL**     :   *String. Optional. Default=current site* </br />
-    The WebURL for the list. (Since v2.2) 
+    The WebURL for the list. (Since v2.1) 
 
 -   **onPickUser**          :   *Function. Optional. Default=null.* <br />
     Function that is called when user makes a selection. Function will have a context (*this* keyword) of the input field to which this plugin was bound, and will be given one input param; an object containing information about the selection made by the user. This object will contain data returned by the SharePoint's webservice.
@@ -41,7 +41,7 @@ This method takes as input an object containing the following options
     
                                 
 -   **onCreate**            :   *Function. Optional. Default=null.* <br />
-    Function that is called after the widget has been initiated on an input element. Function will have a context (this keyword) of the input field to which this plugin is called on, which will also be provided as the first argument to the function. (Since v2.2)
+    Function that is called after the widget has been initiated on an input element. Function will have a context (this keyword) of the input field to which this plugin is called on, which will also be provided as the first argument to the function. (Since v2.1)
     
     Example:
         
@@ -50,7 +50,7 @@ This method takes as input an object containing the following options
         }
 
 -   **onRemoveUser**    :   *Function. Optional. Default=null.* <br />
-    (Since v2.2) Function that is called when user makes removes a person from the selected list. Function will have a context (*this* keyword) of the input field to which this plugin was bound, and will be given the following two input parameters:
+    (Since v2.1) Function that is called when user makes removes a person from the selected list. Function will have a context (*this* keyword) of the input field to which this plugin was bound, and will be given the following two input parameters:
     
     1.  Original Input field as jQuery object
 
@@ -102,7 +102,7 @@ The following methods are supported:
         $("input[name='user']").pickSPUser("method", "destroy");
     
 -   **add('id;#name')**</br />
-    (Since v2.2) Adds a person to the seletion list. Method accepts one input:
+    (Since v2.1) Adds a person to the seletion list. Method accepts one input:
     
     -   {String} A string with people to add in the format of _id;#name_
     
@@ -112,7 +112,7 @@ The following methods are supported:
         
 
 -   **remove('id')**</br />
-    (Since v2.2) Removes a person from the selection.  Method accepts 1 input paramater:
+    (Since v2.1) Removes a person from the selection.  Method accepts 1 input paramater:
     
     -   {String} The ID or Display Name of the person that should be removed.
     
@@ -125,7 +125,7 @@ The following methods are supported:
         $("input[name='user']").pickSPUser("method", "remove", "John Smith");
         
 -   **getSelected()**</br />
-    (Since v2.2) Returns an Array of objects representing the currently set of selected people.  The array object element will have the following structure:
+    (Since v2.1) Returns an Array of objects representing the currently set of selected people.  The array object element will have the following structure:
         
         {
             id: 'id of person',
@@ -145,7 +145,7 @@ Events
 The following Events are triggered by this widget:
 
 -   **spwidget:peoplePickerCreate**</br />
-    (Since v2.2) Event is triggered after widget is initiated on an element. Event is given two input parameters:
+    (Since v2.1) Event is triggered after widget is initiated on an element. Event is given two input parameters:
     
     1.  jQuery Event Object
     
@@ -160,7 +160,7 @@ The following Events are triggered by this widget:
             .pickSPUser()
 
 -   **spwidget:peoplePickerAdd**</br />
-    (Since v2.2) Event is triggered anytime the user selects a person/group. Event is given three input parameters:
+    (Since v2.1) Event is triggered anytime the user selects a person/group. Event is given three input parameters:
     
     1.  jQuery Event Object
     
@@ -177,7 +177,7 @@ The following Events are triggered by this widget:
             .pickSPUser()
 
 -   **spwidget:peoplePickerRemove**</br />
-    (Since v2.2) Event is triggered anytime the user removes a person/group from the selected list. Returning False (Boolean) will canceld the removal and leave the person in the selected list. Event is given three input parameters:
+    (Since v2.1) Event is triggered anytime the user removes a person/group from the selected list. Returning False (Boolean) will canceld the removal and leave the person in the selected list. Event is given three input parameters:
     
     1.  jQuery Event Object
     
