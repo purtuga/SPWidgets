@@ -734,7 +734,7 @@ DEPLOYING TO: ${me.deploy.location}
         <delete verbose="true">
             <fileset dir="${build.src}" includes="**${/}*.min.*"/>
         </delete>
-        <java jar="${tool.jscompiler.jar}" fork="true" dir="${build.src}${/}">
+        <java jar="${tool.jscompiler.jar}" fork="true" dir="${build.src}${/}" failonerror="true">
             <arg value="--js='${build.src}${/}${build.dist.baseFileName}.js'" />
             <arg value="--js_output_file='${build.src}${/}${build.dist.baseFileName}.min.js'" />
         </java>
