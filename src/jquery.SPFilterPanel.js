@@ -789,7 +789,7 @@
             
             filters.CAMLQuery = $.SPWidgets.getCamlLogical({
                                     type:   'AND',
-                                    values: colFilters,
+                                    values: colFilters
                                 });
             
         } else if (filters.count === 1 ) {
