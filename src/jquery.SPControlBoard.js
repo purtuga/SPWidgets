@@ -103,21 +103,20 @@
      *                  field from where Board was built is optional in the
      *                  List. 
      * 
-     * @param {String|Function|Element|jQuery} [options.template="<div></div>"]
+     * @param {String|Function} [options.template="<div></div>"]
      *                  The HTML template that will be used to for displaying
-     *                  items on the board. The HTML will be used with jQuery's
-     *                  .wrapInner() method and will use the Title field to
-     *                  populate the inner nodes.
+     *                  items on the board. The HTML can be defined with tokens
+     *                  in the format of {{Column_Internal_Name}}.
      *                  When defining a Function, it will be called with
-     *                  a context of the item container on board that
-     *                  should receive the content and be given two
-     *                  input parameters: an object with the list item
-     *                  and the original element that the board was bound
-     *                  to.
+     *                  a context of the board Html Element container and be
+     *                  given two input params:
+     *                  1. Item data object
+     *                  2. Null || jQuery object
+     * 
      *                  Example:
      * 
-     *                      function(listItem, board){
-     *                          // this = jQuery - List Item container within the board.
+     *                      function(listItemObj, $ItemUI){
+     *                          // this = jQuery - the container of the board.
      *                      } 
      * 
      * @param {String} [options.webURL=$().SPServices.SPGetCurrentSite()]
@@ -1819,6 +1818,8 @@
                                 cursor:         "move",
                                 tolerance:      "pointer",
                                 opacity:        ".80",
+                                placeholder:    "ui-state-highlight spwidget-board-placeholder",
+                                forcePlaceholderSize: true,
                                 remove:         function(ev, ui){
                                     
                                     $.SPWidgets.makeSameHeight(

@@ -50,8 +50,8 @@ div.spwidget-board div.spwidget-board-state-item div.spwidget-board-item-actions
     overflow: hidden;
     text-align: center;
 }
-div.spwidget-board div.spwidget-board-state-item .spwidget-board-handle {
-    
+div.spwidget-board .spwidget-board-placeholder {
+    height: 3em;
 }
 
 /** Setting container */
