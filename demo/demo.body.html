@@ -104,7 +104,6 @@
             </div>
         </div>
         
-        
     </div>
     
     <div id="SPControlListFilterPanel">
@@ -117,10 +116,15 @@
         <p>
             The demo below uses the Tasks list and displays the CAML query below 
             the filter panel when the Filter button is clicked.</p>
-        <div class="spwidgets-list-filter">
-            
+        <div style="padding: .5em; margin-bottom: 2em;margin-top:2em;">
+            <div style="margin-bottom: 1em;">Use slider below to test width of container holding the filter panel and see how the content adjusts to the new width.</div>
+            <div class="ui-widget-content spwidgets-list-filter-slider-value" style="text-align:center;width:5em;padding:.5em;margin:.2em;font-size:1.5em;font-weight:bold;">100%</div>
+            <div class="spwidgets-list-filter-width" style="width: 50%;"></div>
         </div>
-        <div class="spwidgets-list-filter-query">
+        <div class="spwidgets-list-filter ui-widget-content" style="padding: .5em;">
+        </div>
+        <div class="spwidgets-list-filter-query" style="margin-top:2em;padding:.5em;">
+            <div>Click filter button above to see CAML generated from filter values entered above.</div>
             <textarea name="camlquery" style="width: 98%; height: 200px;"></textarea>
         </div>
         
