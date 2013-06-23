@@ -262,6 +262,10 @@
                                 
                             }
                             
+                            
+                            // Set some default model values
+                            model.Name = $thisCol.attr("Name");
+                            
                             // Build the column ui based on its type
                             switch ($thisCol.attr("Type")) {
                                 
@@ -289,7 +293,8 @@
                                         thisColUI,
                                         {
                                             DisplayName: $thisCol.attr("DisplayName"),
-                                            type:        'choice'
+                                            type:        'choice',
+                                            Name:        $thisCol.attr("Name")
                                         }
                                     );
                                     
@@ -365,7 +370,12 @@
                                 var $field = $(this);
                                 
                                 $field.SPLookupField({
-                                    list: $field.data("spwidget_list")
+                                    list:           $field.data("spwidget_list"),
+                                    template:       '<div>{{Title}} <span class="spwidgets-item-remove">[x]</span></div>',
+                                    listTemplate:   '{{Title}}',
+                                    allowMultiples: true,
+                                    readOnly:       false,
+                                    filter:         ''
                                 });
                                 
                                 $field.parent().find(".spwidget-tooltip").remove();
