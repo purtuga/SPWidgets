@@ -39,7 +39,10 @@
         optionalLabel:  '(none)',
         template:       null,
         webURL:         $().SPServices.SPGetCurrentSite(),
-        columnPicker:   false,
+        showColPicker:  false,
+        colPickerLabel: "Columns",
+        colPickerCloseLabel:    "Close",
+        colPickerApplyLabel:    "Apply",
         onGetListItems: null,
         onPreUpdate:    null,
         onBoardCreate:  null
@@ -120,13 +123,22 @@
      * @param {String} [options.webURL=$().SPServices.SPGetCurrentSite()]
      *                  The WebURL for the list.
      * 
-     * @param {Boolean} [options.columnPicker=false]
+     * @param {Boolean} [options.showColPicker=false]
      *                  If true, the column picker option will be displayed
      *                  on the page. Allows user to pick which column are
      *                  visible/hidden.
      *                  Note: This option is automatically turned to True
      *                  if the number of columns available is greater than
      *                  10. 
+     * 
+     * @param {String} [options.colPickerLabel="Columns"]
+     *                  The label for the column picker button.
+     * 
+     * @param {String} [options.colPickerCloseLabel="Close"]
+     *                  The label for the column picker pop-up close button
+     * 
+     * @param {String} [options.colPickerApplyLabel="Apply"]
+     *                  The label for the column picker pop-up apply button
      * 
      * @param {Function} [options.onGetListItems=null]
      *                  Callback function to be called after data has been
@@ -1322,15 +1334,65 @@
                          */
                         Picker.setSelected = function() {
                             
-                            // TODO: finish method
-                            // SHould this method be setup on the instance? (opt)
+                            var $columns = $colList.find("a");
+                            
+                            $.each(opt.states, function(i, colDef){
+                                
+                                var $thisCol = $columns.filter(
+                                                "[data-board_col_index='" + i + "']" );
+                                
+                                if (colDef.isVisible) {
+                                    
+                                    Picker.selectColumn($thisCol, false);
+                                    
+                                } else {
+                                    
+                                    Picker.selectColumn($thisCol, true);
+                                    
+                                }
+                                
+                            });
                             
                         }; //end: Picker.setSelected()
+                        
+                        /**
+                         * Sets the columns (an <a> anchor) to either
+                         * selected or not selected
+                         * 
+                         * @param {HTMLElement} colEle
+                         * @param {Boolean} unSelect
+                         * 
+                         * @return {HTMLElement} anchor 
+                         */
+                        Picker.selectColumn = function(colEle, unSelect){
+                            
+                            var $a      = $(colEle),
+                                $icon   = $a.find(".ui-icon");
+                            
+                            if ($a.hasClass("ui-state-highlight") || unSelect) {
+                                
+                                if (unSelect !== false) {
+                                    
+                                    $icon.removeClass("ui-icon-check");
+                                    $a.removeClass("ui-state-highlight");
+                                    
+                                }
+                                
+                            } else {
+                                
+                                $icon.addClass("ui-icon-check");
+                                $a.addClass("ui-state-highlight");
+                                
+                            }
+                            
+                            return colEle;
+                            
+                        }; //end: Picker.selectColumn()
                         
                         // Setup apply button
                         $colCntr.find("button[name='apply']")
                             .button({
-                                text: "Apply",
+                                label: opt.colPickerApplyLabel,
                                 icons: {
                                     secondary: "ui-icon-circle-check"
                                 }
@@ -1356,13 +1418,14 @@
                                 // Hide container
                                 $colCntr.hide();
                                 
-                                // FIXME: Apply columns
+                                // Apply columns
                                 $.each(opt.states, function(i, colDef){
                                     
                                     if ($selected.filter("[data-board_col_index='" + i + "']").length) {
                                         
                                         if (colDef.isVisible === false) {
                                             
+                                            colDef.isVisible = true;
                                             colDef.dataEle.css("display", "");
                                             colDef.headerEle.css("display", "");
                                             
@@ -1384,6 +1447,7 @@
                         
                         // Setup Close button
                         $colCntr.find("button[name='close']")
+                            .attr("title", opt.colPickerCloseLabel)
                             .button({
                                 text: false,
                                 icons: {
@@ -1405,6 +1469,7 @@
                                     var $btn = $(this);
                                     
                                     $btn.button({
+                                        label: opt.colPickerLabel,
                                         icons: {
                                             secondary: "ui-icon-triangle-1-s"
                                         }
@@ -1417,10 +1482,13 @@
                                             
                                         } else {
                                             
+                                            Picker.setSelected();
+                                            
                                             $colCntr.show()
                                                 .position({
-                                                    my: "top left",
-                                                    at: "top left"
+                                                    my: "left top",
+                                                    at: "left bottom",
+                                                    of: $btn
                                                 });
                                             
                                         }
@@ -1452,26 +1520,17 @@
                             })
                             .on("click", "a", function(){
                                 
-                                var $a      = $(this),
-                                    $icon   = $a.find(".ui-icon");
-                                
-                                if ($icon.hasClass("ui-icon-check")) {
-                                    
-                                    $icon.removeClass("ui-icon-check");
-                                    $a.removeClass("ui-state-highlight");
-                                    
-                                } else {
-                                    
-                                    $icon.addClass("ui-icon-check");
-                                    $a.addClass("ui-state-highlight");
-                                    
-                                }
+                                Picker.selectColumn(this);
                                 
                             });
                         
                     } //end: opt.setupColumnPicker()
                     
             });//end: $.extend() set opt
+            
+            //----------------------------------------------------------
+            //----------------[ Initialize this instance ]--------------
+            //----------------------------------------------------------
             
             // Check for Required params
             if ( !opt.list || !opt.field ) {
@@ -1511,7 +1570,7 @@
                 // ELSE, must be higher than 10... Force columnsPicker. 
                 } else {
                     
-                    opt.columnPicker = true;
+                    opt.showColPicker = true;
                     
                 }
                 
@@ -1568,8 +1627,8 @@
                 $(opt.headersCntr,opt.statesCntr)
                     .append('<div style="clear:both;"></div>');
                 
-                // If columnPicker is true, then show the column selector
-                if (opt.columnPicker === true) {
+                // If showColPicker is true, then show the column selector
+                if (opt.showColPicker === true) {
                     
                     opt.setupColumnPicker();
                     
