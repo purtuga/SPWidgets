@@ -25,16 +25,17 @@
      * Default options. 
      */
     $.SPWidgets.defaults.filter = {
-        list:               '',
-        webURL:             $().SPServices.SPGetCurrentSite(),
-        columns:            ['Title'],
-        textFieldTooltip:   'Use a semicolon to delimiter multiple keywords.',
-        showFilterButton:   true,
-        showStackedUI:      false,
-        filterButtonLabel:  "Filter",
-        onFilterClick:      null,
-        onReady:            null,
-        ignoreKeywords:     /^(of|and|a|an|to|by|the|or|from)$/i
+        list:                   '',
+        webURL:                 $().SPServices.SPGetCurrentSite(),
+        columns:                ['Title'],
+        textFieldTooltip:       'Use a semicolon to delimiter multiple keywords.',
+        showFilterButton:       true,
+        showFilterButtonTop:    true,
+        showStackedUI:          false,
+        filterButtonLabel:      "Filter",
+        onFilterClick:          null,
+        onReady:                null,
+        ignoreKeywords:         /^(of|and|a|an|to|by|the|or|from)$/i
     };
     
     /**
@@ -47,6 +48,7 @@
      * @param {Array}   [options.columns=['title']]
      * @param {String}  [options.textFieldTooltip='']
      * @param {Boolean} [options.showFilterButton=true]
+     * @param {Boolean} [options.showFilterButtonTop=true]
      * @param {Boolean} [options.showStackedUI=false]
      * @param {String}  [options.filterButtonLabel='Fitler']
      * @param {String}  [options.onFilterClick=null]
@@ -395,17 +397,45 @@
                             });
                         
                         // Setup the Button on the UI (if applicable)
-                        if (Inst.opt.showFilterButton) {
+                        if (Inst.opt.showFilterButton || Inst.opt.showFilterButtonTop) {
                             
-                            Inst.$ui
-                                .find("div.spwidget-filter-button-cntr button")
-                                    .button({
-                                        icons: {
-                                            primary: "ui-icon-search"
-                                        },
-                                        label: Inst.opt.filterButtonLabel
-                                    })
-                                    .on("click", Filter.onFilterButtonClick);
+                            Inst.$ui.find("div.spwidget-filter-button-cntr")
+                                .each(function(){
+                                    
+                                    var $btnCntr  = $(this),
+                                        $btn      = $();
+                                    
+                                    // If Top button is true, clone adn insert at top
+                                    if (Inst.opt.showFilterButtonTop) {
+                                        
+                                        $btn = $btn
+                                                .add( $btnCntr.clone(true) )
+                                                .prependTo( Inst.$ui );
+                                        
+                                    }
+                                    
+                                    // If BOttom Button is true, then added to
+                                    // group selection... if not, then remove it.
+                                    if (Inst.opt.showFilterButton) {
+                                        
+                                        $btn = $btn.add( $btnCntr );
+                                        
+                                    } else {
+                                        
+                                        $btnCntr.remove();
+                                        
+                                    }
+                                    
+                                    $btn.find("button")
+                                        .button({
+                                            icons: {
+                                                primary: "ui-icon-search"
+                                            },
+                                            label: Inst.opt.filterButtonLabel
+                                        })
+                                        .on("click", Filter.onFilterButtonClick);
+                                    
+                                });
                             
                         // Else, remove button container
                         } else {
