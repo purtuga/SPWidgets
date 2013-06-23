@@ -291,9 +291,12 @@
     // Kan-Ban Board
     $("#SPControlBoardDemo div.spwidget-board-demo-cntr")
         .SPShowBoard({
-            list:           "Tasks",
-            field:          "Status",
-            columnPicker:   true
+            list:                   "Tasks",
+            field:                  "Status",
+            showColPicker:          true,
+            colPickerLabel:         "Choose Columns",
+            colPickerCloseLabel:    "Close Picker",
+            colPickerApplyLabel:    "Change"
         });
     
     
