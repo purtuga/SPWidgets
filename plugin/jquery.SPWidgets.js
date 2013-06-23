@@ -3,7 +3,7 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *  
- * @version 20130615061754
+ * @version 20130623052801
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  * 
@@ -11,8 +11,8 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date:  June 15, 2013 - 06:17 PM
- * Version:     20130615061754
+ * Build Date:  June 23, 2013 - 05:28 PM
+ * Version:     20130623052801
  * 
  */
 ;(function($){
@@ -50,7 +50,7 @@
         }
         
         $.SPWidgets             = {};
-        $.SPWidgets.version     = "20130615061754";
+        $.SPWidgets.version     = "20130623052801";
         $.SPWidgets.defaults    = {};
         
         /**
@@ -526,7 +526,7 @@
  *  -   jQuery-UI Draggable
  * 
  * 
- * BUILD: Paul:June 15, 2013 03:35 PM
+ * BUILD: June 23, 2013 - 04:37 PM
  */
 
 ;(function($){
@@ -536,11 +536,15 @@
     /*global SPWidgets */
     
     /**
-     * @class 
+     * @class Baard
      */
     var Board   = {};
     
+    /** @property {Boolean} */
     Board.initDone = false;
+    
+    /** @property {Integer} The max number of columns that can be built (not displayed) */
+    Board.maxColumns = 20;
     
     /**
      * Board widget default options. 
@@ -554,6 +558,10 @@
         optionalLabel:  '(none)',
         template:       null,
         webURL:         $().SPServices.SPGetCurrentSite(),
+        showColPicker:  false,
+        colPickerLabel: "Columns",
+        colPickerCloseLabel:    "Close",
+        colPickerApplyLabel:    "Apply",
         onGetListItems: null,
         onPreUpdate:    null,
         onBoardCreate:  null
@@ -614,25 +622,41 @@
      *                  field from where Board was built is optional in the
      *                  List. 
      * 
-     * @param {String|Function|Element|jQuery} [options.template="<div></div>"]
+     * @param {String|Function} [options.template="<div></div>"]
      *                  The HTML template that will be used to for displaying
-     *                  items on the board. The HTML will be used with jQuery's
-     *                  .wrapInner() method and will use the Title field to
-     *                  populate the inner nodes.
+     *                  items on the board. The HTML can be defined with tokens
+     *                  in the format of {{Column_Internal_Name}}.
      *                  When defining a Function, it will be called with
-     *                  a context of the item container on board that
-     *                  should receive the content and be given two
-     *                  input parameters: an object with the list item
-     *                  and the original element that the board was bound
-     *                  to.
+     *                  a context of the board Html Element container and be
+     *                  given two input params:
+     *                  1. Item data object
+     *                  2. Null || jQuery object
+     * 
      *                  Example:
      * 
-     *                      function(listItem, board){
-     *                          // this = jQuery - List Item container within the board.
+     *                      function(listItemObj, $ItemUI){
+     *                          // this = jQuery - the container of the board.
      *                      } 
      * 
      * @param {String} [options.webURL=$().SPServices.SPGetCurrentSite()]
      *                  The WebURL for the list.
+     * 
+     * @param {Boolean} [options.showColPicker=false]
+     *                  If true, the column picker option will be displayed
+     *                  on the page. Allows user to pick which column are
+     *                  visible/hidden.
+     *                  Note: This option is automatically turned to True
+     *                  if the number of columns available is greater than
+     *                  10. 
+     * 
+     * @param {String} [options.colPickerLabel="Columns"]
+     *                  The label for the column picker button.
+     * 
+     * @param {String} [options.colPickerCloseLabel="Close"]
+     *                  The label for the column picker pop-up close button
+     * 
+     * @param {String} [options.colPickerApplyLabel="Apply"]
+     *                  The label for the column picker pop-up apply button
      * 
      * @param {Function} [options.onGetListItems=null]
      *                  Callback function to be called after data has been
@@ -839,6 +863,7 @@
                 $.SPWidgets.defaults.board,
                 options,
                 {
+                    ele:                ele,
                     states:             [], // List of states
                     statesMap:          {}, // Map of State->object in states[]
                     tmpltHeader:        '', // Header template
@@ -849,6 +874,7 @@
                     initDone:           false,
                     formUrls:           null, // Object with url's to form. Used by opt.getListFormUrl()
                     isStateRequired:    true,
+                    showNumberOfColumns: 10,
                     /**
                      * Populates the opt.stats and opt.statesMap by 
                      * pulling info. from the List definition
@@ -883,11 +909,18 @@
                                         f       = resp.find("Fields Field[StaticName='" + opt.field + "']");
                                     
                                     // If we did not find the field by internal name, try external.
+                                    // If we found it by Display name, then lets change the
+                                    // field value... We need internal name for referencing
+                                    // item column values.
                                     if (!f.length) {
                                         
                                         f = resp.find("Fields Field[DisplayName='" + opt.field + "']");
-                                    
+                                        
+                                        opt.field = f.attr("StaticName");
+                                            
                                     }
+                                    
+                                    // TODO: what if field is not found in list definition?
                                     
                                     // store if field is required
                                     if ( f.attr("Required") === "FALSE" ) {
@@ -919,7 +952,8 @@
                                             
                                             }
                                             
-                                            f.find("CHOICES CHOICE").each(function(){
+                                            f.find("CHOICES CHOICE").each(function(i,v){
+                                                
                                                 var thisChoice = $(this).text();
                                                 
                                                 // if there i sa filter and this column
@@ -928,6 +962,20 @@
                                                     if (!$.grep(opt.fieldFilter, function(e){ return (e === thisChoice); }).length) {
                                                         return;
                                                     }
+                                                }
+                                                
+                                                // If we reached a max column number, exit here.
+                                                if (i >= Board.maxColumns){
+                                                    
+                                                    try { 
+                                                        console.log(
+                                                            "SPWIDGETS:BOARD:Warning: Can only build a max of " + 
+                                                            Board.maxColumns + " columns!");
+                                                    
+                                                    } catch(e){ }
+                                                    
+                                                    return false;
+                                                    
                                                 }
                                                 
                                                 opt.states.push({
@@ -962,6 +1010,7 @@
                                                 async:          true,
                                                 cacheXML:       true,
                                                 CAMLQuery:      opt.fieldFilter,
+                                                webURL:         opt.webURL,
                                                 CAMLRowLimit:   0,
                                                 CAMLViewFields: 
                                                     '<ViewFields>' +
@@ -1008,7 +1057,21 @@
                                                     
                                                     // Loop thorugh all rows and build the
                                                     // array of states.
-                                                    resp.SPFilterNode("z:row").each(function(){
+                                                    resp.SPFilterNode("z:row").each(function(i,v){
+                                                        
+                                                        // If we reached a max column number, exit here.
+                                                        if (i >= Board.maxColumns){
+                                                            
+                                                            try { 
+                                                                console.log(
+                                                                    "SPWIDGETS:BOARD:Warning: Can only build a max of " + 
+                                                                    Board.maxColumns + " columns!");
+                                                            
+                                                            } catch(e){ }
+                                                            
+                                                            return false;
+                                                            
+                                                        }
                                                         
                                                         var thisRow     = $(this),
                                                             thisId      = thisRow.attr("ows_ID"),
@@ -1026,7 +1089,6 @@
                                                         opt.statesMap[thisName] = opt.states[opt.states.length - 1];
                                                         
                                                     });
-                                                    
                                                     
                                                     dfd.resolveWith(opt, [xData, status]);
                                                     
@@ -1117,6 +1179,7 @@
                                     CAMLQuery:      opt.CAMLQuery,
                                     CAMLRowLimit:   0, // FIXME: SP data should be paged??
                                     CAMLViewFields: opt.CAMLViewFields,
+                                    webURL:         opt.webURL,
                                     completefunc:   function(xData, status){
                                         
                                         // Process Errors
@@ -1157,9 +1220,6 @@
                                 });//end: SPServices
                                 
                             } //end: else: do SPServices call
-                            
-                            
-                            
                             
                         }).promise();
                         
@@ -1343,10 +1403,10 @@
                         if (!thisOpt.refresh) {
                             
                             for(x=0,y=opt.states.length; x<y; x++){
-                                
+
                                 opt.states[x].headerTotalEle.html("0");
                                 opt.states[x].dataEle.empty();
-                                
+
                             }
                             
                         }
@@ -1694,9 +1754,301 @@
                         
                         return ( opt.formUrls[type] || "" );
                         
-                    } // end: opt.getListFormUrl()
+                    }, // end: opt.getListFormUrl()
+                    
+                    /**
+                     * Sets the class on the board based on the number
+                     * of columns displayed.
+                     * 
+                     * @param {Integer} colCount
+                     *      Number of columns. If not defined, then this
+                     *      method will loop through opt.states to determine
+                     *      what is visible
+                     * 
+                     * @return {Object} opt 
+                     */
+                    setBoardColumnClass: function(colCount) {
+                        
+                        var $colCntr = opt.headersCntr.add(opt.statesCntr);
+                        
+                        colCount = parseInt( colCount );
+                        
+                        if (!colCount || colCount < 2) {
+                            
+                            colCount = 0;
+                            
+                            $.each(opt.states, function(i, colDef){
+                                
+                                if (colDef.isVisible) {
+
+                                    colCount++;
+                                    
+                                }
+                                
+                            });
+                            
+                        }
+                        
+                        if (opt.showNumberOfColumns === colCount) {
+                            
+                            return opt;
+                            
+                        }
+                        
+                        // Add the new class...
+                        $colCntr.addClass("spwidget-states-" + colCount);
+                        
+                        if (opt.showNumberOfColumns) {
+                            
+                            $colCntr.removeClass(
+                                "spwidget-states-" + opt.showNumberOfColumns);
+                            
+                        }
+                        
+                        opt.showNumberOfColumns = colCount;
+                        
+                        return opt;
+                                                
+                    }, //end: opt.setBoardColumnClass()
+                    
+                    /**
+                     * Sets up the button for the Column picker 
+                     */
+                    setupColumnPicker: function(){
+                        
+                        var $colCntr = ele.find(".spwidget-board-column-list-cntr"),
+                            $colList = $colCntr.find("div.spwidget-board-column-list"),
+                            Picker   = {};
+                        
+                        /**
+                         * Returns a jQuery object with the list of columns
+                         * selected by the user (anchors <a>)
+                         *  
+                         * @return {jQuery}
+                         */
+                        Picker.getSelected = function() {
+                            
+                            return $colList.find("a.ui-state-highlight");
+                            
+                        }; //end: Picker.getSelected()
+                        
+                        /**
+                         * Shows a message on the picker
+                         *  
+                         */
+                        Picker.showMessage = function(msg) {
+                            
+                            $('<div class="spwidget-board-msg ui-state-error">' +
+                                    msg + '</div>')
+                                .appendTo($colList)
+                                .fadeOut(8000, function(){
+                                    $(this).remove();
+                                });
+                            
+                        }; 
+                        
+                        /**
+                         * Sets the currently displayed columns on the picker 
+                         */
+                        Picker.setSelected = function() {
+                            
+                            var $columns = $colList.find("a");
+                            
+                            $.each(opt.states, function(i, colDef){
+                                
+                                var $thisCol = $columns.filter(
+                                                "[data-board_col_index='" + i + "']" );
+                                
+                                if (colDef.isVisible) {
+                                    
+                                    Picker.selectColumn($thisCol, false);
+                                    
+                                } else {
+                                    
+                                    Picker.selectColumn($thisCol, true);
+                                    
+                                }
+                                
+                            });
+                            
+                        }; //end: Picker.setSelected()
+                        
+                        /**
+                         * Sets the columns (an <a> anchor) to either
+                         * selected or not selected
+                         * 
+                         * @param {HTMLElement} colEle
+                         * @param {Boolean} unSelect
+                         * 
+                         * @return {HTMLElement} anchor 
+                         */
+                        Picker.selectColumn = function(colEle, unSelect){
+                            
+                            var $a      = $(colEle),
+                                $icon   = $a.find(".ui-icon");
+                            
+                            if ($a.hasClass("ui-state-highlight") || unSelect) {
+                                
+                                if (unSelect !== false) {
+                                    
+                                    $icon.removeClass("ui-icon-check");
+                                    $a.removeClass("ui-state-highlight");
+                                    
+                                }
+                                
+                            } else {
+                                
+                                $icon.addClass("ui-icon-check");
+                                $a.addClass("ui-state-highlight");
+                                
+                            }
+                            
+                            return colEle;
+                            
+                        }; //end: Picker.selectColumn()
+                        
+                        // Setup apply button
+                        $colCntr.find("button[name='apply']")
+                            .button({
+                                label: opt.colPickerApplyLabel,
+                                icons: {
+                                    secondary: "ui-icon-circle-check"
+                                }
+                            })
+                            .on("click", function(ev){
+                                
+                                var $selected   = Picker.getSelected(),
+                                    colNum      = $selected.length;
+                                
+                                // validate
+                                if (colNum > 10) {
+                                    
+                                    Picker.showMessage("Max Exceeded!")
+                                    return;
+                                    
+                                } else if (colNum < 2) {
+                                    
+                                    Picker.showMessage("Min Not Met!")
+                                    return;
+                                    
+                                }
+                                
+                                // Hide container
+                                $colCntr.hide();
+                                
+                                // Apply columns
+                                $.each(opt.states, function(i, colDef){
+                                    
+                                    if ($selected.filter("[data-board_col_index='" + i + "']").length) {
+                                        
+                                        if (colDef.isVisible === false) {
+                                            
+                                            colDef.isVisible = true;
+                                            colDef.dataEle.css("display", "");
+                                            colDef.headerEle.css("display", "");
+                                            
+                                        }
+                                        
+                                    } else {
+                                        
+                                        colDef.isVisible = false;
+                                        colDef.dataEle.css("display", "none");
+                                        colDef.headerEle.css("display", "none");
+                                        
+                                    }
+                                    
+                                });
+                                
+                                opt.setBoardColumnClass(colNum);
+                                
+                            });
+                        
+                        // Setup Close button
+                        $colCntr.find("button[name='close']")
+                            .attr("title", opt.colPickerCloseLabel)
+                            .button({
+                                text: false,
+                                icons: {
+                                    primary: "ui-icon-circle-close"
+                                }
+                            })
+                            .on("click", function(ev){
+                                
+                                $colCntr.hide();
+                                
+                            });
+                        
+                        // Setup the columns button
+                        ele.find("div.spwidget-board-settings")
+                            .css("display", "")
+                            .find("div.spwidget-board-settings-columns")
+                                .each(function(){
+                                    
+                                    var $btn = $(this);
+                                    
+                                    $btn.button({
+                                        label: opt.colPickerLabel,
+                                        icons: {
+                                            secondary: "ui-icon-triangle-1-s"
+                                        }
+                                    })
+                                    .on("click.SPWidgets", function(){
+                                        
+                                        if ($colCntr.is(":visible")) {
+                                            
+                                            $colCntr.hide();
+                                            
+                                        } else {
+                                            
+                                            Picker.setSelected();
+                                            
+                                            $colCntr.show()
+                                                .position({
+                                                    my: "left top",
+                                                    at: "left bottom",
+                                                    of: $btn
+                                                });
+                                            
+                                        }
+                                        
+                                    });
+                                    
+                                    return false;
+                                    
+                                });
+                        
+                        // Setup the Column choices in the popup
+                        $colList.each(function(){
+                                    
+                                var $cntr   = $(this),
+                                    columns = "";
+                                
+                                $.each(opt.states, function(i,colDef){
+                                    
+                                    columns += '<a href="javascript:" data-board_col_index="' +
+                                        i + '"><span class="ui-icon ui-icon-minus"></span>' +
+                                        '<span>' + colDef.title + '</span></a>';
+                                    
+                                });
+                                
+                                $cntr.html(columns);
+                                
+                                return false;
+                                
+                            })
+                            .on("click", "a", function(){
+                                
+                                Picker.selectColumn(this);
+                                
+                            });
+                        
+                    } //end: opt.setupColumnPicker()
                     
             });//end: $.extend() set opt
+            
+            //----------------------------------------------------------
+            //----------------[ Initialize this instance ]--------------
+            //----------------------------------------------------------
             
             // Check for Required params
             if ( !opt.list || !opt.field ) {
@@ -1709,11 +2061,8 @@
             // Store instance object and mark element "loading"
             ele.addClass("loadingSPShowBoard").data("SPShowBoardOptions", opt);
             
-            
             // get board states from the table definition
             opt.getBoardStates().then(function(){
-                
-                ele.removeClass("loadingSPShowBoard").addClass("hasSPShowBoard");
                 
                 // Populate the element with the board template
                 ele.html($(Board.htmlTemplate).filter("div.spwidget-board"));
@@ -1729,15 +2078,36 @@
                                     ele.find("div.spwidget-board-states-cntr div.spwidget-board-state")
                                 )
                                 .html();
-                            
+                
+                // Set the number of columns to display
+                // If less then 11, then set it to that number
+                if (opt.states.length < 11) {
+                    
+                    opt.showNumberOfColumns = opt.states.length;
+                    
+                // ELSE, must be higher than 10... Force columnsPicker. 
+                } else {
+                    
+                    opt.showColPicker = true;
+                    
+                }
+                
                 // Get pointers to the containers in the UI
-                opt.statesCntr  = ele.find("div.spwidget-board-states-cntr")
-                                .addClass("spwidget-states-" + opt.states.length)
-                                .empty();
+                opt.statesCntr  = ele
+                                    .find("div.spwidget-board-states-cntr")
+                                        .addClass(
+                                            "spwidget-states-" + 
+                                            opt.showNumberOfColumns
+                                        )
+                                        .empty();
                                 
-                opt.headersCntr = ele.find("div.spwidget-board-headers-cntr")
-                                .addClass("spwidget-states-" + opt.states.length)
-                                .empty();
+                opt.headersCntr = ele
+                                    .find("div.spwidget-board-headers-cntr")
+                                        .addClass(
+                                            "spwidget-states-" + 
+                                            opt.showNumberOfColumns
+                                        )
+                                        .empty();
                 
                 // Build the board columns
                 $.each(opt.states, function(i,v){
@@ -1756,11 +2126,32 @@
                                         .appendTo(v.headerEle)
                                         .find("span.spwidget-state-item-total");
                     
-                });
+                    // Create variable to track if column is visible
+                    v.isVisible = true;
+                    
+                    // If the index is greater than 9 (10 columns) then Column
+                    // must be hidden - only support 10 columns.
+                    if (i > 9) {
+                        
+                        v.headerEle.css("display", "none");
+                        v.dataEle.css("display", "none");
+                        v.isVisible = false;
+                        
+                    }
+                    
+                }); //end: .each()
                 
+                // Insert element to clear float elements
                 $(opt.headersCntr,opt.statesCntr)
                     .append('<div style="clear:both;"></div>');
-    
+                
+                // If showColPicker is true, then show the column selector
+                if (opt.showColPicker === true) {
+                    
+                    opt.setupColumnPicker();
+                    
+                }
+               
                 // Create listeners on the board.
                 ele
                     // Bind function to sortable events so that headers stay updated
@@ -1841,6 +2232,7 @@
                                 async:          true,
                                 ID:             itemId,
                                 valuepairs:     evData.updates,
+                                webURL:         opt.webURL,
                                 completefunc:   function(xData, status){
                                     
                                     // Process Errors
@@ -1945,6 +2337,8 @@
                                 cursor:         "move",
                                 tolerance:      "pointer",
                                 opacity:        ".80",
+                                placeholder:    "ui-state-highlight spwidget-board-placeholder",
+                                forcePlaceholderSize: true,
                                 remove:         function(ev, ui){
                                     
                                     $.SPWidgets.makeSameHeight(
@@ -1961,7 +2355,12 @@
                         
                         opt.initDone = true;
                         
-                        $.SPWidgets.makeSameHeight( opt.statesCntr.find("div.spwidget-board-state"), 20 );
+                        $.SPWidgets.makeSameHeight(
+                            opt.statesCntr.find("div.spwidget-board-state"), 20 );
+                        
+                        // remove temp class and set
+                        ele.addClass("hasSPShowBoard")
+                            .removeClass("loadingSPShowBoard");
                         
                     });
             
@@ -1982,7 +2381,7 @@
     Board.styleSheet = "/** \n"
 + " * Stylesheet for the Board widget\n"
 + " * \n"
-+ " * BUILD: Paul:May 26, 2013 09:24 PM\n"
++ " * BUILD: June 23, 2013 - 01:54 PM\n"
 + " */\n"
 + "div.spwidget-board {\n"
 + "    width: 100%;\n"
@@ -2031,8 +2430,45 @@
 + "    overflow: hidden;\n"
 + "    text-align: center;\n"
 + "}\n"
-+ "div.spwidget-board div.spwidget-board-state-item .spwidget-board-handle {\n"
-+ "    \n"
++ "div.spwidget-board .spwidget-board-placeholder {\n"
++ "    height: 3em;\n"
++ "}\n"
++ "\n"
++ "/** Setting container */\n"
++ "div.spwidget-board-settings {\n"
++ "    font-size: .8em;\n"
++ "    margin: .2em;\n"
++ "}\n"
++ "div.spwidget-board-settings div.spwidget-board-column-list-cntr {\n"
++ "    z-index: 5;\n"
++ "    position: absolute;\n"
++ "}\n"
++ "div.spwidget-board-settings div.spwidget-board-column-list-cntr > div {\n"
++ "    padding: .2em;\n"
++ "}\n"
++ "div.spwidget-board-settings div.spwidget-board-column-list-cntr > div:first-child,\n"
++ "div.spwidget-board-settings div.spwidget-board-column-list-cntr > div:last-child {\n"
++ "    text-align: right;\n"
++ "}\n"
++ "div.spwidget-board-settings div.spwidget-board-column-list {\n"
++ "    width: 20em;\n"
++ "    height: 17em;\n"
++ "    overflow: auto;\n"
++ "    position: relative\n"
++ "}\n"
++ "div.spwidget-board-settings div.spwidget-board-column-list > .spwidget-board-msg {\n"
++ "    position: absolute;\n"
++ "    top: 0px;\n"
++ "    right: 0px;\n"
++ "    padding: .2em 1.5em;\n"
++ "}\n"
++ "div.spwidget-board-settings div.spwidget-board-column-list > a {\n"
++ "    display: block;\n"
++ "    margin: .2em;\n"
++ "    padding: .2em;\n"
++ "}\n"
++ "div.spwidget-board-settings div.spwidget-board-column-list > a > span.ui-icon {\n"
++ "    display: inline-block;\n"
 + "}\n"
 + "\n"
 + "/* Number of Columns (96 % #columns)\n"
@@ -2071,6 +2507,19 @@
      * Value is set at build time.
      */
     Board.htmlTemplate = "<div class=\"spwidget-board\">\n"
++ "    <div class=\"spwidget-board-settings\" style=\"display:none;\">\n"
++ "        <div class='spwidget-board-settings-columns'>Columns</div>\n"
++ "        <div class=\"spwidget-board-column-list-cntr ui-widget-content ui-corner-all\" style=\"display: none\">\n"
++ "            <div class=\"ui-state-default\">\n"
++ "                <button type=\"button\" name=\"close\" title=\"Close\">close</button>\n"
++ "            </div>\n"
++ "            <div class=\"spwidget-board-column-list\">\n"
++ "            </div>\n"
++ "            <div class=\"ui-state-default\">\n"
++ "                <button type=\"button\" name=\"apply\">Apply</button>\n"
++ "            </div>\n"
++ "        </div>\n"
++ "    </div>\n"
 + "    <div class=\"spwidget-board-headers\">\n"
 + "        <div class=\"spwidget-board-headers-cntr ui-widget-content ui-corner-all\">\n"
 + "            <div class=\"spwidget-board-state ui-widget-content ui-corner-all\"></div>\n"
@@ -2106,7 +2555,7 @@
  * THe user, however, is presented with the existing items
  * and has the ability to Remove them and add new ones.
  * 
- * BUILD: Paul:June 15, 2013 03:35 PM
+ * BUILD: June 23, 2013 - 04:12 PM
  * 
  */
 
@@ -3124,7 +3573,7 @@
  * on jQuery UI's Autocomplete and SPServices library.
  *      
  *  
- * @version 20130615060020NUMBER_
+ * @version 20130623041246NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
@@ -3132,7 +3581,7 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date Paul:June 15, 2013 06:00 PM
+ * Build Date June 23, 2013 - 04:12 PM
  * 
  */
 
@@ -3946,7 +4395,7 @@ $.pt.addHoverEffect = function(ele){
  * through the many SP pages and without having to leave the user's current page.
  *      
  *  
- * @version 20130615030248NUMBER_
+ * @version 20130623015412NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
@@ -3954,7 +4403,7 @@ $.pt.addHoverEffect = function(ele){
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date Paul:June 15, 2013 03:02 PM
+ * Build Date June 23, 2013 - 01:54 PM
  * 
  */
 
@@ -4656,7 +5105,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
 /**
  * @fileOverview - List filter panel widget
  * 
- * BUILD: Paul:June 15, 2013 06:16 PM
+ * BUILD: June 23, 2013 - 04:14 PM
  * 
  */
 (function($){
@@ -4680,16 +5129,17 @@ $.pt.SPUploadStyleSheet = "/**\n"
      * Default options. 
      */
     $.SPWidgets.defaults.filter = {
-        list:               '',
-        webURL:             $().SPServices.SPGetCurrentSite(),
-        columns:            ['Title'],
-        textFieldTooltip:   'Use a semicolon to delimiter multiple keywords.',
-        showFilterButton:   true,
-        showStackedUI:      false,
-        filterButtonLabel:  "Filter",
-        onFilterClick:      null,
-        onReady:            null,
-        ignoreKeywords:     /^(of|and|a|an|to|by|the|or|from)$/i
+        list:                   '',
+        webURL:                 $().SPServices.SPGetCurrentSite(),
+        columns:                ['Title'],
+        textFieldTooltip:       'Use a semicolon to delimiter multiple keywords.',
+        showFilterButton:       true,
+        showFilterButtonTop:    true,
+        showStackedUI:          false,
+        filterButtonLabel:      "Filter",
+        onFilterClick:          null,
+        onReady:                null,
+        ignoreKeywords:         /^(of|and|a|an|to|by|the|or|from)$/i
     };
     
     /**
@@ -4702,6 +5152,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
      * @param {Array}   [options.columns=['title']]
      * @param {String}  [options.textFieldTooltip='']
      * @param {Boolean} [options.showFilterButton=true]
+     * @param {Boolean} [options.showFilterButtonTop=true]
      * @param {Boolean} [options.showStackedUI=false]
      * @param {String}  [options.filterButtonLabel='Fitler']
      * @param {String}  [options.onFilterClick=null]
@@ -4917,6 +5368,10 @@ $.pt.SPUploadStyleSheet = "/**\n"
                                 
                             }
                             
+                            
+                            // Set some default model values
+                            model.Name = $thisCol.attr("Name");
+                            
                             // Build the column ui based on its type
                             switch ($thisCol.attr("Type")) {
                                 
@@ -4944,7 +5399,8 @@ $.pt.SPUploadStyleSheet = "/**\n"
                                         thisColUI,
                                         {
                                             DisplayName: $thisCol.attr("DisplayName"),
-                                            type:        'choice'
+                                            type:        'choice',
+                                            Name:        $thisCol.attr("Name")
                                         }
                                     );
                                     
@@ -5020,7 +5476,12 @@ $.pt.SPUploadStyleSheet = "/**\n"
                                 var $field = $(this);
                                 
                                 $field.SPLookupField({
-                                    list: $field.data("spwidget_list")
+                                    list:           $field.data("spwidget_list"),
+                                    template:       '<div>{{Title}} <span class="spwidgets-item-remove">[x]</span></div>',
+                                    listTemplate:   '{{Title}}',
+                                    allowMultiples: true,
+                                    readOnly:       false,
+                                    filter:         ''
                                 });
                                 
                                 $field.parent().find(".spwidget-tooltip").remove();
@@ -5040,17 +5501,45 @@ $.pt.SPUploadStyleSheet = "/**\n"
                             });
                         
                         // Setup the Button on the UI (if applicable)
-                        if (Inst.opt.showFilterButton) {
+                        if (Inst.opt.showFilterButton || Inst.opt.showFilterButtonTop) {
                             
-                            Inst.$ui
-                                .find("div.spwidget-filter-button-cntr button")
-                                    .button({
-                                        icons: {
-                                            primary: "ui-icon-search"
-                                        },
-                                        label: Inst.opt.filterButtonLabel
-                                    })
-                                    .on("click", Filter.onFilterButtonClick);
+                            Inst.$ui.find("div.spwidget-filter-button-cntr")
+                                .each(function(){
+                                    
+                                    var $btnCntr  = $(this),
+                                        $btn      = $();
+                                    
+                                    // If Top button is true, clone adn insert at top
+                                    if (Inst.opt.showFilterButtonTop) {
+                                        
+                                        $btn = $btn
+                                                .add( $btnCntr.clone(true) )
+                                                .prependTo( Inst.$ui );
+                                        
+                                    }
+                                    
+                                    // If BOttom Button is true, then added to
+                                    // group selection... if not, then remove it.
+                                    if (Inst.opt.showFilterButton) {
+                                        
+                                        $btn = $btn.add( $btnCntr );
+                                        
+                                    } else {
+                                        
+                                        $btnCntr.remove();
+                                        
+                                    }
+                                    
+                                    $btn.find("button")
+                                        .button({
+                                            icons: {
+                                                primary: "ui-icon-search"
+                                            },
+                                            label: Inst.opt.filterButtonLabel
+                                        })
+                                        .on("click", Filter.onFilterButtonClick);
+                                    
+                                });
                             
                         // Else, remove button container
                         } else {
@@ -5466,7 +5955,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
     Filter.styleSheet = "/** \n"
 + " * Stylesheet for the Board widget\n"
 + " * \n"
-+ " * BUILD: Paul:June 15, 2013 03:02 PM\n"
++ " * BUILD: June 23, 2013 - 12:43 PM\n"
 + " */\n"
 + "div.spwidget-filter {\n"
 + "    width: 100%;\n"
@@ -5475,30 +5964,25 @@ $.pt.SPUploadStyleSheet = "/**\n"
 + "div.spwidget-filter .spwidgets-lookup-cntr {\n"
 + "    display: block;\n"
 + "}\n"
-+ "div.spwidget-filter input[type='text'] {\n"
++ "div.spwidget-filter input[type='text'],\n"
++ "div.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input {\n"
 + "    width: 97%;\n"
 + "}\n"
 + "div.spwidget-filter div.spwidget-column {\n"
 + "    padding: 1em;\n"
 + "    margin: .5em;\n"
++ "    position: relative;\n"
 + "    border-bottom: 1px solid  darkgray;\n"
 + "    box-shadow: 1px 1px 1px 0 lightgray inset;\n"
 + "}\n"
-+ "div.spwidget-filter div.spwidget-filter-type-cntr > label,\n"
-+ "div.spwidget-filter div.spwidget-filter-value-cntr > label {\n"
-+ "    display: block;\n"
-+ "    padding: .2em;\n"
++ "div.spwidget-filter div.spwidget-filter-type-cntr {\n"
++ "    margin-right: 3%;\n"
++ "    float: right;\n"
 + "}\n"
-+ "div.spwidget-filter div.spwidget-filter-value-cntr > label {\n"
-+ "    font-size: 1.1em;\n"
-+ "    font-weight: bold;\n"
++ "div.spwidget-filter div.spwidget-filter-value-cntr {\n"
++ "    margin-top: .5em;\n"
++ "    width: 100%;\n"
 + "}\n"
-+ "div.spwidget-filter .spwidget-tooltip {\n"
-+ "    display: block;\n"
-+ "    font-size: .8em;\n"
-+ "    font-style: italic;\n"
-+ "}\n"
-+ "\n"
 + "div.spwidget-filter div.spwidget-column:before,\n"
 + "div.spwidget-filter div.spwidget-column:after {\n"
 + "    content: \"\";\n"
@@ -5508,20 +5992,20 @@ $.pt.SPUploadStyleSheet = "/**\n"
 + "div.spwidget-filter div.spwidget-column:after {\n"
 + "    clear: both;\n"
 + "}\n"
++ "div.spwidget-filter div.spwidget-filter-value-cntr > label {\n"
++ "    display: block;\n"
++ "    padding: .2em;\n"
++ "    font-size: 1.1em;\n"
++ "    font-weight: bold;\n"
++ "}\n"
++ "div.spwidget-filter .spwidget-tooltip {\n"
++ "    display: block;\n"
++ "    font-size: .8em;\n"
++ "    font-style: italic;\n"
++ "}\n"
 + "\n"
-+ "/* Make the type and value stand next to eachother */\n"
-+ "div.spwidget-filter div.spwidget-filter-type-cntr,\n"
-+ "div.spwidget-filter div.spwidget-filter-value-cntr {\n"
-+ "    float: left;\n"
-+ "}\n"
-+ "div.spwidget-filter div.spwidget-filter-type-cntr {\n"
-+ "    width: 19%;\n"
-+ "    text-align: right;\n"
-+ "    margin-right: .5em;\n"
-+ "}\n"
-+ "div.spwidget-filter div.spwidget-filter-value-cntr {\n"
-+ "    width: 78%;\n"
-+ "}\n"
++ "\n"
++ "\n"
 + "/* CHOICE FIELDS */\n"
 + "div.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input {\n"
 + "    max-height: 6em;\n"
@@ -5550,18 +6034,11 @@ $.pt.SPUploadStyleSheet = "/**\n"
 + "\n"
 + "/** Button container */\n"
 + "div.spwidget-filter div.spwidget-filter-button-cntr {\n"
-+ "    padding: .5em 4em;\n"
++ "    padding: .5em 4%;\n"
 + "    margin-top: .5em;\n"
 + "    text-align: right;\n"
 + "}\n"
-+ "\n"
-+ "/** Format: stacked */\n"
-+ "div.spwidget-filter div.spwidget-filter-fmt-stacked div.spwidget-filter-type-cntr,\n"
-+ "div.spwidget-filter div.spwidget-filter-fmt-stacked div.spwidget-filter-value-cntr {\n"
-+ "    clear: both;\n"
-+ "    width: 100%;\n"
-+ "    text-align: left;\n"
-+ "}\n";
++ "\n";
 //_HAS_FILTER_CSS_TEMPLATE_
     
     /**
@@ -5571,9 +6048,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
      */
     Filter.htmlTemplate = "<script type=\"text/html\" id=\"filter_main_ui\">\n"
 + "    <div class=\"spwidget-filter\" style=\"display: none;\">\n"
-+ "    \n"
-+ "        <div class=\"spwidget-filter-column-cntr\">\n"
-+ "        </div>\n"
++ "        <div class=\"spwidget-filter-column-cntr\"></div>\n"
 + "        <div class=\"spwidget-filter-button-cntr\">\n"
 + "            <button type=\"button\" class=\"spwidget-button\">Filter</button>\n"
 + "        </div>\n"
@@ -5581,9 +6056,8 @@ $.pt.SPUploadStyleSheet = "/**\n"
 + "</script>\n"
 + "<script type=\"text/html\" id=\"filter_column\">\n"
 + "    <div class=\"spwidget-column spwidget-type-{{type}}\" data-spwidget_column_type=\"{{type}}\">\n"
-+ "        <div class=\"spwidget-filter-type-cntr\">\n"
-+ "            <label>Match Type</label>\n"
-+ "            <select name=\"spwidget_type\" class=\"spwidget-filter-type\" tabindex=\"-1\">\n"
++ "        <div class=\"spwidget-filter-type-cntr\" title=\"Match Type\">\n"
++ "            <select name=\"{{Name}}_type\" class=\"spwidget-filter-type\" tabindex=\"-1\">\n"
 + "                <option value=\"Contains\" selected=\"selected\">Contains</option>\n"
 + "                <option value=\"Eq\">Equal</option>\n"
 + "                <option value=\"Neq\">Not Equal</option>\n"
