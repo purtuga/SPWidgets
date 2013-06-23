@@ -291,8 +291,9 @@
     // Kan-Ban Board
     $("#SPControlBoardDemo div.spwidget-board-demo-cntr")
         .SPShowBoard({
-            list:   "Tasks",
-            field:  "Status"
+            list:           "Tasks",
+            field:          "Status",
+            columnPicker:   true
         });
     
     
