@@ -54,6 +54,43 @@ div.spwidget-board div.spwidget-board-state-item .spwidget-board-handle {
     
 }
 
+/** Setting container */
+div.spwidget-board-settings {
+    font-size: .8em;
+    margin: .2em;
+}
+div.spwidget-board-settings div.spwidget-board-column-list-cntr {
+    z-index: 5;
+    position: absolute;
+}
+div.spwidget-board-settings div.spwidget-board-column-list-cntr > div {
+    padding: .2em;
+}
+div.spwidget-board-settings div.spwidget-board-column-list-cntr > div:first-child,
+div.spwidget-board-settings div.spwidget-board-column-list-cntr > div:last-child {
+    text-align: right;
+}
+div.spwidget-board-settings div.spwidget-board-column-list {
+    width: 20em;
+    height: 17em;
+    overflow: auto;
+    position: relative
+}
+div.spwidget-board-settings div.spwidget-board-column-list > .spwidget-board-msg {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    padding: .2em 1.5em;
+}
+div.spwidget-board-settings div.spwidget-board-column-list > a {
+    display: block;
+    margin: .2em;
+    padding: .2em;
+}
+div.spwidget-board-settings div.spwidget-board-column-list > a > span.ui-icon {
+    display: inline-block;
+}
+
 /* Number of Columns (96 % #columns)
  * Currently support 10 columns. 
  */
