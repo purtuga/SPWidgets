@@ -559,7 +559,10 @@
     	</java>
     	
     	<mkdir dir="${build.doc}${/}html" />
-    	<apply executable="perl" addsourcefile="true">
+    	
+        <echo message="Running Markdown..."/>
+    	
+    	<apply executable="perl" addsourcefile="true" errorproperty="markdown.error">
             <arg line="${tool.Markdown}"/>
             <!-- Collect the md-files -->
             <fileset dir="${build.doc}" includes="*.md"/>
@@ -570,6 +573,7 @@
                     to="${build.doc}${/}html${/}*.md.html"/>
             </redirector>
         </apply>
+        <echo message="Markdown Done! ${line.separator} ${markdown.error}"/>
         
         <!-- Concatenate all help files and added it to the html file -->
         <concat destfile="${build.tmp}${/}all.doc.md.html" append="false">
