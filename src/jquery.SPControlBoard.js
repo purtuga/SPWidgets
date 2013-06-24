@@ -43,6 +43,7 @@
         colPickerLabel: "Columns",
         colPickerCloseLabel:    "Close",
         colPickerApplyLabel:    "Apply",
+        colPickerCheckLabel:    "Check-Uncheck All",
         onGetListItems: null,
         onPreUpdate:    null,
         onBoardCreate:  null
@@ -1359,36 +1360,41 @@
                          * selected or not selected
                          * 
                          * @param {HTMLElement} colEle
+                         *          Single html element or an array of elements
                          * @param {Boolean} unSelect
                          * 
                          * @return {HTMLElement} anchor 
                          */
                         Picker.selectColumn = function(colEle, unSelect){
                             
-                            var $a      = $(colEle),
-                                $icon   = $a.find(".ui-icon");
-                            
-                            if ($a.hasClass("ui-state-highlight") || unSelect) {
+                            $(colEle).each(function(){
                                 
-                                if (unSelect !== false) {
+                                var $a      = $(this),
+                                    $icon   = $a.find(".ui-icon");
+                                
+                                if ($a.hasClass("ui-state-highlight") || unSelect) {
                                     
-                                    $icon.removeClass("ui-icon-check");
-                                    $a.removeClass("ui-state-highlight");
+                                    if (unSelect !== false) {
+                                        
+                                        $icon.removeClass("ui-icon-check");
+                                        $a.removeClass("ui-state-highlight");
+                                        
+                                    }
+                                    
+                                } else {
+                                    
+                                    $icon.addClass("ui-icon-check");
+                                    $a.addClass("ui-state-highlight");
                                     
                                 }
                                 
-                            } else {
-                                
-                                $icon.addClass("ui-icon-check");
-                                $a.addClass("ui-state-highlight");
-                                
-                            }
+                            });
                             
                             return colEle;
                             
                         }; //end: Picker.selectColumn()
                         
-                        // Setup apply button
+                        // Setup Picker apply button
                         $colCntr.find("button[name='apply']")
                             .button({
                                 label: opt.colPickerApplyLabel,
@@ -1442,9 +1448,39 @@
                                 
                                 opt.setBoardColumnClass(colNum);
                                 
+                                // Adjust the board columns height
+                                $.SPWidgets.makeSameHeight(
+                                        opt.statesCntr
+                                            .find("div.spwidget-board-state:visible"), 20 );
+                                
                             });
                         
-                        // Setup Close button
+                        // Setup Picker CHECK button
+                        $colCntr.find("button[name='check']")
+                            .attr("title", opt.colPickerCheckLabel)
+                            .button({
+                                text: false,
+                                icons: {
+                                    primary: "ui-icon-check"
+                                }
+                            })
+                            .on("click", function(ev){
+                                
+                                var $sel = Picker.getSelected(); 
+                                
+                                if ($sel.length) {
+                                    
+                                    Picker.selectColumn($sel, true);
+                                    
+                                } else {
+                                    
+                                    Picker.selectColumn( $colList.find("a") );
+                                    
+                                }
+                                
+                            });
+                        
+                        // Setup Picker Close button
                         $colCntr.find("button[name='close']")
                             .attr("title", opt.colPickerCloseLabel)
                             .button({

@@ -197,7 +197,11 @@ The default options for this widget can be manipulated/set via the following obj
     
 -   **colPickerApplyLabel** :   *String. Optional. Default="Apply"* <br>
     The label for the column picker pop-up apply button.  (Since v2.1)
-    
+
+
+-   **colPickerCheckLabel** :   *String. Optional. Default="Check-Uncheck All"* <br>
+    The label for the column picker pop-up Check/UnCheck all button.  (Since v2.1)
+
     
 -   **onGetListItems**     :  *Function. Optional. Default=null* <br>
     Callback function to be called after data has been
