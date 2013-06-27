@@ -30,6 +30,8 @@ div.spwidget-board div.spwidget-board-headers-cntr div.spwidget-board-state {
     text-align: center;
     font-weight: bold;
     font-size: 1.1em;
+    overflow: hidden;
+    word-wrap: break-word;
 }
 div.spwidget-board div.spwidget-board-states div.spwidget-board-state {
     margin-bottom: 1em;
@@ -76,11 +78,14 @@ div.spwidget-board-settings div.spwidget-board-column-list {
     overflow: auto;
     position: relative
 }
-div.spwidget-board-settings div.spwidget-board-column-list > .spwidget-board-msg {
+div.spwidget-board-settings div.spwidget-board-column-list-cntr .spwidget-board-msg {
     position: absolute;
-    top: 0px;
-    right: 0px;
-    padding: .2em 1.5em;
+    top: 1px;
+    left: 1px;
+    padding: .2em;
+}
+div.spwidget-board-settings div.ui-state-default {
+    position: relative;
 }
 div.spwidget-board-settings div.spwidget-board-column-list > a {
     display: block;
