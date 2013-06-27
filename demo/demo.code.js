@@ -290,6 +290,15 @@
     
     // Kan-Ban Board
     $("#SPControlBoardDemo div.spwidget-board-demo-cntr")
+        .on("spwidget:boardColumnChange", function(ev, $board, colObj){
+            
+            try {
+                
+                console.log("spwidget:boardColumnChange = Columns changed:" + colObj.join(" | "));
+                
+            } catch(e) {}
+            
+        })
         .SPShowBoard({
             list:                   "Tasks",
             field:                  "Status",
