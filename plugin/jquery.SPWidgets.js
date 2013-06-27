@@ -3,7 +3,7 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *  
- * @version 20130623052801
+ * @version 20130626090631
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  * 
@@ -11,8 +11,8 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date:  June 23, 2013 - 05:28 PM
- * Version:     20130623052801
+ * Build Date:  June 26, 2013 - 09:06 PM
+ * Version:     20130626090631
  * 
  */
 ;(function($){
@@ -50,7 +50,7 @@
         }
         
         $.SPWidgets             = {};
-        $.SPWidgets.version     = "20130623052801";
+        $.SPWidgets.version     = "20130626090631";
         $.SPWidgets.defaults    = {};
         
         /**
@@ -526,7 +526,7 @@
  *  -   jQuery-UI Draggable
  * 
  * 
- * BUILD: June 23, 2013 - 04:37 PM
+ * BUILD: June 26, 2013 - 07:39 PM
  */
 
 ;(function($){
@@ -550,21 +550,26 @@
      * Board widget default options. 
      */
     $.SPWidgets.defaults.board = {
-        list:           '',
-        field:          '',
-        CAMLQuery:      '<Query></Query>',
-        CAMLViewFields: '',
-        fieldFilter:    null,
-        optionalLabel:  '(none)',
-        template:       null,
-        webURL:         $().SPServices.SPGetCurrentSite(),
-        showColPicker:  false,
-        colPickerLabel: "Columns",
+        list:                   '',
+        field:                  '',
+        CAMLQuery:              '<Query></Query>',
+        CAMLViewFields:         '',
+        fieldFilter:            null,
+        optionalLabel:          '(none)',
+        template:               null,
+        webURL:                 $().SPServices.SPGetCurrentSite(),
+        showColPicker:          false,
+        colPickerLabel:         "Columns",
+        colPickerVisible:       [],
         colPickerCloseLabel:    "Close",
         colPickerApplyLabel:    "Apply",
-        onGetListItems: null,
-        onPreUpdate:    null,
-        onBoardCreate:  null
+        colPickerCheckLabel:    "Check-Uncheck All",
+        colPickerTotalLabel:    "Selected.",
+        colPickerMaxColMsg:     "Can not exceed 10 columns!",
+        colPickerMinColMsg:     "Mininum of 2 required!",
+        onGetListItems:         null,
+        onPreUpdate:            null,
+        onBoardCreate:          null
     };
     
     /**
@@ -649,14 +654,31 @@
      *                  if the number of columns available is greater than
      *                  10. 
      * 
+     * @param {Array} [options.colPickerVisible=[]]
+     *                  The list of board columns that should be visible. Used
+     *                  only when showColPicker is true.
+     * 
      * @param {String} [options.colPickerLabel="Columns"]
      *                  The label for the column picker button.
      * 
      * @param {String} [options.colPickerCloseLabel="Close"]
      *                  The label for the column picker pop-up close button
      * 
+     * @param {String} [options.colPickerCheckLabel="Apply"]
+     *                  Label for the Check all/uncheck all
+     * 
      * @param {String} [options.colPickerApplyLabel="Apply"]
      *                  The label for the column picker pop-up apply button
+     * 
+     * @param {String} [options.colPickerMaxColMsg="Can not exceed 10 columns!"]
+     *                  Message to display when more than 10 columns were selected
+     * 
+     * @param {String} [options.colPickerMinColMsg="Minimum of 2 required!"]
+     *                  Message to display when less then 2 columsn were selected
+     * 
+     * @param {String} [options.colPickerTotalLabel="Selected."]
+     *                  The label for the number of column selected text on
+     *                  the column picker popup. 
      * 
      * @param {Function} [options.onGetListItems=null]
      *                  Callback function to be called after data has been
@@ -692,10 +714,15 @@
      *                      data.updatePromise - A jQuery.Promise that represents
      *                          the update that will be made. This can be used to
      *                          bind on additional functionality. The queued functions
-     *                          will be given the List Item object as well as the
-     *                          xml resposne returned from the update. The context of
-     *                          object will be the HTML element from where the update
-     *                          was triggered.
+     *                          will be given the following as input:
+     *                          
+     *                              updatePromise.then(function(newItemObj, oldItemObj, xData){
+     *                                  // this = jQuery of the row container on the board
+     *                              })
+     * 
+     *                          -   The update item object (as returned by SP)
+     *                          -   current item object (the one used to display the item on the board)
+     *                          -   XML Document of the response from SP (xData)
      * 
      *                  The function should return a boolean indicating whether the
      *                  update should be canceled. True will cancel the update.
@@ -764,6 +791,22 @@
      *                                 item/widget binding.  The objects's .itemsModified attribute
      *                                 will contain an array of Objects that were removed.
      * 
+     * spwidget:boardColumnChange -   Event triggered when columns on the board are changed. 
+     *                              Event will be given the following input params:
+     *                              1) jQuery: the event object (jquery)
+     *                              2) jQuery: the board container (DOM element)
+     *                              3) Object of Column Names currently visible. Key is internal
+     *                                 static name, while value is the external visible name.
+     *                                 For boards created from CHOICE values, key and value is
+     *                                 the same.
+     *                              
+     *                              $("#board")
+     *                                  .on(
+     *                                      "spwidget:boardColumnChange",
+     *                                      function($board, columnsObj){
+     *                                          //this = $board object
+     *                                      })
+     * 
      * 
      * 
      * 
@@ -783,6 +826,11 @@
      *                  widget will be refreshed.
      * 
      *                  $().SPShowBoard("redraw");
+     * 
+     * setVisible   -   Sets which Board columns should be visible.  Method takes
+     *                  as input an array of board column values (the visible name)
+     * 
+     *                  $().SPShowBoard("setVisible", ['Not Started', 'Completed']);
      * 
      * 
      * // TODO: Destroy method (must remove all event bindings)
@@ -811,6 +859,10 @@
             
         }
         
+        // Capture original set of input arguments.
+        var args = arguments;
+        
+        // Attach the board to each element
         return this.each(function(){
             
             var ele         = $(this),
@@ -843,8 +895,17 @@
                 } else if (method === "redraw") {
                     
                     board.statesCntr.find("div.spwidget-board-state").sortable("refresh");
-                    $.SPWidgets.makeSameHeight( board.statesCntr.find("div.spwidget-board-state"), 20 );
+                    board.setBoardColumnHeight();
 
+                //*** SETVISIBLE ***\\
+                } else if (method === "setvisible") {
+                    
+                    if (board.showColPicker) {
+                        
+                        board.setUserDefinedVisibleCol( args[1] );
+                        
+                    }
+                    
                 }//end: if(): methods
                 
                 return this;
@@ -874,7 +935,8 @@
                     initDone:           false,
                     formUrls:           null, // Object with url's to form. Used by opt.getListFormUrl()
                     isStateRequired:    true,
-                    showNumberOfColumns: 10,
+                    maxColumnVisible:   10,
+                    showNumberOfColumns: 10,    // number of columns shown on the board
                     /**
                      * Populates the opt.stats and opt.statesMap by 
                      * pulling info. from the List definition
@@ -1566,8 +1628,8 @@
                                     .end()
                                 .disableSelection();
                                 
-                            $.SPWidgets.makeSameHeight( opt.statesCntr.find("div.spwidget-board-state"), 20 );
-    
+                            opt.setBoardColumnHeight();
+                            
                             // Get a new event object
                             evData = opt.getEventObject();
                             
@@ -1654,9 +1716,9 @@
                     /**
                      * Returns an object with data about the board that can
                      * be used to pass along to events.
-                     * @class
                      * 
-                     * @param {jQuery|HTMLElement} uiItemEle    The board item to initiate the event object from.
+                     * @param {jQuery|HTMLElement} [uiItemEle]
+                     *      The board item to initiate the event object from.
                      * 
                      * @return {Object}
                      * 
@@ -1812,13 +1874,33 @@
                     }, //end: opt.setBoardColumnClass()
                     
                     /**
-                     * Sets up the button for the Column picker 
+                     * Sets up the button for the Column picker.
                      */
                     setupColumnPicker: function(){
                         
-                        var $colCntr = ele.find(".spwidget-board-column-list-cntr"),
-                            $colList = $colCntr.find("div.spwidget-board-column-list"),
-                            Picker   = {};
+                        var $colCntr    = ele.find(".spwidget-board-column-list-cntr"),
+                            $colList    = $colCntr.find("div.spwidget-board-column-list"),
+                            $colFooter  = $colCntr.children("div.ui-state-default:last"),
+                            Picker      = {
+                                $totalCntr:     $colCntr.find("span.spwidget-board-column-total")
+                            };
+                        
+                        
+                        /**
+                         * SEts the total selected on the picker and returns
+                         * that total to the caller.
+                         * 
+                         * @return {Integer} 
+                         */
+                        Picker.setTotalSelected = function(){
+                            
+                            var total = Picker.getSelected().length;
+                            
+                            Picker.$totalCntr.html(total);
+                            
+                            return total;
+                            
+                        }; //end: Picker.setTotalSelected()
                         
                         /**
                          * Returns a jQuery object with the list of columns
@@ -1838,9 +1920,9 @@
                          */
                         Picker.showMessage = function(msg) {
                             
-                            $('<div class="spwidget-board-msg ui-state-error">' +
+                            $('<div class="spwidget-board-msg ui-state-error ui-corner-all">' +
                                     msg + '</div>')
-                                .appendTo($colList)
+                                .appendTo($colFooter)
                                 .fadeOut(8000, function(){
                                     $(this).remove();
                                 });
@@ -1852,7 +1934,7 @@
                          */
                         Picker.setSelected = function() {
                             
-                            var $columns = $colList.find("a");
+                            var $columns    = $colList.find("a");
                             
                             $.each(opt.states, function(i, colDef){
                                 
@@ -1871,6 +1953,8 @@
                                 
                             });
                             
+                            Picker.setTotalSelected();
+                            
                         }; //end: Picker.setSelected()
                         
                         /**
@@ -1878,36 +1962,184 @@
                          * selected or not selected
                          * 
                          * @param {HTMLElement} colEle
+                         *          Single html element or an array of elements
+                         * 
                          * @param {Boolean} unSelect
+                         *          If true, then the column, regardless of its
+                         *          current display setting, will be un-selected. 
                          * 
                          * @return {HTMLElement} anchor 
                          */
                         Picker.selectColumn = function(colEle, unSelect){
                             
-                            var $a      = $(colEle),
-                                $icon   = $a.find(".ui-icon");
-                            
-                            if ($a.hasClass("ui-state-highlight") || unSelect) {
+                            $(colEle).each(function(){
                                 
-                                if (unSelect !== false) {
+                                var $a      = $(this),
+                                    $icon   = $a.find(".ui-icon");
+                                
+                                if ($a.hasClass("ui-state-highlight") || unSelect) {
                                     
-                                    $icon.removeClass("ui-icon-check");
-                                    $a.removeClass("ui-state-highlight");
+                                    if (unSelect !== false) {
+                                        
+                                        $icon.removeClass("ui-icon-check");
+                                        $a.removeClass("ui-state-highlight");
+                                                                                
+                                    }
+                                    
+                                } else {
+                                    
+                                    $icon.addClass("ui-icon-check");
+                                    $a.addClass("ui-state-highlight");
                                     
                                 }
                                 
-                            } else {
-                                
-                                $icon.addClass("ui-icon-check");
-                                $a.addClass("ui-state-highlight");
-                                
-                            }
+                            });
                             
                             return colEle;
                             
                         }; //end: Picker.selectColumn()
                         
-                        // Setup apply button
+                        /**
+                         * CHanges the board columns and makes only those selected
+                         * on the COlumn Picker visible.
+                         */
+                        Picker.setVisibleColumns = function($selected){
+                            
+                            if (!$selected) {
+                                
+                                $selected = Picker.getSelected();
+                                
+                            }
+                            
+                            var colNum = $selected.length;
+                            
+                            // Apply columns
+                            $.each(opt.states, function(i, colDef){
+                                
+                                if ($selected.filter(
+                                            "[data-board_col_index='" + i + "']"
+                                        ).length
+                                ) {
+                                    
+                                    if (colDef.isVisible === false) {
+                                        
+                                        colDef.isVisible = true;
+                                        colDef.dataEle.css("display", "");
+                                        colDef.headerEle.css("display", "");
+                                        
+                                    }
+                                    
+                                } else {
+                                    
+                                    colDef.isVisible = false;
+                                    colDef.dataEle.css("display", "none");
+                                    colDef.headerEle.css("display", "none");
+                                    
+                                }
+                                
+                            });
+                            
+                            opt.setBoardColumnClass(colNum);
+                            
+                            // Adjust the board columns height
+                            opt.setBoardColumnHeight();
+                            
+                        }; //end: Picker.setVisibleColumns()
+                        
+                        /**
+                         * Given an array of visible column names, this method
+                         * will make that set of columns visible.
+                         * Columns are first validated to ensure they exist,
+                         * and the min/max limits are also honored.
+                         *  
+                         */
+                        Picker.setUserDefinedVisibleCol = 
+                            opt.setUserDefinedVisibleCol = function(colList){
+                                
+                                var count       = 0,
+                                    selector    = "";
+                                
+                                if (!$.isArray(colList)) {
+                                    
+                                    return;
+                                    
+                                }
+                                
+                                // first check that we have at least 2 columns
+                                $.each(colList, function(i,columnName){
+                                    
+                                    if (opt.statesMap[columnName]) {
+                                        
+                                        count++;
+                                        
+                                        if (count > 1) {
+                                            
+                                            selector += ",";
+                                        }
+                                        
+                                        selector += "a[data-board_col_name='" + 
+                                                    opt.statesMap[columnName].name + 
+                                                    "']";
+                                    
+                                        // if we reached the MAX allowed number
+                                        // of visible columns, then break loop.
+                                        if (count >= opt.maxColumnVisible) {
+                                            
+                                            return false;
+                                            
+                                        }
+                                        
+                                    }
+                                    
+                                });
+                                
+                                // if we have at least 2 columns, then make only the
+                                // requested set visible
+                                if (count >= 2) {
+                                    
+                                    Picker.selectColumn(
+                                        Picker.getSelected().not(selector),
+                                        true
+                                    );
+                                    
+                                    Picker.setVisibleColumns($colList.find(selector));
+                                    Picker.triggerEvent();
+                                    
+                                }
+                                
+                            }; //end: Picker.setUserDefinedVisibleCol() and opt.setUserDefinedVisibleCol()
+                        
+                        /**
+                         * Triggers a spwidget:boardColumnChange event on the board.
+                         * This is done only if initiazliation has been done. 
+                         */
+                        Picker.triggerEvent = function() {
+                            
+                            var columns = [];
+                            
+                            if (opt.initDone) {
+                                
+                                $.each(opt.statesMap, function(key,defObj){
+                                    
+                                    if (defObj.isVisible){
+                                        
+                                        columns.push(defObj.title);
+                                        
+                                    }
+                                    
+                                });
+                                
+                                opt.ele.trigger(
+                                    "spwidget:boardColumnChange",
+                                    [ opt.ele, columns ] );
+                                
+                            }
+                            
+                        }; //end: PIcker.triggerEvent()
+                        
+                        // ----------------- [ setup ] ------------------
+                        
+                        // Setup Picker apply button
                         $colCntr.find("button[name='apply']")
                             .button({
                                 label: opt.colPickerApplyLabel,
@@ -1921,14 +2153,14 @@
                                     colNum      = $selected.length;
                                 
                                 // validate
-                                if (colNum > 10) {
+                                if (colNum > opt.maxColumnVisible) {
                                     
-                                    Picker.showMessage("Max Exceeded!")
+                                    Picker.showMessage(opt.colPickerMaxColMsg)
                                     return;
                                     
                                 } else if (colNum < 2) {
                                     
-                                    Picker.showMessage("Min Not Met!")
+                                    Picker.showMessage(opt.colPickerMinColMsg)
                                     return;
                                     
                                 }
@@ -1936,34 +2168,39 @@
                                 // Hide container
                                 $colCntr.hide();
                                 
-                                // Apply columns
-                                $.each(opt.states, function(i, colDef){
-                                    
-                                    if ($selected.filter("[data-board_col_index='" + i + "']").length) {
-                                        
-                                        if (colDef.isVisible === false) {
-                                            
-                                            colDef.isVisible = true;
-                                            colDef.dataEle.css("display", "");
-                                            colDef.headerEle.css("display", "");
-                                            
-                                        }
-                                        
-                                    } else {
-                                        
-                                        colDef.isVisible = false;
-                                        colDef.dataEle.css("display", "none");
-                                        colDef.headerEle.css("display", "none");
-                                        
-                                    }
-                                    
-                                });
-                                
-                                opt.setBoardColumnClass(colNum);
+                                Picker.setVisibleColumns($selected);
+                                Picker.triggerEvent();
                                 
                             });
                         
-                        // Setup Close button
+                        // Setup Picker CHECK button
+                        $colCntr.find("button[name='check']")
+                            .attr("title", opt.colPickerCheckLabel)
+                            .button({
+                                text: false,
+                                icons: {
+                                    primary: "ui-icon-check"
+                                }
+                            })
+                            .on("click", function(ev){
+                                
+                                var $sel = Picker.getSelected(); 
+                                
+                                if ($sel.length) {
+                                    
+                                    Picker.selectColumn($sel, true);
+                                    
+                                } else {
+                                    
+                                    Picker.selectColumn( $colList.find("a") );
+                                    
+                                }
+                                
+                                Picker.setTotalSelected();
+                                
+                            });
+                        
+                        // Setup Picker Close button
                         $colCntr.find("button[name='close']")
                             .attr("title", opt.colPickerCloseLabel)
                             .button({
@@ -2026,7 +2263,8 @@
                                 $.each(opt.states, function(i,colDef){
                                     
                                     columns += '<a href="javascript:" data-board_col_index="' +
-                                        i + '"><span class="ui-icon ui-icon-minus"></span>' +
+                                        i + '" data-board_col_name="' + colDef.name +
+                                        '"><span class="ui-icon ui-icon-minus"></span>' +
                                         '<span>' + colDef.title + '</span></a>';
                                     
                                 });
@@ -2039,10 +2277,49 @@
                             .on("click", "a", function(){
                                 
                                 Picker.selectColumn(this);
+                                Picker.setTotalSelected();
                                 
                             });
                         
-                    } //end: opt.setupColumnPicker()
+                        // Set the label of the Total
+                        $colCntr.find("span.spwidget-board-column-total-label")
+                            .html( opt.colPickerTotalLabel );
+                        
+                        // If user defined colPickerVisible on input, then
+                        // make only those items visible
+                        if ($.isArray(opt.colPickerVisible) && opt.colPickerVisible.length) {
+                            
+                            Picker.setUserDefinedVisibleCol(opt.colPickerVisible);
+                            
+                        } //end: if() Have opt.colPickerVisible?
+                        
+                    }, //end: opt.setupColumnPicker()
+                    
+                    /**
+                     * Sets the height on the board header and
+                     * data columns so that they are all equal.
+                     *  
+                     */
+                    setBoardColumnHeight: function() {
+                        
+                        if (opt.statesCntr.is(":visible")) {
+                            
+                            $.SPWidgets.makeSameHeight(
+                                opt.statesCntr.find("div.spwidget-board-state:visible"),
+                                20 );
+                            
+                        }
+                        
+                        if (opt.headersCntr.is(":visible")) {
+                            
+                            $.SPWidgets.makeSameHeight(
+                                opt.headersCntr.find("div.spwidget-board-state:visible"),
+                                0 );
+                            
+                        }
+                        
+                        
+                    } // end: opt.setBoardCOlumnHeight()
                     
             });//end: $.extend() set opt
             
@@ -2081,7 +2358,7 @@
                 
                 // Set the number of columns to display
                 // If less then 11, then set it to that number
-                if (opt.states.length < 11) {
+                if (opt.states.length <= opt.maxColumnVisible) {
                     
                     opt.showNumberOfColumns = opt.states.length;
                     
@@ -2131,7 +2408,7 @@
                     
                     // If the index is greater than 9 (10 columns) then Column
                     // must be hidden - only support 10 columns.
-                    if (i > 9) {
+                    if (i > (opt.maxColumnVisible - 1) ) {
                         
                         v.headerEle.css("display", "none");
                         v.dataEle.css("display", "none");
@@ -2162,117 +2439,98 @@
                         
                     })
                     
-                    // On Sortcreate: update headers
                     // On Sortreceive: update item
-                    .on("sortreceive sortcreate", function(ev, ui){
+                    .on("sortreceive", function(ev, ui){
                         
-                        var evData = opt.getEventObject(ui.item),
-                            dfd, itemId;
+                        var evData  = opt.getEventObject(ui.item),
+                            dfd     = $.Deferred(),
+                            itemId  = '';
                         
-                        // Sortcreate
-                        if (ev.type === "sortcreate") {
+                        // Handle possibly the itemObject being a knockout object
+                        if ($.isFunction(evData.itemObj.ID)) {
                             
-                            if ($.isFunction(opt.onBoardCreate)) {
-                                
-                                opt.onBoardCreate.call(ele, evData);
-                                
-                            }
+                            itemId = evData.itemObj.ID();
                             
-                            $(ev.target).trigger("spwidget:boardcreate", [ ele, evData ]);                                
-                        
-                        // sortreceive
                         } else {
                             
-                            dfd     = $.Deferred();
-                            itemId  = '';
+                            itemId = evData.itemObj.ID;
                             
-                            // Handle possibly the itemObject being a knockout object
-                            if ($.isFunction(evData.itemObj.ID)) {
-                                
-                                itemId = evData.itemObj.ID();
-                                
-                            } else {
-                                
-                                itemId = evData.itemObj.ID;
-                                
-                            }
+                        }
+                        
+                        // Make the update to the state in SP
+                        evData.updates       = []; // Format = SPService UpdateListItems
+                        evData.updatePromise = dfd.promise();
+                        evData.updates.push([ opt.field, evData.currentState ]);
+                        
+                        // TODO: need to normalize evData by adding values to itemsModified
+                        
+                        // Call any onPreUpdate event. If TRUE (boolean) is returned,
+                        // update is canceled. Note that the UI is not updated to 
+                        // reflect a canceled update (ex. item is not moved back to
+                        // original position)
+                        if ($.isFunction(opt.onPreUpdate)) {
                             
-                            // Make the update to the state in SP
-                            evData.updates       = []; // Format = SPService UpdateListItems
-                            evData.updatePromise = dfd.promise();
-                            evData.updates.push([ opt.field, evData.currentState ]);
-                            
-                            // TODO: need to normalize evData by adding values to itemsModified
-                            
-                            // Call any onPreUpdate event. If TRUE (boolean) is returned,
-                            // update is canceled. Note that the UI is not updated to 
-                            // reflect a canceled update (ex. item is not moved back to
-                            // original position)
-                            if ($.isFunction(opt.onPreUpdate)) {
-                                
-                                if (opt.onPreUpdate.call(ui.item, ev, ui.item, evData) === true) {
-                                    
-                                    return this;
-                                    
-                                }
-                                
-                            }
-                            
-                            // If no updates to make, exit here.
-                            if (!evData.updates.length) {
+                            if (opt.onPreUpdate.call(ui.item, ev, ui.item, evData) === true) {
                                 
                                 return this;
                                 
                             }
                             
-                            // Make update to SP item
-                            $().SPServices({
-                                operation:      "UpdateListItems",
-                                listName:       opt.list,
-                                async:          true,
-                                ID:             itemId,
-                                valuepairs:     evData.updates,
-                                webURL:         opt.webURL,
-                                completefunc:   function(xData, status){
-                                    
-                                    // Process Errors
-                                    if (status === "error") {
-                                        
-                                        dfd.rejectWith(
-                                                ele,
-                                                [ 'Communications Error!', xData, status ]);
-                                        
-                                        return;
-                                        
-                                    }
-                                    
-                                    var resp = $(xData.responseXML),
-                                        row  = null;
-                                    
-                                    if ( resp.SPMsgHasError() ) {
-                                         
-                                         dfd.rejectWith(
-                                                ele,
-                                                [ resp.SPGetMsgError(), xData, status ]);
-                                        
-                                        return;
-                                        
-                                    }
-                                    
-                                    row = $(xData.responseXML).SPFilterNode("z:row")
-                                                .SPXmlToJson({includeAllAttrs: true});
-                                    
-                                    $(ev.target).trigger(
-                                        "spwidget:boardchange", [ ui.item, evData ] );
-                                    
-                                    dfd.resolveWith(ev.target, [evData.itemObj, xData]);
-                                    
-                                }//end: completefunc()
-                            });
-                            
-                        }//end: if()
+                        }
                         
-                    }) // end: ele.on("sortreceive sortcreate")
+                        // If no updates to make, exit here.
+                        if (!evData.updates.length) {
+                            
+                            return this;
+                            
+                        }
+                        
+                        // Make update to SP item
+                        $().SPServices({
+                            operation:      "UpdateListItems",
+                            listName:       opt.list,
+                            async:          true,
+                            ID:             itemId,
+                            valuepairs:     evData.updates,
+                            webURL:         opt.webURL,
+                            completefunc:   function(xData, status){
+                                
+                                // Process Errors
+                                if (status === "error") {
+                                    
+                                    dfd.rejectWith(
+                                            ele,
+                                            [ 'Communications Error!', xData, status ]);
+                                    
+                                    return;
+                                    
+                                }
+                                
+                                var resp = $(xData.responseXML),
+                                    row  = null;
+                                
+                                if ( resp.SPMsgHasError() ) {
+                                     
+                                     dfd.rejectWith(
+                                            ele,
+                                            [ resp.SPGetMsgError(), xData, status ]);
+                                    
+                                    return;
+                                    
+                                }
+                                
+                                row = $(xData.responseXML).SPFilterNode("z:row")
+                                            .SPXmlToJson({includeAllAttrs: true});
+                                
+                                $(ev.target).trigger(
+                                    "spwidget:boardchange", [ ui.item, evData ] );
+                                
+                                dfd.resolveWith(ev.target, [row[0], evData.itemObj, xData]);
+                                
+                            }//end: completefunc()
+                        });
+                        
+                    }) // end: ele.on("sortreceive")
                     
                     // Buind event to catch board actions
                     .on("click", "a.spwidgets-board-action", function(ev){
@@ -2341,30 +2599,39 @@
                                 forcePlaceholderSize: true,
                                 remove:         function(ev, ui){
                                     
-                                    $.SPWidgets.makeSameHeight(
-                                        opt.statesCntr
-                                            .find("div.spwidget-board-state"), 20 );
+                                    opt.setBoardColumnHeight();
                                     
                                 }//end: remove()
                             });
                             
                         });
                         
+                        
                         // Make text inside the states container un-selectable.
                         opt.statesCntr.disableSelection();
                         
                         opt.initDone = true;
                         
-                        $.SPWidgets.makeSameHeight(
-                            opt.statesCntr.find("div.spwidget-board-state"), 20 );
+                        opt.setBoardColumnHeight();
                         
-                        // remove temp class and set
+                        // remove temp class and add the hasSPShowBoard to it.
                         ele.addClass("hasSPShowBoard")
                             .removeClass("loadingSPShowBoard");
+                            
+                        // Call any user defined callback and trigger create event
+                        if ($.isFunction(opt.onBoardCreate)) {
+                            
+                            opt.onBoardCreate.call(ele, opt.getEventObject());
+                            
+                        }
+                        
+                        $(ele).trigger(
+                            "spwidget:boardcreate", 
+                            [ ele, opt.getEventObject() ] );
                         
                     });
             
-            }); //end: .then()
+            }); //end: .then() (get board states)
             
             return this;
             
@@ -2381,7 +2648,7 @@
     Board.styleSheet = "/** \n"
 + " * Stylesheet for the Board widget\n"
 + " * \n"
-+ " * BUILD: June 23, 2013 - 01:54 PM\n"
++ " * BUILD: June 24, 2013 - 04:12 PM\n"
 + " */\n"
 + "div.spwidget-board {\n"
 + "    width: 100%;\n"
@@ -2410,6 +2677,8 @@
 + "    text-align: center;\n"
 + "    font-weight: bold;\n"
 + "    font-size: 1.1em;\n"
++ "    overflow: hidden;\n"
++ "    word-wrap: break-word;\n"
 + "}\n"
 + "div.spwidget-board div.spwidget-board-states div.spwidget-board-state {\n"
 + "    margin-bottom: 1em;\n"
@@ -2456,11 +2725,14 @@
 + "    overflow: auto;\n"
 + "    position: relative\n"
 + "}\n"
-+ "div.spwidget-board-settings div.spwidget-board-column-list > .spwidget-board-msg {\n"
++ "div.spwidget-board-settings div.spwidget-board-column-list-cntr .spwidget-board-msg {\n"
 + "    position: absolute;\n"
-+ "    top: 0px;\n"
-+ "    right: 0px;\n"
-+ "    padding: .2em 1.5em;\n"
++ "    top: 1px;\n"
++ "    left: 1px;\n"
++ "    padding: .2em;\n"
++ "}\n"
++ "div.spwidget-board-settings div.ui-state-default {\n"
++ "    position: relative;\n"
 + "}\n"
 + "div.spwidget-board-settings div.spwidget-board-column-list > a {\n"
 + "    display: block;\n"
@@ -2511,7 +2783,12 @@
 + "        <div class='spwidget-board-settings-columns'>Columns</div>\n"
 + "        <div class=\"spwidget-board-column-list-cntr ui-widget-content ui-corner-all\" style=\"display: none\">\n"
 + "            <div class=\"ui-state-default\">\n"
-+ "                <button type=\"button\" name=\"close\" title=\"Close\">close</button>\n"
++ "                <span>\n"
++ "                    <span class=\"spwidget-board-column-total\"></span> \n"
++ "                    <span class=\"spwidget-board-column-total-label\">Selected.</span>\n"
++ "                </span>\n"
++ "                <button type=\"button\" name=\"check\" title=\"Check-Uncheck All\">Check</button>\n"
++ "                <button type=\"button\" name=\"close\" title=\"Close\">Close</button>\n"
 + "            </div>\n"
 + "            <div class=\"spwidget-board-column-list\">\n"
 + "            </div>\n"
@@ -2555,7 +2832,7 @@
  * THe user, however, is presented with the existing items
  * and has the ability to Remove them and add new ones.
  * 
- * BUILD: June 23, 2013 - 04:12 PM
+ * BUILD: June 26, 2013 - 03:04 PM
  * 
  */
 
@@ -3573,7 +3850,7 @@
  * on jQuery UI's Autocomplete and SPServices library.
  *      
  *  
- * @version 20130623041246NUMBER_
+ * @version 20130626030422NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
@@ -3581,7 +3858,7 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date June 23, 2013 - 04:12 PM
+ * Build Date June 26, 2013 - 03:04 PM
  * 
  */
 
@@ -4395,7 +4672,7 @@ $.pt.addHoverEffect = function(ele){
  * through the many SP pages and without having to leave the user's current page.
  *      
  *  
- * @version 20130623015412NUMBER_
+ * @version 20130624041239NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
@@ -4403,7 +4680,7 @@ $.pt.addHoverEffect = function(ele){
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date June 23, 2013 - 01:54 PM
+ * Build Date June 24, 2013 - 04:12 PM
  * 
  */
 
@@ -5105,7 +5382,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
 /**
  * @fileOverview - List filter panel widget
  * 
- * BUILD: June 23, 2013 - 04:14 PM
+ * BUILD: June 26, 2013 - 03:04 PM
  * 
  */
 (function($){
