@@ -32,6 +32,9 @@ This method takes as input an object containing the supported options:
             colPickerLabel:         "Columns",
             colPickerCloseLabel:    "Close",
             colPickerApplyLabel:    "Apply",
+            colPickerCheckLabel:    "Check-Uncheck All",
+            colPickerMaxColMsg:     "Can not exceed 10 columns!",
+            colPickerMinColMsg:     "Mininum of 2 required!",
             onGetListItems:         null,
             onPreUpdate:            null,
             onBoardCreate:          null
@@ -187,6 +190,10 @@ The default options for this widget can be manipulated/set via the following obj
     _Note: This option is automatically turned to True if the number of columns available is greater than 10._
     
     
+-   **colPickerVisible**     :   *Array. Optional. Default=[]* <br>
+    An array with a list of board columns that should be visible. Used only when showColPicker is true. (Since v2.1). 
+    
+    
 -   **colPickerLabel**      :   *String. Optional. Default="Columns"* <br>
     The label for the column picker button that is displayed when _showColPicker_ option is set to _true_. (Since v2.1)
    
@@ -201,6 +208,18 @@ The default options for this widget can be manipulated/set via the following obj
 
 -   **colPickerCheckLabel** :   *String. Optional. Default="Check-Uncheck All"* <br>
     The label for the column picker pop-up Check/UnCheck all button.  (Since v2.1)
+
+
+-   **colPickerTotalLabel** :   *String. Optional. Default="Selected."* <br>
+    The label for the number of column selected text on the column picker popup. (Since v2.1)
+
+
+-   **colPickerMinColMsg** :   *String. Optional. Default="Mininum of 2 required!"* <br>
+    The message to display on column picker if user attempts to display less than 2 columns. (Since v2.1)
+
+    
+-   **colPickerMaxColMsg** :   *String. Optional. Default="Can not exceed 10 columns!"* <br>
+    The message to display on column picker if user attempts to display more than 10 columns. (Since v2.1)
 
     
 -   **onGetListItems**     :  *Function. Optional. Default=null* <br>
@@ -221,7 +240,19 @@ The default options for this widget can be manipulated/set via the following obj
 
 
 -   **onPreUpdate**     :   *Function. Optional. Default=null* <br>
-    Callback function to be called just prior to a List Item update. The function should return a boolean indicating whether the update should be canceled. True will cancel the update. 
+    Callback function to be called just prior to a List Item update. The function should return a boolean indicating whether the update should be canceled. True will cancel the update.
+    
+    Example:
+ 
+            options.onPreUpdate: function(ev, item, data){
+                //this = jQuery element container selction
+                //
+                data.updates.push(["Title", "Update was made!"]);
+                data.updatePromise.done(function(updatedItemObject, xData){
+                        alert("udpate done!");
+                    });
+            }
+    
     The callback will have a scope of the item being updated and be given 3 parameters:
     
     -   The event object
@@ -229,33 +260,30 @@ The default options for this widget can be manipulated/set via the following obj
     -   The item (DOM element) that triggered the event and
     
     -   A data object with information/methods for the current item/widget binding. The object will include two attributes that will impact the updates that will be done:
-
+            
+            {
+                updates:        {Array},
+                updatePromise:  {Object}
+            }
+            
         *data.updates* <br/>
         An array of updates that will be made. The array will have, to start, the update to the state that was triggered by the move in the board. Additional updates can be added. Format will be identical to what SPServices uses:
         
             ["field", "value"]
         
-        Example:
+        Example: Make an additional update
             
             data.updates.push(["Title", "New title here"]);
         
         *data.updatePromise*<br/>
-        A jQuery.Promise that represents the update that will be made. This can be used to bind on additional functionality. The queued functions will be given the List Item object as well as the xml resposne returned from the update. The context of object will be the HTML element from where the update was triggered.
+        A jQuery.Promise that represents the update that will be made. This can be used to bind on additional functionality. The queued functions will be given:
         
-        The function should return a boolean indicating whether the update should be canceled. True will cancel the update.
+        -   {Object} The updated List Item object
+        -   {Object} The pre-update List Item object
+        -   {XMLDocument} The xml response returned from the update (xData).
         
-        Example:
- 
-            onPreUpdate: function(ev, item, data){
-                //this = jQuery element container selction
-                //
-                data.updates.push(["Title", "Update was made!"]);
-                data.updatePromise
-                    .done(function(){
-                        alert("udpate done!");
-                    });
-            }
-
+        The context of object will be the HTML element from where the update was triggered.
+        
 
 -   **onBoardCreate**     :   *Function. Optional. Default=null* <br>
     Function triggered after board is initially created. See spwidget:boardcreate event for parameters that will be given to function.
@@ -279,12 +307,22 @@ The following methods are supported:
 
         $("#board").SPShowBoard("refresh");
 
+
 -   **redraw()**<br>
     Redraws the board without pulling in data from the list. Column heights will be normalized and jQuery UI's sortable widget will be refreshed.
     
     Usage:
  
         $("#board").SPShowBoard("redraw");
+
+
+-   **setVisible([columnName,...])**<br>
+    Sets the visible columns on the board. Method accepts as input an array of board column names to be displayed. A minimum of 2 must be difined and no more than 10 will be displayed. (Since 2.1)
+    
+    Example:
+    
+        $("#board").SPShowBoard("setVisible", [ 'Not Started', 'Completed' ]); 
+
 
 Events
 ------
@@ -327,6 +365,21 @@ This widget triggers several events that can be used to perform additional actio
     2.  the board container (DOM element)
     
     3.  a data object with information/methods for the current item/widget binding.  The objects's .itemsModified attribute will contain an array of Objects that were removed.
+
+
+-   **spwidget:boarditemremove**<br>
+    Event triggered when columns on the board are changed. Event will be given the following input params:
+    
+    -   _{jQuery}_ jQuery Event object
+    -   _{jQuery}_ The board container
+    -   _{Array}_ A list of board columns currently visible.
+    
+    Example:
+    
+        $("#board").on("spwidget:boardColumnChange", function(ev, $board, colArray){
+            //this = $board object
+            alert("Columns changed to: " + colArray.join(" | "));
+        });
 
 
 Examples
