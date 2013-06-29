@@ -3,7 +3,7 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *  
- * @version 20130627100426
+ * @version 20130629045258
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  * 
@@ -11,8 +11,8 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date:  June 27, 2013 - 10:04 AM
- * Version:     20130627100426
+ * Build Date:  June 29, 2013 - 04:52 PM
+ * Version:     20130629045258
  * 
  */
 ;(function($){
@@ -50,7 +50,7 @@
         }
         
         $.SPWidgets             = {};
-        $.SPWidgets.version     = "20130627100426";
+        $.SPWidgets.version     = "20130629045258";
         $.SPWidgets.defaults    = {};
         
         /**
@@ -526,7 +526,7 @@
  *  -   jQuery-UI Draggable
  * 
  * 
- * BUILD: June 26, 2013 - 07:39 PM
+ * BUILD: June 29, 2013 - 04:10 PM
  */
 
 ;(function($){
@@ -888,15 +888,16 @@
                 if (method === "refresh") {
                     
                     board._getListItems().then(function(){
+                        
                         board.showItemsOnBoard({ refresh: true });
+                        
                     });
                     
                 //*** REDRAW ***\\
                 } else if (method === "redraw") {
                     
-                    board.statesCntr.find("div.spwidget-board-state").sortable("refresh");
                     board.setBoardColumnHeight();
-
+                    
                 //*** SETVISIBLE ***\\
                 } else if (method === "setvisible") {
                     
@@ -2001,7 +2002,14 @@
                         
                         /**
                          * CHanges the board columns and makes only those selected
-                         * on the COlumn Picker visible.
+                         * on the COlumn Picker visible. A set of colunsn (the <a>
+                         * element on the picker) can also be given on input, which
+                         * will be used as the set to make visible, regardless of
+                         * their state on the picker.
+                         * 
+                         * @param {jQuery} $selected
+                         * 
+                         * @return {undefined}
                          */
                         Picker.setVisibleColumns = function($selected){
                             
@@ -2065,29 +2073,41 @@
                                     
                                 }
                                 
-                                // first check that we have at least 2 columns
+                                // Build the jQUery selector for the set of columns
+                                // that should be made visible. This selector is used
+                                // to get a set of elements (columns) from the Picker
+                                // that will then drive which columns are visible.
                                 $.each(colList, function(i,columnName){
                                     
-                                    if (opt.statesMap[columnName]) {
+                                    // loop through the Array of states looking
+                                    // for this column. Once found, build the
+                                    // jquery selector for it and exit loop 
+                                    $.each(opt.states, function(i, state){
                                         
-                                        count++;
-                                        
-                                        if (count > 1) {
+                                        if (state.title === columnName) {
                                             
-                                            selector += ",";
-                                        }
-                                        
-                                        selector += "a[data-board_col_name='" + 
-                                                    opt.statesMap[columnName].name + 
-                                                    "']";
-                                    
-                                        // if we reached the MAX allowed number
-                                        // of visible columns, then break loop.
-                                        if (count >= opt.maxColumnVisible) {
+                                            count++;
                                             
+                                            if (count > 1) {
+                                                
+                                                selector += ",";
+                                            }
+                                            
+                                            selector += "a[data-board_col_name='" + 
+                                                        state.name + 
+                                                        "']";
+                                        
                                             return false;
                                             
                                         }
+                                        
+                                    });
+                                    
+                                    // if we reached the MAX allowed number
+                                    // of visible columns, then break loop.
+                                    if (count >= opt.maxColumnVisible) {
+                                        
+                                        return false;
                                         
                                     }
                                     
@@ -2096,11 +2116,6 @@
                                 // if we have at least 2 columns, then make only the
                                 // requested set visible
                                 if (count >= 2) {
-                                    
-                                    Picker.selectColumn(
-                                        Picker.getSelected().not(selector),
-                                        true
-                                    );
                                     
                                     Picker.setVisibleColumns($colList.find(selector));
                                     Picker.triggerEvent();
@@ -2832,7 +2847,7 @@
  * THe user, however, is presented with the existing items
  * and has the ability to Remove them and add new ones.
  * 
- * BUILD: June 26, 2013 - 03:04 PM
+ * BUILD: June 29, 2013 - 04:10 PM
  * 
  */
 
@@ -3850,7 +3865,7 @@
  * on jQuery UI's Autocomplete and SPServices library.
  *      
  *  
- * @version 20130626030422NUMBER_
+ * @version 20130629041034NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
@@ -3858,7 +3873,7 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date June 26, 2013 - 03:04 PM
+ * Build Date June 29, 2013 - 04:10 PM
  * 
  */
 
@@ -4672,7 +4687,7 @@ $.pt.addHoverEffect = function(ele){
  * through the many SP pages and without having to leave the user's current page.
  *      
  *  
- * @version 20130624041239NUMBER_
+ * @version 20130629041034NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
@@ -4680,7 +4695,7 @@ $.pt.addHoverEffect = function(ele){
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date June 24, 2013 - 04:12 PM
+ * Build Date June 29, 2013 - 04:10 PM
  * 
  */
 
@@ -5382,7 +5397,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
 /**
  * @fileOverview - List filter panel widget
  * 
- * BUILD: June 26, 2013 - 03:04 PM
+ * BUILD: June 29, 2013 - 04:52 PM
  * 
  */
 (function($){
@@ -5416,6 +5431,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
         filterButtonLabel:      "Filter",
         onFilterClick:          null,
         onReady:                null,
+        onReset:                null,
         ignoreKeywords:         /^(of|and|a|an|to|by|the|or|from)$/i
     };
     
@@ -5494,6 +5510,13 @@ $.pt.SPUploadStyleSheet = "/**\n"
                     case "getfilter":
                         
                         response = Filter.getFilterValues(Inst);
+                        
+                        break;
+                        
+                    // METHOD----------> reset
+                    case "reset":
+                        
+                        Filter.doResetFilter( Inst );
                         
                         break;
                         
@@ -5807,7 +5830,8 @@ $.pt.SPUploadStyleSheet = "/**\n"
                                         
                                     }
                                     
-                                    $btn.find("button")
+                                    // Setup Filter button
+                                    $btn.find("button[name='filter']")
                                         .button({
                                             icons: {
                                                 primary: "ui-icon-search"
@@ -5815,6 +5839,22 @@ $.pt.SPUploadStyleSheet = "/**\n"
                                             label: Inst.opt.filterButtonLabel
                                         })
                                         .on("click", Filter.onFilterButtonClick);
+                                        
+                                    // Setup Filter button
+                                    $btn.find("button[name='reset']")
+                                        .button({
+                                            icons: {
+                                                primary: "ui-icon-arrowreturnthick-1-n"
+                                            },
+                                            text: false
+                                        })
+                                        .on("click", function(ev){
+                                            
+                                            Filter.doResetFilter( Inst );
+                                            
+                                            return this;
+                                            
+                                        });
                                     
                                 });
                             
@@ -5957,6 +5997,48 @@ $.pt.SPUploadStyleSheet = "/**\n"
         return this;
         
     }; //end: Filter.onFilterButtonClick()
+    
+    /**
+     * Resets the filter panel, by removing all filters
+     * defined from the form. 
+     * 
+     * @param {Object} Inst
+     *      The widget instance object
+     * 
+     * @return {Object} the instance object
+     */
+    Filter.doResetFilter = function(Inst) {
+        
+        if ($.isFunction(Inst.onReset)) {
+            
+            if (Inst.onReset.call(Inst.$ele, Filter.getFilterValues(Inst)) === true) {
+                
+                return Inst;
+                
+            }
+            
+        }
+        
+        Inst.$ui
+            // Reset regular text fields
+            .find("div[data-spwidget_column_type='text'] input")
+                .val("")
+                .end()
+            // reset checkboxes for CHOICE columns
+            .find("div[data-spwidget_column_type='choice'] input")
+                .prop("checked", false)
+                .end()
+            // reset people fields
+            .find(".hasPickSPUser")
+                .pickSPUser("method", "clear")
+                .end()
+            // reset lookup fields
+            .find(".hasLookupSPField")
+                .SPLookupField("method", "clear");
+        
+        return Inst;
+        
+    }; // Filter.doResetFilter()
     
     /**
      * Generates the filters from the values entered by the user.
@@ -6232,7 +6314,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
     Filter.styleSheet = "/** \n"
 + " * Stylesheet for the Board widget\n"
 + " * \n"
-+ " * BUILD: June 23, 2013 - 12:43 PM\n"
++ " * BUILD: June 29, 2013 - 04:10 PM\n"
 + " */\n"
 + "div.spwidget-filter {\n"
 + "    width: 100%;\n"
@@ -6246,7 +6328,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
 + "    width: 97%;\n"
 + "}\n"
 + "div.spwidget-filter div.spwidget-column {\n"
-+ "    padding: 1em;\n"
++ "    padding: .5em;\n"
 + "    margin: .5em;\n"
 + "    position: relative;\n"
 + "    border-bottom: 1px solid  darkgray;\n"
@@ -6254,6 +6336,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
 + "}\n"
 + "div.spwidget-filter div.spwidget-filter-type-cntr {\n"
 + "    margin-right: 3%;\n"
++ "    margin-top: 0.3em;\n"
 + "    float: right;\n"
 + "}\n"
 + "div.spwidget-filter div.spwidget-filter-value-cntr {\n"
@@ -6327,7 +6410,8 @@ $.pt.SPUploadStyleSheet = "/**\n"
 + "    <div class=\"spwidget-filter\" style=\"display: none;\">\n"
 + "        <div class=\"spwidget-filter-column-cntr\"></div>\n"
 + "        <div class=\"spwidget-filter-button-cntr\">\n"
-+ "            <button type=\"button\" class=\"spwidget-button\">Filter</button>\n"
++ "            <button type=\"button\" class=\"spwidget-button\" name='reset'>Reset</button>\n"
++ "            <button type=\"button\" class=\"spwidget-button\" name='filter'>Filter</button>\n"
 + "        </div>\n"
 + "    </div>\n"
 + "</script>\n"
