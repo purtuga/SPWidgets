@@ -369,15 +369,16 @@
                 if (method === "refresh") {
                     
                     board._getListItems().then(function(){
+                        
                         board.showItemsOnBoard({ refresh: true });
+                        
                     });
                     
                 //*** REDRAW ***\\
                 } else if (method === "redraw") {
                     
-                    board.statesCntr.find("div.spwidget-board-state").sortable("refresh");
                     board.setBoardColumnHeight();
-
+                    
                 //*** SETVISIBLE ***\\
                 } else if (method === "setvisible") {
                     
@@ -1482,7 +1483,14 @@
                         
                         /**
                          * CHanges the board columns and makes only those selected
-                         * on the COlumn Picker visible.
+                         * on the COlumn Picker visible. A set of colunsn (the <a>
+                         * element on the picker) can also be given on input, which
+                         * will be used as the set to make visible, regardless of
+                         * their state on the picker.
+                         * 
+                         * @param {jQuery} $selected
+                         * 
+                         * @return {undefined}
                          */
                         Picker.setVisibleColumns = function($selected){
                             
@@ -1546,29 +1554,41 @@
                                     
                                 }
                                 
-                                // first check that we have at least 2 columns
+                                // Build the jQUery selector for the set of columns
+                                // that should be made visible. This selector is used
+                                // to get a set of elements (columns) from the Picker
+                                // that will then drive which columns are visible.
                                 $.each(colList, function(i,columnName){
                                     
-                                    if (opt.statesMap[columnName]) {
+                                    // loop through the Array of states looking
+                                    // for this column. Once found, build the
+                                    // jquery selector for it and exit loop 
+                                    $.each(opt.states, function(i, state){
                                         
-                                        count++;
-                                        
-                                        if (count > 1) {
+                                        if (state.title === columnName) {
                                             
-                                            selector += ",";
-                                        }
-                                        
-                                        selector += "a[data-board_col_name='" + 
-                                                    opt.statesMap[columnName].name + 
-                                                    "']";
-                                    
-                                        // if we reached the MAX allowed number
-                                        // of visible columns, then break loop.
-                                        if (count >= opt.maxColumnVisible) {
+                                            count++;
                                             
+                                            if (count > 1) {
+                                                
+                                                selector += ",";
+                                            }
+                                            
+                                            selector += "a[data-board_col_name='" + 
+                                                        state.name + 
+                                                        "']";
+                                        
                                             return false;
                                             
                                         }
+                                        
+                                    });
+                                    
+                                    // if we reached the MAX allowed number
+                                    // of visible columns, then break loop.
+                                    if (count >= opt.maxColumnVisible) {
+                                        
+                                        return false;
                                         
                                     }
                                     
@@ -1577,11 +1597,6 @@
                                 // if we have at least 2 columns, then make only the
                                 // requested set visible
                                 if (count >= 2) {
-                                    
-                                    Picker.selectColumn(
-                                        Picker.getSelected().not(selector),
-                                        true
-                                    );
                                     
                                     Picker.setVisibleColumns($colList.find(selector));
                                     Picker.triggerEvent();
