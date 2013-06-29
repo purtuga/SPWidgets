@@ -15,7 +15,7 @@ div.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input {
     width: 97%;
 }
 div.spwidget-filter div.spwidget-column {
-    padding: 1em;
+    padding: .5em;
     margin: .5em;
     position: relative;
     border-bottom: 1px solid  darkgray;
@@ -23,6 +23,7 @@ div.spwidget-filter div.spwidget-column {
 }
 div.spwidget-filter div.spwidget-filter-type-cntr {
     margin-right: 3%;
+    margin-top: 0.3em;
     float: right;
 }
 div.spwidget-filter div.spwidget-filter-value-cntr {
