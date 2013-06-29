@@ -367,7 +367,7 @@ This widget triggers several events that can be used to perform additional actio
     -   _{Object}_ a data object with information/methods for the current item/widget binding.  The objects's .itemsModified attribute will contain an array of Objects that were removed.
 
 
--   **spwidget:boarditemremove**<br>
+-   **spwidget:boardColumnChange**<br>
     Event triggered when columns on the board are changed. Event will be given the following input params:
     
     -   _{jQuery}_ jQuery Event object
