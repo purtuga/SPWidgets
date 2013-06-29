@@ -158,7 +158,7 @@ The default options for this widget can be manipulated/set via the following obj
 -   **hideInput**      :   *Boolean. Optional. Default=true* <br />
     Option used only when allowMultiples is false. It will hide the input field once a value has been selected. Only way to get it displayed again is to remove existing selected item.
 
--   **hideInput**      :   *Boolean. Optional. Default=false* <br />
+-   **showSelector**      :   *Boolean. Optional. Default=false* <br />
     If true, then an icon will be displayed to the right of the selection input field that displays a popup displaying all values currently in the lookup List. 
 
 
