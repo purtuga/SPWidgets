@@ -94,6 +94,22 @@ The default options for this widget can be manipulated/set via the following obj
 -   **onReady**      :   *Function. Optional. Default=null* <br />
     A function to be executed when the widget is done being created. Function is called prior to making the widget visible and will have a scope of the original HTML element container (the one where the widget was inserted) and given one parameter: the original options object given to this widget.
 
+-   **onReset**      :   *Function. Optional. Default=null* <br />
+    A function to be executed when the widget is reset, either by the user clicking the reset button or by code calling the reset method. The function will have a scope of the original element where the filter widget was inserted and be given the following as input:
+    
+    -   {Object} An object with the currently defined filters on the widget. See *getFilter* method below for an example of the object structure.
+    
+    Return Value:
+    
+    If function return a Boolean *true*, the reset action will be canceled (form will not be reset and will maintain the currently defined values).
+    
+    Example:
+    
+        onReset: function(filters) {
+            // this = HTML element
+        }
+    
+
 -   **ignoreKeywords**      :   *RegEx. Optional. Default=/^(of|and|a|an|to|by|the|or|from)$/i* <br />
     A regular expression with the list of keywords to ignore. RegEx is used when parsing the values entered by the user in text fields. Default setting ignores the following: of, and, a, an, to, by, the, or, from
 
