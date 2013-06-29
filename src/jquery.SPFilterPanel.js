@@ -35,6 +35,7 @@
         filterButtonLabel:      "Filter",
         onFilterClick:          null,
         onReady:                null,
+        onReset:                null,
         ignoreKeywords:         /^(of|and|a|an|to|by|the|or|from)$/i
     };
     
@@ -113,6 +114,13 @@
                     case "getfilter":
                         
                         response = Filter.getFilterValues(Inst);
+                        
+                        break;
+                        
+                    // METHOD----------> reset
+                    case "reset":
+                        
+                        Filter.doResetFilter( Inst );
                         
                         break;
                         
@@ -426,7 +434,8 @@
                                         
                                     }
                                     
-                                    $btn.find("button")
+                                    // Setup Filter button
+                                    $btn.find("button[name='filter']")
                                         .button({
                                             icons: {
                                                 primary: "ui-icon-search"
@@ -434,6 +443,22 @@
                                             label: Inst.opt.filterButtonLabel
                                         })
                                         .on("click", Filter.onFilterButtonClick);
+                                        
+                                    // Setup Filter button
+                                    $btn.find("button[name='reset']")
+                                        .button({
+                                            icons: {
+                                                primary: "ui-icon-arrowreturnthick-1-n"
+                                            },
+                                            text: false
+                                        })
+                                        .on("click", function(ev){
+                                            
+                                            Filter.doResetFilter( Inst );
+                                            
+                                            return this;
+                                            
+                                        });
                                     
                                 });
                             
@@ -576,6 +601,48 @@
         return this;
         
     }; //end: Filter.onFilterButtonClick()
+    
+    /**
+     * Resets the filter panel, by removing all filters
+     * defined from the form. 
+     * 
+     * @param {Object} Inst
+     *      The widget instance object
+     * 
+     * @return {Object} the instance object
+     */
+    Filter.doResetFilter = function(Inst) {
+        
+        if ($.isFunction(Inst.onReset)) {
+            
+            if (Inst.onReset.call(Inst.$ele, Filter.getFilterValues(Inst)) === true) {
+                
+                return Inst;
+                
+            }
+            
+        }
+        
+        Inst.$ui
+            // Reset regular text fields
+            .find("div[data-spwidget_column_type='text'] input")
+                .val("")
+                .end()
+            // reset checkboxes for CHOICE columns
+            .find("div[data-spwidget_column_type='choice'] input")
+                .prop("checked", false)
+                .end()
+            // reset people fields
+            .find(".hasPickSPUser")
+                .pickSPUser("method", "clear")
+                .end()
+            // reset lookup fields
+            .find(".hasLookupSPField")
+                .SPLookupField("method", "clear");
+        
+        return Inst;
+        
+    }; // Filter.doResetFilter()
     
     /**
      * Generates the filters from the values entered by the user.
