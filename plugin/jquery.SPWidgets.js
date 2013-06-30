@@ -3,7 +3,7 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *  
- * @version 20130629045258
+ * @version 20130630014913
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  * 
@@ -11,8 +11,8 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date:  June 29, 2013 - 04:52 PM
- * Version:     20130629045258
+ * Build Date:  June 30, 2013 - 01:49 PM
+ * Version:     20130630014913
  * 
  */
 ;(function($){
@@ -50,7 +50,7 @@
         }
         
         $.SPWidgets             = {};
-        $.SPWidgets.version     = "20130629045258";
+        $.SPWidgets.version     = "20130630014913";
         $.SPWidgets.defaults    = {};
         
         /**
@@ -526,7 +526,7 @@
  *  -   jQuery-UI Draggable
  * 
  * 
- * BUILD: June 29, 2013 - 04:10 PM
+ * BUILD: Paul:June 30, 2013 12:58 PM
  */
 
 ;(function($){
@@ -1074,12 +1074,11 @@
                                                 cacheXML:       true,
                                                 CAMLQuery:      opt.fieldFilter,
                                                 webURL:         opt.webURL,
-                                                CAMLRowLimit:   0,
+                                                CAMLRowLimit:   Board.maxColumns,
                                                 CAMLViewFields: 
-                                                    '<ViewFields>' +
-                                                        '<FieldRef Name="' + 
-                                                            f.attr("ShowField") + '" />' +
-                                                    '</ViewFields>',
+                                                    '<ViewFields><FieldRef Name="' + 
+                                                    f.attr("ShowField") +
+                                                    '" /></ViewFields>',
                                                 completefunc:   function(xData, status){
                                                     
                                                     // Process Errors
@@ -2847,7 +2846,7 @@
  * THe user, however, is presented with the existing items
  * and has the ability to Remove them and add new ones.
  * 
- * BUILD: June 29, 2013 - 04:10 PM
+ * BUILD: Paul:June 30, 2013 12:58 PM
  * 
  */
 
@@ -3110,7 +3109,8 @@
                                 o._cntr.find("div.spwidgets-lookup-selected")
                                     .css("display", "none")
                                     .empty();
-                                o._ele.val("");
+                                
+                                o._ele.val("").change();
                                 
                                 // Make sure input is visible
                                 o._cntr.find("div.spwidgets-lookup-input").css("display", "");
@@ -3734,11 +3734,12 @@
             
         };  
         
-        o.storeItemIDs( store );
-        
         // Focus on the autocomplete field.
         o._lookupInputEleCntr.find("input").focus();
         
+        // remove the item and trigger a change event
+        o.storeItemIDs( store );
+        o._ele.change();
         return Lookup;
         
     };//end:Lookup.removeItem() 
@@ -3865,7 +3866,7 @@
  * on jQuery UI's Autocomplete and SPServices library.
  *      
  *  
- * @version 20130629041034NUMBER_
+ * @version 20130630125832NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
@@ -3873,7 +3874,7 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date June 29, 2013 - 04:10 PM
+ * Build Date Paul:June 30, 2013 12:58 PM
  * 
  */
 
@@ -4687,7 +4688,7 @@ $.pt.addHoverEffect = function(ele){
  * through the many SP pages and without having to leave the user's current page.
  *      
  *  
- * @version 20130629041034NUMBER_
+ * @version 20130630125832NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
@@ -4695,7 +4696,7 @@ $.pt.addHoverEffect = function(ele){
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date June 29, 2013 - 04:10 PM
+ * Build Date Paul:June 30, 2013 12:58 PM
  * 
  */
 
@@ -5397,7 +5398,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
 /**
  * @fileOverview - List filter panel widget
  * 
- * BUILD: June 29, 2013 - 04:52 PM
+ * BUILD: June 30, 2013 - 01:49 PM
  * 
  */
 (function($){
@@ -5425,9 +5426,9 @@ $.pt.SPUploadStyleSheet = "/**\n"
         webURL:                 $().SPServices.SPGetCurrentSite(),
         columns:                ['Title'],
         textFieldTooltip:       'Use a semicolon to delimiter multiple keywords.',
+        definedClass:           'spwidget-column-dirty',
         showFilterButton:       true,
         showFilterButtonTop:    true,
-        showStackedUI:          false,
         filterButtonLabel:      "Filter",
         onFilterClick:          null,
         onReady:                null,
@@ -5444,9 +5445,9 @@ $.pt.SPUploadStyleSheet = "/**\n"
      * @param {String}  [options.webURL=current site]
      * @param {Array}   [options.columns=['title']]
      * @param {String}  [options.textFieldTooltip='']
+     * @param {String}  [options.definedClass='spwidget-column-dirty']
      * @param {Boolean} [options.showFilterButton=true]
      * @param {Boolean} [options.showFilterButtonTop=true]
-     * @param {Boolean} [options.showStackedUI=false]
      * @param {String}  [options.filterButtonLabel='Fitler']
      * @param {String}  [options.onFilterClick=null]
      * @param {String}  [options.onReady=null]
@@ -5625,16 +5626,6 @@ $.pt.SPUploadStyleSheet = "/**\n"
                                     .empty()
                                     .addClass("hasSPFilterPanel")
                             );
-                        
-                        // If showStackedUI is true, then add class that will
-                        // cause the UI to be vertical.
-                        if (Inst.opt.showStackedUI) {
-                            
-                            Inst.$ui
-                                .find("div.spwidget-filter-column-cntr")
-                                .addClass("spwidget-filter-fmt-stacked");
-                            
-                        }
                         
                         // Store list definition
                         Inst.$list = $list;
@@ -5867,7 +5858,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
                             
                         }
                         
-                        // Bind event
+                        // Bind events
                         Inst.$ui
                             // Filter type change()
                             .on(
@@ -5875,6 +5866,19 @@ $.pt.SPUploadStyleSheet = "/**\n"
                                 "select.spwidget-filter-type", 
                                 Filter.onFilterTypeChange
                             );
+                        
+                        // If we have a DefinedClass specified, then
+                        // listen to change events
+                        if (Inst.opt.definedClass !== "") {
+                            
+                            Inst.$ui
+                                .on(
+                                    "change.SPWidgets.SPFilterPanel",
+                                    ".spwidget-filter-input",
+                                    Filter.onFilterInputChange
+                                );
+                                
+                        }
                         
                         // If a onReady callback was defined, then
                         // execute it now
@@ -5938,6 +5942,49 @@ $.pt.SPUploadStyleSheet = "/**\n"
         }); //end: return()
         
     }; //end: $.fn.SPFilterPanel()
+    
+    /**
+     * Triggered when the change event is triggered on the
+     * input elements that collect data from the user.
+     * Sets the dirty class on the column if one is defined.
+     * 
+     * @param {jQuery.Event} ev
+     * 
+     * @return {HTMLElement} this
+     */
+    Filter.onFilterInputChange = function(ev){
+        
+        var $input  = $(this),
+            $cntr   = $input.closest("div.spwidget-filter-value-input"),
+            $col    = $cntr.closest("div.spwidget-column"),
+            val     = $input.val(),
+            Inst    = $cntr
+                        .closest("div.spwidget-filter")
+                        .data("SPFilterPanelInst");
+        
+        if ($col.is(".spwidget-type-choice")) {
+            
+            if (!$cntr.find(".spwidget-filter-input:checked").length) {
+                
+                val = "";
+                
+            }
+            
+        }
+        
+        if (val !== "") {
+            
+            $col.addClass(Inst.opt.definedClass);
+            
+        } else {
+            
+            $col.removeClass(Inst.opt.definedClass);
+            
+        }
+        
+        return this;
+        
+    }; //end: Filter.onFilterInputChange()
     
     /**
      * Bound to the $ui. Listen for changes in the filter type
@@ -6035,6 +6082,14 @@ $.pt.SPUploadStyleSheet = "/**\n"
             // reset lookup fields
             .find(".hasLookupSPField")
                 .SPLookupField("method", "clear");
+        
+        if (Inst.opt.definedClass !== "") {
+            
+            Inst.$ui
+                .find("." + Inst.opt.definedClass)
+                .removeClass(Inst.opt.definedClass);
+            
+        }
         
         return Inst;
         
@@ -6314,7 +6369,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
     Filter.styleSheet = "/** \n"
 + " * Stylesheet for the Board widget\n"
 + " * \n"
-+ " * BUILD: June 29, 2013 - 04:10 PM\n"
++ " * BUILD: Paul:June 30, 2013 12:58 PM\n"
 + " */\n"
 + "div.spwidget-filter {\n"
 + "    width: 100%;\n"
@@ -6343,20 +6398,15 @@ $.pt.SPUploadStyleSheet = "/**\n"
 + "    margin-top: .5em;\n"
 + "    width: 100%;\n"
 + "}\n"
-+ "div.spwidget-filter div.spwidget-column:before,\n"
-+ "div.spwidget-filter div.spwidget-column:after {\n"
-+ "    content: \"\";\n"
-+ "    display: table;\n"
-+ "    line-height: 0;\n"
-+ "}\n"
-+ "div.spwidget-filter div.spwidget-column:after {\n"
-+ "    clear: both;\n"
-+ "}\n"
++ "\n"
 + "div.spwidget-filter div.spwidget-filter-value-cntr > label {\n"
 + "    display: block;\n"
 + "    padding: .2em;\n"
 + "    font-size: 1.1em;\n"
 + "    font-weight: bold;\n"
++ "}\n"
++ "div.spwidget-filter div.spwidget-column-dirty div.spwidget-filter-value-cntr > label {\n"
++ "    color: #FF0000;\n"
 + "}\n"
 + "div.spwidget-filter .spwidget-tooltip {\n"
 + "    display: block;\n"
@@ -6364,7 +6414,11 @@ $.pt.SPUploadStyleSheet = "/**\n"
 + "    font-style: italic;\n"
 + "}\n"
 + "\n"
-+ "\n"
++ "/* LOOKUP FIELDS */\n"
++ "div.spwidget-filter div.spwidgets-lookup-cntr div.spwidgets-lookup-selected > div.spwidgets-item {\n"
++ "    display: block;\n"
++ "    margin-left: 0px;\n"
++ "}\n"
 + "\n"
 + "/* CHOICE FIELDS */\n"
 + "div.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input {\n"
@@ -6435,12 +6489,12 @@ $.pt.SPUploadStyleSheet = "/**\n"
 + "    </div>\n"
 + "</script>\n"
 + "<script type=\"text/html\" id=\"filter_text_field\">\n"
-+ "    <input name=\"{{Name}}\" title=\"{{DisplayName}}\" type=\"text\" value=\"\" data-spwidget_list=\"{{list}}\" class=\"spwidget-input\" />\n"
++ "    <input name=\"{{Name}}\" title=\"{{DisplayName}}\" type=\"text\" value=\"\" data-spwidget_list=\"{{list}}\" class=\"spwidget-input spwidget-filter-input\" />\n"
 + "    <span class=\"spwidget-tooltip\">{{tooltip}}</span>\n"
 + "</script>\n"
 + "<script type=\"text/html\" id=\"filter_choice_field\">\n"
 + "    <label>\n"
-+ "        <input name=\"{{Name}}\" title=\"{{DisplayName}}\" type=\"checkbox\" value=\"{{value}}\" class=\"spwidget-input\" />\n"
++ "        <input name=\"{{Name}}\" title=\"{{DisplayName}}\" type=\"checkbox\" value=\"{{value}}\" class=\"spwidget-input spwidget-filter-input\" />\n"
 + "        {{value}}\n"
 + "    </label>\n"
 + "</script>\n";
