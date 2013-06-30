@@ -268,7 +268,8 @@
                                 o._cntr.find("div.spwidgets-lookup-selected")
                                     .css("display", "none")
                                     .empty();
-                                o._ele.val("");
+                                
+                                o._ele.val("").change();
                                 
                                 // Make sure input is visible
                                 o._cntr.find("div.spwidgets-lookup-input").css("display", "");
@@ -892,11 +893,12 @@
             
         };  
         
-        o.storeItemIDs( store );
-        
         // Focus on the autocomplete field.
         o._lookupInputEleCntr.find("input").focus();
         
+        // remove the item and trigger a change event
+        o.storeItemIDs( store );
+        o._ele.change();
         return Lookup;
         
     };//end:Lookup.removeItem() 
