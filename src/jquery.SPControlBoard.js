@@ -555,12 +555,11 @@
                                                 cacheXML:       true,
                                                 CAMLQuery:      opt.fieldFilter,
                                                 webURL:         opt.webURL,
-                                                CAMLRowLimit:   0,
+                                                CAMLRowLimit:   Board.maxColumns,
                                                 CAMLViewFields: 
-                                                    '<ViewFields>' +
-                                                        '<FieldRef Name="' + 
-                                                            f.attr("ShowField") + '" />' +
-                                                    '</ViewFields>',
+                                                    '<ViewFields><FieldRef Name="' + 
+                                                    f.attr("ShowField") +
+                                                    '" /></ViewFields>',
                                                 completefunc:   function(xData, status){
                                                     
                                                     // Process Errors
