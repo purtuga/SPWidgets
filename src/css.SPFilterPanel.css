@@ -30,20 +30,15 @@ div.spwidget-filter div.spwidget-filter-value-cntr {
     margin-top: .5em;
     width: 100%;
 }
-div.spwidget-filter div.spwidget-column:before,
-div.spwidget-filter div.spwidget-column:after {
-    content: "";
-    display: table;
-    line-height: 0;
-}
-div.spwidget-filter div.spwidget-column:after {
-    clear: both;
-}
+
 div.spwidget-filter div.spwidget-filter-value-cntr > label {
     display: block;
     padding: .2em;
     font-size: 1.1em;
     font-weight: bold;
+}
+div.spwidget-filter div.spwidget-column-dirty div.spwidget-filter-value-cntr > label {
+    color: #FF0000;
 }
 div.spwidget-filter .spwidget-tooltip {
     display: block;
@@ -51,7 +46,11 @@ div.spwidget-filter .spwidget-tooltip {
     font-style: italic;
 }
 
-
+/* LOOKUP FIELDS */
+div.spwidget-filter div.spwidgets-lookup-cntr div.spwidgets-lookup-selected > div.spwidgets-item {
+    display: block;
+    margin-left: 0px;
+}
 
 /* CHOICE FIELDS */
 div.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input {

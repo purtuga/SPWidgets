@@ -29,9 +29,9 @@
         webURL:                 $().SPServices.SPGetCurrentSite(),
         columns:                ['Title'],
         textFieldTooltip:       'Use a semicolon to delimiter multiple keywords.',
+        definedClass:           'spwidget-column-dirty',
         showFilterButton:       true,
         showFilterButtonTop:    true,
-        showStackedUI:          false,
         filterButtonLabel:      "Filter",
         onFilterClick:          null,
         onReady:                null,
@@ -48,9 +48,9 @@
      * @param {String}  [options.webURL=current site]
      * @param {Array}   [options.columns=['title']]
      * @param {String}  [options.textFieldTooltip='']
+     * @param {String}  [options.definedClass='spwidget-column-dirty']
      * @param {Boolean} [options.showFilterButton=true]
      * @param {Boolean} [options.showFilterButtonTop=true]
-     * @param {Boolean} [options.showStackedUI=false]
      * @param {String}  [options.filterButtonLabel='Fitler']
      * @param {String}  [options.onFilterClick=null]
      * @param {String}  [options.onReady=null]
@@ -229,16 +229,6 @@
                                     .empty()
                                     .addClass("hasSPFilterPanel")
                             );
-                        
-                        // If showStackedUI is true, then add class that will
-                        // cause the UI to be vertical.
-                        if (Inst.opt.showStackedUI) {
-                            
-                            Inst.$ui
-                                .find("div.spwidget-filter-column-cntr")
-                                .addClass("spwidget-filter-fmt-stacked");
-                            
-                        }
                         
                         // Store list definition
                         Inst.$list = $list;
@@ -471,7 +461,7 @@
                             
                         }
                         
-                        // Bind event
+                        // Bind events
                         Inst.$ui
                             // Filter type change()
                             .on(
@@ -479,6 +469,19 @@
                                 "select.spwidget-filter-type", 
                                 Filter.onFilterTypeChange
                             );
+                        
+                        // If we have a DefinedClass specified, then
+                        // listen to change events
+                        if (Inst.opt.definedClass !== "") {
+                            
+                            Inst.$ui
+                                .on(
+                                    "change.SPWidgets.SPFilterPanel",
+                                    ".spwidget-filter-input",
+                                    Filter.onFilterInputChange
+                                );
+                                
+                        }
                         
                         // If a onReady callback was defined, then
                         // execute it now
@@ -542,6 +545,49 @@
         }); //end: return()
         
     }; //end: $.fn.SPFilterPanel()
+    
+    /**
+     * Triggered when the change event is triggered on the
+     * input elements that collect data from the user.
+     * Sets the dirty class on the column if one is defined.
+     * 
+     * @param {jQuery.Event} ev
+     * 
+     * @return {HTMLElement} this
+     */
+    Filter.onFilterInputChange = function(ev){
+        
+        var $input  = $(this),
+            $cntr   = $input.closest("div.spwidget-filter-value-input"),
+            $col    = $cntr.closest("div.spwidget-column"),
+            val     = $input.val(),
+            Inst    = $cntr
+                        .closest("div.spwidget-filter")
+                        .data("SPFilterPanelInst");
+        
+        if ($col.is(".spwidget-type-choice")) {
+            
+            if (!$cntr.find(".spwidget-filter-input:checked").length) {
+                
+                val = "";
+                
+            }
+            
+        }
+        
+        if (val !== "") {
+            
+            $col.addClass(Inst.opt.definedClass);
+            
+        } else {
+            
+            $col.removeClass(Inst.opt.definedClass);
+            
+        }
+        
+        return this;
+        
+    }; //end: Filter.onFilterInputChange()
     
     /**
      * Bound to the $ui. Listen for changes in the filter type
@@ -639,6 +685,14 @@
             // reset lookup fields
             .find(".hasLookupSPField")
                 .SPLookupField("method", "clear");
+        
+        if (Inst.opt.definedClass !== "") {
+            
+            Inst.$ui
+                .find("." + Inst.opt.definedClass)
+                .removeClass(Inst.opt.definedClass);
+            
+        }
         
         return Inst;
         

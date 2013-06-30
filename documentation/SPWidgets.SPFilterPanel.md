@@ -19,7 +19,7 @@ The SPFilterPanel widget was introduced with v2.1
 Usage
 -----
 
-    $("#listfilter").SPFilterPanel({
+    $("#listFilter").SPFilterPanel({
         list: "Tasks",
         columns: [
             'Title', 'Status', 'AssignedTo', 'Predecessors'
@@ -37,7 +37,7 @@ Input Parameters
 
 This method takes as input an object containing the supported options:
 
-        $("#board").SPFilterPanel({
+        $("#listFilter").SPFilterPanel({
             list:               '',
             webURL:             $().SPServices.SPGetCurrentSite(),
             columns:            ['Title'],
@@ -72,24 +72,28 @@ The default options for this widget can be manipulated/set via the following obj
 -   **showFilterButton**    :   *Boolean. Optional. Default=true* <br />
     True or false whether a button should be displayed at the bottom of the widget. Default is true. See _filterButtonLabel_ and _onFilterClick_ options for more on the use of this button.
 
--   **showStackedUI**    :   *Boolean. Optional. Default=false* <br />
-    By default, the UI for each column is to place the Match type to the left of the area where the user defines the filters for the column. Setting this option to true will cause the UI to be presented stacked; where the match type is displayed above the column filter area. Use this options when displaying the Filter Panel in narrow container.
+-   **definedClass**    :   *Boolean. Optional. Default=spwidget-column-dirty* <br />
+    The CSS class name for columns that have received filtering criteria from the user. The default class (*spwidget-column-dirty*) highlights the column label in red.
 
 -   **filterButtonLabel**   :   *String. Optional. Default='Filter'* <br />
-    The text that will be used in the button at the bottom of the filter panel. Used only when _showFilterButton_ is set to true. If a _onFilterClick_ function is not set, a click event can be set on _button.spwidget-button_
+    The text that will be used in the button at the bottom of the filter panel. Used only when _showFilterButton_ is set to true. 
     
-    Example:
-    
-        $("body").on("click", "button.spwidget-button", function(){
-            // this = button
-        });
-
 -   **onFilterClick**       :   *Function. Optional. Default=null* <br />
     Used when _showFilterButton_ is set to true.  Function is executed when the button is clicked. Function is have a scope of the original container HTML element (the one where the widget was inserted) and be given one parameter: A _Filter_ object (see the getFilter method of this widget).
     
         onFilterClick: function(FilterObj) {
             // this = original container element
         }
+
+    If a _onFilterClick_ function is not set, a click event can be set on _button.spwidget-button_ and the _getFilter_ method used to retrieve the defined criteria. 
+    
+    Example:
+        
+        $filterPanel = $("#listFilter").SPFilterPanel({ list: "Tasks" });
+        $("body").on("click", "button.spwidget-button", function(){
+            // this = button
+            var filterCrit = $filterPanel.SPFilterPanel("getFilter");
+        });
 
 -   **onReady**      :   *Function. Optional. Default=null* <br />
     A function to be executed when the widget is done being created. Function is called prior to making the widget visible and will have a scope of the original HTML element container (the one where the widget was inserted) and given one parameter: the original options object given to this widget.
@@ -117,20 +121,19 @@ The default options for this widget can be manipulated/set via the following obj
 Return Value
 ------------
 
-This plugin will return a jQuery object that contains the initially selected
-set of nodes (selector), thus maintaining chainability.
+This plugin will return a jQuery object that contains the initially selected set of nodes (selector), thus maintaining chainability.
 
 
 Methods
 -------
 
 
--   **getFilter**</br />
+-   **getFilter()**</br />
     Returns a Filter object with the values entered by the user. The object will have CAML Query ready string values as well as properties that hold the individual values entered by the user.
     
     Usage:
 
-        $("#board").SPFilterPanel("getFilter");
+        $("#listFilter").SPFilterPanel("getFilter");
     
     The Filter object return will contain the following:
     
@@ -153,12 +156,12 @@ Methods
         }
 
 
--   **destroy**</br />
+-   **destroy()**</br />
     Removes the widget from the UI.
     
     Usage:
  
-        $("#board").SPFilterPanel("destroy");
+        $("#listFilter").SPFilterPanel("destroy");
 
 
 Examples
