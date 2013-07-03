@@ -106,7 +106,7 @@ The following methods are supported:
     
     Example:
     
-        $("input[name='user']").pickSPUser("method", "remove", '4;#John Smith');
+        $("input[name='user']").pickSPUser("method", "add", '4;#John Smith');
         
 
 -   **remove('id')**<br />
