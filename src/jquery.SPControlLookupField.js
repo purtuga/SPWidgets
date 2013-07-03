@@ -222,6 +222,10 @@
      *              $(ele).SPLookupField("method", "clear", { id: [5, 123455] }); // clear ID=5 and 123455
      * 
      * 
+     * add      Adds a lookup value to the widget. (does not clear existing)
+     *          Usage:
+     *              $(ele).SPLookupField("method", "add", "45;#test;#234;#test 2")
+     * 
      * 
      */
     $.fn.SPLookupField = function(options) {
@@ -260,11 +264,13 @@
                     if (options.toLowerCase() === 'method') {
 
                         var cmd     = String(arg[1] || '').toLowerCase();
-                        var cmdOpt  = arg[2] || {};
+                        var cmdOpt  = arg[2];
                         
-                        // ACTION: clear
-                        if (cmd === "clear") {
+                        // ====> ACTION: clear
+                        if (cmd === "clear" && cmdOpt) {
+                            
                             if (cmdOpt.id === undefined) {
+                                
                                 o._cntr.find("div.spwidgets-lookup-selected")
                                     .css("display", "none")
                                     .empty();
@@ -275,18 +281,30 @@
                                 o._cntr.find("div.spwidgets-lookup-input").css("display", "");
                                 
                             } else {
-                                alert("TBD... Delete individual ID's");
+                                
+                                alert("TBD... Delete individual ID's not yet supported. Contact plugin author.");
+                                
                             }
-                        }                        
+                        
+                        // ====> ACTION: add
+                        } else if (cmd === "add") {
+                            
+                            Lookup.addItem(o, cmdOpt);
+                            
+                        }
+                                            
                     }//end: options === method
+                    
                 }
                 
                 // Exit
                 return this;
+                
             }
             
-            
+            //-------------------------------------
             // CREATE THE WIDGET ON THE PAGE.
+            //-------------------------------------
             
             // Options for this element
             var o = $.extend(
@@ -304,8 +322,10 @@
              * the original input element if necessary.
              * 
              * @params {Array|Object} items
-             *          An object or array of object wiht the items
-             *          to be shown as slected
+             *          An object or array of objects with the rows
+             *          to be shown as slected. Object contains the row
+             *          metadata as retrieved from Sharepoint and used on
+             *          the autocomplete widget
              * @params {Boolean} [doNotStoreIds=false]
              *          If true, then the IDs of the items that will be
              *          shown as selected will not be added to the input
@@ -348,7 +368,6 @@
                     // If this item is not yet displayed, then add it now
                     if (!itemCntr.find("div.spwidgets-item-id-" + item.ID).length) {
                         
-                        
                         // Create the new item UI and append it to the
                         // display area.
                         var thisItemUI = 
@@ -357,14 +376,14 @@
                                         $.SPWidgets.fillTemplate(o.template, item) +
                                         '</div>'
                                     )
+                                    .appendTo( itemCntr )
                                     .find(".spwidgets-item-remove")
                                         .on("click.SPWidgets", function(ev){
                                             
                                             Lookup.removeItem(o,this);
                                             
                                         })
-                                        .end()
-                                    .appendTo( itemCntr );
+                                        .end();
                         
                         // If an onAddItem event was defined, then run it now
                         // TODO: in future, need to trigger/bubble event as well
@@ -410,6 +429,14 @@
                     } //end: if(): item already displayed?
                 
                 });//end: .each() item
+                
+                // If readOnly = true, then remove the "delete item"
+                // link from the elements
+                if (o.readOnly) {
+                    
+                    o._cntr.find(".spwidgets-item-remove").remove();
+                    
+                }
                 
                 // if an update was made, then trigger the change() event on the
                 // original input element.
@@ -491,6 +518,85 @@
                 
             };//end: o.storeItemIDs()
             
+            /**
+             * Looks at the input field where this widget was bound to
+             * and displays the items (rows) that are currently stored
+             * there in the widget.
+             * 
+             * @param {Object} options  
+             * @param {Boolean} [options.aysnc=true]  
+             * 
+             * @return {jQuery.Deferred}
+             *      A deferred because based on those values in the input
+             *      calls will be made to the server to retrieve their data.
+             *      Deferred is resolved with a scope of the intance object
+             *      (o) and given two input params: xData, Status.. Note that
+             *      these could be null if input was not set
+             */
+            o.showCurrentInputSelection = function(options) {
+                
+                return $.Deferred(function(dfd){
+                    
+                    var opt     = $.extend({}, {
+                                    async: true
+                                }, options),
+                        items = $.SPWidgets.parseLookupFieldValue(o._ele.val());
+                    
+                    if (!items.length) {
+                        
+                        dfd.resolveWith(o, [null, null]);
+                        return;
+                        
+                    }
+                    
+                    $().SPServices({
+                        operation: "GetListItems",
+                        async:      opt.async,
+                        listName:   o.list,
+                        CAMLQuery:  '<Query><Where>' +
+                                $.SPWidgets.getCamlLogical({
+                                    type:   'OR',
+                                    values: items,
+                                    onEachValue: function(n){
+                                        var s = "";
+                                        if (n.id) {
+                                            s = "<Eq><FieldRef Name='ID'/>" +
+                                                "<Value Type='Counter'>" + 
+                                                n.id + "</Value></Eq>";
+                                        }
+                                        return s;
+                                    }
+                                }) +
+                                '</Where></Query>',
+                        CAMLViewFields: "<ViewFields>" + 
+                                o._selectFields + "</ViewFields>",
+                        CAMLRowLimit: 0,
+                        completefunc: function(xData, status) {
+                            
+                            // Display the items.
+                            var arrayOfCurrentItems = $(xData.responseXML)
+                                            .SPFilterNode("z:row")
+                                            .SPXmlToJson({
+                                                includeAllAttrs:    true,
+                                                removeOws:          true
+                                            });
+                            
+                            o.showSelectedItems( arrayOfCurrentItems, true );
+                            dfd.resolveWith(o, [xData, status]);
+                            
+                            return;
+                            
+                        }//end: completefunc()
+                    }); //end: SPSErvices
+                    
+                }) //end: deferred()
+                .promise();
+                
+            }; //end: o.showCurrentInputSelection()
+            
+            //---------------------------------------------------
+            //              START BUILD THIS INSTANCE 
+            //--------------------------------------------------- 
 
             // Create the UI container and store the options object in the input field
             o._cntr                 = $(Lookup.htmlTemplate)
@@ -737,60 +843,28 @@
                  * that it gets pass the autocomplete options set during setup.
                  */
                 .on("keyup.SPWidgets", function(ev){
+                    
                     if (ev.which != 13 ) { return; }
+                    
                     var v = $(ev.target).val();
+                    
                     if (v) {
+                        
                         if (String(v).length < o.minLength) {
+                            
                             $(ev.target).autocomplete("search", v + "    ");
+                            
                         }
+                        
                     }
+                    
                 }); 
             
             // If the input field has values, then parse them and display them
-            var items = $.SPWidgets.parseLookupFieldValue(o._ele.val());
-            if (items.length) {
+            if (o._ele.val()) {
                 
-                $().SPServices({
-                    operation: "GetListItems",
-                    async:      true,
-                    listName:   o.list,
-                    CAMLQuery:  '<Query><Where>' +
-                            $.SPWidgets.getCamlLogical({
-                                type:   'OR',
-                                values: items,
-                                onEachValue: function(n){
-                                    var s = "";
-                                    if (n.id) {
-                                        s = "<Eq><FieldRef Name='ID'/>" +
-                                            "<Value Type='Counter'>" + 
-                                            n.id + "</Value></Eq>";
-                                    }
-                                    return s;
-                                }
-                            }) +
-                            '</Where></Query>',
-                    CAMLViewFields: "<ViewFields>" + 
-                            o._selectFields + "</ViewFields>",
-                    CAMLRowLimit: 0,
-                    completefunc: function(xData, Status) {
-                        
-                        // Display the items.
-                        var arrayOfCurrentItems = $(xData.responseXML)
-                                        .SPFilterNode("z:row")
-                                        .SPXmlToJson({
-                                            includeAllAttrs:    true,
-                                            removeOws:          true
-                                        });
-                        
-                        o.showSelectedItems( arrayOfCurrentItems, true );
-                        
-                        // If readOnly = true, then remove the "delete item"
-                        // link from the elements
-                        if (o.readOnly) {
-                            
-                            o._cntr.find(".spwidgets-item-remove").remove();
-                            
-                        }
+                o.showCurrentInputSelection()
+                    .then(function(xData, status){
                         
                         // Call onReady function if one was defined. 
                         if ($.isFunction(o.onReady)) {
@@ -799,10 +873,7 @@
                         
                         }
                         
-                        return this;
-                        
-                    }//end: completefunc()
-                });
+                    });
                 
             // ELSE, input was blank. Trigger onReady if applicable.
             } else {
@@ -903,6 +974,42 @@
         
     };//end:Lookup.removeItem() 
     
+    /**
+     * Adds items to the Lookup widget. Method is used with the
+     * "add" method on this widget.
+     * Takes a string of values in format id;#title (title optional)
+     * and adds them to the input element and then calls the
+     * Inst.showCurrentInputSelection() method to display them.
+     * 
+     * @param {Object} Inst     The instance object for the widget
+     * @param {String} strItems The sting of items to add.
+     * 
+     * @return {Object} Inst
+     */
+    Lookup.addItem = function(Inst, strItems) {
+        
+        if (!strItems || typeof strItems !== "string") {
+            
+            return Inst;
+            
+        }
+        
+        var newVal = Inst._ele.val();
+        
+        if (newVal) {
+            
+            newVal += ";#";
+            
+        }
+        
+        newVal += strItems;
+        
+        Inst._ele.val(newVal);
+        Inst.showCurrentInputSelection();
+        
+        return Inst;
+        
+    }; //end: Lookup.addItem()
     
     /**
      * @property
