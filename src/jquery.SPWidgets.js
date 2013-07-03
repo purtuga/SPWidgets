@@ -348,7 +348,7 @@
                 if ((last - i) > 1){
                     logical += $.SPWidgets.getCamlLogical(
                                 $.extend({}, o, {
-                                    values: o.values.splice((i + 1), (total - i))
+                                    values: o.values.slice((i + 1), (total - i))
                                 })
                             );
                     break;
