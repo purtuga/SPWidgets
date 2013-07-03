@@ -66,12 +66,18 @@
      * 
      *      Returns an object with the filter information entered by the user.
      * 
+     *  $(ele).SPFilterPanel("setFilter", {column: { matchType: "eq", values: [ '1', '2' ]} });
+     * 
+     *      Returns an object with the filter information entered by the user.
+     * 
      * $(ele).SPFilterPanel("destroy");
      * 
      *      Removes the widget from the page.
      * 
      */
     $.fn.SPFilterPanel = function(options){
+        
+        var arg = arguments;
         
         // If initialization is not yet done, then do it now
         if ( !Filter.isInitDone ) {
@@ -111,9 +117,18 @@
                 switch (method) {
                     
                     // METHOD----------> getFilter
+                    //      Return: {Object}
                     case "getfilter":
                         
                         response = Filter.getFilterValues(Inst);
+                        
+                        break;
+                        
+                    // METHOD----------> setFilter("url param")
+                    //      Return: $ele
+                    case "setfilter":
+                        
+                        Filter.setFilterValues(Inst, arg[1]);
                         
                         break;
                         
@@ -483,6 +498,10 @@
                                 
                         }
                         
+                        // Store the Widget Inst object in the UI
+                        Inst.$ui
+                            .data("SPFilterPanelInst", Inst);
+                        
                         // If a onReady callback was defined, then
                         // execute it now
                         if ($.isFunction(Inst.opt.onReady)) {
@@ -500,11 +519,6 @@
                                 dfd.resolve();
                                 
                             });
-                        
-                        // Store the Widget Inst object in the UI
-                        Inst.$ui
-                            .data("SPFilterPanelInst", Inst);
-                        
                         
                     }) //end: .then()
                     // IF getting the List definition fails, then display error
@@ -714,6 +728,7 @@
      * 
      *      {
      *          CAMLQuery: 'string with query wrapped in an <And> aggregate',
+     *          URLParams: 'String with query in URL params style',
      *          filters: {
      *              columnInternalName: {
      *                  matchType: 'Eq',
@@ -723,6 +738,7 @@
      *                      etc...
      *                  ],
      *                  CAMLQuery: 'string with query wrapped in an <Or> aggregate',
+     *                  URLParams: 'string with query in URL param style',
      *                  count: 0
      *              }
      *          },
@@ -735,6 +751,7 @@
         
         var filters = {
                 CAMLQuery:  '',
+                URLParams:  '',
                 filters:    {},
                 count:      0
             },
@@ -782,10 +799,12 @@
                                             .val(),
                         values:     [],
                         count:      0,
-                        CAMLQuery:  ''
+                        CAMLQuery:  '',
+                        URLParams:  ''
                     },
                 colFilterWasSet = false,
-                colType         = $thisCol.data("spwidget_column_type");
+                colType         = $thisCol.data("spwidget_column_type"),
+                thisColUrlParam = {};
             
             // If the match type is IsNull or IsNotNull, then
             // build the match now... don't need to know which type
@@ -940,8 +959,23 @@
                 filters.count           += thisColFilter.count;
                 filters.filters[colName] = thisColFilter;
                 
+                // Create the URLParams for this column
+                thisColUrlParam[ colName ] = {
+                    matchType:  thisColFilter.matchType,
+                    values:     thisColFilter.values
+                };
+                
+                thisColFilter.URLParams = $.param(thisColUrlParam, false);
+                
+                if (filters.URLParams !== "") {
+                    
+                    filters.URLParams += "&";
+                    
+                }
+                
+                filters.URLParams += thisColFilter.URLParams;
+                
             }
-            
             
         });
         
@@ -962,6 +996,109 @@
         return filters;
         
     }; // Filter.getFilterValues()
+    
+    /**
+     * Clears the current panel and populates it with the
+     * filter criteria defined on the input object
+     * 
+     * @param {Object} Inst
+     *      The instance object for the widget on the page
+     * @param {String} filters
+     *      An object with the column criteria to be set.
+     *      format of object:
+     *          {
+     *              columnInternalName: {
+     *                  matchType: "",
+     *                  values: [
+     *                      'value 1',
+     *                      'value 2'
+     *                  ]
+     *              }
+     *          }
+     * 
+     * @return {Object} Inst
+     */
+    Filter.setFilterValues = function(Inst, filters) {
+        
+        // If filters is not an object or is an empty object, exit
+        if (typeof filters !== "object" || $.isEmptyObject(filters)) {
+            
+            return Inst;
+            
+        }
+        
+        Filter.doResetFilter(Inst);
+        
+        $.each(filters, function(column, filter){
+            
+            var $input  = Inst.$ui
+                            .find(
+                                ".spwidget-filter-input[name='" + 
+                                column + "']"
+                            ),
+                $colUI  = $input.closest("div.spwidget-column"),
+                type    = $colUI.data("spwidget_column_type"),
+                $match  = $colUI.find("select[name='" + column + "_type']");
+            
+            // If we have a matchType, then set it
+            if (filter.matchType) {
+                
+                $match.val(filter.matchType);
+                
+            }
+            
+            // Populate the values
+            switch (type) {
+                
+                case "text":
+                
+                    if (filter.values instanceof Array) {
+                        
+                        $input.val(filter.values.join(";"));
+                        
+                    } else {
+                        
+                        $input.val(filter.values);
+                        
+                    }
+                    
+                    break;
+                
+                case "choice":
+                    
+                    $.each(filter.values, function(i, colVal){
+                        
+                        $input
+                            .filter("[value='" + colVal + "']")
+                                .prop("checked", true);
+                        
+                    });
+                    
+                    break;
+                
+                case "lookup":
+                    
+                    $input.SPLookupField("method", "add", 
+                        filter.values.join(";#") );
+                    
+                    break;
+                
+                case "people":
+                    
+                    $input.pickSPUser("method", "add", 
+                        filter.values.join(";#") );
+                    
+                    break;
+                
+            }
+            
+            $input.change();
+            
+        }); //end: each(): filter
+        
+        return Inst;
+        
+    }; //end: Filter.setFilterValues()
     
     /**
      * @property
