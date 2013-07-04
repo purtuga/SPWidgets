@@ -139,6 +139,7 @@ Methods
     
         {
             CAMLQuery: 'string with query of all columns filters wrapped in an <And> aggregate',
+            URLParams: 'String of items in URL param style',
             filters: {
                 columnInternalName: {
                     matchType: 'Eq',
@@ -148,12 +149,46 @@ Methods
                         etc...
                     ],
                     CAMLQuery: 'string with query wrapped in an <Or> aggregate',
+                    URLParams: 'String in URL param style',
                     count: 0
                 },
                 etc...
            },
            count: 2 // number of filters created
         }
+
+
+-   **setFiler(ObjectWithFilters)**</br />
+    Clears the existing set of filters defind on the panel and sets the filter panel with the criteria defined on input to this method.  Input will be an object with similar format as the _filters_ attribute of the _getFilter_ method.
+    
+    Usage:
+    
+        $("#listFilter")
+            .SPFilterPanel(
+                "setFilter",
+                {
+                    ID: { 
+                        values: [ 3, 4, 5]
+                    },
+                    matchType: 'Eq'
+                }
+            );
+    
+    Input:
+    
+    -   _{Object} ObjectWithFilters_ An object with the list of columns internal names and the defined criteria to be set. Format of the object is:
+        
+            {
+                columns_internal_name: {
+                    matchType: 'String. Match type. Optional',
+                    values: [
+                        'value 1',
+                        'value 2',
+                        'value 3'
+                    ]
+                },
+                ...etc...
+            }
 
 
 -   **destroy()**</br />
