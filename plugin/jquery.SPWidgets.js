@@ -3,7 +3,7 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *  
- * @version 20130630014913
+ * @version 20130704025820
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  * 
@@ -11,8 +11,8 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date:  June 30, 2013 - 01:49 PM
- * Version:     20130630014913
+ * Build Date:  July 04, 2013 - 02:58 PM
+ * Version:     20130704025820
  * 
  */
 ;(function($){
@@ -50,7 +50,7 @@
         }
         
         $.SPWidgets             = {};
-        $.SPWidgets.version     = "20130630014913";
+        $.SPWidgets.version     = "20130704025820";
         $.SPWidgets.defaults    = {};
         
         /**
@@ -348,7 +348,7 @@
                 if ((last - i) > 1){
                     logical += $.SPWidgets.getCamlLogical(
                                 $.extend({}, o, {
-                                    values: o.values.splice((i + 1), (total - i))
+                                    values: o.values.slice((i + 1), (total - i))
                                 })
                             );
                     break;
@@ -2846,7 +2846,7 @@
  * THe user, however, is presented with the existing items
  * and has the ability to Remove them and add new ones.
  * 
- * BUILD: Paul:June 30, 2013 12:58 PM
+ * BUILD: July 04, 2013 - 02:58 PM
  * 
  */
 
@@ -3063,6 +3063,10 @@
      *              $(ele).SPLookupField("method", "clear", { id: [5, 123455] }); // clear ID=5 and 123455
      * 
      * 
+     * add      Adds a lookup value to the widget. (does not clear existing)
+     *          Usage:
+     *              $(ele).SPLookupField("method", "add", "45;#test;#234;#test 2")
+     * 
      * 
      */
     $.fn.SPLookupField = function(options) {
@@ -3101,11 +3105,13 @@
                     if (options.toLowerCase() === 'method') {
 
                         var cmd     = String(arg[1] || '').toLowerCase();
-                        var cmdOpt  = arg[2] || {};
+                        var cmdOpt  = arg[2];
                         
-                        // ACTION: clear
-                        if (cmd === "clear") {
+                        // ====> ACTION: clear
+                        if (cmd === "clear" && cmdOpt) {
+                            
                             if (cmdOpt.id === undefined) {
+                                
                                 o._cntr.find("div.spwidgets-lookup-selected")
                                     .css("display", "none")
                                     .empty();
@@ -3116,18 +3122,30 @@
                                 o._cntr.find("div.spwidgets-lookup-input").css("display", "");
                                 
                             } else {
-                                alert("TBD... Delete individual ID's");
+                                
+                                alert("TBD... Delete individual ID's not yet supported. Contact plugin author.");
+                                
                             }
-                        }                        
+                        
+                        // ====> ACTION: add
+                        } else if (cmd === "add") {
+                            
+                            Lookup.addItem(o, cmdOpt);
+                            
+                        }
+                                            
                     }//end: options === method
+                    
                 }
                 
                 // Exit
                 return this;
+                
             }
             
-            
+            //-------------------------------------
             // CREATE THE WIDGET ON THE PAGE.
+            //-------------------------------------
             
             // Options for this element
             var o = $.extend(
@@ -3145,8 +3163,10 @@
              * the original input element if necessary.
              * 
              * @params {Array|Object} items
-             *          An object or array of object wiht the items
-             *          to be shown as slected
+             *          An object or array of objects with the rows
+             *          to be shown as slected. Object contains the row
+             *          metadata as retrieved from Sharepoint and used on
+             *          the autocomplete widget
              * @params {Boolean} [doNotStoreIds=false]
              *          If true, then the IDs of the items that will be
              *          shown as selected will not be added to the input
@@ -3189,7 +3209,6 @@
                     // If this item is not yet displayed, then add it now
                     if (!itemCntr.find("div.spwidgets-item-id-" + item.ID).length) {
                         
-                        
                         // Create the new item UI and append it to the
                         // display area.
                         var thisItemUI = 
@@ -3198,14 +3217,14 @@
                                         $.SPWidgets.fillTemplate(o.template, item) +
                                         '</div>'
                                     )
+                                    .appendTo( itemCntr )
                                     .find(".spwidgets-item-remove")
                                         .on("click.SPWidgets", function(ev){
                                             
                                             Lookup.removeItem(o,this);
                                             
                                         })
-                                        .end()
-                                    .appendTo( itemCntr );
+                                        .end();
                         
                         // If an onAddItem event was defined, then run it now
                         // TODO: in future, need to trigger/bubble event as well
@@ -3251,6 +3270,14 @@
                     } //end: if(): item already displayed?
                 
                 });//end: .each() item
+                
+                // If readOnly = true, then remove the "delete item"
+                // link from the elements
+                if (o.readOnly) {
+                    
+                    o._cntr.find(".spwidgets-item-remove").remove();
+                    
+                }
                 
                 // if an update was made, then trigger the change() event on the
                 // original input element.
@@ -3332,6 +3359,85 @@
                 
             };//end: o.storeItemIDs()
             
+            /**
+             * Looks at the input field where this widget was bound to
+             * and displays the items (rows) that are currently stored
+             * there in the widget.
+             * 
+             * @param {Object} options  
+             * @param {Boolean} [options.aysnc=true]  
+             * 
+             * @return {jQuery.Deferred}
+             *      A deferred because based on those values in the input
+             *      calls will be made to the server to retrieve their data.
+             *      Deferred is resolved with a scope of the intance object
+             *      (o) and given two input params: xData, Status.. Note that
+             *      these could be null if input was not set
+             */
+            o.showCurrentInputSelection = function(options) {
+                
+                return $.Deferred(function(dfd){
+                    
+                    var opt     = $.extend({}, {
+                                    async: true
+                                }, options),
+                        items = $.SPWidgets.parseLookupFieldValue(o._ele.val());
+                    
+                    if (!items.length) {
+                        
+                        dfd.resolveWith(o, [null, null]);
+                        return;
+                        
+                    }
+                    
+                    $().SPServices({
+                        operation: "GetListItems",
+                        async:      opt.async,
+                        listName:   o.list,
+                        CAMLQuery:  '<Query><Where>' +
+                                $.SPWidgets.getCamlLogical({
+                                    type:   'OR',
+                                    values: items,
+                                    onEachValue: function(n){
+                                        var s = "";
+                                        if (n.id) {
+                                            s = "<Eq><FieldRef Name='ID'/>" +
+                                                "<Value Type='Counter'>" + 
+                                                n.id + "</Value></Eq>";
+                                        }
+                                        return s;
+                                    }
+                                }) +
+                                '</Where></Query>',
+                        CAMLViewFields: "<ViewFields>" + 
+                                o._selectFields + "</ViewFields>",
+                        CAMLRowLimit: 0,
+                        completefunc: function(xData, status) {
+                            
+                            // Display the items.
+                            var arrayOfCurrentItems = $(xData.responseXML)
+                                            .SPFilterNode("z:row")
+                                            .SPXmlToJson({
+                                                includeAllAttrs:    true,
+                                                removeOws:          true
+                                            });
+                            
+                            o.showSelectedItems( arrayOfCurrentItems, true );
+                            dfd.resolveWith(o, [xData, status]);
+                            
+                            return;
+                            
+                        }//end: completefunc()
+                    }); //end: SPSErvices
+                    
+                }) //end: deferred()
+                .promise();
+                
+            }; //end: o.showCurrentInputSelection()
+            
+            //---------------------------------------------------
+            //              START BUILD THIS INSTANCE 
+            //--------------------------------------------------- 
 
             // Create the UI container and store the options object in the input field
             o._cntr                 = $(Lookup.htmlTemplate)
@@ -3578,60 +3684,28 @@
                  * that it gets pass the autocomplete options set during setup.
                  */
                 .on("keyup.SPWidgets", function(ev){
+                    
                     if (ev.which != 13 ) { return; }
+                    
                     var v = $(ev.target).val();
+                    
                     if (v) {
+                        
                         if (String(v).length < o.minLength) {
+                            
                             $(ev.target).autocomplete("search", v + "    ");
+                            
                         }
+                        
                     }
+                    
                 }); 
             
             // If the input field has values, then parse them and display them
-            var items = $.SPWidgets.parseLookupFieldValue(o._ele.val());
-            if (items.length) {
+            if (o._ele.val()) {
                 
-                $().SPServices({
-                    operation: "GetListItems",
-                    async:      true,
-                    listName:   o.list,
-                    CAMLQuery:  '<Query><Where>' +
-                            $.SPWidgets.getCamlLogical({
-                                type:   'OR',
-                                values: items,
-                                onEachValue: function(n){
-                                    var s = "";
-                                    if (n.id) {
-                                        s = "<Eq><FieldRef Name='ID'/>" +
-                                            "<Value Type='Counter'>" + 
-                                            n.id + "</Value></Eq>";
-                                    }
-                                    return s;
-                                }
-                            }) +
-                            '</Where></Query>',
-                    CAMLViewFields: "<ViewFields>" + 
-                            o._selectFields + "</ViewFields>",
-                    CAMLRowLimit: 0,
-                    completefunc: function(xData, Status) {
-                        
-                        // Display the items.
-                        var arrayOfCurrentItems = $(xData.responseXML)
-                                        .SPFilterNode("z:row")
-                                        .SPXmlToJson({
-                                            includeAllAttrs:    true,
-                                            removeOws:          true
-                                        });
-                        
-                        o.showSelectedItems( arrayOfCurrentItems, true );
-                        
-                        // If readOnly = true, then remove the "delete item"
-                        // link from the elements
-                        if (o.readOnly) {
-                            
-                            o._cntr.find(".spwidgets-item-remove").remove();
-                            
-                        }
+                o.showCurrentInputSelection()
+                    .then(function(xData, status){
                         
                         // Call onReady function if one was defined. 
                         if ($.isFunction(o.onReady)) {
@@ -3640,10 +3714,7 @@
                         
                         }
                         
-                        return this;
-                        
-                    }//end: completefunc()
-                });
+                    });
                 
             // ELSE, input was blank. Trigger onReady if applicable.
             } else {
@@ -3744,6 +3815,42 @@
         
     };//end:Lookup.removeItem() 
     
+    /**
+     * Adds items to the Lookup widget. Method is used with the
+     * "add" method on this widget.
+     * Takes a string of values in format id;#title (title optional)
+     * and adds them to the input element and then calls the
+     * Inst.showCurrentInputSelection() method to display them.
+     * 
+     * @param {Object} Inst     The instance object for the widget
+     * @param {String} strItems The sting of items to add.
+     * 
+     * @return {Object} Inst
+     */
+    Lookup.addItem = function(Inst, strItems) {
+        
+        if (!strItems || typeof strItems !== "string") {
+            
+            return Inst;
+            
+        }
+        
+        var newVal = Inst._ele.val();
+        
+        if (newVal) {
+            
+            newVal += ";#";
+            
+        }
+        
+        newVal += strItems;
+        
+        Inst._ele.val(newVal);
+        Inst.showCurrentInputSelection();
+        
+        return Inst;
+        
+    }; //end: Lookup.addItem()
     
     /**
      * @property
@@ -5398,7 +5505,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
 /**
  * @fileOverview - List filter panel widget
  * 
- * BUILD: June 30, 2013 - 01:49 PM
+ * BUILD: July 03, 2013 - 04:15 PM
  * 
  */
 (function($){
@@ -5463,12 +5570,18 @@ $.pt.SPUploadStyleSheet = "/**\n"
      * 
      *      Returns an object with the filter information entered by the user.
      * 
+     *  $(ele).SPFilterPanel("setFilter", {column: { matchType: "eq", values: [ '1', '2' ]} });
+     * 
+     *      Returns an object with the filter information entered by the user.
+     * 
      * $(ele).SPFilterPanel("destroy");
      * 
      *      Removes the widget from the page.
      * 
      */
     $.fn.SPFilterPanel = function(options){
+        
+        var arg = arguments;
         
         // If initialization is not yet done, then do it now
         if ( !Filter.isInitDone ) {
@@ -5508,9 +5621,18 @@ $.pt.SPUploadStyleSheet = "/**\n"
                 switch (method) {
                     
                     // METHOD----------> getFilter
+                    //      Return: {Object}
                     case "getfilter":
                         
                         response = Filter.getFilterValues(Inst);
+                        
+                        break;
+                        
+                    // METHOD----------> setFilter("url param")
+                    //      Return: $ele
+                    case "setfilter":
+                        
+                        Filter.setFilterValues(Inst, arg[1]);
                         
                         break;
                         
@@ -5880,6 +6002,10 @@ $.pt.SPUploadStyleSheet = "/**\n"
                                 
                         }
                         
+                        // Store the Widget Inst object in the UI
+                        Inst.$ui
+                            .data("SPFilterPanelInst", Inst);
+                        
                         // If a onReady callback was defined, then
                         // execute it now
                         if ($.isFunction(Inst.opt.onReady)) {
@@ -5897,11 +6023,6 @@ $.pt.SPUploadStyleSheet = "/**\n"
                                 dfd.resolve();
                                 
                             });
-                        
-                        // Store the Widget Inst object in the UI
-                        Inst.$ui
-                            .data("SPFilterPanelInst", Inst);
-                        
                         
                     }) //end: .then()
                     // IF getting the List definition fails, then display error
@@ -6111,6 +6232,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
      * 
      *      {
      *          CAMLQuery: 'string with query wrapped in an <And> aggregate',
+     *          URLParams: 'String with query in URL params style',
      *          filters: {
      *              columnInternalName: {
      *                  matchType: 'Eq',
@@ -6120,6 +6242,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
      *                      etc...
      *                  ],
      *                  CAMLQuery: 'string with query wrapped in an <Or> aggregate',
+     *                  URLParams: 'string with query in URL param style',
      *                  count: 0
      *              }
      *          },
@@ -6132,6 +6255,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
         
         var filters = {
                 CAMLQuery:  '',
+                URLParams:  '',
                 filters:    {},
                 count:      0
             },
@@ -6179,10 +6303,12 @@ $.pt.SPUploadStyleSheet = "/**\n"
                                             .val(),
                         values:     [],
                         count:      0,
-                        CAMLQuery:  ''
+                        CAMLQuery:  '',
+                        URLParams:  ''
                     },
                 colFilterWasSet = false,
-                colType         = $thisCol.data("spwidget_column_type");
+                colType         = $thisCol.data("spwidget_column_type"),
+                thisColUrlParam = {};
             
             // If the match type is IsNull or IsNotNull, then
             // build the match now... don't need to know which type
@@ -6337,8 +6463,23 @@ $.pt.SPUploadStyleSheet = "/**\n"
                 filters.count           += thisColFilter.count;
                 filters.filters[colName] = thisColFilter;
                 
+                // Create the URLParams for this column
+                thisColUrlParam[ colName ] = {
+                    matchType:  thisColFilter.matchType,
+                    values:     thisColFilter.values
+                };
+                
+                thisColFilter.URLParams = $.param(thisColUrlParam, false);
+                
+                if (filters.URLParams !== "") {
+                    
+                    filters.URLParams += "&";
+                    
+                }
+                
+                filters.URLParams += thisColFilter.URLParams;
+                
             }
-            
             
         });
         
@@ -6359,6 +6500,109 @@ $.pt.SPUploadStyleSheet = "/**\n"
         return filters;
         
     }; // Filter.getFilterValues()
+    
+    /**
+     * Clears the current panel and populates it with the
+     * filter criteria defined on the input object
+     * 
+     * @param {Object} Inst
+     *      The instance object for the widget on the page
+     * @param {String} filters
+     *      An object with the column criteria to be set.
+     *      format of object:
+     *          {
+     *              columnInternalName: {
+     *                  matchType: "",
+     *                  values: [
+     *                      'value 1',
+     *                      'value 2'
+     *                  ]
+     *              }
+     *          }
+     * 
+     * @return {Object} Inst
+     */
+    Filter.setFilterValues = function(Inst, filters) {
+        
+        // If filters is not an object or is an empty object, exit
+        if (typeof filters !== "object" || $.isEmptyObject(filters)) {
+            
+            return Inst;
+            
+        }
+        
+        Filter.doResetFilter(Inst);
+        
+        $.each(filters, function(column, filter){
+            
+            var $input  = Inst.$ui
+                            .find(
+                                ".spwidget-filter-input[name='" + 
+                                column + "']"
+                            ),
+                $colUI  = $input.closest("div.spwidget-column"),
+                type    = $colUI.data("spwidget_column_type"),
+                $match  = $colUI.find("select[name='" + column + "_type']");
+            
+            // If we have a matchType, then set it
+            if (filter.matchType) {
+                
+                $match.val(filter.matchType);
+                
+            }
+            
+            // Populate the values
+            switch (type) {
+                
+                case "text":
+                
+                    if (filter.values instanceof Array) {
+                        
+                        $input.val(filter.values.join(";"));
+                        
+                    } else {
+                        
+                        $input.val(filter.values);
+                        
+                    }
+                    
+                    break;
+                
+                case "choice":
+                    
+                    $.each(filter.values, function(i, colVal){
+                        
+                        $input
+                            .filter("[value='" + colVal + "']")
+                                .prop("checked", true);
+                        
+                    });
+                    
+                    break;
+                
+                case "lookup":
+                    
+                    $input.SPLookupField("method", "add", 
+                        filter.values.join(";#") );
+                    
+                    break;
+                
+                case "people":
+                    
+                    $input.pickSPUser("method", "add", 
+                        filter.values.join(";#") );
+                    
+                    break;
+                
+            }
+            
+            $input.change();
+            
+        }); //end: each(): filter
+        
+        return Inst;
+        
+    }; //end: Filter.setFilterValues()
     
     /**
      * @property
