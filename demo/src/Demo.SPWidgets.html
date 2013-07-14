@@ -1,0 +1,221 @@
+<script type="text/javascript">
+/**
+ * Demo of Sharepoint Upload Widget
+ * 
+ * This file is a self contained demo for the SPControlUpload widget.
+ * To use it, follow these steps:
+ * 
+ *  1.  Upload this file to a Document Library and copy the URL
+ *      where it is located.
+ *          
+ *  3.  Edit a Sharepoint page on a site and add a new Content Edit
+ *      Webpart (CEWP) to it.
+ * 
+ *  4.  Edit the newly inserted webpart, and under the 'Content Link'
+ *      field, paste the URL for this file obtain from step 1
+ * 
+ *  5.  Click OK. 
+ * 
+ * 
+ */
+</script>
+<div id="sp_control_upload_demo_cntr" class="ui-widget-content">
+    
+    <div style="padding:1em;margin:.5em;" class="ui-state-active">
+        <h1>Demo of SPWidgets</h1>
+        <p>SPWidgets is a set of Sharepoint widgets meant to facilitate the 
+            building of custom UI's. This webpart contains demos of the widgets 
+            that are included and serves to only scratch at the possibilities 
+            of what can be accomplished with them.</p> 
+    </div>
+    <div id="ptTabsCntr" style="display: none;">
+        <ul>
+            <li><a href="#SPControlUploadDemo"><span>Upload</span></a></li>
+            <li><a href="#SPControlPickUserDemo"><span>People Picker</span></a></li>
+            <li><a href="#SPControlBoardDemo"><span>Board</span></a></li>
+            <li><a href="#SPControlLookupFieldDemo"><span>Lookup Field</span></a></li>
+            <li><a href="#SPControlListFilterPanel"><span>List Filter Panel</span></a></li>
+        </ul>
+        <div id="SPControlUploadDemo">
+            <h2>Upload Plugin</h2>
+            <div style="padding: 1em;margin: 3em auto;" class="ui-state-highlight">
+                Once an existing Document Library is selected, you will be presented 
+                with an upload button that will allow you to upload files to the 
+                root of the library selected.
+            </div>
+            <div>
+                <div id="sp_control_library_name"></div>
+                <div id="sp_control_file_list" style="margin-bottom:2em;padding:.5em;padding-left:1.5em;"></div>
+            </div>
+            <hr/>
+            <h3>Upload New File</h3>
+            <div id="sp_control_upload_file">
+                <div>
+                    <button type="button" name="upload" value="">Upload</button>
+                </div>
+                <div id="sp_upload_widget"></div>
+            </div>
+        </div>
+        
+        <div id="SPControlPickUserDemo">
+            <h2>People Picker</h2>
+            <div style="min-height: 300px;">
+                <div style="padding: 1em;margin: 3em auto;" class="ui-state-highlight">
+                    Start typing the user\'s name (last or first) and a list of
+                    suggested selections will be displayed. Because it is using jQuery
+                    UI, mouse or keyboard shortcuts can be used to select a user. The
+                    input field that was used to bind this plugin will be populated with
+                    the selected user\'s information in the formta expected for update to
+                    the sharepoing list (ID;#userName)
+                </div>
+                
+                <div>
+                    <div>
+                        <label>User Name</label>
+                        <input type="text" name="spuserdemo" value="" />
+                        <div id="sp_control_pick_user_detail" style="margin-top: 1em;padding:1em;"></div>
+                        
+                    </div>
+                    <div>
+                        <h4>Events Output</h4>
+                        <div id="SPControlPickUserEventOut">
+                            
+                        </div>
+                    </div>
+                        
+                </div>
+                
+            </div>
+        </div>
+        
+        <div id="SPControlBoardDemo">
+            <h2>Kan-Ban Board Widget</h2>
+            <div style="padding: 1em;margin: 3em auto;" class="ui-state-highlight">
+                The Board widget displays a Kan-Ban type board for list items, allowing
+                the user to quickly move items around between states. The example below
+                is using the Tasks List commonly used in all Sharepoint Sites, and
+                specifically, the Status Field of that List. 
+            </div>
+            <div class="spwidget-board-demo-cntr"></div>
+        </div>
+        
+        <div id="SPControlLookupFieldDemo">
+            <h2>Lookup Field Widget</h2>
+            <div style="padding: 1em;margin: 3em auto;" class="ui-state-highlight">
+                The Lookup Field widget provides a custom interface for List/Library
+                field of type Lookup. It turns an input field into a Type-Ahead/autocomplete
+                field allowing the user to start typing values and select a match from
+                the suggestion.
+            </div>
+            
+            <div>
+                <h3 style="border-top: 1px solid;">Demo 1</h3>
+                <p>State field below allows user to pick only 1 value.</p>
+                <div>
+                    <label style="font-weight: bold; display: block;">State</label>
+                    <input name="State" value="" />
+                </div>
+            </div>
+    
+            <div>
+                <h3 style="border-top: 1px solid;">Demo 2</h3>
+                <p>In this demo, the State field allows user to define/select
+                    mulitple values to be stored.</p>
+                <div>
+                    <label style="font-weight: bold; display: block;">State</label>
+                    <input name="State2" value="" />
+                </div>
+            </div>
+            
+        </div>
+        
+        <div id="SPControlListFilterPanel">
+            
+            <h2>List Filter Widget</h2>
+            <p style="padding: 1em;margin: 3em auto;" class="ui-state-highlight">
+                The List Filter widget displays a filter panel to collect information from the
+                user. Data can be used to then retrieve rows from the list 
+                using the criteria provided by the user.</p>
+            <p>
+                The demo below uses the Tasks list and displays the CAML query below 
+                the filter panel when the Filter button is clicked.</p>
+            <div style="padding: .5em; margin-bottom: 2em;margin-top:2em;">
+                <div style="margin-bottom: 1em;">Use slider below to test width of container holding the filter panel and see how the content adjusts to the new width.</div>
+                <div class="ui-widget-content spwidgets-list-filter-slider-value ui-corner-all" style="text-align:center;width:5em;padding:.5em;margin:.2em;font-size:1.5em;font-weight:bold;">100%</div>
+                <div class="spwidgets-list-filter-width" style="width: 50%;"></div>
+            </div>
+            <div class="spwidgets-list-filter ui-widget-content" style="padding: .5em;">
+            </div>
+            <div class="spwidgets-list-filter-query" style="margin-top:2em;padding:.5em;">
+                <div>Click filter button above to see CAML generated from filter values entered above.</div>
+                <textarea name="camlquery" style="width: 98%; height: 200px;"></textarea>
+            </div>
+            
+        </div><!-- end: #SPControlListFilterPanel -->
+        
+    </div>
+    <div>
+        <span>Build: </span><span>_BUILD_VERSION_NUMBER_</span>
+    </div>
+    <div>
+        <div id="themeSwitchWidget"></div>
+    </div>
+    
+</div>
+
+<script type="text/javascript" language="javascript">
+
+setTimeout(function(){
+    
+    (function($){
+        
+        var jQuery = $;
+        
+        $(function(){
+            
+            // Load the jQuery UI styles 
+            $('<link rel="stylesheet" type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/redmond/jquery-ui.css" />').appendTo("head");
+            
+//-------- demo code below: inserted by build script -----------------
+
+//__BUILD:DEMO_CODE__
+
+//----------------- end of demo code (above) -------------------------
+            
+        }); //end: ready()
+        
+    })(
+        // Execute the function below to load all the needed libraries
+        // and then return the jQuery object as input to the function
+        // above.
+        (function(){
+            
+            window.SPWIDGET_DEMO = {
+                
+                JQUERY: null
+            };
+            
+//-------- 3rd Party Libs below: inserted by build script ----------------- 
+            
+//__BUILD:EXT_LIBS__
+            
+//-------- 3rd Party Libs above: inserted by build script ----------------- 
+
+//-------- START SPWidgets plugin: inserted by build script ----------------- 
+
+//__BUILD:DEMO_SPWIDGETS__
+
+//-------- END of SPWidgets plugin: inserted by build script ----------------- 
+            
+            // Get private version of jQuery for use by this demo only!
+            SPWIDGET_DEMO.JQUERY = jQuery.noConflict(true);
+            
+            return SPWIDGET_DEMO.JQUERY || jQuery;
+            
+        })()
+    ); //end: initialize all code
+    
+}, 2000); //end: setTimeout
+    
+</script>
+

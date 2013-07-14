@@ -1,0 +1,40 @@
+<script type="text/javascript">
+/**
+ * Dev.SPWidgets.html
+ * File is used for development. Loads each script file individually
+ * so that it can be looked at in the browser's debugger. 
+ * 
+ * To Use it, simply make a copy of it and save anywhere on a 
+ * SharePoint library. Use it in a CEWP. Remember to set the
+ * BIN_DIR on the copy that was made.
+ */
+
+window.SPWIDGET_DEMO = {
+    
+    // BIN_DIR - Used for Development only.
+    //  Edit the SPWIDGET_BIN_DIR variable below and define the URL
+    //  to the folder that contains the Demo and src folder. 
+    //  Example:
+    //  if the folders are in
+    //      http://yoursite/plugins/spwidgets/demo/
+    //      http://yoursite/plugins/spwidgets/src/
+    // the variable below would be defined as:
+    //          http://yoursite/plugins/spwidgets/    
+    BIN_DIR: '',
+    
+    JQUERY: null
+    
+};
+
+</script>
+<div id="sp_control_upload_demo_cntr" class="ui-widget-content">
+    
+</div>
+<script type="text/javascript">
+
+    document.write(
+        '<script type="text/javascript" src="' + SPWIDGET_DEMO.BIN_DIR +
+        'demo/src/demo.dev.js"></' + 'script>'
+    );
+
+</script>

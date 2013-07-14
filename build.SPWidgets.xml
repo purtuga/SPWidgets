@@ -11,6 +11,7 @@
     
     <property name="src.base"       location="${basedir}" />
     <property name="src.demo"       location="${basedir}${/}demo" />	
+    <property name="src.demo.src"   location="${src.demo}${/}src" />	
     <property name="src.pluginDir"  location="${basedir}${/}plugin${/}" />	
     <property name="build"          location="${basedir}${/}BUILD" />
     <property name="build.base"     location="${basedir}${/}BUILD${/}${ant.project.name}" />
@@ -18,6 +19,7 @@
     <property name="build.dist"     location="${build.base}${/}dist" />
     <property name="build.tmp"      location="${build.base}${/}tmp" />
     <property name="build.demo"     location="${build.base}${/}demo" />
+    <property name="build.demo.src" location="${build.demo}${/}src" />
     <property name="build.doc"      location="${build.base}${/}documentation" />
     <property name="build.tools"    location="${build}${/}tools" />
     
@@ -54,8 +56,9 @@
 	        a CEWP links to. -->
     <patternset id="patternset.deploy">
         <include name="src${/}*.js" />
-        <include name="demo${/}*.js" />
-        <include name="demo${/}dev.test.SPWidgets.webpart.html" />
+        <include name="demo${/}**${/}*" />
+    	
+        <exclude name="**${/}*.xml" />
     </patternset>
     
     <!-- FILESET: All source files -->
@@ -166,11 +169,6 @@
                 <uptodate 
                     srcfile="${src.base}${/}src${/}html.SPFilterPanel.html"
                     targetfile="${build.src}${/}html.SPFilterPanel.html" />
-                
-            	
-            	<uptodate 
-                    srcfile="${src.base}${/}demo${/}demo.body.html"
-                    targetfile="${build.demo}${/}demo.body.html" />
             </and>
         </condition>
         <echo message="forceHtmlCopyNotNeeded set to: ${forceHtmlCopyNotNeeded}" />
@@ -308,12 +306,12 @@
     	<antcall target="minify" inheritall="true" />
     	<echo message="MINIFY Done!" />
     	
-    	
-    	
-    	<!-- BUILD the webparts -->
-    	<echo message="Building Demo" />
-    	<antcall target="createWebparts" inheritall="true" />
-    	<echo message="Building Demo Done!" />
+    	<!-- BUILD the webparts	-->
+    	<subant target="createDemoFiles" 
+    		inheritall="true"
+    		antfile="build.demo.xml"
+    		buildpath="${build.demo.src}"
+            />
     	
     	<!-- update the build date variable -->
         <echo message="Updating Version date to ${build.date}" />    	
@@ -645,88 +643,7 @@ DEPLOYING TO: ${me.deploy.location}
         <echo message="deploy complete!."/>
     </target> <!-- END target name="deploy" -->
 
-   <!-- ================================= 
-          target: createWebparts              
-         ================================= -->
-    <target name="createWebparts" depends="" description="creates the webparts">
-        
-        <echo message="createWebparts ------------------------------ [START]" />
-        
-    	<!-- Delete current webparts and copy over new 	-->
-    	<delete verbose="true">
-            <fileset dir="${build.demo}" includes="**/*.webpart,**/*.webpart.*"/>
-        </delete>
-        <copy file="${src.demo}${/}${src.demo.webpartName}" 
-        	tofile="${build.demo}${/}${build.demo.webpartName}" verbose="true" />
-        <copy file="${src.demo}${/}${src.dev.webpartName}" 
-        	tofile="${build.demo}${/}${build.dev.webpartName}" verbose="true" />
-    	
-    	<!-- Embed HTML into the demo js code -->
-        <getFileAsJsString file="${build.demo}${/}demo.body.html" 
-               property="html.demoBody"/>
-        <replace dir="${build.demo}" 
-                token='"_INCLUDE_DEMO_BODY_TEMPLATE_";'
-                value="${html.demoBody};${line.separator}//_HAS_DEMO_BODY_TEMPLATE_"
-                summary="Yes">
-        </replace>
-    	
-    	<!-- Create the .html files that represent the Webpart code -->
-        <concat destfile="${build.demo}${/}${build.demo.webpartName}.html" append="false">
-            <!-- fileset refid="fileset.build.demo.webpart" / -->
-        	<filelist dir="${build.demo}"  
-        	    files="demo.SPWidgets.html
-        		       demo.script.open.tag.html" />
-        	<filelist dir="${build.src}"
-        		files="jquery.SPWidgets.js" />
-        	<filelist dir="${build.demo}" 
-        		files="demo.code.js
-        		       demo.script.close.tag.html"/>
-        </concat>
-        <concat destfile="${build.demo}${/}${build.dev.webpartName}.html" append="false">
-            <filelist dir="${build.demo}" 
-                files="demo.SPWidgets.html
-            	       dev.test.SPWidgets.html" />
-        </concat>
-    	
-    	<!-- Create the Webparts -->
-    	<loadfile property="html.demoCode" 
-    		srcfile="${build.demo}${/}${build.demo.webpartName}.html" />
-        <replace file="${build.demo}${/}${build.demo.webpartName}" 
-                token='&lt;!--_BUILD_CODE_HERE_--&gt;'
-                value="${html.demoCode}"
-                summary="Yes">
-        </replace>
-    	<replace dir="${build.demo}" 
-                token='_BUILD_WEBPART_TITLE_'
-                value="SPControlUpload Widget Demo"
-                summary="Yes">
-        </replace>
-    	
-    	<loadfile property="html.devTestCode" 
-    		srcfile="${build.demo}${/}${build.dev.webpartName}.html" />
-        <replace file="${build.demo}${/}${build.dev.webpartName}" 
-                token='&lt;!--_BUILD_CODE_HERE_--&gt;'
-                value="${html.devTestCode}"
-                summary="Yes">
-        </replace>
-    	<replace dir="${build.demo}" 
-    		    token='_BUILD_WEBPART_TITLE_'
-                value="DEVELOPMENT TEST - SPControlUpload Widget"
-                summary="Yes">
-        </replace>
-    	
-    	<!-- Update DEV weparts with user specific DEV url -->
-    	<replace dir="${build.demo}" 
-    		    token='[me.deploy.locationUrl]'
-                value="${me.deploy.locationUrl}"
-                summary="Yes">
-        </replace>
-    	
-    	
-        <echo message="createWebparts ------------------------------ [END]" />
-        
-    </target><!-- END: target: createWebparts -->
-	
+   
 	
 	<!-- ================================= 
           target: minify              
