@@ -27,4 +27,4 @@ Reference
 
 
 
-[demoFile]: http://.... "Demo.SPWidgets.html"
+[demoFile]: https://raw.github.com/purtuga/SPWidgets/master/demo/Demo.SPWidgets.html "Demo.SPWidgets.html"
