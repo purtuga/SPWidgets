@@ -28,13 +28,12 @@ User can pick whichever one applies best for their project
 and does'nt not have to contact me.
 
 
-Developer Notes
----------------
+Developer/Contributor Notes
+---------------------------
 
 This project has been developed in Eclipse using the Aptana plugin.
-The project is built using Apached Ant.  In addition to have Ant installed,
-Google Closure compiler (for minification) and Markdown.pl is needed. Perl
-is required in order to turn Markdown.pl.
+The project is built using Apached Ant (see file [build.SPWidgets.xml](https://github.com/purtuga/SPWidgets/blob/master/build.SPWidgets.xml)).  
+In addition to requiring Ant installed, Google Closure compiler (for minification) and Markdown.pl is needed. Perl is required in order to turn Markdown.pl.
 
 The tools should be downloaded and placed under:
 
@@ -43,6 +42,6 @@ The tools should be downloaded and placed under:
 
 The project also allows you to "deploy" to a live sharepoint site by doing
 a file copy from the development BUILD folder to a sharepoint folder. In order
-to do, the target location (the sharepoint location) must be setup in the me.build.properties
-file. this file is automatically created the first time the build file is ran.
+to do so, the target location (the sharepoint location) must be setup in the me.build.properties
+file. This file is automatically created the first time the build file is ran.
 
