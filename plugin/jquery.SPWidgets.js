@@ -3,7 +3,7 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *  
- * @version 20130704025820
+ * @version 20130713110659
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  * 
@@ -11,8 +11,8 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date:  July 04, 2013 - 02:58 PM
- * Version:     20130704025820
+ * Build Date:  July 13, 2013 - 11:06 PM
+ * Version:     20130713110659
  * 
  */
 ;(function($){
@@ -50,7 +50,7 @@
         }
         
         $.SPWidgets             = {};
-        $.SPWidgets.version     = "20130704025820";
+        $.SPWidgets.version     = "20130713110659";
         $.SPWidgets.defaults    = {};
         
         /**
@@ -526,7 +526,7 @@
  *  -   jQuery-UI Draggable
  * 
  * 
- * BUILD: Paul:June 30, 2013 12:58 PM
+ * BUILD: July 13, 2013 - 05:41 PM
  */
 
 ;(function($){
@@ -2662,7 +2662,7 @@
     Board.styleSheet = "/** \n"
 + " * Stylesheet for the Board widget\n"
 + " * \n"
-+ " * BUILD: June 24, 2013 - 04:12 PM\n"
++ " * BUILD: July 12, 2013 - 06:47 PM\n"
 + " */\n"
 + "div.spwidget-board {\n"
 + "    width: 100%;\n"
@@ -2846,7 +2846,7 @@
  * THe user, however, is presented with the existing items
  * and has the ability to Remove them and add new ones.
  * 
- * BUILD: July 04, 2013 - 02:58 PM
+ * BUILD: July 13, 2013 - 05:41 PM
  * 
  */
 
@@ -3973,7 +3973,7 @@
  * on jQuery UI's Autocomplete and SPServices library.
  *      
  *  
- * @version 20130630125832NUMBER_
+ * @version 20130713054148NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
@@ -3981,7 +3981,7 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date Paul:June 30, 2013 12:58 PM
+ * Build Date July 13, 2013 - 05:41 PM
  * 
  */
 
@@ -4795,7 +4795,7 @@ $.pt.addHoverEffect = function(ele){
  * through the many SP pages and without having to leave the user's current page.
  *      
  *  
- * @version 20130630125832NUMBER_
+ * @version 20130712064740NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
@@ -4803,7 +4803,7 @@ $.pt.addHoverEffect = function(ele){
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date Paul:June 30, 2013 12:58 PM
+ * Build Date July 12, 2013 - 06:47 PM
  * 
  */
 
@@ -5505,7 +5505,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
 /**
  * @fileOverview - List filter panel widget
  * 
- * BUILD: July 03, 2013 - 04:15 PM
+ * BUILD: July 13, 2013 - 05:41 PM
  * 
  */
 (function($){
@@ -6613,7 +6613,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
     Filter.styleSheet = "/** \n"
 + " * Stylesheet for the Board widget\n"
 + " * \n"
-+ " * BUILD: Paul:June 30, 2013 12:58 PM\n"
++ " * BUILD: July 12, 2013 - 06:47 PM\n"
 + " */\n"
 + "div.spwidget-filter {\n"
 + "    width: 100%;\n"
@@ -6704,7 +6704,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
      * Stores the HTML template for each Filter widget.
      * Value is set at build time.
      */
-    Filter.htmlTemplate = "<script type=\"text/html\" id=\"filter_main_ui\">\n"
+    Filter.htmlTemplate = "<div id=\"filter_main_ui\">\n"
 + "    <div class=\"spwidget-filter\" style=\"display: none;\">\n"
 + "        <div class=\"spwidget-filter-column-cntr\"></div>\n"
 + "        <div class=\"spwidget-filter-button-cntr\">\n"
@@ -6712,8 +6712,8 @@ $.pt.SPUploadStyleSheet = "/**\n"
 + "            <button type=\"button\" class=\"spwidget-button\" name='filter'>Filter</button>\n"
 + "        </div>\n"
 + "    </div>\n"
-+ "</script>\n"
-+ "<script type=\"text/html\" id=\"filter_column\">\n"
++ "</div>\n"
++ "<div id=\"filter_column\">\n"
 + "    <div class=\"spwidget-column spwidget-type-{{type}}\" data-spwidget_column_type=\"{{type}}\">\n"
 + "        <div class=\"spwidget-filter-type-cntr\" title=\"Match Type\">\n"
 + "            <select name=\"{{Name}}_type\" class=\"spwidget-filter-type\" tabindex=\"-1\">\n"
@@ -6731,17 +6731,17 @@ $.pt.SPUploadStyleSheet = "/**\n"
 + "            </div>\n"
 + "        </div>\n"
 + "    </div>\n"
-+ "</script>\n"
-+ "<script type=\"text/html\" id=\"filter_text_field\">\n"
++ "</div>\n"
++ "<div id=\"filter_text_field\">\n"
 + "    <input name=\"{{Name}}\" title=\"{{DisplayName}}\" type=\"text\" value=\"\" data-spwidget_list=\"{{list}}\" class=\"spwidget-input spwidget-filter-input\" />\n"
 + "    <span class=\"spwidget-tooltip\">{{tooltip}}</span>\n"
-+ "</script>\n"
-+ "<script type=\"text/html\" id=\"filter_choice_field\">\n"
++ "</div>\n"
++ "<div id=\"filter_choice_field\">\n"
 + "    <label>\n"
 + "        <input name=\"{{Name}}\" title=\"{{DisplayName}}\" type=\"checkbox\" value=\"{{value}}\" class=\"spwidget-input spwidget-filter-input\" />\n"
 + "        {{value}}\n"
 + "    </label>\n"
-+ "</script>\n";
++ "</div>\n";
 //_HAS_FILTER_HTML_TEMPLATE_
     
 })(jQuery); /***** End of module: jquery.SPFilterPanel.js */
