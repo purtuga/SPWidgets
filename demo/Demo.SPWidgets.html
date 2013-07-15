@@ -19,7 +19,7 @@
  * 
  */
 </script>
-<div id="sp_control_upload_demo_cntr" class="ui-widget-content">
+<div id="spwidgets_demo_cntr" class="ui-widget-content">
     
     <div style="padding:1em;margin:.5em;" class="ui-state-active">
         <h1>Demo of SPWidgets</h1>
@@ -136,9 +136,9 @@
                 The List Filter widget displays a filter panel to collect information from the
                 user. Data can be used to then retrieve rows from the list 
                 using the criteria provided by the user.</p>
-            <p>
-                The demo below uses the Tasks list and displays the CAML query below 
-                the filter panel when the Filter button is clicked.</p>
+            <div class="spwidgets-demo-lists">
+                
+            </div>
             <div style="padding: .5em; margin-bottom: 2em;margin-top:2em;">
                 <div style="margin-bottom: 1em;">Use slider below to test width of container holding the filter panel and see how the content adjusts to the new width.</div>
                 <div class="ui-widget-content spwidgets-list-filter-slider-value ui-corner-all" style="text-align:center;width:5em;padding:.5em;margin:.2em;font-size:1.5em;font-weight:bold;">100%</div>
@@ -182,14 +182,131 @@ setTimeout(function(){
  * @fileOverview demo.common.js
  * Common file for all demos. Initiates the UI on the page.
  * 
- * @version 20130713061328
+ * @version 20130714050014
  * 
  */
 (function($){
     
-    var Main = SPWIDGET_DEMO;
+    var Main    = SPWIDGET_DEMO;
     
-    Main.$ui = $("#sp_control_upload_demo_cntr")
+    
+    /**
+     * Given a container element, this method will insert a
+     * list of List and/or Libraries in the current site
+     * for the user to select/pick one.
+     * 
+     * @param {Object} options
+     * @param {HTMLElement|jQuery} options.container
+     * @param {Boolean} [options.includeLibraries=true]
+     * @param {Boolean} [options.includeLists=true]
+     * @param {Function} [options.onListSelect=null]
+     *      Function will have the scope of the library picker
+     *      HTML element (as a jQuery object) and given 2 input
+     *      parameters - 1) jQuery object with the list definition
+     *      and 2) the html element that the user clicked on.
+     * 
+     * @return {Object} Main
+     * 
+     */
+    Main.insertListSelector = function(options) {
+        
+        var opt = $.extend({}, {
+                container:          null,
+                includeLibraries:   true,
+                includeLists:       true,
+                onListSelect:       null
+            },
+            options);
+        
+        if (!opt.container) {
+            
+            return Main;
+            
+        }
+        
+        opt.container = $(opt.container);
+        
+        // Have the user pick which library to use in the demo.
+        $().SPServices({
+            operation:  "SiteDataGetListCollection",
+            async:      false,
+            cacheXML:   true,
+            completefunc: function (xData, Status) {
+                
+                var $siteLists  = $(xData.responseXML),
+                    htmlList    = '';
+                
+                opt._lists = null;
+                
+                // Get a set (array) of lists to work with
+                if (opt.inclueLibraries && opt.includeLists) {
+                    
+                    opt._lists = $siteLists.find("_sList");
+                    
+                } else if (opt.inclueLibraries) {
+                    
+                    opt._lists = $siteLists
+                                .find("_sList BaseType:contains('DocumentLibrary')")
+                                    .parent();
+                    
+                } else if (opt.includeLists) {
+                    
+                    opt._lists = $siteLists
+                                .find("_sList BaseType:contains('GenericList')")
+                                    .parent();
+                    
+                } else {
+                    
+                    return Main;
+                    
+                }
+                
+                // If no lists define, then exit
+                if (!opt._lists || !opt._lists.length) {
+                    
+                    return Main;
+                    
+                }
+                
+                // Loop through all lists and build the UI for it.
+                opt._lists.each(function(){
+                    
+                    var $list = $(this);
+                    
+                    htmlList +=
+                        '<a href="javascript:" class="ui-state-default" style="display:block;" data-list_uid="' +
+                         $.trim($list.find("InternalName").text()) +
+                         '" data-list_name="' +
+                         $list.find("Title").text() + '">' +
+                         $list.find("Title").text() + ' </a>';
+                         
+                });
+                
+                $('<div class="spwidgets-demo-list-picker"></div>')
+                    .append(htmlList)
+                    .on("click", "a", function(ev){
+                        
+                        var $thisClickList
+                        
+                        if ($.isFunction(opt.onListSelect)) {
+                            
+                            opt.onListSelect.call(
+                                opt.container, $list, $thisClickList);
+                            
+                        }
+                        
+                    });
+                
+            }//end: completefunc()
+        });
+
+        return Main;
+        
+    }; //end: Main.insertListSelector();
+    
+    
+    
+    Main.$ui = $("#spwidgets_demo_cntr")
             .css({
                 padding:    '1em',
                 minHeight:  '400px'
@@ -220,7 +337,27 @@ setTimeout(function(){
         })
         .fadeIn("slow");
     
-})(SPWIDGET_DEMO.JQUERY || jQuery);
+    
+})( (function($){ /* function return jQuery to closure above */
+    
+    var styles = "/**\n"
++ " * Stylesheet for the demo area\n"
++ " */\n"
++ "#spwidgets_demo_cntr {\n"
++ "    \n"
++ "}\n"
++ "\n"
++ "#spwidgets_demo_cntr div.spwidgets-demo-list-picker a {\n"
++ "    display: block;\n"
++ "    margin: 0.3em;\n"
++ "    padding: 0.5em;\n"
++ "}\n";
+    
+    $("<style>" + styles + "</style>").appendTo(head);
+    
+    return $;
+    
+})(SPWIDGET_DEMO.JQUERY || jQuery) );
 /**
  * widget.board.demo.js
  * Code for the board widget demo.
@@ -255,10 +392,42 @@ setTimeout(function(){
  */
 (function($){
     
-    var $cntr       = $("#SPControlListFilterPanel"),
+    var Main        = SPWIDGET_DEMO,
+        $cntr       = $("#SPControlListFilterPanel"),
         $textarea   = $cntr.find("textarea"),
         $demoCntr   = $cntr.find("div.spwidgets-list-filter"),
         $sliderVal  = $cntr.find("div.spwidgets-list-filter-slider-value");
+    
+    
+    
+    
+    
+    
+    
+    //---------------------------------------
+    Main.insertListSelector({
+        container:          $cntr.find("div.spwidgets-demo-lists"),
+        includeLibraries:   false,
+        onListSelect:       function($listInfo){
+            
+            $demoCntr
+                .empty()
+                .SPFilterPanel({
+                    list: "Tasks",
+                    columns: [
+                        'Title', 'Status', 'Priority', 
+                        'PercentComplete', 'AssignedTo', 
+                        'Predecessors' ],
+                    onFilterClick: function(filters){
+                        
+                        $textarea.val( vkbeautify.xml( filters.CAMLQuery ) );
+                        
+                    }
+                });
+            
+        }
+    });
+    
     
     $cntr.find("div.spwidgets-list-filter-width")
         .slider({
@@ -274,19 +443,6 @@ setTimeout(function(){
             }
         });
     
-    $demoCntr
-        .SPFilterPanel({
-            list: "Tasks",
-            columns: [
-                'Title', 'Status', 'Priority', 
-                'PercentComplete', 'AssignedTo', 
-                'Predecessors' ],
-            onFilterClick: function(filters){
-                
-                $textarea.val( vkbeautify.xml( filters.CAMLQuery ) );
-                
-            }
-        });
     
 })(SPWIDGET_DEMO.JQUERY || jQuery);
 /**
