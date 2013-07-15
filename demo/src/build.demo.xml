@@ -125,11 +125,11 @@
     	
     	
     	<!-- ====================================================== -->
-    	<!-- =====================[[ REGULAR DEMO FILE ]]========== -->
+    	<!-- =====================[[ CREATE DEMO FILE  ]]========== -->
     	<!-- ====================================================== -->
     	
     	<!-- ~~~~~ Embed concatenated demo code into demo html file -->
-    	<echo message="REGULAR DEMO: Embeding demo code" />
+    	<echo message="CREATING: Embeding demo code" />
     	<loadfile 
     		property="js.demo.code" 
             srcfile="${demo.code.file}" />
@@ -140,7 +140,7 @@
             value="${js.demo.code}"
             summary="Yes" />
     	
-    	<echo message="REGULAR DEMO: Embeding 3rd party libs" />
+    	<echo message="CREATING: Embeding 3rd party libs" />
     	<loadfile 
     		property="js.libs.code" 
             srcfile="${demo.libraries.file}" />
@@ -153,7 +153,7 @@
     	
     	
     	<!-- ~~~~~ Embed the built jQuery.SPWidgets.min.js file -->
-    	<echo message="REGULAR DEMO: Embeding SPWidgets min file" />
+    	<echo message="CREATING: Embeding SPWidgets min file" />
     	<loadfile 
             property="js.spwidgets.min" 
             srcfile="${build.src}${/}${build.dist.baseFileName}.min.js" />
@@ -165,6 +165,20 @@
         summary="Yes" />
     	
     	
+    	<!-- ~~~~~ Embed the STYLE Sheet for demo elements -->
+    	<echo message="CREATING: Embedding .css file" />
+    	<getFileAsJsString 
+    		file="${build.demo.src}${/}demo.css" 
+    	    property="css.demo.styles"/>
+        
+        <replace 
+        	dir="${build.demo}" 
+        	token="'__BUILD:STYLES__';" 
+        	value="${css.demo.styles};" 
+        	summary="Yes" />
+    	
+    	
+    	<!-- ~~~~~ Copy the built file to the demo folder under src -->
     	<echo message="Copying Demo file to src folder" />
     	<copy
             file="${demo.file.regular}" 

@@ -1,6 +1,12 @@
 /**
  * Stylesheet for the demo area
  */
+#spwidgets_demo_cntr {
+    
+}
 
-
-
+#spwidgets_demo_cntr div.spwidgets-demo-list-picker a {
+    display: block;
+    margin: 0.3em;
+    padding: 0.5em;
+}
