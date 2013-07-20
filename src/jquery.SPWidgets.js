@@ -20,6 +20,9 @@
     // Local pointer to jQuery given on input
     var jQuery = $;
     
+    // Need a shim because we insert styles into head
+    document.head || (document.head = document.getElementsByTagName('head')[0]); 
+    
     (function(){
         
         "use strict";
@@ -513,6 +516,86 @@
                     .replace(/&quot;/g,'"');
                     
         }/* $.SPWidgets.unEscapeXML() */
+        
+        /**
+         * Returns information about the runtime as it applies
+         * to SPWidgets.
+         * 
+         * @return {Object} info
+         * 
+         */
+        $.SPWidgets.getRuntimeInfo = function() {
+            
+            // Class
+            function Info() {
+                
+                this.SPWidgets      = $.SPWidgets.version;
+                this.jQuery         = ($.fn.jquery || '?');
+                this.jQueryUI       = '?';
+                this.jQueryUICss    = "?";
+                this.SPServices     = "?";
+                
+                return this
+            }
+            Info.prototype.asString = function() {
+                
+                var me      = this,
+                    resp    = "",
+                    prop;
+                
+                for (prop in me) {
+                    
+                    if (me.hasOwnProperty(prop)) {
+                        
+                        resp += "[ " + prop + " = " + me[prop] + " ] "
+                        
+                    }
+                    
+                }
+                
+                return resp;
+                
+            }; //end: asString()
+            
+            var info = new Info(),
+                $testObj = $('<div/>'),
+                testInfo = '';
+            
+            try {
+                
+                info.jQueryUI = jQuery.ui.version;
+                
+            } catch(e){}
+            
+            try {
+                
+                info.SPServices = $().SPServices.Version;
+                
+                if (info.SPServices) {
+                    
+                    if ($().SPServices) {
+                        
+                        info.SPServices = "loaded";
+                        
+                    }
+                    
+                }
+                
+            } catch(e){}
+            
+            // Check if jQuery ui css loaded
+            testInfo = $testObj.css("background-image");
+            $testObj.addClass('ui-widget-header');
+            
+            if ($testObj.css("background-image") !== testInfo) {
+                
+                info.jQueryUICss = 'loaded';
+                
+            }
+            
+            return info;
+            
+        }; //end: $.SPWidgets.getRuntimeInfo()
         
         
     })(jQuery); /** *********** END: $.SPWidgets common */
