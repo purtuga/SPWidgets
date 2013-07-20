@@ -602,7 +602,8 @@
             o._cntr                 = $(Lookup.htmlTemplate)
                                         .find(".spwidgets-lookup-cntr").clone(1);
             o._selectedItemsCntr    = o._cntr.find("div.spwidgets-lookup-selected");
-            o._lookupInputEleCntr    = o._cntr.find("div.spwidgets-lookup-input");
+            o._lookupInputEleCntr   = o._cntr.find("div.spwidgets-lookup-input");
+            o._ignoreKeywordsRegEx  = (/^(of|and|a|an|to|by|the|or)$/i);
             
             o._cntr.data("SPWidgetLookupFieldOpt", o);
             o._ele.data("SPWidgetLookupFieldUI", o._cntr);
@@ -768,7 +769,7 @@
                             for (var n=0,m=o.filterFields.length; n<m; n++){
                                 var fieldFilters = [];
                                 for (var i=0,j=keywords.length; i<j; i++){
-                                    if (!(/^(of|and|a|an|to|by|the|or)$/i).test(keywords[i])) {
+                                    if (!o._ignoreKeywordsRegEx.test(keywords[i])) {
                                         fieldFilters.push(
                                             "<Contains><FieldRef Name='" +  o.filterFields[n] + "'/>" +
                                             "<Value Type='Text'>" + keywords[i] + "</Value></Contains>" );
