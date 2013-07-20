@@ -424,6 +424,10 @@
                      * pulling info. from the List definition
                      * 
                      * @return {jQuery.Promise}
+                     *      Success, promise get resolved with a scope of 'opt' and
+                     *          receives the xData and status variables
+                     *      Failure, promise gets resolved with cope of 'ele' and
+                     *          received a string with the error, xData and Status.
                      * 
                      */
                     getBoardStates:     function(){
@@ -460,11 +464,21 @@
                                         
                                         f = resp.find("Fields Field[DisplayName='" + opt.field + "']");
                                         
-                                        opt.field = f.attr("StaticName");
+                                        if (!f.length) {
+                                            
+                                            dfd.rejectWith(
+                                                ele,
+                                                [ 'Field (' + opt.field +  ') not found in list definition!',
+                                                xData, status ]);
+                                            
+                                            return;
+                                            
+                                        }
+                                        
+                                        opt._origField  = opt.field;
+                                        opt.field       = f.attr("StaticName");
                                             
                                     }
-                                    
-                                    // TODO: what if field is not found in list definition?
                                     
                                     // store if field is required
                                     if ( f.attr("Required") === "FALSE" ) {
@@ -641,7 +655,20 @@
                                             });
                                             
                                             break;
+                                        
+                                        // DEFAULT: Type on the column is not supported.
+                                        default:
                                             
+                                            dfd.rejectWith(
+                                                ele,
+                                                [   'Field (' + opt.field +  
+                                                    ') Type (' + f.attr("Type") + 
+                                                    ') is not supported!',
+                                                    xData,
+                                                    status ]);
+                                            
+                                            break;
+                                        
                                     }
                                     
                                     return;
@@ -2126,7 +2153,12 @@
                         
                     });
             
-            }); //end: .then() (get board states)
+            }) //end: .then() (get board states)
+            .fail(function(failureMsg, xData, status){
+                
+                ele.append('<div class="ui-state-error"><p>' + failureMsg + '</p></div>');
+                
+            }); //end: .fail() (get board states)
             
             return this;
             
