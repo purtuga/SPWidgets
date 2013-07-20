@@ -9,7 +9,7 @@ The SPWidgets Demo page is a self-contained Single Page Application (SPA) that s
 Installation
 ------------
 
-The demo page is provided as a SharePoint page (_aspx_) and should work by simply uploading (or copying) it to a Document Library. The file assumes that a Master page named _~masterurl/default.master_ is available on the Site that it will be uploaded to.
+The demo page is provided as a SharePoint page (*aspx*) and should work by simply uploading (or copying) it to a Document Library. The file assumes that a Master page named _~masterurl/default.master_ is available on the Site that it will be uploaded to.
 
 
 ### Steps
