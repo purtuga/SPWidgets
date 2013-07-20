@@ -14,6 +14,12 @@ For columns that will be displayed to the user with a text input field (ex. Text
 -   Choice Columns<br/>
     Each choice value is displayed in a scrollable area as checkboxes, thus allowing the user to pick multiples. 
 
+
+Below is a screen capture from the available demo:
+
+![Filter Panel Widget](web/spwidgets.filter.jpg)
+
+
 The SPFilterPanel widget was introduced with v2.1
 
 Usage

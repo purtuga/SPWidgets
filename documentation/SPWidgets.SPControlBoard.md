@@ -4,6 +4,10 @@ SPShowBoard Widget
 Given a selector (an html element), this method will insert a Kan-Ban board inside of it based on one of the columns from the desired List.  The column must be of type Lookup or Choice, and it's values will be used by this widget to build the Board columns.
 The widget support both columns set as Required or Optional and has input parameters available to filter the list of columns created. Currently, this widget supports no more than 20 columns total, with no more than 10 displayed at one time.
 
+Below is a screen capture from the available demo:
+
+![Board Widget](web/spwidgets.board.jpg)
+
 
 Usage
 -----

@@ -46,6 +46,14 @@ $(document).ready(function(){
         i++;
     });
     
+    $("#pt_documentation img")
+        .attr("width", "100%")
+        .css({
+            width: "100%",
+            height: "auto",
+            border: "1px solid"
+        });
+    
     $("div.ptNav")
         .append(nav)
         .sticky({

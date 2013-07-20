@@ -15,6 +15,10 @@ Example of the value stored when a 3 items are selected:
 
 A common utility (*$.SPWidgets.parseLookupFieldValue*) is available for parsing Lookup fields, both those created by this widget as well as those returned by SharePoint's Webservices.
 
+Below is a screen capture from the available demo:
+
+![Lookupup Field Widget](web/spwidgets.lookupfield.jpg)
+
 
 Usage
 -----
