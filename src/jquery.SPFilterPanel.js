@@ -261,7 +261,8 @@
                                 inputUI   = '',
                                 values    = null,
                                 model     = {
-                                    type:   null
+                                    type:               null,
+                                    otherFilterTypes:   ''
                                 };
                             
                             if (!$thisCol.length) {
@@ -315,20 +316,28 @@
                                     
                                     break;
                                 
+                                //============================================
+                                // === all types below use the input field ===
+                                //============================================
+                                
                                 // From here until DEFAUL, we only set the type.
                                 case "Lookup":
                                 case "LookupMulti":
                                     
-                                    model.type = 'lookup';
-                                    model.list = $thisCol.attr("List");
-                                    
-                                    if ( model.list === "Self") {
+                                    if (model.type === null) {
                                         
-                                        model.list = $list.find("List").attr("Title");
+                                        model.type = 'lookup';
+                                        model.list = $thisCol.attr("List");
+                                        
+                                        if ( model.list === "Self") {
+                                            
+                                            model.list = $list.find("List").attr("Title");
+                                            
+                                        }
                                         
                                     }
                                     
-                                
+                                    
                                 case "User":
                                 case "UserMulti":
                                     
@@ -337,7 +346,33 @@
                                         model.type = 'people';
                                         
                                     }
+                                
+                                // COUNTER: Inser additional filter types
+                                case "Counter":
                                     
+                                    if (model.type === null) {
+                                        
+                                        model.type = 'text';
+                                        
+                                        model.otherFilterTypes = 
+                                            '<option value="Gt">Greater Than</option>' + 
+                                            '<option value="Lt">Less Than</option>'; 
+                                            
+                                    }
+                                
+                                 // Date and Time: Inser additional filter types
+                                case "DateTime":
+                                    
+                                    if (model.type === null) {
+                                        
+                                        model.type = 'text';
+                                        
+                                        model.otherFilterTypes = 
+                                            '<option value="Gt">After</option>' + 
+                                            '<option value="Lt">Before</option>';
+                                            
+                                    }
+                                
                                 // DEFAULT: Show as a text field
                                 default:
                                     
@@ -351,7 +386,9 @@
                                                 .filter("#filter_text_field")
                                                     .html();
                                     
-                                    thisColUI = thisColUI.replace(/__COLUMN__UI__/, inputUI);
+                                    thisColUI = thisColUI
+                                                .replace(/__COLUMN__UI__/, inputUI)
+                                                .replace(/__OTHER_FILTER_TYPES__/, model.otherFilterTypes);
                                     
                                     thisColUI = $.SPWidgets.fillTemplate(
                                             thisColUI,
@@ -397,17 +434,10 @@
                                 
                             });
                         
-                        // Setup PEOPLE fields
-                        Inst.$ele.find("div.spwidget-type-people input")
-                            .each(function(){
-                                
-                                var $field = $(this);
-                                
-                                $field.pickSPUser({ allowMultiple: true });
-                                    
-                                $field.parent().find(".spwidget-tooltip").remove();
-                                
-                            });
+                        // Setup the DateTime fields
+                        Inst.$ele.find("div.spwidget-type-date input")
+                            .datepicker({});
+                        
                         
                         // Setup the Button on the UI (if applicable)
                         if (Inst.opt.showFilterButton || Inst.opt.showFilterButtonTop) {
