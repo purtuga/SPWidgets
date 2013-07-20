@@ -3,7 +3,7 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *  
- * @version 20130719110939
+ * @version 20130720033254
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  * 
@@ -11,8 +11,8 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date:  July 19, 2013 - 11:09 PM
- * Version:     20130719110939
+ * Build Date:  July 20, 2013 - 03:32 PM
+ * Version:     20130720033254
  * 
  */
 ;(function($){
@@ -53,7 +53,7 @@
         }
         
         $.SPWidgets             = {};
-        $.SPWidgets.version     = "20130719110939";
+        $.SPWidgets.version     = "20130720033254";
         $.SPWidgets.defaults    = {};
         
         /**
@@ -609,7 +609,7 @@
  *  -   jQuery-UI Draggable
  * 
  * 
- * BUILD: July 19, 2013 - 10:36 PM
+ * BUILD: July 20, 2013 - 03:32 PM
  */
 
 ;(function($){
@@ -2465,6 +2465,28 @@
             // get board states from the table definition
             opt.getBoardStates().then(function(){
                 
+                // If user did not define CAMLViewFields or the definition
+                // by the user did not include the Board column then either
+                // define it here or add on to the set.
+                if (opt.CAMLViewFields === "") {
+                    
+                    opt.CAMLViewFields = 
+                        '<ViewFields>' +
+                            '<FieldRef Name="ID" />' +
+                            '<FieldRef Name="Title" />' +
+                            '<FieldRef Name="' + opt.field + '" />' +
+                        '</ViewFields>';
+                    
+                } else if (opt.CAMLViewFields.indexOf(opt.field) < 0){
+                    
+                    opt.CAMLViewFields = opt.CAMLViewFields.replace(
+                                    /\<\/ViewFields\>/i,
+                                    '<FieldRef Name="' + 
+                                        opt.field + '" /></ViewFields>'
+                                );
+                    
+                }
+                
                 // Populate the element with the board template
                 ele.html($(Board.htmlTemplate).filter("div.spwidget-board"));
                 
@@ -2777,7 +2799,7 @@
     Board.styleSheet = "/** \n"
 + " * Stylesheet for the Board widget\n"
 + " * \n"
-+ " * BUILD: July 19, 2013 - 10:36 PM\n"
++ " * BUILD: July 20, 2013 - 03:32 PM\n"
 + " */\n"
 + "div.spwidget-board {\n"
 + "    width: 100%;\n"
@@ -2961,7 +2983,7 @@
  * THe user, however, is presented with the existing items
  * and has the ability to Remove them and add new ones.
  * 
- * BUILD: July 19, 2013 - 10:36 PM
+ * BUILD: July 20, 2013 - 03:32 PM
  * 
  */
 
@@ -4089,7 +4111,7 @@
  * on jQuery UI's Autocomplete and SPServices library.
  *      
  *  
- * @version 20130719103610NUMBER_
+ * @version 20130720033254NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
@@ -4097,7 +4119,7 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date July 19, 2013 - 10:36 PM
+ * Build Date July 20, 2013 - 03:32 PM
  * 
  */
 
@@ -4911,7 +4933,7 @@ $.pt.addHoverEffect = function(ele){
  * through the many SP pages and without having to leave the user's current page.
  *      
  *  
- * @version 20130719103610NUMBER_
+ * @version 20130720033254NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
@@ -4919,7 +4941,7 @@ $.pt.addHoverEffect = function(ele){
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date July 19, 2013 - 10:36 PM
+ * Build Date July 20, 2013 - 03:32 PM
  * 
  */
 
@@ -5621,7 +5643,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
 /**
  * @fileOverview - List filter panel widget
  * 
- * BUILD: July 19, 2013 - 10:36 PM
+ * BUILD: July 20, 2013 - 03:32 PM
  * 
  */
 (function($){
@@ -5881,7 +5903,8 @@ $.pt.SPUploadStyleSheet = "/**\n"
                                 inputUI   = '',
                                 values    = null,
                                 model     = {
-                                    type:   null
+                                    type:               null,
+                                    otherFilterTypes:   ''
                                 };
                             
                             if (!$thisCol.length) {
@@ -5935,20 +5958,28 @@ $.pt.SPUploadStyleSheet = "/**\n"
                                     
                                     break;
                                 
+                                //============================================
+                                // === all types below use the input field ===
+                                //============================================
+                                
                                 // From here until DEFAUL, we only set the type.
                                 case "Lookup":
                                 case "LookupMulti":
                                     
-                                    model.type = 'lookup';
-                                    model.list = $thisCol.attr("List");
-                                    
-                                    if ( model.list === "Self") {
+                                    if (model.type === null) {
                                         
-                                        model.list = $list.find("List").attr("Title");
+                                        model.type = 'lookup';
+                                        model.list = $thisCol.attr("List");
+                                        
+                                        if ( model.list === "Self") {
+                                            
+                                            model.list = $list.find("List").attr("Title");
+                                            
+                                        }
                                         
                                     }
                                     
-                                
+                                    
                                 case "User":
                                 case "UserMulti":
                                     
@@ -5957,7 +5988,33 @@ $.pt.SPUploadStyleSheet = "/**\n"
                                         model.type = 'people';
                                         
                                     }
+                                
+                                // COUNTER: Inser additional filter types
+                                case "Counter":
                                     
+                                    if (model.type === null) {
+                                        
+                                        model.type = 'text';
+                                        
+                                        model.otherFilterTypes = 
+                                            '<option value="Gt">Greater Than</option>' + 
+                                            '<option value="Lt">Less Than</option>'; 
+                                            
+                                    }
+                                
+                                 // Date and Time: Inser additional filter types
+                                case "DateTime":
+                                    
+                                    if (model.type === null) {
+                                        
+                                        model.type = 'text';
+                                        
+                                        model.otherFilterTypes = 
+                                            '<option value="Gt">After</option>' + 
+                                            '<option value="Lt">Before</option>';
+                                            
+                                    }
+                                
                                 // DEFAULT: Show as a text field
                                 default:
                                     
@@ -5971,7 +6028,9 @@ $.pt.SPUploadStyleSheet = "/**\n"
                                                 .filter("#filter_text_field")
                                                     .html();
                                     
-                                    thisColUI = thisColUI.replace(/__COLUMN__UI__/, inputUI);
+                                    thisColUI = thisColUI
+                                                .replace(/__COLUMN__UI__/, inputUI)
+                                                .replace(/__OTHER_FILTER_TYPES__/, model.otherFilterTypes);
                                     
                                     thisColUI = $.SPWidgets.fillTemplate(
                                             thisColUI,
@@ -6017,17 +6076,10 @@ $.pt.SPUploadStyleSheet = "/**\n"
                                 
                             });
                         
-                        // Setup PEOPLE fields
-                        Inst.$ele.find("div.spwidget-type-people input")
-                            .each(function(){
-                                
-                                var $field = $(this);
-                                
-                                $field.pickSPUser({ allowMultiple: true });
-                                    
-                                $field.parent().find(".spwidget-tooltip").remove();
-                                
-                            });
+                        // Setup the DateTime fields
+                        Inst.$ele.find("div.spwidget-type-date input")
+                            .datepicker({});
+                        
                         
                         // Setup the Button on the UI (if applicable)
                         if (Inst.opt.showFilterButton || Inst.opt.showFilterButtonTop) {
@@ -6729,7 +6781,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
     Filter.styleSheet = "/** \n"
 + " * Stylesheet for the Board widget\n"
 + " * \n"
-+ " * BUILD: July 19, 2013 - 10:36 PM\n"
++ " * BUILD: July 20, 2013 - 03:32 PM\n"
 + " */\n"
 + "div.spwidget-filter {\n"
 + "    width: 100%;\n"
@@ -6838,7 +6890,8 @@ $.pt.SPUploadStyleSheet = "/**\n"
 + "                <option value=\"Eq\">Equal</option>\n"
 + "                <option value=\"Neq\">Not Equal</option>\n"
 + "                <option value=\"IsNull\">Is Blank</option> \n"
-+ "                <option value=\"IsNotNull\">Is Not Blank</option> \n"
++ "                <option value=\"IsNotNull\">Is Not Blank</option>\n"
++ "                __OTHER_FILTER_TYPES__\n"
 + "            </select>\n"
 + "        </div>\n"
 + "        <div class=\"spwidget-filter-value-cntr\">\n"
