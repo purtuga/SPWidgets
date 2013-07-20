@@ -102,7 +102,7 @@ The default options for this widget can be manipulated/set via the following obj
 
      
 -   **CAMLViewFields**    :   *String. Optional. Default=""* <br>
-    String in CAML format with list of fields to be returned from the list when retrieving the rows to be displayed on the board.
+    String in CAML format with list of fields to be returned from the list when retrieving the rows to be displayed on the board. If left blank, the ID, TITLE and the column defined for the _field_ option will be used, as they are the minimum set required to build a board with the default options.
     
     Example:
     

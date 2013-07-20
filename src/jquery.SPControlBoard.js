@@ -1863,6 +1863,28 @@
             // get board states from the table definition
             opt.getBoardStates().then(function(){
                 
+                // If user did not define CAMLViewFields or the definition
+                // by the user did not include the Board column then either
+                // define it here or add on to the set.
+                if (opt.CAMLViewFields === "") {
+                    
+                    opt.CAMLViewFields = 
+                        '<ViewFields>' +
+                            '<FieldRef Name="ID" />' +
+                            '<FieldRef Name="Title" />' +
+                            '<FieldRef Name="' + opt.field + '" />' +
+                        '</ViewFields>';
+                    
+                } else if (opt.CAMLViewFields.indexOf(opt.field) < 0){
+                    
+                    opt.CAMLViewFields = opt.CAMLViewFields.replace(
+                                    /\<\/ViewFields\>/i,
+                                    '<FieldRef Name="' + 
+                                        opt.field + '" /></ViewFields>'
+                                );
+                    
+                }
+                
                 // Populate the element with the board template
                 ele.html($(Board.htmlTemplate).filter("div.spwidget-board"));
                 
