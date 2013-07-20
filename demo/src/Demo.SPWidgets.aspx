@@ -1,3 +1,44 @@
+<%-- SPWIDGETS DEMO PAGE --%>
+<%@ Page language="C#" MasterPageFile="~masterurl/default.master"    Inherits="Microsoft.SharePoint.WebPartPages.WebPartPage,Microsoft.SharePoint,Version=12.0.0.0,Culture=neutral,PublicKeyToken=71e9bce111e9429c" %> 
+<%@ Register Tagprefix="SharePoint" Namespace="Microsoft.SharePoint.WebControls" Assembly="Microsoft.SharePoint, Version=12.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %>
+<%@ Register Tagprefix="Utilities" Namespace="Microsoft.SharePoint.Utilities" Assembly="Microsoft.SharePoint, Version=12.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %>
+<%@ Import Namespace="Microsoft.SharePoint" %>
+<%@ Register Tagprefix="WebPartPages" Namespace="Microsoft.SharePoint.WebPartPages" Assembly="Microsoft.SharePoint, Version=12.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %>
+<asp:Content ContentPlaceHolderId="PlaceHolderPageTitle" runat="server">
+    SPWidgets Showcase Demo
+</asp:Content>
+<asp:Content ContentPlaceHolderId="PlaceHolderPageTitleInTitleArea" runat="server">
+    <h2>SPWidgets Showcase</h2>
+</asp:Content>
+<asp:Content ContentPlaceHolderId="PlaceHolderAdditionalPageHead" runat="server">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+
+<!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+<style type="text/css">
+    body #s4-leftpanel {
+        display:none;
+    }
+    .s4-ca {
+        margin-left:0px;
+    }
+</style>
+
+</asp:Content>
+<asp:Content ContentPlaceHolderId="PlaceHolderSearchArea" runat="server"></asp:Content>
+<asp:Content ContentPlaceHolderId="PlaceHolderLeftActions" runat="server"></asp:Content>
+<asp:Content ContentPlaceHolderId="PlaceHolderPageDescription" runat="server">
+SPWidgets - Widgets for building custom UIs
+</asp:Content>
+<asp:Content ContentPlaceHolderId="PlaceHolderBodyRightMargin" runat="server"></asp:Content>
+<asp:Content ContentPlaceHolderId="PlaceHolderPageImage" runat="server"></asp:Content>
+<asp:Content ContentPlaceHolderId="PlaceHolderLeftNavBar" runat="server"></asp:Content>
+<asp:Content ContentPlaceHolderId="PlaceHolderNavSpacer" runat="server"></asp:Content>
+<asp:Content ContentPlaceHolderId="PlaceHolderMain" runat="server">
+
 <script type="text/javascript">
 /**
  * Demo of Sharepoint Upload Widget
@@ -17,16 +58,22 @@
  *  5.  Click OK. 
  * 
  * 
+ * Build Date:  _BUILD_VERSION_DATE_
+ * Version:     _BUILD_VERSION_NUMBER_ 
+ * 
  */
 </script>
 <div id="spwidgets_demo_cntr" class="ui-widget-content">
     
-    <div style="padding:1em;margin:.5em;" class="ui-state-active">
+    <div class="spwidgets-demo-top-banner ui-state-active">
         <h1>Demo of SPWidgets</h1>
-        <p>SPWidgets is a set of Sharepoint widgets meant to facilitate the 
-            building of custom UI's. This webpart contains demos of the widgets 
-            that are included and serves to only scratch at the possibilities 
-            of what can be accomplished with them.</p> 
+        <p class="ui-widget-content ui-corner-all">
+            SPWidgets is a set of Sharepoint widgets meant to facilitate the 
+            building of custom UI's. This demo contains a showcase of the widgets 
+            that are available and serves to only scratch at the possibilities 
+            of what can be accomplished with them.  Visit the project at 
+            <a href="http://purtuga.github.io/SPWidgets/">purtuga.github.io/SPWidgets</a>
+        </p> 
     </div>
     <div id="ptTabsCntr" style="display: none;">
         <ul>
@@ -89,41 +136,131 @@
         </div>
         
         <div id="SPControlBoardDemo">
+            
             <h2>Kan-Ban Board Widget</h2>
-            <div style="padding: 1em;margin: 3em auto;" class="ui-state-highlight">
-                The Board widget displays a Kan-Ban type board for list items, allowing
-                the user to quickly move items around between states. The example below
-                is using the Tasks List commonly used in all Sharepoint Sites, and
-                specifically, the Status Field of that List. 
+            
+            <div class="spwidget-demo-tabs">
+                <ul>
+                    <li>
+                        <a href="#spwidgets_demo_board_demo">
+                            <span>Demo</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#spwidgets_demo_board_output">
+                            <span>Output</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#spwidgets_demo_board_about">
+                            <span>About</span>
+                        </a>
+                    </li>
+                </ul>
+                <div id="spwidgets_demo_board_demo">
+                    
+                    <p>
+                        Click below to select a list followed by a column from
+                        that list. Reminder: Column must be of a type supported
+                        by the widget. 
+                    </p>
+                    
+                    <div class="spwidgets-demo-lists"></div>
+                    <div class="spwidgets-demo-columns"></div>
+                    
+                    <div class="spwidget-board-demo-cntr"></div>
+                    
+                </div>
+                <div id="spwidgets_demo_board_output">
+                    
+                    <p>
+                    Events fired by the widget will populate data here.
+                    </p>
+                    
+                    <div class="spwidget-demo-code ui-widget-content ui-corner-all"></div>
+                    
+                </div>
+                <div id="spwidgets_demo_board_about">
+                    
+                    <p>
+                    The Board widget displays a Kan-Ban type board for list items, allowing
+                    the user to quickly move items around between states. The example below
+                    is using the Tasks List commonly used in all Sharepoint Sites, and
+                    specifically, the Status Field of that List.
+                    </p>
+                    
+                </div>
             </div>
-            <div class="spwidget-board-demo-cntr"></div>
+            
         </div>
         
         <div id="SPControlLookupFieldDemo">
             <h2>Lookup Field Widget</h2>
-            <div style="padding: 1em;margin: 3em auto;" class="ui-state-highlight">
-                The Lookup Field widget provides a custom interface for List/Library
-                field of type Lookup. It turns an input field into a Type-Ahead/autocomplete
-                field allowing the user to start typing values and select a match from
-                the suggestion.
-            </div>
             
-            <div>
-                <h3 style="border-top: 1px solid;">Demo 1</h3>
-                <p>State field below allows user to pick only 1 value.</p>
-                <div>
-                    <label style="font-weight: bold; display: block;">State</label>
-                    <input name="State" value="" />
+            <div class="spwidget-demo-fluid spwidget-demo-float-cntr">
+                <div class="ui-widget-content ui-corner-all spwidget-demo-float">
+                    
+                    <p>Click below to select a List.</p>
+                    <div class="spwidgets-demo-lists"></div>
+                    
+                    <div class="spwidgets-demo-lookup-examples">
+                        <div>
+                            <h3>Example 1</h3>
+                            <p>Field below allows user to pick only 1 value.</p>
+                            <div>
+                                <input name="example1" value="" />
+                            </div>
+                        </div>
+                
+                        <div>
+                            <h3>Example 2</h3>
+                            <p>Field below allows user to select
+                                mulitple values (multi-select).</p>
+                            <div>
+                                <input name="example2" value="" />
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
                 </div>
-            </div>
-    
-            <div>
-                <h3 style="border-top: 1px solid;">Demo 2</h3>
-                <p>In this demo, the State field allows user to define/select
-                    mulitple values to be stored.</p>
-                <div>
-                    <label style="font-weight: bold; display: block;">State</label>
-                    <input name="State2" value="" />
+                <div class="spwidget-demo-float">
+                    <div class="spwidget-demo-tabs">
+                        <ul>
+                            <li>
+                                <a href="#spwidgets_demo_lookup_output">
+                                    <span>Output</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#spwidgets_demo_lookup_about">
+                                    <span>About</span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div id="spwidgets_demo_lookup_output">
+                            
+                            <p>
+                                Area below will capture out of events from the demo.
+                            </p>
+                            
+                            <div class="spwidget-demo-code ui-widget-content ui-corner-all"></div>
+                            
+                        </div>
+                        
+                        <div id="spwidgets_demo_lookup_about">
+                            
+                            <p>
+                            The Lookup Field widget provides a custom interface for List/Library
+                            field of type Lookup. It turns an input field into a Type-Ahead/autocomplete
+                            field allowing the user to start typing values and select a match from
+                            the suggestion.
+                            </p>
+                            
+                            
+                        </div>
+                        
+                    </div>
                 </div>
             </div>
             
@@ -131,24 +268,84 @@
         
         <div id="SPControlListFilterPanel">
             
-            <h2>List Filter Widget</h2>
-            <p style="padding: 1em;margin: 3em auto;" class="ui-state-highlight">
-                The List Filter widget displays a filter panel to collect information from the
-                user. Data can be used to then retrieve rows from the list 
-                using the criteria provided by the user.</p>
-            <div class="spwidgets-demo-lists">
-                
-            </div>
-            <div style="padding: .5em; margin-bottom: 2em;margin-top:2em;">
-                <div style="margin-bottom: 1em;">Use slider below to test width of container holding the filter panel and see how the content adjusts to the new width.</div>
-                <div class="ui-widget-content spwidgets-list-filter-slider-value ui-corner-all" style="text-align:center;width:5em;padding:.5em;margin:.2em;font-size:1.5em;font-weight:bold;">100%</div>
-                <div class="spwidgets-list-filter-width" style="width: 50%;"></div>
-            </div>
-            <div class="spwidgets-list-filter ui-widget-content" style="padding: .5em;">
-            </div>
-            <div class="spwidgets-list-filter-query" style="margin-top:2em;padding:.5em;">
-                <div>Click filter button above to see CAML generated from filter values entered above.</div>
-                <textarea name="camlquery" style="width: 98%; height: 200px;"></textarea>
+            <h2>List Filter Widget Demo</h2>
+            
+            <div class="spwidget-demo-fluid spwidget-demo-float-cntr">
+                <div class="ui-widget-content ui-corner-all spwidget-demo-float">
+                    
+                    <p>This demo uses one of lists available on this site (picker below) and displays a filter panel for the fields on that list.</p>
+                    
+                    <p>Click below to select a List.</p>
+                    <div class="spwidgets-demo-lists"></div>
+                    
+                    <div class="spwidgets-list-filter ui-widget-content" style="padding: .5em;">
+                    </div>
+                    
+                </div>
+                <div class="spwidget-demo-float">
+                    <div class="spwidget-demo-tabs">
+                        <ul>
+                            <li>
+                                <a href="#spwidgets_demo_filter_results">
+                                    <span>Results</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#spwidgets_demo_filter_output">
+                                    <span>CAML XML</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#spwidgets_demo_filter_about">
+                                    <span>About</span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div id="spwidgets_demo_filter_results">
+                            
+                            <p>
+                                The results from the filter defined are displayed below.
+                                Results are limited only to the first 10 matches and the
+                                first 3 columns..
+                            </p>
+                            
+                            <div class="spwidgets-demo-filter-result-output">
+                                
+                            </div>
+                            
+                        </div>
+                        <div id="spwidgets_demo_filter_output">
+                            <p>
+                            Click the filter button to see CAML generated from filter values entered.
+                            </p>
+                            <div class="spwidgets-list-filter-query">
+                                <textarea name="camlquery" class="spwidget-demo-code"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div id="spwidgets_demo_filter_about">
+                            
+                            <p>
+                            The List Filter widget displays a filter panel to collect information from the
+                            user. Data can be used to then retrieve rows from the list 
+                            using the criteria provided by the user.
+                            </p>
+                            
+                            <p>Slider below is used for testing purposes.</p>
+                            
+                            <div style="padding: .5em; margin-bottom: 2em;margin-top:2em;">
+                                <div style="margin-bottom: 1em;">
+                                    Use slider below to test width of container holding the 
+                                    filter panel and see how the content adjusts to the new
+                                     width.</div>
+                                <div class="ui-widget-content spwidgets-list-filter-slider-value ui-corner-all" style="text-align:center;width:5em;padding:.5em;margin:.2em;font-size:1.5em;font-weight:bold;">100%</div>
+                                <div class="spwidgets-list-filter-width" style="width: 50%;"></div>
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+                </div>
             </div>
             
         </div><!-- end: #SPControlListFilterPanel -->
@@ -173,8 +370,11 @@ setTimeout(function(){
         
         $(function(){
             
-            // Load the jQuery UI styles 
-            $('<link rel="stylesheet" type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/redmond/jquery-ui.css" />').appendTo("head");
+            $('<link rel="stylesheet" type="text/css" href="' +
+                window.location.protocol + 
+                '//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/redmond/jquery-ui.css" />'
+            )
+            .appendTo("head");
             
 //-------- demo code below: inserted by build script -----------------
 
@@ -190,10 +390,13 @@ setTimeout(function(){
         // above.
         (function(){
             
-            window.SPWIDGET_DEMO = {
+            if (!window.SPWIDGET_DEMO) {
                 
-                JQUERY: null
-            };
+                window.SPWIDGET_DEMO = {};
+                
+            }
+            
+            window.SPWIDGET_DEMO.JQUERY = null;
             
 //-------- 3rd Party Libs below: inserted by build script ----------------- 
             
@@ -218,4 +421,6 @@ setTimeout(function(){
 }, 2000); //end: setTimeout
     
 </script>
+
+</asp:Content>
 

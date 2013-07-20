@@ -4,24 +4,57 @@
  */
 (function($){
     
-    // Kan-Ban Board
-    $("#SPControlBoardDemo div.spwidget-board-demo-cntr")
-        .on("spwidget:boardColumnChange", function(ev, $board, colObj){
+     var Main       = SPWIDGET_DEMO,
+        $cntr       = $("#SPControlBoardDemo"),
+        $boardCntr  = $cntr.find("div.spwidget-board-demo-cntr"),
+        $colCntr    = $cntr.find("div.spwidgets-demo-columns"),
+        $output     = $cntr.find(".spwidget-demo-code");
+    
+    
+    // Create the tabs
+    $cntr.find("div.spwidget-demo-tabs").tabs();
+    
+    // Populate the container to select a list
+    Main.insertListSelector({
+        container: $cntr.find("div.spwidgets-demo-lists"),
+        onListSelect: function($list){
             
-            try {
-                
-                console.log("spwidget:boardColumnChange = Columns changed:" + colObj.join(" | "));
-                
-            } catch(e) {}
+            var listName = $list.find("Title").text();
             
-        })
-        .SPShowBoard({
-            list:                   "Tasks",
-            field:                  "Status",
-            showColPicker:          true,
-            colPickerLabel:         "Choose Columns",
-            colPickerCloseLabel:    "Close Picker",
-            colPickerApplyLabel:    "Change"
-        });
+            $colCntr.empty();
+            $boardCntr.empty();
+            
+            // Insert the column picker
+            Main.insertListColumnSelector({
+                container:      $colCntr,
+                listName:       listName,
+                onColumnSelect: function(columnName){
+                    
+                    // Kan-Ban Board
+                    $("<div/>")
+                        .appendTo( $boardCntr.empty() )
+                        .on("spwidget:boardColumnChange", function(ev, $board, colObj){
+                            
+                            $output.append(
+                                "<div>spwidget:boardColumnChange = Columns changed:" + 
+                                colObj.join(" | ") + "</div>");
+                               
+                        })
+                        .SPShowBoard({
+                            list:                   listName,
+                            field:                  columnName,
+                            showColPicker:          true,
+                            colPickerLabel:         "Choose Columns",
+                            colPickerCloseLabel:    "Close Picker",
+                            colPickerApplyLabel:    "Change"
+                        });
+                    
+                }
+            });
+            
+        }//end: insertListSelector.onListSelect()
+    });
+    
+    
     
 })(SPWIDGET_DEMO.JQUERY || jQuery);

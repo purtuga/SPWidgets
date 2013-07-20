@@ -97,8 +97,6 @@
         <file name="SPWidgets.Utilities.md.html"/>
     </filelist>
     
-	
-	
 	<!--*******************************************
             TARGET: init
         ******************************************* -->
@@ -273,6 +271,18 @@
             <format property="build.version" pattern="yyyyMMddhhmmss" />
         </tstamp>
     	
+        <!-- ~~~~~ Force a copy of the Demo .html files -->
+        <echo message="Deleting HTML files from build folder" />
+        <delete verbose="true">
+            <fileset 
+                dir="${build.demo}" 
+                includes="**/*.html" />
+            <fileset dir="${build.demo}">
+                <contains text="__HAS_EMBEDED_DATA_FROM_BUILD__"/>
+                <exclude name="**${/}*.xml"/>
+            </fileset>
+        </delete>
+        
     	
         <!-- get all changed files from the src folder -->
         <echo message="Updating files in ${build.base}" />
@@ -306,13 +316,6 @@
     	<antcall target="minify" inheritall="true" />
     	<echo message="MINIFY Done!" />
     	
-    	<!-- BUILD the webparts	-->
-    	<subant target="createDemoFiles" 
-    		inheritall="true"
-    		antfile="build.demo.xml"
-    		buildpath="${build.demo.src}"
-            />
-    	
     	<!-- update the build date variable -->
         <echo message="Updating Version date to ${build.date}" />    	
         <replace token="_BUILD_VERSION_DATE_" value="${build.date}">
@@ -338,10 +341,11 @@
     	    </fileset>
         </copy>
         <echo message="Update done!" />
-        
     	
-        <echo message="BUILD -------------------------------- [END]" />
+    	<!-- BUILD the webparts	-->
+    	<antcall target="createDemoFiles" inheritall="true" />
     
+        <echo message="BUILD -------------------------------- [END]" />
     </target> <!-- target name="build" -->
 
     <!-- - - - - - - - - - - - - - - - - - 
@@ -655,7 +659,10 @@ DEPLOYING TO: ${me.deploy.location}
         <delete verbose="true">
             <fileset dir="${build.src}" includes="**${/}*.min.*"/>
         </delete>
-        <java jar="${tool.jscompiler.jar}" fork="true" dir="${build.src}${/}" failonerror="true">
+    	
+    	<!-- ${tool.jscompiler.jar} -->
+    	
+        <java jar="${me.build.tool.googleClosureCompiler}" fork="true" dir="${build.src}${/}" failonerror="true">
             <arg value="--js='${build.src}${/}${build.dist.baseFileName}.js'" />
             <arg value="--js_output_file='${build.src}${/}${build.dist.baseFileName}.min.js'" />
         </java>
@@ -732,4 +739,204 @@ DEPLOYING TO: ${me.deploy.location}
     </macrodef>
 	
 	
+	<!--
+	==============================================================
+	===========        DEMO BUILD TARGETS BELOW  =================
+	==============================================================
+	-->
+	
+	
+    <!-- set global properties for this build -->
+    <property 
+        name="demo.file.basename" 
+        value="Demo.SPWidgets" />
+    <property 
+        name="demo.code.file" 
+        location="${build.tmp}${/}widget.demo.code.js" />   
+    <property 
+        name="demo.libraries.file" 
+        location="${build.tmp}${/}widget.demo.libs.js" />   
+    <property 
+        name="demo.spacer.file" 
+        location="${build.tmp}${/}spacer.txt" />    
+    <property 
+        name="demo.file.regular" 
+        location="${build.demo}${/}${demo.file.basename}.aspx" />
+    <property 
+        name="src.demo.file.regular" 
+        location="${src.demo}${/}${demo.file.basename}.aspx" />
+    
+    
+    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    
+    <fileset dir="${build.demo.src}" id="fileset.widgets.demo.code">
+        <include name="widget.*.demo.js"/>
+    </fileset>
+
+    <filelist id="filelist.demo.code.all">
+        <file name="${build.demo.src}${/}demo.common.js"/>
+    </filelist>
+    
+    
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: initDemoBuild                      
+         - - - - - - - - - - - - - - - - - -->
+    <target name="initDemoBuild">
+        
+        <echo append="false" file="${demo.spacer.file}">
+
+</echo>
+        
+    </target>
+
+    
+    <!-- ================================= 
+          target: createDemoFiles              
+         ================================= -->
+    <target name="createDemoFiles" 
+        depends="initDemoBuild" 
+        description="creates the webparts">
+        
+        <echo message="createDemoFiles ------------------------------ [START]" />
+        
+        <!-- ~~~~~ Copy files from the src Demo folder to the build -->
+        <echo message="Copying files from SRC to BUILD" />
+        <copy todir="${build.demo}"
+               verbose="true" 
+               preservelastmodified="true">
+            <fileset dir="${src.demo}">
+                <include name="**${/}*"/>
+            </fileset>
+        </copy>
+        
+        <!-- ~~~~~ Embed the STYLE Sheet for demo elements -->
+        <echo message="CREATING: Embedding .css file" />
+        <getFileAsJsString 
+            file="${build.demo.src}${/}demo.css" 
+            property="css.demo.styles"/>
+        
+        <replace 
+            dir="${build.demo}" 
+            token='"__BUILD_STYLES__";' 
+            value="${css.demo.styles}; ${line.separator}//__HAS_EMBEDED_DATA_FROM_BUILD__" 
+            summary="Yes" 
+            />
+        
+        <!-- ~~~~~ Concatenate all demo code into a single file -->
+        <echo message="Concatenating demo code files" />
+         <concat 
+            destfile="${demo.code.file}" 
+            append="false" >
+            
+            <filelist refid="filelist.demo.code.all" />
+            <fileset refid="fileset.widgets.demo.code" />
+            
+        </concat>
+        
+        
+        <!-- ~~~~~ Concatenate all 3rd party libraries a single file -->
+        <echo message="Concatenating 3rd party libraries files" />
+         <concat 
+            destfile="${demo.libraries.file}" 
+            append="false" >
+            
+            <filelist files="
+                ${build.demo.src}${/}ext${/}jquery.js 
+                ${demo.spacer.file} 
+                ${build.demo.src}${/}ext${/}jquery-ui.js 
+                ${demo.spacer.file} 
+                ${build.demo.src}${/}ext${/}jquery.SPServices.js 
+                ${demo.spacer.file} 
+                ${build.demo.src}${/}ext${/}vkBeautify.js 
+                ${demo.spacer.file} 
+                " />
+            
+        </concat>
+        
+        
+        <!-- ~~~~~ Create the base Demo file under the demo folder -->
+        <echo message="Copying Demo files to appropriate locations" />
+        <copy
+            file="${build.demo.src}${/}${demo.file.basename}.aspx" 
+            tofile="${demo.file.regular}" 
+            verbose="true" />
+        
+        
+        <!-- ====================================================== -->
+        <!-- =====================[[ CREATE DEMO FILE  ]]========== -->
+        <!-- ====================================================== -->
+        
+        
+        <!-- ~~~~~ Embed concatenated demo code into demo html file -->
+        <echo message="CREATING: Embeding demo code" />
+        <loadfile 
+            property="js.demo.code" 
+            srcfile="${demo.code.file}" />
+        
+        <replace 
+            file="${demo.file.regular}" 
+            token='//__BUILD:DEMO_CODE__'
+            value="${js.demo.code}"
+            summary="Yes" />
+        
+        <echo message="CREATING: Embeding 3rd party libs" />
+        <loadfile 
+            property="js.libs.code" 
+            srcfile="${demo.libraries.file}" />
+        
+        <replace 
+            file="${demo.file.regular}" 
+            token='//__BUILD:EXT_LIBS__'
+            value="${js.libs.code}"
+            summary="Yes" />
+        
+        
+        <!-- ~~~~~ Embed the built jQuery.SPWidgets.min.js file -->
+        <echo message="CREATING: Embeding SPWidgets min file" />
+        <loadfile 
+            property="js.spwidgets.min" 
+            srcfile="${build.src}${/}${build.dist.baseFileName}.min.js" />
+        
+        <replace 
+            file="${demo.file.regular}" 
+            token='//__BUILD:DEMO_SPWIDGETS__'
+            value="${js.spwidgets.min}"
+            summary="Yes"  />
+        
+
+        <!-- update the build date variable -->
+        <echo message="Embedding BUILD VERSION DATE - ${build.date}" />       
+        <replace token="_BUILD_VERSION_DATE_" value="${build.date}">
+            <fileset dir="${build.demo}">
+                <include name="**${/}*"/>
+            </fileset>
+        </replace>
+        
+        
+        <!-- update the build VERSION variable -->
+        <echo message="Embedding BUILD VERSION - ${build.version}" />
+        <replace 
+            dir="${build.demo}"
+            token='_BUILD_VERSION_NUMBER_' 
+            value="${build.version}"  >
+
+            <include name="**${/}*"/>
+            
+        </replace>
+        
+        
+        <!-- ~~~~~ Copy the built file to the demo folder under src -->
+        <echo message="Copying Demo file to src folder" />
+        <copy
+            file="${demo.file.regular}" 
+            tofile="${src.demo.file.regular}" 
+            verbose="true" 
+            overwrite="yes"
+            preservelastmodified="true"  />
+        
+        
+        <echo message="createDemoFiles ------------------------------ [END]" />
+        
+    </target><!-- END: target: createDemoFiles -->
+    
 </project>

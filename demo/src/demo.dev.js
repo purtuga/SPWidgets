@@ -189,7 +189,7 @@
                             $("#spwidgets_demo_cntr")
                                 .load(
                                     String(SPWIDGET_DEMO.BIN_DIR).replace(/ /g, "%20") + 
-                                    "demo/src/Demo.SPWidgets.html #spwidgets_demo_cntr",
+                                    "demo/src/Demo.SPWidgets.aspx #spwidgets_demo_cntr",
                                     function(){
                                         
                                         // 13. demo.common.js

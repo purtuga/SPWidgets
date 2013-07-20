@@ -9,7 +9,6 @@
     
     var Main    = SPWIDGET_DEMO;
     
-    
     /**
      * Given a container element, this method will insert a
      * list of List and/or Libraries in the current site
@@ -102,9 +101,26 @@
                          
                 });
                 
-                $('<div class="spwidgets-demo-list-picker"></div>')
+                opt._widget = $('<div class="spwidgets-demo-list-picker">' +
+                        '<div class="ui-state-active spwidgets-demo-list-selected">Select List...</div>' +
+                        '</div>')
                     .appendTo(opt.container)
-                    .append(htmlList)
+                    .append(
+                        '<div class="spwidgets-demo-list-selector ui-widget-content" style="display:none;">' + 
+                        htmlList + '</div>' )
+                    .on("click", "div.spwidgets-demo-list-selected", function(ev){
+                        
+                        var $this = $(this).html("Select...");
+                        
+                        opt._widgetSelector
+                            .css("display", "")
+                            .position({
+                                my: "left top",
+                                at: "left top",
+                                of: $this
+                            });
+                        
+                    })
                     .on("click", "a", function(ev){
                         
                         var $this   = $(this),
@@ -115,6 +131,10 @@
                                         )
                                         .parent();
                         
+                        opt._widgetSelector.hide();
+                        
+                        opt._widgetSelected.html("List: " + $list.find("Title").text());
+                        
                         if ($.isFunction(opt.onListSelect)) {
                             
                             opt.onListSelect.call(
@@ -124,12 +144,168 @@
                         
                     });
                 
+                opt._widgetSelector = opt._widget.find("div.spwidgets-demo-list-selector");
+                opt._widgetSelected = opt._widget.find("div.spwidgets-demo-list-selected");
+                
             }//end: completefunc()
         });
-
+        
         return Main;
         
     }; //end: Main.insertListSelector();
+    
+    
+    /**
+     * Inserts a list column selector into the defined container.
+     * 
+     * @param {Object} options
+     * @param {Object} options
+     * @param {Object} options
+     * @param {Object} [options.onColumnSelect=null]
+     *          Called with a scope of container and 3 params:
+     *          thisCol, opt.listName, html a element
+     *          
+     * 
+     * @return {jQuery.Promise}
+     *          Resolved with scope of the container
+     * 
+     */
+    Main.insertListColumnSelector = function(options) {
+        
+        return $.Deferred(function(dfd){
+            
+             var opt = $.extend({}, {
+                    container:      null,
+                    listName:       "",
+                    ColumnType:     "",
+                    onColumnSelect: null
+                },
+                options);
+            
+            if (!opt.container) {
+                
+                dfd.resolve();
+                return;
+                
+            }
+            
+            opt.container = $(opt.container).empty();
+            
+            Main.getListColumns(opt.listName)
+                .then(function(columns){
+                    
+                    var htmlList = "";
+                    
+                    // Loop through all lists and build the UI for it.
+                    $.each(columns, function(i, column){
+                        
+                        htmlList +=
+                            '<a href="javascript:" class="ui-state-default" data-list_name="' +
+                             opt.listName + '" data-column_name="' + column + '">' +
+                             column + ' </a>';
+                             
+                    });
+                    
+                    // If no columns, entere default message
+                    if (htmlList === "") {
+                        
+                        htmlList += '<div>No Columns!</div>';
+                        
+                    }
+                    
+                    opt._widget = $('<div class="spwidgets-demo-list-picker">' +
+                            '<div class="ui-state-active spwidgets-demo-list-selected">Select Column...</div>' +
+                            '</div>')
+                        .appendTo(opt.container)
+                        .append(
+                            '<div class="spwidgets-demo-list-selector ui-widget-content" style="display:none;">' + 
+                            htmlList + '</div>' )
+                        .on("click", "div.spwidgets-demo-list-selected", function(ev){
+                            
+                            var $this = $(this).html("Column: Select...");
+                            
+                            opt._widgetSelector
+                                .css("display", "")
+                                .position({
+                                    my: "left top",
+                                    at: "left top",
+                                    of: $this
+                                });
+                            
+                        })
+                        .on("click", "a", function(ev){
+                            
+                            var $this   = $(this),
+                                thisCol  = $this.data("column_name");
+                            
+                            opt._widgetSelector.hide();
+                            
+                            opt._widgetSelected.html( "Column: " + thisCol );
+                            
+                            if ($.isFunction(opt.onColumnSelect)) {
+                                
+                                opt.onColumnSelect.call(
+                                    opt.container, thisCol, opt.listName, $this);
+                                
+                            }
+                            
+                        });
+                    
+                    opt._widgetSelector = opt._widget.find("div.spwidgets-demo-list-selector");
+                    opt._widgetSelected = opt._widget.find("div.spwidgets-demo-list-selected");
+                    
+                    dfd.resolveWith(opt.container);
+                    
+                });
+            
+        })
+        .promise();
+        
+        
+    }; //end: Main.insertListColumnSelector()
+    
+    
+    /**
+     * Gets the list of columns names by using the Edit form
+     * 
+     * @param {Object} listName
+     * 
+     * @return {jQuery.Promise}
+     */
+    Main.getListColumns = function(listName){
+        
+        return $.Deferred(function(dfd){
+            
+            $('<div style="display:none;"/>')
+                .load(
+                    String(
+                            $().SPServices.SPGetCurrentSite() +
+                            "/Lists/" + listName + "/NewForm.aspx"
+                        )
+                        .replace(/ /, "%20") +
+                        " .ms-formtable",
+                    function(){
+                        
+                        var $ele = $(this),
+                            cols = ['ID'];
+                        
+                        $ele.find(".ms-standardheader").each(function(){
+                            
+                            cols.push( $.trim( $(this).text().replace(/ \*/, "") ) );
+                            
+                        });
+                        
+                        dfd.resolveWith($, [cols]);
+                        
+                        $ele.remove();  
+                        
+                    }
+                );
+            
+        })
+        .promise();
+        
+    }; //end: getListColumns()
     
     
     
@@ -149,27 +325,16 @@
     
     // Create TABs and make ui visible
     Main.$ui.find("#ptTabsCntr")
-        .tabs({
-            activate: function(ev,ui){
-                
-                // If Board? then redraw it.
-                if (ui.newPanel.is("#SPControlBoardDemo")) {
-                    
-                    $("#SPControlBoardDemo div.spwidget-board-demo-cntr")
-                        .SPShowBoard("redraw");
-                        
-                }
-                
-            } //end: activate()
-        })
+        .tabs()
         .fadeIn("slow");
     
     
 })( (function($){ /* function return jQuery to closure above */
     
-    var styles = '__BUILD:STYLES__';
+    var styles = "__BUILD_STYLES__";
     
-    $('<style type="text/css">' + styles + "</style>").appendTo("head");
+    $('<style type="text/css">' + styles + "</style>")
+        .appendTo(document.head || document.getElementsByTagName('head')[0]);
     
     return $;
     

@@ -9,16 +9,16 @@ The SPWidgets Demo HTML file is a self contained file that demonstrates the widg
 Installation
 ------------
 
-The demo is installed by using a Content Editor Web Part (CEWP) and pointing it to the Demo.SPWidgets.html file.
+The demo is installed by using a Content Editor Web Part (CEWP) and pointing it to the Demo.SPWidgets.aspx file.
 
-1.  Upload the [Demo.SPWidgets.html][demoFile] file to a SharePoint Document Library. 
+1.  Upload the [Demo.SPWidgets.aspx][demoFile] file to a SharePoint Document Library. 
 
     a.  Once uploaded, copy the file URL to the clipboard. This will be needed in a step below.
     
 2.  On a SharePoint site, create a new Page and add a CEWP to it.
 3.  Edit the newly inserted CEWP and
 
-    a.   Under the _Content Link_ field, paste the URL of the Demo.SPWidgets.html (the one copied from Step 1.a above)
+    a.   Under the _Content Link_ field, paste the URL of the Demo.SPWidgets.aspx (the one copied from Step 1.a above)
     
 4.  Click OK. 
 
@@ -31,4 +31,4 @@ Reference
 
 
 
-[demoFile]: https://raw.github.com/purtuga/SPWidgets/master/demo/Demo.SPWidgets.html "Demo.SPWidgets.html"
+[demoFile]: https://raw.github.com/purtuga/SPWidgets/master/demo/Demo.SPWidgets.aspx "Demo.SPWidgets.aspx"
