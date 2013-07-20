@@ -3,7 +3,7 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *  
- * @version 20130714061015
+ * @version 20130719110939
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  * 
@@ -11,14 +11,17 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date:  July 14, 2013 - 06:10 PM
- * Version:     20130714061015
+ * Build Date:  July 19, 2013 - 11:09 PM
+ * Version:     20130719110939
  * 
  */
 ;(function($){
     
     // Local pointer to jQuery given on input
     var jQuery = $;
+    
+    // Need a shim because we insert styles into head
+    document.head || (document.head = document.getElementsByTagName('head')[0]); 
     
     (function(){
         
@@ -50,7 +53,7 @@
         }
         
         $.SPWidgets             = {};
-        $.SPWidgets.version     = "20130714061015";
+        $.SPWidgets.version     = "20130719110939";
         $.SPWidgets.defaults    = {};
         
         /**
@@ -514,6 +517,86 @@
                     
         }/* $.SPWidgets.unEscapeXML() */
         
+        /**
+         * Returns information about the runtime as it applies
+         * to SPWidgets.
+         * 
+         * @return {Object} info
+         * 
+         */
+        $.SPWidgets.getRuntimeInfo = function() {
+            
+            // Class
+            function Info() {
+                
+                this.SPWidgets      = $.SPWidgets.version;
+                this.jQuery         = ($.fn.jquery || '?');
+                this.jQueryUI       = '?';
+                this.jQueryUICss    = "?";
+                this.SPServices     = "?";
+                
+                return this
+            }
+            Info.prototype.asString = function() {
+                
+                var me      = this,
+                    resp    = "",
+                    prop;
+                
+                for (prop in me) {
+                    
+                    if (me.hasOwnProperty(prop)) {
+                        
+                        resp += "[ " + prop + " = " + me[prop] + " ] "
+                        
+                    }
+                    
+                }
+                
+                return resp;
+                
+            }; //end: asString()
+            
+            var info = new Info(),
+                $testObj = $('<div/>'),
+                testInfo = '';
+            
+            try {
+                
+                info.jQueryUI = jQuery.ui.version;
+                
+            } catch(e){}
+            
+            try {
+                
+                info.SPServices = $().SPServices.Version;
+                
+                if (info.SPServices) {
+                    
+                    if ($().SPServices) {
+                        
+                        info.SPServices = "loaded";
+                        
+                    }
+                    
+                }
+                
+            } catch(e){}
+            
+            // Check if jQuery ui css loaded
+            testInfo = $testObj.css("background-image");
+            $testObj.addClass('ui-widget-header');
+            
+            if ($testObj.css("background-image") !== testInfo) {
+                
+                info.jQueryUICss = 'loaded';
+                
+            }
+            
+            return info;
+            
+        }; //end: $.SPWidgets.getRuntimeInfo()
+        
         
     })(jQuery); /** *********** END: $.SPWidgets common */
     
@@ -526,7 +609,7 @@
  *  -   jQuery-UI Draggable
  * 
  * 
- * BUILD: July 13, 2013 - 05:41 PM
+ * BUILD: July 19, 2013 - 10:36 PM
  */
 
 ;(function($){
@@ -943,6 +1026,10 @@
                      * pulling info. from the List definition
                      * 
                      * @return {jQuery.Promise}
+                     *      Success, promise get resolved with a scope of 'opt' and
+                     *          receives the xData and status variables
+                     *      Failure, promise gets resolved with cope of 'ele' and
+                     *          received a string with the error, xData and Status.
                      * 
                      */
                     getBoardStates:     function(){
@@ -979,11 +1066,21 @@
                                         
                                         f = resp.find("Fields Field[DisplayName='" + opt.field + "']");
                                         
-                                        opt.field = f.attr("StaticName");
+                                        if (!f.length) {
+                                            
+                                            dfd.rejectWith(
+                                                ele,
+                                                [ 'Field (' + opt.field +  ') not found in list definition!',
+                                                xData, status ]);
+                                            
+                                            return;
+                                            
+                                        }
+                                        
+                                        opt._origField  = opt.field;
+                                        opt.field       = f.attr("StaticName");
                                             
                                     }
-                                    
-                                    // TODO: what if field is not found in list definition?
                                     
                                     // store if field is required
                                     if ( f.attr("Required") === "FALSE" ) {
@@ -1160,7 +1257,20 @@
                                             });
                                             
                                             break;
+                                        
+                                        // DEFAULT: Type on the column is not supported.
+                                        default:
                                             
+                                            dfd.rejectWith(
+                                                ele,
+                                                [   'Field (' + opt.field +  
+                                                    ') Type (' + f.attr("Type") + 
+                                                    ') is not supported!',
+                                                    xData,
+                                                    status ]);
+                                            
+                                            break;
+                                        
                                     }
                                     
                                     return;
@@ -2645,7 +2755,12 @@
                         
                     });
             
-            }); //end: .then() (get board states)
+            }) //end: .then() (get board states)
+            .fail(function(failureMsg, xData, status){
+                
+                ele.append('<div class="ui-state-error"><p>' + failureMsg + '</p></div>');
+                
+            }); //end: .fail() (get board states)
             
             return this;
             
@@ -2662,7 +2777,7 @@
     Board.styleSheet = "/** \n"
 + " * Stylesheet for the Board widget\n"
 + " * \n"
-+ " * BUILD: July 12, 2013 - 06:47 PM\n"
++ " * BUILD: July 19, 2013 - 10:36 PM\n"
 + " */\n"
 + "div.spwidget-board {\n"
 + "    width: 100%;\n"
@@ -2846,7 +2961,7 @@
  * THe user, however, is presented with the existing items
  * and has the ability to Remove them and add new ones.
  * 
- * BUILD: July 13, 2013 - 05:41 PM
+ * BUILD: July 19, 2013 - 10:36 PM
  * 
  */
 
@@ -3443,7 +3558,8 @@
             o._cntr                 = $(Lookup.htmlTemplate)
                                         .find(".spwidgets-lookup-cntr").clone(1);
             o._selectedItemsCntr    = o._cntr.find("div.spwidgets-lookup-selected");
-            o._lookupInputEleCntr    = o._cntr.find("div.spwidgets-lookup-input");
+            o._lookupInputEleCntr   = o._cntr.find("div.spwidgets-lookup-input");
+            o._ignoreKeywordsRegEx  = (/^(of|and|a|an|to|by|the|or)$/i);
             
             o._cntr.data("SPWidgetLookupFieldOpt", o);
             o._ele.data("SPWidgetLookupFieldUI", o._cntr);
@@ -3609,7 +3725,7 @@
                             for (var n=0,m=o.filterFields.length; n<m; n++){
                                 var fieldFilters = [];
                                 for (var i=0,j=keywords.length; i<j; i++){
-                                    if (!(/^(of|and|a|an|to|by|the|or)$/i).test(keywords[i])) {
+                                    if (!o._ignoreKeywordsRegEx.test(keywords[i])) {
                                         fieldFilters.push(
                                             "<Contains><FieldRef Name='" +  o.filterFields[n] + "'/>" +
                                             "<Value Type='Text'>" + keywords[i] + "</Value></Contains>" );
@@ -3973,7 +4089,7 @@
  * on jQuery UI's Autocomplete and SPServices library.
  *      
  *  
- * @version 20130713054148NUMBER_
+ * @version 20130719103610NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
@@ -3981,7 +4097,7 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date July 13, 2013 - 05:41 PM
+ * Build Date July 19, 2013 - 10:36 PM
  * 
  */
 
@@ -4795,7 +4911,7 @@ $.pt.addHoverEffect = function(ele){
  * through the many SP pages and without having to leave the user's current page.
  *      
  *  
- * @version 20130712064740NUMBER_
+ * @version 20130719103610NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
@@ -4803,7 +4919,7 @@ $.pt.addHoverEffect = function(ele){
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date July 12, 2013 - 06:47 PM
+ * Build Date July 19, 2013 - 10:36 PM
  * 
  */
 
@@ -5505,7 +5621,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
 /**
  * @fileOverview - List filter panel widget
  * 
- * BUILD: July 13, 2013 - 05:41 PM
+ * BUILD: July 19, 2013 - 10:36 PM
  * 
  */
 (function($){
@@ -6613,7 +6729,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
     Filter.styleSheet = "/** \n"
 + " * Stylesheet for the Board widget\n"
 + " * \n"
-+ " * BUILD: July 12, 2013 - 06:47 PM\n"
++ " * BUILD: July 19, 2013 - 10:36 PM\n"
 + " */\n"
 + "div.spwidget-filter {\n"
 + "    width: 100%;\n"
@@ -6634,9 +6750,10 @@ $.pt.SPUploadStyleSheet = "/**\n"
 + "    box-shadow: 1px 1px 1px 0 lightgray inset;\n"
 + "}\n"
 + "div.spwidget-filter div.spwidget-filter-type-cntr {\n"
-+ "    margin-right: 3%;\n"
-+ "    margin-top: 0.3em;\n"
-+ "    float: right;\n"
++ "    right: 4%;\n"
++ "    margin-top: 0.2em;\n"
++ "    position: absolute;\n"
++ "    z-index: 5;\n"
 + "}\n"
 + "div.spwidget-filter div.spwidget-filter-value-cntr {\n"
 + "    margin-top: .5em;\n"
@@ -6678,7 +6795,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
 + "    font: -webkit-small-control;\n"
 + "    padding: 2px 5px;\n"
 + "}\n"
-+ "div.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input > label {\n"
++ "div.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input label {\n"
 + "    display: block;\n"
 + "    padding: .2em;\n"
 + "}\n"
