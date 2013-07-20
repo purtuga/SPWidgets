@@ -1,7 +1,7 @@
 SPWidgets Demo
 ==============
 
-The SPWidgets Demo HTML file is a self contained file that demonstrates the widgets available. 
+The SPWidgets Demo page is a self-contained Single Page Application (SPA) that showcases the widgets available.
 
 ![SPWidgets Demos](../documentation/web/spwidgets.demos.jpg)
 
@@ -9,18 +9,24 @@ The SPWidgets Demo HTML file is a self contained file that demonstrates the widg
 Installation
 ------------
 
-The demo is installed by using a Content Editor Web Part (CEWP) and pointing it to the Demo.SPWidgets.aspx file.
+The demo page is provided as a SharePoint page (_aspx_) and should work by simply uploading (or copying) it to a Document Library. The file assumes that a Master page named _~masterurl/default.master_ is available on the Site that it will be uploaded to.
 
-1.  Upload the [Demo.SPWidgets.aspx][demoFile] file to a SharePoint Document Library. 
 
-    a.  Once uploaded, copy the file URL to the clipboard. This will be needed in a step below.
+### Steps
+
+1.  Upload the [Demo.SPWidgets.aspx][demoFile] file to a SharePoint Document Library 
+
+2.  After uploading it to a document library, browse to that folder and click on the file 'Demo.SPWidgets'. The page should display the demos (see screen capture above).
+
+
+### Possible Issues
+
+-   When access the file, an error is displayed instead
+    This may be caused by the fact that the site does not have a Master page called default.master. To correct this issue, edit the _Demo.SPWigets.aspx_ page and change the following (located at the top of the file) to a valid master page:
     
-2.  On a SharePoint site, create a new Page and add a CEWP to it.
-3.  Edit the newly inserted CEWP and
-
-    a.   Under the _Content Link_ field, paste the URL of the Demo.SPWidgets.aspx (the one copied from Step 1.a above)
+        MasterPageFile="~masterurl/default.master"
     
-4.  Click OK. 
+    One of the ways to find out the active master page on the site is to create a WebPart Page and then analyze it's markup for the correct value. 
 
 
 Reference
@@ -32,3 +38,4 @@ Reference
 
 
 [demoFile]: https://raw.github.com/purtuga/SPWidgets/master/demo/Demo.SPWidgets.aspx "Demo.SPWidgets.aspx"
+
