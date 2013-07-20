@@ -22,9 +22,10 @@ div.spwidget-filter div.spwidget-column {
     box-shadow: 1px 1px 1px 0 lightgray inset;
 }
 div.spwidget-filter div.spwidget-filter-type-cntr {
-    margin-right: 3%;
-    margin-top: 0.3em;
-    float: right;
+    right: 4%;
+    margin-top: 0.2em;
+    position: absolute;
+    z-index: 5;
 }
 div.spwidget-filter div.spwidget-filter-value-cntr {
     margin-top: .5em;
@@ -66,7 +67,7 @@ div.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input {
     font: -webkit-small-control;
     padding: 2px 5px;
 }
-div.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input > label {
+div.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input label {
     display: block;
     padding: .2em;
 }
