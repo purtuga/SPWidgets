@@ -40,30 +40,17 @@ SPWidgets - Widgets for building custom UIs
 <asp:Content ContentPlaceHolderId="PlaceHolderMain" runat="server">
 
 <script type="text/javascript">
-/**
- * Demo of Sharepoint Upload Widget
- * 
- * This file is a self contained demo for the SPControlUpload widget.
- * To use it, follow these steps:
- * 
- *  1.  Upload this file to a Document Library and copy the URL
- *      where it is located.
- *          
- *  3.  Edit a Sharepoint page on a site and add a new Content Edit
- *      Webpart (CEWP) to it.
- * 
- *  4.  Edit the newly inserted webpart, and under the 'Content Link'
- *      field, paste the URL for this file obtain from step 1
- * 
- *  5.  Click OK. 
- * 
+/** 
+ * SPWidgets Demo
  * 
  * Build Date:  _BUILD_VERSION_DATE_
  * Version:     _BUILD_VERSION_NUMBER_ 
  * 
  */
 </script>
-<div id="spwidgets_demo_cntr" class="ui-widget-content">
+<div id="spwidgets_demo_cntr" class="ui-widget-content" style="display:none;">
+    
+<div class="spwidgets-demo-cntr">
     
     <div class="spwidgets-demo-top-banner ui-state-active">
         <h1>Demo of SPWidgets</h1>
@@ -358,6 +345,7 @@ SPWidgets - Widgets for building custom UIs
         <div id="themeSwitchWidget"></div>
     </div>
     
+</div>
 </div>
 
 <script type="text/javascript" language="javascript">
