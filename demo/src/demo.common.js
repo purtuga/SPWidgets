@@ -310,10 +310,7 @@
     
     
     Main.$ui = $("#spwidgets_demo_cntr")
-            .css({
-                padding:    '1em',
-                minHeight:  '400px'
-            })
+            .css("display", "")
             .on("keyup", function(ev){
                 
                 if (ev.which === 13) {

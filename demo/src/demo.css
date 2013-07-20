@@ -357,8 +357,14 @@
 }
 
 
+/** ==================================================================== */
 /** ==[[   SPWIDGETS DEMO   ]]========================================== */
+/** ==================================================================== */
 
+#spwidgets_demo_cntr {
+    padding: 1em;
+    minHeight: 100em;;
+}
 #spwidgets_demo_cntr .spwidgets-demo-top-banner {
     padding:1em;
     margin:.5em;
@@ -442,10 +448,10 @@
 }
 
 /** LIST FILTER DEMO AREA */
-#spwidgets_demo_filter_output {
+#SPControlListFilterPanel #spwidgets_demo_filter_output {
     padding: .5em;
 }
-#spwidgets_demo_filter_output .spwidgets-list-filter {
+#SPControlListFilterPanel .spwidgets-list-filter {
     margin: 1em .5em;
     padding: .5em;
 }
