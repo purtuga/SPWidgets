@@ -13,7 +13,7 @@ detail on the usage of each available plugins.**
 Downloads
 ---------
 
-The compiled plugin can be found under the [_plugin_](./tree/master/plugin/) folder.
+The compiled plugin can be found under the [_plugin_](https://github.com/purtuga/SPWidgets/tree/master/plugin) folder.
 
 
 License
