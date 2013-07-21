@@ -207,6 +207,18 @@ SPWidgets - Widgets for building custom UIs
                                 <input name="example2" value="" />
                             </div>
                         </div>
+                        
+                        <div>
+                            <h3>Example 3</h3>
+                            <p>Field below allows user to select
+                                mulitple values (multi-select) and displays
+                                the selector, which allows the user the ability
+                                to "browse" the list looking for the correct value.</p>
+                            <div>
+                                <input name="example3" value="" />
+                            </div>
+                        </div>
+                        
                     </div>
                     
                     
