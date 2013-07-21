@@ -409,7 +409,7 @@
 #spwidgets_demo_cntr .spwidget-demo-float-cntr div.spwidget-demo-float {
     float: left;
     width: 49%;
-    overflow: auto;
+    overflow: visible;
     min-height: 40em;
 }
 #spwidgets_demo_cntr .spwidget-demo-float-cntr div.spwidget-demo-float:first-child {
@@ -471,3 +471,7 @@
 #SPControlLookupFieldDemo .spwidgets-demo-lookup-examples {
     padding: .5em;
 }
+#SPControlLookupFieldDemo div.spwidget-demo-float-cntr div.spwidget-demo-float {
+    min-height: 70em;
+}    
+

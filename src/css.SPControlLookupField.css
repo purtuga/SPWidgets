@@ -40,25 +40,9 @@
     margin: .2em 0em;
     position: relative;
 }
-.spwidgets-lookup-cntr .ptLookupSPFieldSelector {
-    height: 16px;
-    width: 16px;
-    text-indent: -99999px;
-    background-repeat: no-repeat;
-    background-image: url("/_layouts/images/ARRDOWNI.GIF");
-    display: inline-block;
-}
-.spwidgets-lookup-cntr .ptLookupSPFieldSelectorCntr {
-    display: none;
-    position: absolute;
-    height: 150px;
-    width: 98%;
-    left: 0px;
-    overflow: auto;
-    z-index: 2000;
-}
 .spwidgets-lookup-cntr ul.ui-autocomplete {
     overflow: auto;
+    z-index: 1;
 }
 
 /* Ready only display */
@@ -72,4 +56,48 @@
 }
 .spwidgets-lookup-cntr div.spwidget-lookup-readyonly .spwidgets-item-remove {
     display: none;
+}
+
+/** SELECTOR */
+.spwidgets-lookup-cntr .spwidget-lookup-selector-showhide {
+    height: 16px;
+    width: 16px;
+    text-indent: -99999px;
+    background-repeat: no-repeat;
+    background-image: url("/_layouts/images/bizdatacontentsource.gif");
+    display: inline-block;
+    cursor: pointer;
+}
+.spwidgets-lookup-cntr div.spwidget-lookup-selector-cntr {
+    display: none;
+    position: absolute;
+    left: 0px;
+    z-index: 10;
+    padding: .2em;
+    width: 98%;
+    font-size: .8em;
+}
+.spwidgets-lookup-cntr div.spwidget-lookup-selector-cntr > .ui-state-default {
+    padding: .2em;
+    text-align: right;
+}
+
+.spwidgets-lookup-cntr div.spwidget-lookup-selector-item-cntr {
+    height: 15em;
+    overflow: auto;
+    padding: .2em;
+    font-size: 1em;
+}
+.spwidgets-lookup-cntr div.spwidget-lookup-selector-item-cntr .ui-state-highlight {
+    padding: .5em;
+    margin: 1em .2em;
+    text-align: center;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+}
+.spwidgets-lookup-cntr div.spwidget-lookup-selector-item-cntr .spwidget-lookup-item {
+    padding: .2em .5em;
+    margin: .2em;
+    cursor: pointer;
 }

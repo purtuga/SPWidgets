@@ -29,26 +29,51 @@
                     .change(function(){
                         
                         $output.append(
-                            "<div>Exmaple 1 input Value: " +
+                            "<div>Example 1 input Value: " +
                             $(this).val() + "</div>");
                         
                     })
                     .SPLookupField({
                         list:           listName,
-                        allowMultiples: false
+                        allowMultiples: false,
+                        showSelector:   true
                     })
                     .end()
                 .find("input[name='example2']")
                     .change(function(){
                         
                         $output.append(
-                            "<div>Exmaple 2 input Value: " +
+                            "<div>Example 2 input Value: " +
                             $(this).val() + "</div>");
                         
                     })
                     .SPLookupField({
                         list:           listName,
                         allowMultiples: true
+                    })
+                    .end()
+                .find("input[name='example3']")
+                    .change(function(){
+                        
+                        $output.append(
+                            "<div>Example 3 input Value: " +
+                            $(this).val() + "</div>");
+                        
+                    })
+                    .SPLookupField({
+                        list:           listName,
+                        allowMultiples: true,
+                        showSelector:   true,
+                        maxResults:     10,
+                        onItemAdd:      function($newItemSelection, itemObject, widgetCntr){
+                            
+                            $output.append(
+                            "<div>Example 3 onItemAdd Event: Item ID " +
+                            itemObject.ID + " was added: " +
+                            itemObject.Title + "</div>");
+                        
+                            
+                        }
                     });
                 
         }

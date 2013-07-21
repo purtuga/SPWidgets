@@ -91,7 +91,7 @@ The default options for this widget can be manipulated/set via the following obj
     Array of field names (internal names) that should be returned. ID is also used when the input value by the user is an integer.
 
 -   **filter**      :   *String. Optional. Default=""* <br>
-    Any additional filter criteria (in CAML format) to be added to the query when retrieving the table rows from the Lookup list. This should be only the filtering criteria with no <Query> and no <where> clause. Example:
+    Any additional filter criteria (in CAML format) to be added to the query when retrieving the table rows from the Lookup list. This should be only the filtering criteria with no _&lt;Query&gt;_ and no _&lt;where&gt;_ clause. Example:
         
         <Contains>
             <FieldRef Name="Title" />
@@ -110,7 +110,9 @@ The default options for this widget can be manipulated/set via the following obj
 
 -   **template**      :   *String. Optional. Default='&lt;div&gt;{{Title}} &lt;span class="spwidgets-item-remove"&gt;[x]&lt;/span&gt;&lt;/div&gt;' <br>
     The template (most likely html) to be used for displaying the item once selected. Use the following format for item column placeholders {{fieldInternalName}}. Any column returned in the query response from the Lookup list can be used.
-    When defining HTML for this value, an element containing a css class of 'spwidgets-item-remove' will be used to remove the item from the list of selected items. Example:
+    When defining HTML for this value, an element containing a css class of 'spwidgets-item-remove' will be used to remove the item from the list of selected items. 
+    
+    Example:
         
         options.template='<div>{{Title}} [<span class="spwidgets-item-remove">x</span>]</div>'
 
@@ -135,7 +137,9 @@ The default options for this widget can be manipulated/set via the following obj
     
     
 -   **onReady**      :   *Function. Optional. Default=null* <br>
-    Triggered after the LookupField has been setup. This is triggered either after completing the UI setup, or if the field already had pre-defined values, after retrieving that data and displaying it. Function will be given a scope of the original selector (the field) as well as the following input params: 1) widget container (jQuery). Example:
+    Triggered after the LookupField has been setup. This is triggered either after completing the UI setup, or if the field already had pre-defined values, after retrieving that data and displaying it. Function will be given a scope of the original selector (the field) as well as the following input params: 1) widget container (jQuery).
+    
+    Example:
         
         onReady: function(widgetCntr){
             //this=original selector to where the widget was bound
@@ -143,7 +147,8 @@ The default options for this widget can be manipulated/set via the following obj
 
 -   **onItemAdd**      :   *Function. Optional. Default=null* <br>
     Function that will be called when adding a new item reference to the list of currently picked item. This method could, if necessary remove the new item from the UI (ex. due to some custom validation rule).
-    The function will be given a scope of the bound area (the input field) as well as two input parameters: 1) A jQuery object representing the new item on the UI and 2) An object with the item's information
+    The function will be given a scope of the bound area (the input field) as well as two input parameters: 1) A jQuery object representing the new item on the UI and 2) An object with the item's information.
+    
     Example:
     
         onItemAdd: function($newItemSelection, itemObject, widgetCntr){
@@ -163,7 +168,9 @@ The default options for this widget can be manipulated/set via the following obj
     Option used only when allowMultiples is false. It will hide the input field once a value has been selected. Only way to get it displayed again is to remove existing selected item.
 
 -   **showSelector**      :   *Boolean. Optional. Default=false* <br>
-    If true, then an icon will be displayed to the right of the selection input field that displays a popup displaying all values currently in the lookup List. 
+    If true, an icon will be displayed to the right of the autocomplete input field that, when clicked, displays a popup area allowing the user to browse through the lookup list items for selection.
+    
+    This option uses the _listTemplate_ option in displaying the items in the popup.  The _maxResults_ option value will be used for paging the data when it is retrieved from the list. 
 
 
 
