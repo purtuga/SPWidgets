@@ -43,8 +43,8 @@ SPWidgets - Widgets for building custom UIs
 /** 
  * SPWidgets Demo
  * 
- * Build Date:  July 20, 2013 - 03:32 PM
- * Version:     20130720033254 
+ * Build Date:  July 21, 2013 - 01:16 PM
+ * Version:     20130721011643 
  * 
  */
 </script>
@@ -207,6 +207,18 @@ SPWidgets - Widgets for building custom UIs
                                 <input name="example2" value="" />
                             </div>
                         </div>
+                        
+                        <div>
+                            <h3>Example 3</h3>
+                            <p>Field below allows user to select
+                                mulitple values (multi-select) and displays
+                                the selector, which allows the user the ability
+                                to "browse" the list looking for the correct value.</p>
+                            <div>
+                                <input name="example3" value="" />
+                            </div>
+                        </div>
+                        
                     </div>
                     
                     
@@ -339,7 +351,7 @@ SPWidgets - Widgets for building custom UIs
         
     </div>
     <div>
-        <span>Build: </span><span>20130720033254</span>
+        <span>Build: </span><span>20130721011643</span>
     </div>
     <div>
         <div id="themeSwitchWidget"></div>
@@ -370,7 +382,7 @@ setTimeout(function(){
  * @fileOverview demo.common.js
  * Common file for all demos. Initiates the UI on the page.
  * 
- * @version 20130720033254
+ * @version 20130721011643
  * 
  */
 (function($){
@@ -1421,7 +1433,7 @@ setTimeout(function(){
                     .change(function(){
                         
                         $output.append(
-                            "<div>Exmaple 1 input Value: " +
+                            "<div>Example 1 input Value: " +
                             $(this).val() + "</div>");
                         
                     })
@@ -1434,13 +1446,27 @@ setTimeout(function(){
                     .change(function(){
                         
                         $output.append(
-                            "<div>Exmaple 2 input Value: " +
+                            "<div>Example 2 input Value: " +
                             $(this).val() + "</div>");
                         
                     })
                     .SPLookupField({
                         list:           listName,
                         allowMultiples: true
+                    })
+                    .end()
+                .find("input[name='example3']")
+                    .change(function(){
+                        
+                        $output.append(
+                            "<div>Example 3 input Value: " +
+                            $(this).val() + "</div>");
+                        
+                    })
+                    .SPLookupField({
+                        list:           listName,
+                        allowMultiples: true,
+                        showSelector:   true
                     });
                 
         }
@@ -2118,7 +2144,7 @@ window.vkbeautify = new vkbeautify();
 
 //-------- START SPWidgets plugin: inserted by build script ----------------- 
 
-(function(c){var s=c;document.head||(document.head=document.getElementsByTagName("head")[0]);(function(){try{c.pt||(c.pt={})}catch(a){c.pt={}}void 0===c.pt._cache&&(c.pt._cache={});c.SPWidgets={};c.SPWidgets.version="20130720033254";c.SPWidgets.defaults={};c.fn.SPMsgHasError=function(){var a=c(this).find("ErrorCode"),e=!1;if(!a.length)return c(this).find("faultcode").length?!0:!1;a.each(function(){if("0x00000000"!==c(this).text())return e=!0,!1});return e};c.fn.SPGetMsgError=function(){var a=
+(function(c){var s=c;document.head||(document.head=document.getElementsByTagName("head")[0]);(function(){try{c.pt||(c.pt={})}catch(a){c.pt={}}void 0===c.pt._cache&&(c.pt._cache={});c.SPWidgets={};c.SPWidgets.version="20130721011643";c.SPWidgets.defaults={};c.fn.SPMsgHasError=function(){var a=c(this).find("ErrorCode"),e=!1;if(!a.length)return c(this).find("faultcode").length?!0:!1;a.each(function(){if("0x00000000"!==c(this).text())return e=!0,!1});return e};c.fn.SPGetMsgError=function(){var a=
 c(this),e="",f=a.find("ErrorCode"),g=0;f.length||(f=a.find("faultcode"));if(!f.length)return"";f.each(function(){var a=c(this);"0x00000000"!==a.text()&&(g+=1,e+="("+g+") "+a.text()+": "+a.parent().children().not(a).text()+"\n")});return e=g+" error(s) encountered! \n"+e};c.SPWidgets.fillTemplate=function(a,e){var f,g,b,l,d,k,n,p;f="";g=String(c("<div/>").append(a).html());b=g.match(/(\{\{.*?\}\})/g);c.isArray(e)||(e=[e]);if(null!==b)for(k=0,n=e.length;k<n;k++){p=g;l=0;for(d=b.length;l<d;l++)b[l]=
 b[l].replace(/[\{\{\}\}]/g,""),p=p.replace("{{"+b[l]+"}}",e[k][b[l]]);f+=p}return f};c.SPWidgets.parseLookupFieldValue=function(a){var e=[],f=String(a).split(";#"),g=f.length,b,c;if(void 0===a)return e;for(a=0;a<g;a++)b=f[a],a++,c=f[a],(b||c)&&e.push({id:b,title:c});return e};c.SPWidgets.getCamlLogical=function(a){a=c.extend({},{type:"AND",values:[],onEachValue:null},a);var e="<And>",f="</And>",g="",b=0,l=0,d=!1;a.type=String(a.type).toUpperCase();c.isArray(a.values)||(a.values=[a.values]);"AND"!==
 a.type&&(e="<Or>",f="</Or>");g=e;b=a.values.length;l=b-1;d=c.isFunction(a.onEachValue);2>b&&(g="");for(e=0;e<b;e++)if(g=d?g+String(a.onEachValue(a.values[e])).toString():g+String(a.values[e]).toString(),1<l-e){g+=c.SPWidgets.getCamlLogical(c.extend({},a,{values:a.values.slice(e+1,b-e)}));break}1<b&&(g+=f);return g};c.SPWidgets.SPGetDateString=function(a,e){function c(a){return 10>a?"0"+a:a}e=String(e||"local").toLowerCase();a=a||new Date;var g="";return g="utc"===e?a.getUTCFullYear()+"-"+c(a.getUTCMonth()+
@@ -2163,15 +2189,15 @@ g=d:g.push(d);a.each(g,function(d,g){if(!f.find("div.spwidgets-item-id-"+g.ID).l
 "")}),!0!==e&&b.storeItemIDs(g.ID,b.allowMultiples),!1===b.allowMultiples&&!0===b.hideInput&&b._lookupInputEleCntr.css("display","none"))}});b.readOnly&&b._cntr.find(".spwidgets-item-remove").remove();k&&b._ele.trigger("change")};b.storeItemIDs=function(d,e){var c=a.trim(b._ele.val()),f=!1;a.isArray(d)||(d=[d]);!0!==e&&(c="");a.each(d,function(a,d){d&&(1>c.length&&(!0===b.padDelimeter&&!f)&&(c+=";#",f=!0),0<c.length&&(c+=";#"),c+=d+";#")});b._ele.val(c)};b.showCurrentInputSelection=function(d){return a.Deferred(function(e){var c=
 a.extend({},{async:!0},d),f=a.SPWidgets.parseLookupFieldValue(b._ele.val());f.length?a().SPServices({operation:"GetListItems",async:c.async,listName:b.list,CAMLQuery:"<Query><Where>"+a.SPWidgets.getCamlLogical({type:"OR",values:f,onEachValue:function(b){var a="";b.id&&(a="<Eq><FieldRef Name='ID'/><Value Type='Counter'>"+b.id+"</Value></Eq>");return a}})+"</Where></Query>",CAMLViewFields:"<ViewFields>"+b._selectFields+"</ViewFields>",CAMLRowLimit:0,completefunc:function(d,c){var f=a(d.responseXML).SPFilterNode("z:row").SPXmlToJson({includeAllAttrs:!0,
 removeOws:!0});b.showSelectedItems(f,!0);e.resolveWith(b,[d,c])}}):e.resolveWith(b,[null,null])}).promise()};b._cntr=a(c.htmlTemplate).find(".spwidgets-lookup-cntr").clone(1);b._selectedItemsCntr=b._cntr.find("div.spwidgets-lookup-selected");b._lookupInputEleCntr=b._cntr.find("div.spwidgets-lookup-input");b._ignoreKeywordsRegEx=/^(of|and|a|an|to|by|the|or)$/i;b._cntr.data("SPWidgetLookupFieldOpt",b);b._ele.data("SPWidgetLookupFieldUI",b._cntr);null===b.uiContainer?b._cntr.insertAfter(b._ele):b._cntr.appendTo(a(b.uiContainer));
-if(b.showSelector){var d=b._cntr.find("div.ptLookupSPFieldSelectorCntr");b._cntr.find(".ptLookupSPFieldSelector").on("click",function(b){d.is(":visible")?d.css("display","none"):d.css("display","block")})}else b._cntr.find(".ptLookupSPFieldSelectorCntr,.ptLookupSPFieldSelector").remove();b.inputLabel?b._cntr.find("div.spwidgets-lookup-input label").empty().append(b.inputLabel):b._cntr.find("div.spwidgets-lookup-input label").remove();b.inputPlaceholder&&b._lookupInputEleCntr.find("input").attr("placeholder",
+if(b.showSelector){var d=b._cntr.find("div.spwidgets-lookup-selector-cntr");b._cntr.find(".spwidgets-lookup-selector-showhide").on("click",function(b){d.is(":visible")?d.css("display","none"):d.css("display","block")})}else b._cntr.find(".spwidgets-lookup-selector-showhide,.spwidgets-lookup-selector-cntr").remove();b.inputLabel?b._cntr.find("div.spwidgets-lookup-input label").empty().append(b.inputLabel):b._cntr.find("div.spwidgets-lookup-input label").remove();b.inputPlaceholder&&b._lookupInputEleCntr.find("input").attr("placeholder",
 b.inputPlaceholder);!0===b.readOnly&&(b._lookupInputEleCntr.css("display","none"),b._cntr.find("div.spwidget-lookup").addClass("spwidget-lookup-readyonly"));b._selectFields="";a.each(b.selectFields,function(a,d){b._selectFields+="<FieldRef Name='"+d+"'/>"});b._templateTokens=String(b.template).match(/(\$\{.*?\})/g);null==b._templateTokens&&(b._templateTokens=[]);a.each(b._templateTokens,function(a,d){b._templateTokens[a]=d.replace(/[\$\{\}]/g,"")});var k={};b._cntr.find("div.spwidgets-lookup-input input").autocomplete({minLength:2,
 appendTo:b._cntr,open:function(d,e){a(this).autocomplete("widget").each(function(){0<b.listHeight&&a(this).css("height",b.listHeight+"px");return!1})},source:function(d,e){d.term=a.trim(d.term);var c=String(a.trim(d.term)).toUpperCase();if(c in k)e(k[c]);else{k[c]=[];var f=[],g=String(d.term);if(null===g.match(/\D/)&&null!==g.match(/\d/))f.push("<Eq><FieldRef Name='ID'/><Value Type='Counter'>"+g+"</Value></Eq>");else{g=[d.term];b.exactMatch||(g=String(d.term).split(/ /));for(var h=0,l=b.filterFields.length;h<
 l;h++){for(var y=[],u=0,s=g.length;u<s;u++)b._ignoreKeywordsRegEx.test(g[u])||y.push("<Contains><FieldRef Name='"+b.filterFields[h]+"'/><Value Type='Text'>"+g[u]+"</Value></Contains>");f.push(a.SPWidgets.getCamlLogical({values:y,type:"AND"}))}}f=a.SPWidgets.getCamlLogical({values:f,type:"OR"});b.filter&&(f=a.SPWidgets.getCamlLogical({values:[f,b.filter],type:"AND"}));a().SPServices({operation:"GetListItems",listName:b.list,async:!0,CAMLQuery:"<Query><Where>"+f+"</Where></Query>",CAMLRowLimit:b.maxResults,
 CAMLViewFields:"<ViewFields>"+b._selectFields+"</ViewFields>",completefunc:function(d,f){a(d.responseXML).SPFilterNode("z:row").each(function(){var d=a(this).SPXmlToJson({includeAllAttrs:!0})[0];d.value="";d.label=a.SPWidgets.fillTemplate(b.listTemplate,d);k[c].push(d)});e(k[c])}})}},select:function(a,d){b.showSelectedItems(d.item)}}).on("keyup.SPWidgets",function(d){if(13==d.which){var e=a(d.target).val();e&&String(e).length<b.minLength&&a(d.target).autocomplete("search",e+"    ")}});b._ele.val()?
 b.showCurrentInputSelection().then(function(d,e){a.isFunction(b.onReady)&&b.onReady.call(b._ele,b._cntr)}):a.isFunction(b.onReady)&&b.onReady.call(b._ele,b._cntr);return this});return this};c.removeItem=function(e,f){var g=a(f).closest("div.spwidgets-item"),b=g.closest("div.spwidgets-lookup-selected"),l=g.data("spid"),d=a.SPWidgets.parseLookupFieldValue(e._ele.val()),k=[],n=0,p=0;g.fadeOut("fast").promise().then(function(){g.remove();!e.msgNoItems&&(!1===e.allowMultiples||!0===e.allowMultiples&&1>
 b.find("div.spwidgets-item").length)&&b.css("display","none");!1===e.allowMultiples&&!0===e.hideInput&&e._lookupInputEleCntr.css("display","");1>b.find("div.spwidgets-item").length&&e.msgNoItems&&b.append("<div>"+e.msgNoItems+"</div>")});n=0;for(p=d.length;n<p;n++)d[n].id!=l&&k.push(d[n].id);e._lookupInputEleCntr.find("input").focus();e.storeItemIDs(k);e._ele.change();return c};c.addItem=function(a,c){if(!c||"string"!==typeof c)return a;var g=a._ele.val();g&&(g+=";#");a._ele.val(g+c);a.showCurrentInputSelection();
-return a};c.styleSheet='/**\n * Stylesheet for the Lookup Field widget.\n * \n */\n\n.spwidgets-lookup-cntr {\n    position: relative;\n    display: inline-block;\n    zoom: 1; /* IE7 hack */\n    *display: inline; /* IE7 hack */\n}\n\n\n.spwidgets-lookup-cntr .spwidgets-lookup-selected {\n    -moz-appearance: textfield;\n    -webkit-appearance: textfield;\n    background-color: white;\n    background-color: -moz-field;\n    border: 1px solid  darkgray;\n    box-shadow: 1px 1px 1px 0 lightgray inset;  \n    font: -moz-field;\n    font: -webkit-small-control;\n    margin-top: 5px;\n    padding: 2px 5px; \n}\n\n.spwidgets-lookup-cntr  .spwidgets-lookup-selected .spwidgets-item {\n    display: inline-block;\n    margin-left: .5em;\n}\n.spwidgets-lookup-cntr .spwidgets-item:first-child {\n    margin-left: 0px;\n}\n.spwidgets-lookup-cntr .spwidgets-item-remove {\n    color: red;\n    cursor: pointer;\n}\n\n.spwidgets-lookup-cntr .spwidgets-lookup-input {\n    margin: .2em 0em;\n    position: relative;\n}\n.spwidgets-lookup-cntr .ptLookupSPFieldSelector {\n    height: 16px;\n    width: 16px;\n    text-indent: -99999px;\n    background-repeat: no-repeat;\n    background-image: url("/_layouts/images/ARRDOWNI.GIF");\n    display: inline-block;\n}\n.spwidgets-lookup-cntr .ptLookupSPFieldSelectorCntr {\n    display: none;\n    position: absolute;\n    height: 150px;\n    width: 98%;\n    left: 0px;\n    overflow: auto;\n    z-index: 2000;\n}\n.spwidgets-lookup-cntr ul.ui-autocomplete {\n    overflow: auto;\n}\n\n/* Ready only display */\n.spwidgets-lookup-cntr div.spwidget-lookup-readyonly .spwidgets-lookup-selected {\n    -moz-appearance: none;\n    -webkit-appearance: none;\n    background-color: transparent;\n    border: none;\n    box-shadow: none;\n    font: inherit;\n}\n.spwidgets-lookup-cntr div.spwidget-lookup-readyonly .spwidgets-item-remove {\n    display: none;\n}\n';
-c.htmlTemplate='<div>\n    <div class="spwidgets-lookup-cntr">\n        <div class="spwidget-lookup">\n            <div class="spwidgets-lookup-selected" style="display:none;">\n            </div>\n            <div class="spwidgets-lookup-input">\n                <label>Add</label>\n                <input type="text" name="ptLookupSPFieldAdd" value="" />\n                <span class="ptLookupSPFieldSelector">Select</span>\n                <div class="ptLookupSPFieldSelectorCntr ui-widget-content">\n                    <div style="height: 1000px;"></div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n\n'})(s);
+return a};c.styleSheet='/**\n * Stylesheet for the Lookup Field widget.\n * \n */\n\n.spwidgets-lookup-cntr {\n    position: relative;\n    display: inline-block;\n    zoom: 1; /* IE7 hack */\n    *display: inline; /* IE7 hack */\n}\n\n\n.spwidgets-lookup-cntr .spwidgets-lookup-selected {\n    -moz-appearance: textfield;\n    -webkit-appearance: textfield;\n    background-color: white;\n    background-color: -moz-field;\n    border: 1px solid  darkgray;\n    box-shadow: 1px 1px 1px 0 lightgray inset;  \n    font: -moz-field;\n    font: -webkit-small-control;\n    margin-top: 5px;\n    padding: 2px 5px; \n}\n\n.spwidgets-lookup-cntr  .spwidgets-lookup-selected .spwidgets-item {\n    display: inline-block;\n    margin-left: .5em;\n}\n.spwidgets-lookup-cntr .spwidgets-item:first-child {\n    margin-left: 0px;\n}\n.spwidgets-lookup-cntr .spwidgets-item-remove {\n    color: red;\n    cursor: pointer;\n}\n\n.spwidgets-lookup-cntr .spwidgets-lookup-input {\n    margin: .2em 0em;\n    position: relative;\n}\n.spwidgets-lookup-cntr .ptLookupSPFieldSelector {\n    height: 16px;\n    width: 16px;\n    text-indent: -99999px;\n    background-repeat: no-repeat;\n    background-image: url("/_layouts/images/ARRDOWNI.GIF");\n    display: inline-block;\n}\n.spwidgets-lookup-cntr .ptLookupSPFieldSelectorCntr {\n    display: none;\n    position: absolute;\n    height: 150px;\n    width: 98%;\n    left: 0px;\n    overflow: auto;\n    z-index: 2000;\n}\n.spwidgets-lookup-cntr ul.ui-autocomplete {\n    overflow: auto;\n    z-index: 1;\n}\n\n/* Ready only display */\n.spwidgets-lookup-cntr div.spwidget-lookup-readyonly .spwidgets-lookup-selected {\n    -moz-appearance: none;\n    -webkit-appearance: none;\n    background-color: transparent;\n    border: none;\n    box-shadow: none;\n    font: inherit;\n}\n.spwidgets-lookup-cntr div.spwidget-lookup-readyonly .spwidgets-item-remove {\n    display: none;\n}\n';
+c.htmlTemplate='<div>\n    <div class="spwidgets-lookup-cntr">\n        <div class="spwidget-lookup">\n            <div class="spwidgets-lookup-selected" style="display:none;">\n            </div>\n            <div class="spwidgets-lookup-input">\n                <label>Add</label>\n                <input type="text" name="ptLookupSPFieldAdd" value="" />\n                <span class="spwidgets-lookup-selector-showhide">Select</span>\n                <div class="spwidgets-lookup-selector-cntr ui-widget-content">\n                    <div style="height: 1000px;"></div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n\n'})(s);
 c.pt.pickSPUser={_isPickSPUserCssDone:!1};c.fn.pickSPUser=function(a){c.pt.pickSPUser._isPickSPUserCssDone||(c.pt.pickSPUser._isPickSPUserCssDone=!0,c('<style type="text/css">\n\n'+c.pt.pickSPUser.styleSheet+"\n\n</style>").prependTo("head"));var h=arguments;this.each(function(){var e=c(this);if(!e.is("input")||e.hasClass("hasPickSPUser"))return"string"===typeof a&&e.is("input")?c.pt.pickSPUser.handleAction.apply(this,h):this;var f=c.extend({},{allowMultiples:!0,maxSearchResults:50,webURL:c().SPServices.SPGetCurrentSite(),
 onPickUser:null,onCreate:null,onRemoveUser:null,inputPlaceholder:"Type and Pick"},a,{eleUserInput:e.css("display","none").addClass("hasPickSPUser")});f.maxSearchResults=parseInt(f.maxSearchResults)||50;var g=c(c.pt.pickSPUser.htmlTemplate).find(".pt-pickSPUser").clone(1).insertAfter(e);f.eleSelected=g.find("div.pt-pickSPUser-selected").empty();f.elePickInput=g.find("div.pt-pickSPUser-input");f.addPeopleToList=function(b,a){var e=(new String(b)).split(";#"),g=e.length,h,m,w;for(h=0;h<g;h++)m=e[h],
 h++,w=e[h],m=c.pt.pickSPUser.getUserHtmlElement(f,m,w).appendTo(f.eleSelected),function(b,a){f.getSearchResults(a).done(function(d,e,f){var g=String(a).toLowerCase();c.each(d,function(a,d){if(String(d.displayName).toLowerCase()===g)return b.data("pickspuser_object",d),!1})})}(m,w);c.pt.addHoverEffect(f.eleSelected.find("div.pt-pickSPUser-person-cntr"));!1===f.allowMultiples&&f.elePickInput.css("display","none");c.pt.pickSPUser.storeListOfUsers(f.eleSelected,a)};f.getSearchResults=function(b){return c.Deferred(function(a){c().SPServices({operation:"SearchPrincipals",

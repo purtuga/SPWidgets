@@ -3,7 +3,7 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *  
- * @version 20130720033254
+ * @version 20130721060236
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  * 
@@ -11,8 +11,8 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date:  July 20, 2013 - 03:32 PM
- * Version:     20130720033254
+ * Build Date:  July 21, 2013 - 06:02 PM
+ * Version:     20130721060236
  * 
  */
 ;(function($){
@@ -53,7 +53,7 @@
         }
         
         $.SPWidgets             = {};
-        $.SPWidgets.version     = "20130720033254";
+        $.SPWidgets.version     = "20130721060236";
         $.SPWidgets.defaults    = {};
         
         /**
@@ -609,7 +609,7 @@
  *  -   jQuery-UI Draggable
  * 
  * 
- * BUILD: July 20, 2013 - 03:32 PM
+ * BUILD: July 21, 2013 - 06:02 PM
  */
 
 ;(function($){
@@ -2983,7 +2983,7 @@
  * THe user, however, is presented with the existing items
  * and has the ability to Remove them and add new ones.
  * 
- * BUILD: July 20, 2013 - 03:32 PM
+ * BUILD: July 21, 2013 - 06:02 PM
  * 
  */
 
@@ -3000,7 +3000,8 @@
      * @class       Namespace for lookup Field plugin
      */
     var Lookup = {
-        _islookupFieldCssDone: false
+        _islookupFieldCssDone:  false,
+        _isLookupbodyEventDone: false
     };
     
     // Default options
@@ -3028,30 +3029,6 @@
         padDelimeter:       false,
         showSelector:       false
     };
-    
-    // $(function(){
-        // $("body").on("click", function(ev){
-            // var selectors = $("div.ptLookupSPFieldSelectorCntr:visible");
-            // if (selectors.length > 0) {
-                // if ($(ev.target).closest("div.spwidgets-lookup-cntr").length == 0) {
-                    // selectors.css("display", "none");
-//                 
-                // } else {
-                    // selectors.each(function(){
-                        // if ($(this).closest("div.spwidgets-lookup-cntr").find(ev.target).length < 1) {
-                            // selectors.css("display", "none");
-                        // }
-                    // });
-//                     
-//                     
-                // // FIXME: @@@@@@ working here: 2012.11.8
-//                     
-//                     
-                // }
-            // }
-//             
-        // })
-    // });
     
 
     /**
@@ -3270,7 +3247,7 @@
                             Lookup.addItem(o, cmdOpt);
                             
                         }
-                                            
+
                     }//end: options === method
                     
                 }
@@ -3581,6 +3558,8 @@
                                         .find(".spwidgets-lookup-cntr").clone(1);
             o._selectedItemsCntr    = o._cntr.find("div.spwidgets-lookup-selected");
             o._lookupInputEleCntr   = o._cntr.find("div.spwidgets-lookup-input");
+            o._lookupInputEle       = o._lookupInputEleCntr
+                                        .find("input[name='spwidgetLookupInput']");
             o._ignoreKeywordsRegEx  = (/^(of|and|a|an|to|by|the|or)$/i);
             
             o._cntr.data("SPWidgetLookupFieldOpt", o);
@@ -3602,29 +3581,70 @@
             // FIXME: maybe we realy want to hide it? case the option is changed later?
             if (!o.showSelector){
                 
-                o._cntr.find('.ptLookupSPFieldSelectorCntr,.ptLookupSPFieldSelector').remove();
+                o._cntr.find('.spwidget-lookup-selector-showhide,.spwidget-lookup-selector-cntr').remove();
             
             // Else, bind methods for handling the selector.
             } else {
                 
-                var selectorCntr = o._cntr.find("div.ptLookupSPFieldSelectorCntr");
+                o._selectorCntr     = o._cntr.find("div.spwidget-lookup-selector-cntr");
+                o._queryInitDone    = false;
                 
-                o._cntr.find(".ptLookupSPFieldSelector")
+                o._cntr.find(".spwidget-lookup-selector-showhide")
                     .on("click", function(ev){
                         
-                        if (selectorCntr.is(":visible")) {
+                        if (o._selectorCntr.is(":visible")) {
                             
-                            selectorCntr.css("display", "none");
+                            o._selectorCntr.css("display", "none");
                             
                         } else {
                             
-                            selectorCntr.css("display", "block");
+                            o._selectorCntr
+                                .css("display", "block")
+                                .position({
+                                    my: "left top",
+                                    at: "left bottom",
+                                    of: o._lookupInputEle
+                                });
                             
-                        }
+                            if (!o._queryInitDone) {
+                                
+                                o._queryInitDone = true;
+                                
+                                Lookup.doSelectorDataInit(o);
+                                
+                            }
+                            
+                        } //end: if/else(): how/hide
                         
                     });
+                    
+                o._selectorCntr
+                    .find("button[name='close']")
+                    .button({
+                        text: false,
+                        icons: {
+                            primary: "ui-icon-circle-close"
+                        }
+                    })
+                    .click(function(){
+                        
+                        o._selectorCntr.css("display", "none");
+                        
+                    });
+                    
+                // If user focuses on the Input field (autocomplete),
+                // then hide the selector if visible
+                o._lookupInputEle.on("focus", function(ev){
+                    
+                    if (o._selectorCntr.is(":visible")) {
+                            
+                        o._selectorCntr.css("display", "none");
+
+                    }
+                    
+                }); 
                 
-            } //end: else()
+            } //end: else(): ShowSelector is true
             
             // If an input label was defined, then set it, else, remove input label
             if (o.inputLabel) {
@@ -3991,6 +4011,221 @@
     }; //end: Lookup.addItem()
     
     /**
+     * Initializes the Selector with data from the List.
+     * 
+     * @param {Object} Inst
+     *          The widget instance object.
+     * 
+     * @return {Object} Inst
+     * 
+     */
+    Lookup.doSelectorDataInit = function(Inst) {
+        
+        var opt = {
+                $resultsCntr:   Inst._selectorCntr
+                                .find("div.spwidget-lookup-selector-item-cntr"),
+                nextPageToken:  '',
+                isLoading:      false,
+                hasMorePages:   true,
+                $lastPage:      $(),
+                queryXml:       (
+                                    Inst.filter
+                                    ?   '<Query><Where>' + Inst.filter +
+                                        '</Where></Query>'
+                                    :   '<Query></Query>' 
+                                )
+            };
+        
+        // If the global listner is not yet setup, do it now
+        if (!Lookup._isLookupbodyEventDone) {
+            
+            Lookup._isLookupbodyEventDone = true;
+            $("body").on("click", function(ev){
+                
+                var $ele            = $(ev.target),
+                    $allSelectors   = $("div.spwidget-lookup-selector-cntr:visible"),
+                    $clickArea      = null;
+                
+                if ($allSelectors.length) {
+                    
+                    $clickArea = $ele.closest("div.spwidget-lookup-selector-cntr");
+                    
+                    if (!$clickArea.length && $ele.is(".spwidget-lookup-selector-showhide")) {
+                        
+                        
+                        $clickArea = $ele.parent().find("div.spwidget-lookup-selector-cntr");
+                        
+                    }
+                    
+                    $allSelectors.not($clickArea).hide();
+                    
+                }
+                
+            });
+            
+        }
+        
+        /**
+         * Gets the rows from the list and keeps
+         * a reference to the next page ID so that
+         * on subsquent calls, it will be used. 
+         * 
+         * @return {jQuery.Promise}
+         *          Promise is resolved with a context of the
+         *          page of data that was inserted into the
+         *          selector.
+         */
+        opt.getListRows = function(){
+            
+            return $.Deferred(function(dfd){
+                
+                // If we're already busy getting results, exit...
+                if (opt.isLoading) {
+                    
+                    dfd.resolveWith($lastPage, [$lastPage]);
+                    return;
+                    
+                }
+                
+                opt.isLoading = true;
+                
+                // Get the data from the list using the user's filter,
+                // maxResult and SelectFields. Then populate the selector
+                // with the data found.
+                $().SPServices({
+                    operation:      "GetListItems",
+                    listName:       Inst.list,
+                    async:          true,
+                    CAMLQuery:      opt.queryXml,
+                    CAMLRowLimit:   Inst.maxResults,
+                    CAMLViewFields: "<ViewFields>" + Inst._selectFields + 
+                                    "</ViewFields>",
+                    CAMLQueryOptions:   (function(){
+                                                
+                                if (opt.nextPageToken !== "") {
+                                    
+                                    return '<QueryOptions>' +
+                                        "<Paging ListItemCollectionPositionNext='" +
+                                        $.SPWidgets.escapeXML(opt.nextPageToken) +
+                                        "'/></QueryOptions>"
+                                    
+                                }
+                                
+                            })(),
+                    completefunc:   function(xData, status){
+                        
+                        var $resp       = $(xData.responseXML),
+                            $rsData     = $resp.SPFilterNode("rs:data").eq(0),
+                            rows        = $resp
+                                            .SPFilterNode("z:row")
+                                            .SPXmlToJson({
+                                                includeAllAttrs:    true,
+                                                removeOws:          true
+                                            }),
+                            $page       = $("<div/>").insertBefore(opt.$nextPage),
+                            rowsHtml    = '';
+                        
+                        // Store the NextPage Token
+                        opt.nextPageToken = $rsData.attr("ListItemCollectionPositionNext") || '';
+                        
+                        if (opt.nextPageToken === "") {
+                            
+                            opt.hasMorePages = false;
+                            
+                        }
+                        
+                        $.each(rows, function(i, row){
+                            
+                            // Create the same attribute as those that are created for
+                            // the Autocomplete widget. Ensure consistency should we
+                            // do more with this in the future.
+                            row.value = "";
+                            row.label = $.SPWidgets.fillTemplate(Inst.listTemplate, row );
+                                
+                            rowsHtml += '<div class="spwidget-lookup-item" data-spwidgetsindex="' +
+                                        i + '">' + row.label + '</div>'
+                             
+                        });
+                        
+                        
+                        $page
+                            .html(rowsHtml)
+                            .find("div.spwidget-lookup-item")
+                                .each(function(){
+                                    
+                                    var $e = $(this)
+                                    
+                                    $e.hover(
+                                        function(){
+                                            
+                                            $e.addClass("ui-state-hover");
+                                            
+                                        },
+                                        function(){
+                                            
+                                            $e.removeClass("ui-state-hover");
+                                            
+                                        }
+                                    );
+                                })
+                                .end()
+                            .on("click", "div.spwidget-lookup-item", function(ev){
+                                
+                                var thisRowIndex = $(this).data("spwidgetsindex");
+                                
+                                Inst.showSelectedItems(rows[thisRowIndex]);
+                                
+                            });
+                        
+                        opt.isLoading = false;
+                        
+                        dfd.resolveWith($page, [$page]);
+                        
+                        return;
+                        
+                    } //end: completefunc()
+                });
+                
+            });
+            
+        }; 
+        
+        // Create the "next page" button
+        opt.$nextPage = $('<div class="ui-state-highlight">Next...</div>')
+                        .appendTo(opt.$resultsCntr.empty())
+                        .click(function(ev){
+
+                            if (!opt.hasMorePages) {
+                                
+                                return;
+                                
+                            }
+                            
+                            opt.$nextPage.css("display", "none");
+                            
+                            opt.getListRows()
+                                .then(function($page){
+                                    
+                                    if (opt.hasMorePages) {
+                                        
+                                        opt.$nextPage.css("display", "");
+                                        
+                                    }
+                                    
+                                    opt.$resultsCntr
+                                        .scrollTop($page.position().top);
+                                    
+                                });
+                            
+                        });
+        
+        opt.getListRows();
+        
+        return Inst;
+        
+    }; //end: Lookup.doSelectorDataInit()
+    
+    /**
      * @property
      * @memberOf    Lookup.lookupField
      * Stores the Style sheet that is inserted into the page the first
@@ -4040,25 +4275,9 @@
 + "    margin: .2em 0em;\n"
 + "    position: relative;\n"
 + "}\n"
-+ ".spwidgets-lookup-cntr .ptLookupSPFieldSelector {\n"
-+ "    height: 16px;\n"
-+ "    width: 16px;\n"
-+ "    text-indent: -99999px;\n"
-+ "    background-repeat: no-repeat;\n"
-+ "    background-image: url(\"/_layouts/images/ARRDOWNI.GIF\");\n"
-+ "    display: inline-block;\n"
-+ "}\n"
-+ ".spwidgets-lookup-cntr .ptLookupSPFieldSelectorCntr {\n"
-+ "    display: none;\n"
-+ "    position: absolute;\n"
-+ "    height: 150px;\n"
-+ "    width: 98%;\n"
-+ "    left: 0px;\n"
-+ "    overflow: auto;\n"
-+ "    z-index: 2000;\n"
-+ "}\n"
 + ".spwidgets-lookup-cntr ul.ui-autocomplete {\n"
 + "    overflow: auto;\n"
++ "    z-index: 1;\n"
 + "}\n"
 + "\n"
 + "/* Ready only display */\n"
@@ -4072,6 +4291,50 @@
 + "}\n"
 + ".spwidgets-lookup-cntr div.spwidget-lookup-readyonly .spwidgets-item-remove {\n"
 + "    display: none;\n"
++ "}\n"
++ "\n"
++ "/** SELECTOR */\n"
++ ".spwidgets-lookup-cntr .spwidget-lookup-selector-showhide {\n"
++ "    height: 16px;\n"
++ "    width: 16px;\n"
++ "    text-indent: -99999px;\n"
++ "    background-repeat: no-repeat;\n"
++ "    background-image: url(\"/_layouts/images/bizdatacontentsource.gif\");\n"
++ "    display: inline-block;\n"
++ "    cursor: pointer;\n"
++ "}\n"
++ ".spwidgets-lookup-cntr div.spwidget-lookup-selector-cntr {\n"
++ "    display: none;\n"
++ "    position: absolute;\n"
++ "    left: 0px;\n"
++ "    z-index: 10;\n"
++ "    padding: .2em;\n"
++ "    width: 98%;\n"
++ "    font-size: .8em;\n"
++ "}\n"
++ ".spwidgets-lookup-cntr div.spwidget-lookup-selector-cntr > .ui-state-default {\n"
++ "    padding: .2em;\n"
++ "    text-align: right;\n"
++ "}\n"
++ "\n"
++ ".spwidgets-lookup-cntr div.spwidget-lookup-selector-item-cntr {\n"
++ "    height: 15em;\n"
++ "    overflow: auto;\n"
++ "    padding: .2em;\n"
++ "    font-size: 1em;\n"
++ "}\n"
++ ".spwidgets-lookup-cntr div.spwidget-lookup-selector-item-cntr .ui-state-highlight {\n"
++ "    padding: .5em;\n"
++ "    margin: 1em .2em;\n"
++ "    text-align: center;\n"
++ "    font-size: 1.1em;\n"
++ "    font-weight: bold;\n"
++ "    cursor: pointer;\n"
++ "}\n"
++ ".spwidgets-lookup-cntr div.spwidget-lookup-selector-item-cntr .spwidget-lookup-item {\n"
++ "    padding: .2em .5em;\n"
++ "    margin: .2em;\n"
++ "    cursor: pointer;\n"
 + "}\n";
 //_HAS_LOOKUP_CSS_TEMPLATE_;
     
@@ -4090,10 +4353,15 @@
 + "            </div>\n"
 + "            <div class=\"spwidgets-lookup-input\">\n"
 + "                <label>Add</label>\n"
-+ "                <input type=\"text\" name=\"ptLookupSPFieldAdd\" value=\"\" />\n"
-+ "                <span class=\"ptLookupSPFieldSelector\">Select</span>\n"
-+ "                <div class=\"ptLookupSPFieldSelectorCntr ui-widget-content\">\n"
-+ "                    <div style=\"height: 1000px;\"></div>\n"
++ "                <input type=\"text\" name=\"spwidgetLookupInput\" value=\"\" />\n"
++ "                <span class=\"spwidget-lookup-selector-showhide\" title=\"Browse\">Browse</span>\n"
++ "                <div class=\"spwidget-lookup-selector-cntr ui-widget-content\">\n"
++ "                    <div class=\"ui-state-default\">\n"
++ "                        <button type=\"button\" name=\"close\" title=\"Close\">Close</button>\n"
++ "                    </div>\n"
++ "                    <div class=\"spwidget-lookup-selector-item-cntr\">\n"
++ "                        <div style=\"height: 1000px;\"></div>\n"
++ "                    </div>\n"
 + "                </div>\n"
 + "            </div>\n"
 + "        </div>\n"
@@ -4111,7 +4379,7 @@
  * on jQuery UI's Autocomplete and SPServices library.
  *      
  *  
- * @version 20130720033254NUMBER_
+ * @version 20130721060236NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
@@ -4119,7 +4387,7 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date July 20, 2013 - 03:32 PM
+ * Build Date July 21, 2013 - 06:02 PM
  * 
  */
 
@@ -4933,7 +5201,7 @@ $.pt.addHoverEffect = function(ele){
  * through the many SP pages and without having to leave the user's current page.
  *      
  *  
- * @version 20130720033254NUMBER_
+ * @version 20130721054546NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
@@ -4941,7 +5209,7 @@ $.pt.addHoverEffect = function(ele){
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date July 20, 2013 - 03:32 PM
+ * Build Date July 21, 2013 - 05:45 PM
  * 
  */
 
@@ -5643,7 +5911,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
 /**
  * @fileOverview - List filter panel widget
  * 
- * BUILD: July 20, 2013 - 03:32 PM
+ * BUILD: July 21, 2013 - 06:02 PM
  * 
  */
 (function($){
