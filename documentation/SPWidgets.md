@@ -6,6 +6,12 @@ SPWidgets is a jQuery plugin that provides SharePoint Widgets that can be used f
 For the latest information on this plugin, see the [project page on GIT](http://purtuga.github.com/SPWidgets/).
 
 
+Demo Showcase
+-------------
+
+Want to try them now and not worry about installation/setup etc. A self contained Single Page Application (SPA) is available that you can quickly upload to a Sharepoint library and see the widgets in action. [**GO HERE**](https://github.com/purtuga/SPWidgets/blob/master/demo/demo.about.md#spwidgets-demo) for more information.
+
+
 Dependencies
 ------------
 
