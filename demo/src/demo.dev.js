@@ -204,33 +204,37 @@
                                         
                                         // 13. demo.common.js
                                         Main.loadScript(
-                                            SPWIDGET_DEMO.BIN_DIR + 
-                                            "demo/src/demo.common.js?rev=" + Main._version);
-                                        
-                                        // 14. widget.upload.demo.js
-                                        Main.loadScript(
-                                            SPWIDGET_DEMO.BIN_DIR + 
-                                            "demo/src/widget.upload.demo.js?rev=" + Main._version);
-                                         
-                                        // 15. widget.peoplepicker.demo.js
-                                        Main.loadScript(
-                                            SPWIDGET_DEMO.BIN_DIR + 
-                                            "demo/src/widget.peoplepicker.demo.js?rev=" + Main._version);
-                                         
-                                        // 16. widget.board.demo.js
-                                        Main.loadScript(
-                                            SPWIDGET_DEMO.BIN_DIR + 
-                                            "demo/src/widget.board.demo.js?rev=" + Main._version);
-                                         
-                                        // 17. widget.lookup.demo.js
-                                        Main.loadScript(
-                                            SPWIDGET_DEMO.BIN_DIR + 
-                                            "demo/src/widget.lookup.demo.js?rev=" + Main._version);
-                                         
-                                        // 18. widget.filter.demo.js
-                                        Main.loadScript(
-                                            SPWIDGET_DEMO.BIN_DIR + 
-                                            "demo/src/widget.filter.demo.js?rev=" + Main._version);
+                                                SPWIDGET_DEMO.BIN_DIR + 
+                                                "demo/src/demo.common.js?rev=" + Main._version
+                                            )
+                                            .then(function(){
+                                                
+                                                // 14. widget.upload.demo.js
+                                                Main.loadScript(
+                                                    SPWIDGET_DEMO.BIN_DIR + 
+                                                    "demo/src/widget.upload.demo.js?rev=" + Main._version);
+                                                 
+                                                // 15. widget.peoplepicker.demo.js
+                                                Main.loadScript(
+                                                    SPWIDGET_DEMO.BIN_DIR + 
+                                                    "demo/src/widget.peoplepicker.demo.js?rev=" + Main._version);
+                                                 
+                                                // 16. widget.board.demo.js
+                                                Main.loadScript(
+                                                    SPWIDGET_DEMO.BIN_DIR + 
+                                                    "demo/src/widget.board.demo.js?rev=" + Main._version);
+                                                 
+                                                // 17. widget.lookup.demo.js
+                                                Main.loadScript(
+                                                    SPWIDGET_DEMO.BIN_DIR + 
+                                                    "demo/src/widget.lookup.demo.js?rev=" + Main._version);
+                                                 
+                                                // 18. widget.filter.demo.js
+                                                Main.loadScript(
+                                                    SPWIDGET_DEMO.BIN_DIR + 
+                                                    "demo/src/widget.filter.demo.js?rev=" + Main._version);
+                                                
+                                            });
                                         
                                     } // getScript.callback
                                 );//end: .load()
