@@ -10,7 +10,8 @@ div.spwidget-filter {
 div.spwidget-filter .spwidgets-lookup-cntr {
     display: block;
 }
-div.spwidget-filter input[type='text'],
+div.spwidget-filter .spwidget-filter-input[type='text'],
+div.spwidget-filter .spwidgets-lookup-cntr,
 div.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input {
     width: 97%;
 }
