@@ -427,7 +427,8 @@
                                     listTemplate:   '{{Title}}',
                                     allowMultiples: true,
                                     readOnly:       false,
-                                    filter:         ''
+                                    filter:         '',
+                                    showSelector:   true
                                 });
                                 
                                 $field.parent().find(".spwidget-tooltip").remove();
