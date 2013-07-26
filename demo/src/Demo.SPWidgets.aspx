@@ -1,4 +1,5 @@
 <%-- SPWIDGETS DEMO PAGE --%>
+<%-- BUILD _BUILD_VERSION_NUMBER_ --%>
 <%@ Page language="C#" MasterPageFile="~masterurl/default.master"    Inherits="Microsoft.SharePoint.WebPartPages.WebPartPage,Microsoft.SharePoint,Version=12.0.0.0,Culture=neutral,PublicKeyToken=71e9bce111e9429c" %> 
 <%@ Register Tagprefix="SharePoint" Namespace="Microsoft.SharePoint.WebControls" Assembly="Microsoft.SharePoint, Version=12.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %>
 <%@ Register Tagprefix="Utilities" Namespace="Microsoft.SharePoint.Utilities" Assembly="Microsoft.SharePoint, Version=12.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %>
@@ -69,6 +70,7 @@ SPWidgets - Widgets for building custom UIs
             <li><a href="#SPControlBoardDemo"><span>Board</span></a></li>
             <li><a href="#SPControlLookupFieldDemo"><span>Lookup Field</span></a></li>
             <li><a href="#SPControlListFilterPanel"><span>List Filter Panel</span></a></li>
+            <li><a href="#SPWidgetsAbout"><span class="ui-icon ui-icon-info">Info</span></a></li>
         </ul>
         <div id="SPControlUploadDemo">
             <h2>Upload Plugin</h2>
@@ -217,6 +219,9 @@ SPWidgets - Widgets for building custom UIs
                             <div>
                                 <input name="example3" value="" />
                             </div>
+                            <div class="spwidgets-dev-only">
+                                <a href="javascript:" class="spwidgets-demo-lookup-example3-clear-all">Clear All</a>
+                            </div>
                         </div>
                         
                     </div>
@@ -255,7 +260,6 @@ SPWidgets - Widgets for building custom UIs
                             field allowing the user to start typing values and select a match from
                             the suggestion.
                             </p>
-                            
                             
                         </div>
                         
@@ -349,6 +353,18 @@ SPWidgets - Widgets for building custom UIs
             
         </div><!-- end: #SPControlListFilterPanel -->
         
+        <div id="SPWidgetsAbout">
+            
+            <p>
+                Below are the version of software currently being used for this demo showcase.
+            </p>
+            
+            <ul class="spwidgets-demo-info-cntr">
+                
+            </ul>
+            
+        </div> <!-- END: #SPWidgetsAbout -->
+        
     </div>
     <div>
         <span>Build: </span><span>_BUILD_VERSION_NUMBER_</span>
@@ -361,6 +377,8 @@ SPWidgets - Widgets for building custom UIs
 </div>
 
 <script type="text/javascript" language="javascript">
+
+//__HAS_EMBEDED_DATA_FROM_BUILD__
 
 setTimeout(function(){
     
