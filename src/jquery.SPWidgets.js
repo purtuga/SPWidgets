@@ -557,9 +557,10 @@
                 
             }; //end: asString()
             
-            var info = new Info(),
-                $testObj = $('<div/>'),
-                testInfo = '';
+            var info        = new Info(),
+                $testObj    = $('<div style="position:fixed;width:100px;left:-1000px;"/>')
+                                .appendTo("body"),
+                testInfo    = '';
             
             try {
                 
@@ -569,19 +570,17 @@
             
             try {
                 
-                info.SPServices = $().SPServices.Version;
+                info.SPServices = $().SPServices.Version();
                 
-                if (info.SPServices) {
+            } catch(e){
+                
+                if ($.fn.SPServices) {
                     
-                    if ($().SPServices) {
-                        
-                        info.SPServices = "loaded";
-                        
-                    }
+                    info.SPServices = "loaded";
                     
                 }
                 
-            } catch(e){}
+            }
             
             // Check if jQuery ui css loaded
             testInfo = $testObj.css("background-image");
@@ -592,6 +591,8 @@
                 info.jQueryUICss = 'loaded';
                 
             }
+            
+            $testObj.remove();
             
             return info;
             
