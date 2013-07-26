@@ -325,8 +325,37 @@
         .tabs()
         .fadeIn("slow");
     
+    // Populate the About page
+    $("#SPWidgetsAbout ul.spwidgets-demo-info-cntr").each(function(){
+        
+        var $ul     = $(this);
+        
+        setTimeout(function(){
+            
+            var info    = $.SPWidgets.getRuntimeInfo(),
+                display = '',
+                key;
+            
+            for (key in info){
+                
+                if (info.hasOwnProperty(key)) {
+                    
+                    display += '<li>' + key + ': ' + info[key] + '</li>';
+                    
+                }
+                
+            }
+            
+            $ul.append(display);
+            
+            
+        }, 2000);
+        
+    });
     
-})( (function($){ /* function return jQuery to closure above */
+    
+ /* function return jQuery to closure above */
+})( (function($){
     
     var styles = "__BUILD_STYLES__";
     
