@@ -71,10 +71,39 @@
                             "<div>Example 3 onItemAdd Event: Item ID " +
                             itemObject.ID + " was added: " +
                             itemObject.Title + "</div>");
-                        
+                            
+                        },
+                        onItemRemove:   function($items, itemObjects, $widgetCntr) {
+                            
+                            var removedItems = "";
+                            
+                            $.each(itemObjects, function(i, item){
+                                
+                                if (removedItems.length) {
+                                    
+                                    removedItems += " | ";
+                                    
+                                }
+                                
+                                removedItems += item.Title;
+                                                                
+                            });
+                            
+                            $output.append(
+                            "<div>Example 3 onItemRemove Event: [" +
+                            removedItems + "] were removed!</div>");
                             
                         }
-                    });
+                    })
+                    .end()
+                .find(".spwidgets-demo-lookup-example3-clear-all")
+                    .click(function(){
+                        
+                        $lookups.find("input[name='example3']")
+                            .SPLookupField("method", "clear");
+                        
+                    })
+                    .end();
                 
         }
     });
