@@ -803,7 +803,8 @@ DEPLOYING TO: ${me.deploy.location}
         <echo message="Copying files from SRC to BUILD" />
         <copy todir="${build.demo}"
                verbose="true" 
-               preservelastmodified="true">
+               preservelastmodified="true"
+        	   force="true" >
             <fileset dir="${src.demo}">
                 <include name="**${/}*"/>
             </fileset>
@@ -859,7 +860,7 @@ DEPLOYING TO: ${me.deploy.location}
         <copy
             file="${build.demo.src}${/}${demo.file.basename}.aspx" 
             tofile="${demo.file.regular}" 
-            verbose="true" />
+            verbose="true" failonerror="yes" overwrite="yes" force="true" />
         
         
         <!-- ====================================================== -->
