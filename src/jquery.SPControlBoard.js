@@ -525,8 +525,7 @@
                                                 // If we reached a max column number, exit here.
                                                 if (i >= Board.maxColumns){
                                                     
-                                                    try { 
-                                                        console.log(
+                                                    try { console.log(
                                                             "SPWIDGETS:BOARD:Warning: Can only build a max of " + 
                                                             Board.maxColumns + " columns!");
                                                     
@@ -619,8 +618,7 @@
                                                         // If we reached a max column number, exit here.
                                                         if (i >= Board.maxColumns){
                                                             
-                                                            try { 
-                                                                console.log(
+                                                            try { console.log(
                                                                     "SPWIDGETS:BOARD:Warning: Can only build a max of " + 
                                                                     Board.maxColumns + " columns!");
                                                             
