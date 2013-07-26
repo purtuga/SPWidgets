@@ -162,6 +162,17 @@
      *                      //this=original selector to where the widget was bound
      *                  }
      * 
+     * @param {Function} [options.onItemRemove=null]
+     *              Function that is called when items are removed. Return Boolean
+     *              false will cancel the removal of the items.
+     *              Function is given the list of items on the UI, an array of
+     *              objects that represent the row data structure (as retrievd from
+     *              SP) and the Widget container on the page
+     *              Example:
+     *                  onItemRemove: function($items, itemObjects, $widgetCntr ){
+     *                          //this=bound element
+     *                      }
+     * 
      * @param {String} [options.msgNoItems=""]
      *              Message to be displayed when no items are selected. Set this
      *              to null/blank if wanting nothing to be displayed, which will
@@ -195,8 +206,8 @@
      * clear    Clears all items currently reference.
      *          Usage:
      *              $(ele).SPLookupField("method", "clear"); // clears all
-     *              $(ele).SPLookupField("method", "clear", { id: 5 }); // clear ID=5
-     *              $(ele).SPLookupField("method", "clear", { id: [5, 123455] }); // clear ID=5 and 123455
+     *              $(ele).SPLookupField("method", "clear", 5); // clear ID=5
+     *              $(ele).SPLookupField("method", "clear", [5, 123455]); // clear ID=5 and 123455
      * 
      * 
      * add      Adds a lookup value to the widget. (does not clear existing)
@@ -244,25 +255,55 @@
                         var cmdOpt  = arg[2];
                         
                         // ====> ACTION: clear
-                        if (cmd === "clear" && cmdOpt) {
+                        if (cmd === "clear") {
                             
-                            if (cmdOpt.id === undefined) {
+                            if (!$.isArray(cmdOpt)) {
                                 
-                                o._cntr.find("div.spwidgets-lookup-selected")
-                                    .css("display", "none")
-                                    .empty();
-                                
-                                o._ele.val("").change();
-                                
-                                // Make sure input is visible
-                                o._cntr.find("div.spwidgets-lookup-input").css("display", "");
-                                
-                            } else {
-                                
-                                alert("TBD... Delete individual ID's not yet supported. Contact plugin author.");
+                                if (cmdOpt) {
+                                    
+                                    cmdOpt = [ cmdOpt ];
+                                    
+                                } else {
+                                    
+                                    cmdOpt = [];
+                                    
+                                }
                                 
                             }
-                        
+                            
+                            // If we have no ID, then blank them all out.
+                            if (!cmdOpt.length) {
+                                
+                                Lookup.removeItem(
+                                    o, 
+                                    o._selectedItemsCntr.find("div.spwidgets-item")
+                                );
+                                
+                            // Else, we must have an id defined. Parse that 
+                            // and remove only those items.
+                            } else {
+                                
+                                (function(){
+                                    
+                                    // find all the ID's in the UI
+                                    var $rmItems = $();
+                                    
+                                    $.each(cmdOpt, function(i, id){
+                                        
+                                        $rmItems = $rmItems.add(
+                                            o._selectedItemsCntr
+                                                .find("div.spwidgets-item-id-" + id)
+                                        );
+                                        
+                                    });
+                                    
+                                    // Remove them.
+                                     Lookup.removeItem(o, $rmItems);
+                                    
+                                })();
+                                
+                            }
+                            
                         // ====> ACTION: add
                         } else if (cmd === "add") {
                             
@@ -362,9 +403,9 @@
                                         })
                                         .end();
                         
-                        // If an onAddItem event was defined, then run it now
-                        // TODO: in future, need to trigger/bubble event as well
-                        if ($.isFunction(o.onItemAdd)) {
+                        // If an onAddItem event was defined, AND the storage
+                        // of the ID are is not being bypassed, then then run it now
+                        if ($.isFunction(o.onItemAdd) && doNotStoreIds !== true) {
                             
                             o.onItemAdd.call(o._ele, thisItemUI, item, o._cntr);
                             
@@ -558,6 +599,9 @@
                                                 removeOws:          true
                                             });
                             
+                            // Add to autocomplete cache
+                            o.addToAutocompleteCache(arrayOfCurrentItems);
+                            
                             o.showSelectedItems( arrayOfCurrentItems, true );
                             dfd.resolveWith(o, [xData, status]);
                             
@@ -571,6 +615,73 @@
                 
             }; //end: o.showCurrentInputSelection()
             
+            /**
+             * Checks the cache object (o._autocompleteCache), which is
+             * used to store the objects of data used by the Autocomplete
+             * function, for an object matching the ID provided on input.
+             * 
+             * @param {String} itemId
+             * 
+             * @return {null|Object}
+             * 
+             */
+            o.getItemObjectFromCache = function(itemId) {
+                
+                var itemObj = null;
+                
+                $.each(o._autocompleteCache, function(key, rows){
+                    
+                    $.each(rows, function(i, row){
+                        
+                        if (row.ID == itemId){
+                            
+                            itemObj = row;
+                            
+                            return false;
+                            
+                        }
+                        
+                    }); 
+                    
+                    if (itemObj !== null) {
+                        
+                        return false;
+                        
+                    }
+                    
+                });
+                
+                return itemObj;
+                
+            }; //end: o.getItemObjectFromCache()
+            
+            /**
+             * Add a new row or rows to the autocomplete
+             * cache. Cache token will be each row ID.
+             */
+            o.addToAutocompleteCache = function(rows){
+                
+                if (!$.isArray(rows)) {
+                    
+                    rows = [rows];
+                    
+                }
+                
+                $.each(rows, function(i, row){
+                    
+                    if (!o._autocompleteCache[row.ID]) {
+                        
+                        o._autocompleteCache[row.ID] = [];
+                        
+                    }
+                    
+                    o._autocompleteCache[row.ID].push( row );
+                    
+                });
+                
+            }; //end: o.addToAutocommpleteCache();
+            
+            
             //---------------------------------------------------
             //              START BUILD THIS INSTANCE 
             //--------------------------------------------------- 
@@ -578,16 +689,6 @@
             // Create the UI container and store the options object in the input field
             o._cntr                 = $(Lookup.htmlTemplate)
                                         .find(".spwidgets-lookup-cntr").clone(1);
-            o._selectedItemsCntr    = o._cntr.find("div.spwidgets-lookup-selected");
-            o._lookupInputEleCntr   = o._cntr.find("div.spwidgets-lookup-input");
-            o._lookupInputEle       = o._lookupInputEleCntr
-                                        .find("input[name='spwidgetLookupInput']");
-            o._ignoreKeywordsRegEx  = (/^(of|and|a|an|to|by|the|or)$/i);
-            
-            o._cntr.data("SPWidgetLookupFieldOpt", o);
-            o._ele.data("SPWidgetLookupFieldUI", o._cntr);
-            
-            
             // Insert the widget container into the UI
             if (o.uiContainer === null) {
                 
@@ -598,6 +699,17 @@
                 o._cntr.appendTo($(o.uiContainer));
                 
             }
+            
+            // Define references to the different elements of the UI
+            o._selectedItemsCntr    = o._cntr.find("div.spwidgets-lookup-selected");
+            o._lookupInputEleCntr   = o._cntr.find("div.spwidgets-lookup-input");
+            o._lookupInputEle       = o._lookupInputEleCntr
+                                        .find("input[name='spwidgetLookupInput']");
+            o._ignoreKeywordsRegEx  = (/^(of|and|a|an|to|by|the|or)$/i);
+            
+            o._cntr.data("SPWidgetLookupFieldOpt", o);
+            o._ele.data("SPWidgetLookupFieldUI", o._cntr);
+            
             
             // If showSelector is false, remove the option from the UI...
             // FIXME: maybe we realy want to hide it? case the option is changed later?
@@ -720,7 +832,9 @@
             });
             
             // Bind an Autocomplete to the ADD input of the Lookup widget
-            var cache = {};
+            // Cache is kept by [searchTerm]: ArrayOfObjects (rows from DB)
+            var cache = o._autocompleteCache = {};
+            
             o._cntr.find("div.spwidgets-lookup-input input")
                 .autocomplete({
                     minLength:  2,
@@ -917,23 +1031,46 @@
     
     
     /**
+     * Removes an item or array of item from the selection. 
+     * The html element is removed from UI and the input 
+     * element is updated to not contain that ID
+     * 
      * @memberOf Lookup.lookupField
-     * Removes an item association. The html element is removed from
-     * UI and the input element is updated to not contain that ID
+     * 
+     * @param {Object} o
+     * @param {Object} htmlEle
+     *              A jQuery selection of elements to remove.
      * 
      * @return {Object} Lookup
      */
     Lookup.removeItem = function(o, htmlEle) {
         
         var e       = $(htmlEle).closest('div.spwidgets-item'),
-            cntr    = e.closest("div.spwidgets-lookup-selected"),
-            id      = e.data("spid"),
-            items   = $.SPWidgets.parseLookupFieldValue( o._ele.val() ),
-            store   = [],
-            i       = 0,
-            j       = 0;
+            cntr    = o._selectedItemsCntr,
+            store   = [];
         
-        // FIXME: this method does not consider the padDelimeter param.
+        // If an onItemRemove param was defined, then trigger it now
+        // Use the store[] array to temporarly store the item IDs that
+        // will be removed. This is used to provide it to the callback.
+        if ($.isFunction(o.onItemRemove)) {
+            
+            e.each(function(){
+                
+                store.push(
+                    o.getItemObjectFromCache( $(this).data("spid") )
+                );
+                
+            });
+            
+            if (o.onItemRemove.call(o._ele, e, store, o._cntr) === false){
+                
+                return Lookup;
+                
+            }
+            
+            store = [];
+            
+        }
         
         // Hide the item the user removed from the UI
         e.fadeOut("fast").promise().then(function(){
@@ -970,27 +1107,22 @@
                 
             }
             
+            // Get a new list of items to store
+            cntr.find("div.spwidgets-item").each(function(){
+                
+                store.push($(this).data("spid"));
+                
+            });
+            
+            // Focus on the autocomplete field.
+            o._lookupInputEleCntr.find("input").focus();
+            
+            // remove the item and trigger a change event
+            o.storeItemIDs( store );
+            o._ele.change();
+            
         });
         
-        // Remove the deleted ID from the array and
-        // store the remainder of the ID back into the
-        // input field.
-        for( i=0,j=items.length; i<j; i++ ){
-            
-            if ( items[i].id != id ) {
-                
-                store.push( items[i].id );
-                
-            }
-            
-        };  
-        
-        // Focus on the autocomplete field.
-        o._lookupInputEleCntr.find("input").focus();
-        
-        // remove the item and trigger a change event
-        o.storeItemIDs( store );
-        o._ele.change();
         return Lookup;
         
     };//end:Lookup.removeItem() 
@@ -1016,6 +1148,12 @@
         }
         
         var newVal = Inst._ele.val();
+        
+        if (newVal === "" && Inst.padDelimeter === true) {
+            
+            newVal += ";#";
+            
+        }
         
         if (newVal) {
             
@@ -1158,6 +1296,9 @@
                         
                         $.each(rows, function(i, row){
                             
+                            // Add row to autocomplete cache
+                            Inst.addToAutocompleteCache(row);
+                            
                             // Create the same attribute as those that are created for
                             // the Autocomplete widget. Ensure consistency should we
                             // do more with this in the future.
@@ -1213,7 +1354,7 @@
         }; 
         
         // Create the "next page" button
-        opt.$nextPage = $('<div class="ui-state-highlight">Next...</div>')
+        opt.$nextPage = $('<div class="ui-state-highlight spwidget-lookup-selector-next">Next...</div>')
                         .appendTo(opt.$resultsCntr.empty())
                         .click(function(ev){
 
@@ -1241,12 +1382,26 @@
                             
                         });
         
-        opt.getListRows();
+        opt.getListRows().then(function($page){
+            
+            if (!opt.hasMorePages) {
+                
+                if (!$page.children().length) {
+                    
+                    $page.append("<div class='ui-state-highlight'>No Items Found!</div>");
+                    
+                }
+                
+                opt.$nextPage.css("display", "none");
+                
+            }
+            
+        });
         
         return Inst;
         
     }; //end: Lookup.doSelectorDataInit()
-    
+
     /**
      * @property
      * @memberOf    Lookup.lookupField
