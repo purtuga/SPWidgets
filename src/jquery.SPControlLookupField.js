@@ -1355,48 +1355,40 @@
         
         // Create the "next page" button
         opt.$nextPage = $('<div class="ui-state-highlight spwidget-lookup-selector-next">Next...</div>')
-                        .appendTo(opt.$resultsCntr.empty())
-                        .click(function(ev){
+            .appendTo(opt.$resultsCntr.empty())
+            .click(function(ev){
 
-                            if (!opt.hasMorePages) {
-                                
-                                return;
-                                
-                            }
-                            
-                            opt.$nextPage.css("display", "none");
-                            
-                            opt.getListRows()
-                                .then(function($page){
-                                    
-                                    if (opt.hasMorePages) {
-                                        
-                                        opt.$nextPage.css("display", "");
-                                        
-                                    }
-                                    
-                                    opt.$resultsCntr
-                                        .scrollTop($page.position().top);
-                                    
-                                });
-                            
-                        });
-        
-        opt.getListRows().then(function($page){
-            
-            if (!opt.hasMorePages) {
-                
-                if (!$page.children().length) {
+                if (!opt.hasMorePages) {
                     
-                    $page.append("<div class='ui-state-highlight'>No Items Found!</div>");
+                    return;
                     
                 }
                 
                 opt.$nextPage.css("display", "none");
                 
-            }
-            
-        });
+                // Get teh list of rows and then:
+                // if more pages exist - display the next button
+                // if not and no items were displayed, then show message  
+                opt.getListRows()
+                    .then(function($page){
+                        
+                        if (opt.hasMorePages) {
+                            
+                            opt.$nextPage.css("display", "");
+                            
+                        } else if (!$page.children().length) {
+                                
+                            $page.append("<div class='ui-state-highlight'>No Items Found!</div>");
+                            
+                        }
+                        
+                        opt.$resultsCntr.scrollTop($page.position().top);
+                        
+                    });
+                
+            });
+        
+        opt.$nextPage.click();
         
         return Inst;
         
