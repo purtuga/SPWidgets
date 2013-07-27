@@ -548,23 +548,11 @@
     <target name="doc" depends="build" description="builds the documentation.">
         <echo message="DOC ---------------------- [START]" />
     	
-    	<!-- Build SRC documentation -->
-    	<delete verbose="true">
-    		<fileset dir="${build.doc}${/}src" includes="**${/}*"/>
-    	</delete>
-    	<java jar="${tool.jsdoc.jar}" fork="true" dir="${build.src}${/}">
-    		<arg value="${tool.jsdoc.base}${/}app${/}run.js" />
-    		<arg value="${build.src}${/}" />
-    		<arg value='-E=".*jquery\.SPWidgets\.js.*"' />
-    		<arg value="-t=${tool.jsdoc.base}${/}templates${/}jsdoc" />
-    		<arg value="-d=${build.doc}${/}src${/}" />
-    	</java>
-    	
     	<mkdir dir="${build.doc}${/}html" />
     	
         <echo message="Running Markdown..."/>
     	
-    	<apply executable="perl" addsourcefile="true" errorproperty="markdown.error">
+    	<apply verbose="true" logerror="true" executable="perl" addsourcefile="true" errorproperty="markdown.error">
             <arg line="${tool.Markdown}"/>
             <!-- Collect the md-files -->
             <fileset dir="${build.doc}" includes="*.md"/>
