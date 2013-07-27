@@ -41,8 +41,7 @@
     position: relative;
 }
 .spwidgets-lookup-cntr .spwidgets-lookup-input input {
-    padding-right: 22px;
-    width: 100%;
+    width: 99%;
 }
 .spwidgets-lookup-cntr ul.ui-autocomplete {
     overflow: auto;
@@ -64,17 +63,17 @@
 
 /** SELECTOR */
 .spwidgets-lookup-cntr .spwidget-lookup-selector-showhide {
-    height: 16px;
-    width: 16px;
-    text-indent: -99999px;
     background-repeat: no-repeat;
     background-image: url("/_layouts/images/bizdatacontentsource.gif");
     cursor: pointer;
     display: block;
     position: absolute;
-    right: 3px;
-    top: .3em;
+    text-indent: -99999px;
     z-index: 5;
+    height: 16px;
+    width: 16px;
+    right: 5px;
+    top: .3em;
 }
 .spwidgets-lookup-cntr div.spwidget-lookup-selector-cntr {
     display: none;
