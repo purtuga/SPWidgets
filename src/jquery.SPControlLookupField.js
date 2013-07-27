@@ -166,7 +166,7 @@
      *              Function that is called when items are removed. Return Boolean
      *              false will cancel the removal of the items.
      *              Function is given the list of items on the UI, an array of
-     *              objects that represent the row data structure (as retrievd from
+     *              objects that represent the row data structure (as retrieved from
      *              SP) and the Widget container on the page
      *              Example:
      *                  onItemRemove: function($items, itemObjects, $widgetCntr ){

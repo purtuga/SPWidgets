@@ -155,6 +155,27 @@ The default options for this widget can be manipulated/set via the following obj
             //this=original selector to where the widget was bound
         }
 
+
+-   **onItemRemove**      :   *Function. Optional. Default=null* <br>
+    Function callback that is called when items are removed. Return Boolean false will cancel the removal of the items. Function will have a scope (_this_) of the input element to which this widget was bound and will be given the following input parameters:
+    
+    -   {jQuery} The list of elements on the UI that will be removed
+    -   {Array} An array of objects with the items that will be removed. Object contains data obtained from when the rows of data were retrieved from SharePoint
+    -   {jQuery} The Widget Container
+    
+    Example 1: Basic definition of callback:
+    
+        onItemRemove: function($items, itemObjects, $widgetCntr ){
+            //this=bound element
+        }
+
+    Example 2: Cancel the action of removing an item from the selected list:
+    
+        onItemRemove: function($items, itemObjects, $widgetCntr ){
+            return false;
+        }
+
+
 -   **msgNoItems**      :   *String. Optional. Default=""* <br>
     Message to be displayed when no items are selected. Set this to null/blank if wanting nothing to be displayed, which will result in only the input selection field being displayed.
 
