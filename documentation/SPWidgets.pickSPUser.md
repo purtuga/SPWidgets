@@ -34,12 +34,10 @@ This method takes as input an object containing the following options
         
         onPickUser: function(personObj) {
             // this = input element
-            
             alert(personObj.displayName + " was selected!");
-            
         }
     
-                                
+
 -   **onCreate**            :   *Function. Optional. Default=null.* <br />
     Function that is called after the widget has been initiated on an input element. Function will have a context (this keyword) of the input field to which this plugin is called on, which will also be provided as the first argument to the function. (Since v2.1)
     
@@ -102,17 +100,18 @@ The following methods are supported:
 -   **add('id;#name')**<br />
     (Since v2.1) Adds a person to the seletion list. Method accepts one input:
     
-    -   _{String}_ A string with people to add in the format of _id;#name_
+    1.   _{String}_ A string with people to add in the format of _id;#name_
     
     Example:
     
         $("input[name='user']").pickSPUser("method", "add", '4;#John Smith');
         
 
--   **remove('id')**<br />
-    (Since v2.1) Removes a person from the selection.  Method accepts 1 input paramater:
+-   **remove(id)**<br />
+    (Since v2.1) Removes a person from the selection.  Method accepts 1 input paramater.
     
-    -   _{String}_ The ID or Display Name of the person that should be removed.
+    
+    1.  _{String}_ The ID or Display Name of the person that should be removed.
     
     Example:
         
@@ -121,7 +120,8 @@ The following methods are supported:
         
         // remove John Smith
         $("input[name='user']").pickSPUser("method", "remove", "John Smith");
-        
+
+
 -   **getSelected()**<br />
     (Since v2.1) Returns an Array of objects representing the currently set of selected people.  The array object element will have the following structure:
         
@@ -137,18 +137,18 @@ The following methods are supported:
         var selected = $("input[name='user']").pickSPUser("method", "getSelected");
         
         alert("There are " + selected.length + " people selected!");
-        
+
 
 Events
 ------
 
-The following Events are triggered by this widget:
+The following Events are triggered by this widget
 
--   **spwidget:peoplePickerCreate**<br />
+-   **spwidget:peoplePickerCreate** <br/>
     (Since v2.1) Event is triggered after widget is initiated on an element. Event is given two input parameters:
     
-    -  jQuery Event Object
-    -  Original Input field as jQuery object 
+    1.  jQuery Event Object
+    2.  Original Input field as jQuery object 
 
     Example:
         
@@ -161,9 +161,9 @@ The following Events are triggered by this widget:
 -   **spwidget:peoplePickerAdd**<br />
     (Since v2.1) Event is triggered anytime the user selects a person/group. Event is given three input parameters:
     
-    -  jQuery Event Object
-    -  Original Input field as jQuery object
-    -  An object with data about the user that was selected 
+    1.  jQuery Event Object
+    2.  Original Input field as jQuery object
+    3.  An object with data about the user that was selected 
 
     Example:
         
@@ -176,9 +176,9 @@ The following Events are triggered by this widget:
 -   **spwidget:peoplePickerRemove**<br />
     (Since v2.1) Event is triggered anytime the user removes a person/group from the selected list. Returning False (Boolean) will canceld the removal and leave the person in the selected list. Event is given three input parameters:
     
-    -  jQuery Event Object
-    -  Original Input field as jQuery object
-    -  An object with data about the user that was selected 
+    1.  jQuery Event Object
+    2.  Original Input field as jQuery object
+    3.  An object with data about the user that was selected 
 
     Example:
         
