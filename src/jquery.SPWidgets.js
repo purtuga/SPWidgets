@@ -161,7 +161,9 @@
             var opt = {},i,j,x,y,item;
             
             opt.response    = "";
-            opt.template    = String($("<div/>").append(tmplt).html());
+            opt.template    = (     typeof tmplt !== "string"
+                                ?   String($("<div/>").append(tmplt).html())
+                                :   tmplt );
             opt.tokens      = opt.template.match(/(\{\{.*?\}\})/g);
             
             if (!$.isArray(data)) {
