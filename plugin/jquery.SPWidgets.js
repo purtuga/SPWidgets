@@ -3,7 +3,7 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *  
- * @version 20130727014448
+ * @version 20130803115505
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  * 
@@ -11,8 +11,8 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date:  July 27, 2013 - 01:44 PM
- * Version:     20130727014448
+ * Build Date:  August 03, 2013 - 11:55 PM
+ * Version:     20130803115505
  * 
  */
 ;(function($){
@@ -53,7 +53,7 @@
         }
         
         $.SPWidgets             = {};
-        $.SPWidgets.version     = "20130727014448";
+        $.SPWidgets.version     = "20130803115505";
         $.SPWidgets.defaults    = {};
         
         /**
@@ -160,8 +160,18 @@
             
             var opt = {},i,j,x,y,item;
             
+            // If user used an object to define input param, then parse that now
+            if (typeof tmplt === "object") {
+                
+                data    = tmplt.data;
+                tmplt   = tmplt.tmplt;
+                
+            }
+            
             opt.response    = "";
-            opt.template    = String($("<div/>").append(tmplt).html());
+            opt.template    = (     typeof tmplt !== "string"
+                                ?   String($("<div/>").append(tmplt).html())
+                                :   tmplt );
             opt.tokens      = opt.template.match(/(\{\{.*?\}\})/g);
             
             if (!$.isArray(data)) {
@@ -610,7 +620,7 @@
  *  -   jQuery-UI Draggable
  * 
  * 
- * BUILD: July 27, 2013 - 01:44 PM
+ * BUILD: Paul:August 03, 2013 11:24 PM
  */
 
 ;(function($){
@@ -2798,7 +2808,7 @@
     Board.styleSheet = "/** \n"
 + " * Stylesheet for the Board widget\n"
 + " * \n"
-+ " * BUILD: July 27, 2013 - 01:44 PM\n"
++ " * BUILD: Paul:July 28, 2013 10:15 AM\n"
 + " */\n"
 + "div.spwidget-board {\n"
 + "    width: 100%;\n"
@@ -2843,11 +2853,9 @@
 + "    overflow: auto;\n"
 + "}\n"
 + "div.spwidget-board div.spwidget-board-state-item div.spwidget-board-item-actions{\n"
-+ "    margin-top: .5em;\n"
++ "    margin-top: .2em;\n"
 + "    padding: .2em .5em;\n"
-+ "    width: 25%;\n"
 + "    overflow: hidden;\n"
-+ "    text-align: center;\n"
 + "}\n"
 + "div.spwidget-board .spwidget-board-placeholder {\n"
 + "    height: 3em;\n"
@@ -2982,7 +2990,7 @@
  * THe user, however, is presented with the existing items
  * and has the ability to Remove them and add new ones.
  * 
- * BUILD: July 27, 2013 - 01:44 PM
+ * BUILD: Paul:August 03, 2013 11:24 PM
  * 
  */
 
@@ -4332,48 +4340,40 @@
         
         // Create the "next page" button
         opt.$nextPage = $('<div class="ui-state-highlight spwidget-lookup-selector-next">Next...</div>')
-                        .appendTo(opt.$resultsCntr.empty())
-                        .click(function(ev){
+            .appendTo(opt.$resultsCntr.empty())
+            .click(function(ev){
 
-                            if (!opt.hasMorePages) {
-                                
-                                return;
-                                
-                            }
-                            
-                            opt.$nextPage.css("display", "none");
-                            
-                            opt.getListRows()
-                                .then(function($page){
-                                    
-                                    if (opt.hasMorePages) {
-                                        
-                                        opt.$nextPage.css("display", "");
-                                        
-                                    }
-                                    
-                                    opt.$resultsCntr
-                                        .scrollTop($page.position().top);
-                                    
-                                });
-                            
-                        });
-        
-        opt.getListRows().then(function($page){
-            
-            if (!opt.hasMorePages) {
-                
-                if (!$page.children().length) {
+                if (!opt.hasMorePages) {
                     
-                    $page.append("<div class='ui-state-highlight'>No Items Found!</div>");
+                    return;
                     
                 }
                 
                 opt.$nextPage.css("display", "none");
                 
-            }
-            
-        });
+                // Get teh list of rows and then:
+                // if more pages exist - display the next button
+                // if not and no items were displayed, then show message  
+                opt.getListRows()
+                    .then(function($page){
+                        
+                        if (opt.hasMorePages) {
+                            
+                            opt.$nextPage.css("display", "");
+                            
+                        } else if (!$page.children().length) {
+                                
+                            $page.append("<div class='ui-state-highlight'>No Items Found!</div>");
+                            
+                        }
+                        
+                        opt.$resultsCntr.scrollTop($page.position().top);
+                        
+                    });
+                
+            });
+        
+        opt.$nextPage.click();
         
         return Inst;
         
@@ -4422,6 +4422,8 @@
 + "}\n"
 + ".spwidgets-lookup-cntr .spwidgets-item-remove {\n"
 + "    color: red;\n"
++ "    font-size: xx-small;\n"
++ "    vertical-align: super;\n"
 + "    cursor: pointer;\n"
 + "}\n"
 + "\n"
@@ -4524,9 +4526,7 @@
 + "                    <div class=\"ui-state-default\">\n"
 + "                        <button type=\"button\" name=\"close\" title=\"Close\">Close</button>\n"
 + "                    </div>\n"
-+ "                    <div class=\"spwidget-lookup-selector-item-cntr\">\n"
-+ "                        <div style=\"height: 1000px;\"></div>\n"
-+ "                    </div>\n"
++ "                    <div class=\"spwidget-lookup-selector-item-cntr\"></div>\n"
 + "                </div>\n"
 + "            </div>\n"
 + "        </div>\n"
@@ -4544,7 +4544,7 @@
  * on jQuery UI's Autocomplete and SPServices library.
  *      
  *  
- * @version 20130727014448NUMBER_
+ * @version 20130803112455NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
@@ -4552,679 +4552,690 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date July 27, 2013 - 01:44 PM
+ * Build Date Paul:August 03, 2013 11:24 PM
  * 
  */
-
-/**
- * Namespace for pickSPUser specific methods.
- * @name        pickSPUser
- * @class       Namespace for pickSPUser plugin
- * @memberOf    jQuery.pt
- */
-$.pt.pickSPUser = {
-    _isPickSPUserCssDone: false
-};
-
-/**
- * Given an input field, this method will display an interface that
- * allows the users to select one or more users from SharePoint and
- * stores the selected user information into the intput field in the
- * format expected when making an update via webservices.
- * 
- * The input field will be hidden in its current position and a UI
- * will displayed instead. As the user picks or removes users, the
- * input field will be updated at the same time, thus it will always
- * be ready to be submitted as part of an update to the server.
- * 
- * @alias $.pickSPUser()
- * @alias jQuery.pickSPUser()
- * @alias $().pickSPUser()
- * @alias jQuery().pickSPUser()
- * 
- * 
- * @param {Object} options
- *                      Object with the options. See below.
- * 
- * @param {Boolean} [options.allowMultiples=true]
- *                      Determine whether multiple users can be picked.
- * 
- * @param {String} [options.webURL=$().SPServices.SPGetCurrentSite()]
- *                  The URL of the site
- * 
- * @param {Interger} [options.maxSearchResults=50]
- *                      The max number of results to be returned from the
- *                      server.
- * 
- * @param {Function} [onPickUser=null]
- *                      Function that is called when user makes a selection.
- *                      Function will have a context (this keyword) of the
- *                      input field to which this plugin is called on, and
- *                      will be given one input param; an object containing
- *                      information about the selected user.
- *   
- * @param {Function} [onCreate=null]
- *                      Function that is called after the widget has been
- *                      initiated on an input element.
- *                      Function will have a context (this keyword) of the
- *                      input field to which this plugin is called on, which
- *                      will also be provided as the first argument to the
- *                      function.
- * 
- * @param {Function} [onRemoveUser=null]
- *                      Function called when removing a user from the selected
- *                      list. Returning false (boolean) will cancel the removal
- *                      of the person from the selected list.
- *                      Function will have a context (this keyword) of the
- *                      input field to which this plugin is called on, and is
- *                      given 3 input params: $input, $personUI, personObj
- * 
- * @param {String} [inputPlaceholder="Type and Pick"]
- *                      The text to appear in the HTML5 placeholder attribute
- *                      of the input field. 
- * 
- * @return {jQuery} selection
- * 
- * 
- * 
- * METHODS:
- * 
- * $().pickSPUser("method", "clear")
- *      Clears the currently selected users.
- * 
- * $().pickSPUser("method", "destroy")
- *      Destroys the widget.
- * 
- * $().pickSPUser("method", "add", "person in id;#name format")
- *      adds a person
- * 
- * $().pickSPUser("method", "remove", "person id or displayed name")
- *      removes a person
- * 
- * $().pickSPUser("method", "getSelected")
- *      Returns array of people selecte.
- * 
- * 
- * EVENTS:
- * 
- * spwidget:peoplePickerCreate
- *          Triggered when the widget is initiated. Event will received
- *          a scope of the input element or whatever object it bubled to
- *          as well as the following input parameter:
- *          1. jQuery Event object
- *          2. Input element that widget was attached to (as jQuery object)
- * 
- * spwidget:peoplePickerAdd
- *          Triggered when an item is added to the input field. Event will
- *          receive a scope of the input element or whatever object it
- *          bubbled to, as well as the following input parametes:
- *          1. jQuery Event Object
- *          2. Input element (as jQuery object)
- *          3. Object with information on the user that was added.
- * 
- * spwidget:peoplePickerRemove
- *          Triggered when an item is removed from the selected list. Event will
- *          receive a scope of the input element or whatever object it
- *          bubbled to, as well as the following input parametes:
- *          1. jQuery Event Object
- *          2. Input element (as jQuery object)
- *          3. Object with information on the user that was added.
- *          
- * 
- */
-$.fn.pickSPUser = function(options) {
+(function(){
     
-    // if the global styles have not yet been inserted into the page, do it now
-    if (!$.pt.pickSPUser._isPickSPUserCssDone) {
-        $.pt.pickSPUser._isPickSPUserCssDone = true;
-        $('<style type="text/css">' + "\n\n" +
-                $.pt.pickSPUser.styleSheet +
-                "\n\n</style>")
-            .prependTo("head");
-    }
+    /*jslint nomen: true, plusplus: true */
+    /*global SPWidgets */
     
-    // Store the arguments given to this function. Used later if the
-    // user is trying to execute a method of this plugin.
-    var arg = arguments;
+    /**
+     * Namespace for pickSPUser specific methods.
+     * @name        pickSPUser
+     * @class       Namespace for pickSPUser plugin
+     * @memberOf    jQuery.pt
+     */
+    $.pt.pickSPUser = {
+        _isPickSPUserCssDone: false
+    };
     
-    // Define options with globals
-    // var options = $.extend({}, options2);
- 
-    // Initiate each selection as a pickSPUser element
-    this.each(function(){
-        var ele = $(this);
-        if (!ele.is("input") || ele.hasClass("hasPickSPUser")){
-            // if the first argument is a string, and this is an input
-            // fild, then process methods
-            if (typeof options === "string" && ele.is("input")) {
-                return $.pt.pickSPUser.handleAction.apply(this, arg);
-                
-            // ELse, exit
-            } else {
-                return this;
-            }
-        };
+    /**
+     * Given an input field, this method will display an interface that
+     * allows the users to select one or more users from SharePoint and
+     * stores the selected user information into the intput field in the
+     * format expected when making an update via webservices.
+     * 
+     * The input field will be hidden in its current position and a UI
+     * will displayed instead. As the user picks or removes users, the
+     * input field will be updated at the same time, thus it will always
+     * be ready to be submitted as part of an update to the server.
+     * 
+     * @alias $.pickSPUser()
+     * @alias jQuery.pickSPUser()
+     * @alias $().pickSPUser()
+     * @alias jQuery().pickSPUser()
+     * 
+     * 
+     * @param {Object} options
+     *                      Object with the options. See below.
+     * 
+     * @param {Boolean} [options.allowMultiples=true]
+     *                      Determine whether multiple users can be picked.
+     * 
+     * @param {String} [options.webURL=$().SPServices.SPGetCurrentSite()]
+     *                  The URL of the site
+     * 
+     * @param {Interger} [options.maxSearchResults=50]
+     *                      The max number of results to be returned from the
+     *                      server.
+     * 
+     * @param {Function} [onPickUser=null]
+     *                      Function that is called when user makes a selection.
+     *                      Function will have a context (this keyword) of the
+     *                      input field to which this plugin is called on, and
+     *                      will be given one input param; an object containing
+     *                      information about the selected user.
+     *   
+     * @param {Function} [onCreate=null]
+     *                      Function that is called after the widget has been
+     *                      initiated on an input element.
+     *                      Function will have a context (this keyword) of the
+     *                      input field to which this plugin is called on, which
+     *                      will also be provided as the first argument to the
+     *                      function.
+     * 
+     * @param {Function} [onRemoveUser=null]
+     *                      Function called when removing a user from the selected
+     *                      list. Returning false (boolean) will cancel the removal
+     *                      of the person from the selected list.
+     *                      Function will have a context (this keyword) of the
+     *                      input field to which this plugin is called on, and is
+     *                      given 3 input params: $input, $personUI, personObj
+     * 
+     * @param {String} [inputPlaceholder="Type and Pick"]
+     *                      The text to appear in the HTML5 placeholder attribute
+     *                      of the input field. 
+     * 
+     * @return {jQuery} selection
+     * 
+     * 
+     * 
+     * METHODS:
+     * 
+     * $().pickSPUser("method", "clear")
+     *      Clears the currently selected users.
+     * 
+     * $().pickSPUser("method", "destroy")
+     *      Destroys the widget.
+     * 
+     * $().pickSPUser("method", "add", "person in id;#name format")
+     *      adds a person
+     * 
+     * $().pickSPUser("method", "remove", "person id or displayed name")
+     *      removes a person
+     * 
+     * $().pickSPUser("method", "getSelected")
+     *      Returns array of people selecte.
+     * 
+     * 
+     * EVENTS:
+     * 
+     * spwidget:peoplePickerCreate
+     *          Triggered when the widget is initiated. Event will received
+     *          a scope of the input element or whatever object it bubled to
+     *          as well as the following input parameter:
+     *          1. jQuery Event object
+     *          2. Input element that widget was attached to (as jQuery object)
+     * 
+     * spwidget:peoplePickerAdd
+     *          Triggered when an item is added to the input field. Event will
+     *          receive a scope of the input element or whatever object it
+     *          bubbled to, as well as the following input parametes:
+     *          1. jQuery Event Object
+     *          2. Input element (as jQuery object)
+     *          3. Object with information on the user that was added.
+     * 
+     * spwidget:peoplePickerRemove
+     *          Triggered when an item is removed from the selected list. Event will
+     *          receive a scope of the input element or whatever object it
+     *          bubbled to, as well as the following input parametes:
+     *          1. jQuery Event Object
+     *          2. Input element (as jQuery object)
+     *          3. Object with information on the user that was added.
+     *          
+     * 
+     */
+    $.fn.pickSPUser = function(options) {
         
-        // Options for this element
-        var o   = $.extend({},
-                {
-                    allowMultiples:     true,
-                    maxSearchResults:   50,
-                    webURL:             $().SPServices.SPGetCurrentSite(),
-                    onPickUser:         null,
-                    onCreate:           null,
-                    onRemoveUser:       null,
-                    inputPlaceholder:   "Type and Pick"
-                },
-                options, 
-                {
-                    eleUserInput: ele.css("display", "none").addClass("hasPickSPUser") 
-                });
-
-        // insure that maxsearchResults is an interger
-        o.maxSearchResults = parseInt(o.maxSearchResults) || 50;
-        
-        // Create pick user container and insert it after the input element
-        // TODO: Clean up
-        // var cntr        = $(o.htmlTemplateSelector + " .pt-pickSPUser")
-                            // .clone(1).insertAfter(ele);
-        var cntr        = $($.pt.pickSPUser.htmlTemplate)
-                            .find(".pt-pickSPUser").clone(1).insertAfter(ele);
-        o.eleSelected   = cntr.find("div.pt-pickSPUser-selected").empty();
-        
-        o.elePickInput  = cntr.find("div.pt-pickSPUser-input");
-        
-        /**
-         * Adds people to the selected list. 
-         * 
-         * @param {String} peopleString
-         * @param {Boolean} noEvents
-         * 
-         */
-        o.addPeopleToList = function(peopleString, noEvents) {
-            
-            var curUsers    = new String(peopleString).split(';#'), 
-                total       = curUsers.length,
-                i,id,user, $ui;
-            
-            for (i=0; i<total; i++){
-                
-                id = curUsers[i];
-                
-                i++;
-                
-                user    = curUsers[i];
-                $ui     = $.pt.pickSPUser
-                            .getUserHtmlElement(o, id, user)
-                            .appendTo( o.eleSelected );
-                
-                // Get this user's info. and store it in the input element
-                (function($thisUserUI, thisUserName){
-                    
-                    o.getSearchResults(thisUserName)
-                        .done(function(rows, xData, status){
-                            
-                            var personName = String(thisUserName).toLowerCase();
-                            
-                            $.each(rows, function(i,v){
-                                
-                                var thisName = String(v.displayName).toLowerCase();
-                                
-                                if (thisName === personName) {
-                                    
-                                    $thisUserUI.data("pickspuser_object", v);
-                                    
-                                    return false;
-                                    
-                                }
-                                
-                            });
-                            
-                            // TODO: should something be done if we're unable to find user?
-                            
-                        });
-                    
-                })($ui, user);
-                
-            }
-            
-            $.pt.addHoverEffect(
-                o.eleSelected.find("div.pt-pickSPUser-person-cntr") );
-        
-            // if we don't allow multiple, then hide the input area
-            if (o.allowMultiples === false) {
-                
-                o.elePickInput.css("display", "none");
-                
-            }
-            
-            $.pt.pickSPUser.storeListOfUsers(o.eleSelected, noEvents);
-            
-        }; //end: o.addPeopleToList()
-        
-        /**
-         * Searches SP for the value providedon input
-         * 
-         * @param {String} searchString
-         * 
-         * @return {jQuery.Promise}
-         *  
-         */
-        o.getSearchResults = function(searchString) {
-            
-            return $.Deferred(function(dfd){
-                
-                $().SPServices({
-                    operation:      "SearchPrincipals",
-                    searchText:     searchString,
-                    maxResults:     o.maxSearchResults,
-                    async:          true,
-                    webURL:         o.webURL,
-                    completefunc:   function(xData, status){
-                        
-                        var resp = $(xData.responseXML),
-                            rows = [];
-                        
-                        resp.find("PrincipalInfo").each(function(){
-                            
-                            var thisEle = $(this);
-                            
-                            rows.push({
-                                displayName:    thisEle.find("DisplayName").text(),
-                                accountId:      thisEle.find("UserInfoID").text(),
-                                accountName:    thisEle.find("AccountName").text(),
-                                accountType:    thisEle.find("PrincipalType").text(),
-                                // needed attributes for autocomplete
-                                value:          thisEle.find("DisplayName").text(),
-                                label:          thisEle.find("DisplayName").text()
-                            });
-                            
-                        });
-                        
-                        dfd.resolveWith(xData, [rows, xData, status]);
-                        
-                    }
-                });
-                
-            })
-            .promise();
-            
-        }; //end: o.getSearchResults()
-        
-        // If multiple user are allowed to be picked, then add style to
-        // selected input area
-        if (o.allowMultiples === true) {
-            
-            o.eleSelected.addClass("pt-pickSPUser-selected-multiple");
-            
+        // if the global styles have not yet been inserted into the page, do it now
+        if (!$.pt.pickSPUser._isPickSPUserCssDone) {
+            $.pt.pickSPUser._isPickSPUserCssDone = true;
+            $('<style type="text/css">' + "\n\n" +
+                    $.pt.pickSPUser.styleSheet +
+                    "\n\n</style>")
+                .prependTo("head");
         }
         
-        // If the current input field has a value defined, then parse it
-        // and display the currently defined values
-        if (ele.val()) {
-            
-            o.addPeopleToList(ele.val(), noEvents);
-            
-        }
+        // Store the arguments given to this function. Used later if the
+        // user is trying to execute a method of this plugin.
+        var arg = arguments;
         
-        // Variable that store all search results
-        var cache = {};
-        
-        // Add the AutoComplete functionality to the input field
-        o.elePickInput.find("input[name='pickSPUserInputField']")
-            .attr("placeholder", o.inputPlaceholder)
-            .autocomplete({
-                minLength: 3,
-                source: function(request, response){
-                    // If search term is in cache, return it now
-                    if (request.term in cache) {
-                        response(cache[request.term]);
-                        return;
-                    }
+        // Define options with globals
+        // var options = $.extend({}, options2);
+     
+        // Initiate each selection as a pickSPUser element
+        this.each(function(){
+            var ele = $(this);
+            if (!ele.is("input") || ele.hasClass("hasPickSPUser")){
+                // if the first argument is a string, and this is an input
+                // fild, then process methods
+                if (typeof options === "string" && ele.is("input")) {
+                    return $.pt.pickSPUser.handleAction.apply(this, arg);
                     
-                    cache[request.term] = [];
+                // ELse, exit
+                } else {
+                    return this;
+                }
+            };
+            
+            // Options for this element
+            var o   = $.extend({},
+                    {
+                        allowMultiples:     true,
+                        maxSearchResults:   50,
+                        webURL:             $().SPServices.SPGetCurrentSite(),
+                        onPickUser:         null,
+                        onCreate:           null,
+                        onRemoveUser:       null,
+                        inputPlaceholder:   "Type and Pick"
+                    },
+                    options, 
+                    {
+                        eleUserInput: ele.css("display", "none").addClass("hasPickSPUser") 
+                    });
+    
+            // insure that maxsearchResults is an interger
+            o.maxSearchResults = parseInt(o.maxSearchResults) || 50;
+            
+            // Create pick user container and insert it after the input element
+            // TODO: Clean up
+            // var cntr        = $(o.htmlTemplateSelector + " .pt-pickSPUser")
+                                // .clone(1).insertAfter(ele);
+            var cntr        = $($.pt.pickSPUser.htmlTemplate)
+                                .find(".pt-pickSPUser").clone(1).insertAfter(ele);
+            
+            o.eleSelected   = cntr.find("div.pt-pickSPUser-selected")
+                                .empty()
+                                .on("click", ".tt-delete-icon", function(){
+                                    
+                                    $.pt.pickSPUser.removeUser(this);
+                                    
+                                });
+            
+            o.elePickInput  = cntr.find("div.pt-pickSPUser-input");
+            
+            /**
+             * Adds people to the selected list. 
+             * 
+             * @param {String} peopleString
+             * @param {Boolean} noEvents
+             * 
+             */
+            o.addPeopleToList = function(peopleString, noEvents) {
+                
+                var curUsers    = new String(peopleString).split(';#'), 
+                    total       = curUsers.length,
+                    i,id,user, $ui;
+                
+                for (i=0; i<total; i++){
                     
-                    // Search SP
-                    o.getSearchResults(request.term)
-                        .then(function(rows, xData, status){
-                            
-                            cache[request.term].push
-                                .apply(
-                                    cache[request.term],
-                                    rows
-                               );
-                               
-                            response(cache[request.term]);
-                            
-                        });
+                    id = curUsers[i];
                     
-                },//end:source()
-                /**
-                 * Event bound to an autocomplete suggestion.
-                 * 
-                 * @param {jQuery} ev   -   jQuery event.
-                 * @param {Object} u    -   An object containing the element generated above
-                 *                          by the <source> method that represents the person
-                 *                          that was selected.
-                 */
-                select: function(ev, u){
-                    // If we store only 1 user, then clear out the current values
-                    if (o.allowMultiples === false) {
+                    i++;
+                    
+                    user    = curUsers[i];
+                    $ui     = $.pt.pickSPUser
+                                .getUserHtmlElement(o, id, user)
+                                .appendTo( o.eleSelected );
+                    
+                    // Get this user's info. and store it in the input element
+                    (function($thisUserUI, thisUserName){
                         
-                        o.eleSelected.empty();
+                        o.getSearchResults(thisUserName)
+                            .done(function(rows, xData, status){
+                                
+                                var personName = String(thisUserName).toLowerCase();
+                                
+                                $.each(rows, function(i,v){
+                                    
+                                    var thisName = String(v.displayName).toLowerCase();
+                                    
+                                    if (thisName === personName) {
+                                        
+                                        $thisUserUI.data("pickspuser_object", v);
+                                        
+                                        return false;
+                                        
+                                    }
+                                    
+                                });
+                                
+                                // TODO: should something be done if we're unable to find user?
+                                
+                            });
                         
-                    // Check if already displayed.
-                    } else if (
-                        o.eleSelected.find(
-                            "div[data-pickspuserid='" + 
-                            u.item.accountId + "']" ).length
-                    ) {
-                        
-                        return;
-                        
-                    }
-                    
-                    var $newPersonUI = $.pt.pickSPUser.getUserHtmlElement(
-                                o, u.item.accountId, u.item.displayName
-                            )
-                            .appendTo( o.eleSelected );
-                    
-                    // Store a copy of the user object on the UI
-                    $newPersonUI.data("pickspuser_object", u.item);
-                    
-                    $.pt.pickSPUser.storeListOfUsers(cntr);
-                    
-                    $.pt.addHoverEffect(
-                        cntr.find("div.pt-pickSPUser-person-cntr") );
-                    
-                    // clear out the autocomplete box
-                    setTimeout(function(){ev.target.value = "";}, 50);
-                    
-                    if (o.allowMultiples === false) {
-                        o.elePickInput.hide();
-                    }
-                    
-                    // if a callback was defined, call it now
-                    if ($.isFunction(o.onPickUser)) {
-                        o.onPickUser.call(o.eleUserInput, $.extend({},u.item));
-                    }
-                    
-                    // Triggere event
-                    ele.trigger(
-                        $.Event("spwidget:peoplePickerAdd"),
-                        [ o.eleUserInput, $.extend({},u.item) ]
-                    );
+                    })($ui, user);
                     
                 }
-            });//end:autocomplete 
-        
-        // Store the options for this call on the container and include a pointer
-        // in the input field to this element
-        cntr.data("pickSPUserContainerOpt", o);
-        ele.data("pickSPUserContainer", cntr);
-        
-        // call onCreate if defined
-        if ($.isFunction(o.onCreate)) {
-            
-            o.onCreate.call(ele, ele);
-            
-        }
-        
-        // Trigger create event on this instance
-        ele.trigger(
-            $.Event("spwidget:peoplePickerCreate"),
-            [o.eleUserInput]
-        );
-        
-        return this;
-    });
-    
-    return this;
-    
-};// $.fn.pickSPUser()
-
-/**
- * Builds the html element that surrounds a user for display on the page.
- * 
- * @param {Object} opt     -   The options object given to <jQuery.fn.pickSPUser()>
- * @param {String} id      -   The User's Sharepoint UID
- * @param {String} name    -   The User's name.
- * 
- * @return {jQuery} Html element
- * 
- */
-$.pt.pickSPUser.getUserHtmlElement = function(opt, id, name){
-    // TODO: clean up
-    // var ele = $(opt.htmlTemplateSelector + " .pt-pickSPUser-person").clone(1);
-    var ele = $($.pt.pickSPUser.htmlTemplate)
-                .find(".pt-pickSPUser-person").clone(1);
-    ele.attr("data-pickSPUserID", id);
-    ele.find("span.pt-person-name")
-            .append(name)
-            .end()
-        .attr("data-pickSPUserNAME", name);
-    return ele;    
-    
-};// $.pt.pickSPUser.getUserHtmlElement()
-
-
-/**
- * Method is bound to the X (remove) button that appears when the one 
- * hovers over the names curerntly displayed. Removes the user from
- * the UI and updates the input field to reflect what is currently
- * displayed. 
- * 
- * @param {Object} ele -   The HTML element from where this method was
- *                         called. Used to find both the div.pt-pickSPUser
- *                         overall parent element as well as the specific
- *                         .pt-pickSPUser-person element for the user that
- *                         was clicked on.
- * 
- * @return {undefined}
- * 
- */
-$.pt.pickSPUser.removeUser = function(ele){
-    
-    var cntr        = $(ele).closest("div.pt-pickSPUser"),
-        o           = cntr.data("pickSPUserContainerOpt"),
-        $personUI   = $(ele).closest("div.pt-pickSPUser-person"),
-        personObj   = $personUI.data("pickspuser_object"),
-        doRemove    = true;
-    
-    // If an onRemoveUser is defined, then call method
-    // and capture response
-    if ($.isFunction(o.onRemoveUser)) {
-        
-        o.onRemoveUser.call(
-            o.ele, 
-            o.ele, 
-            $personUI, 
-            personObj );
-        
-    }
-    
-    if (doRemove === false) {
-        
-        return;
-        
-    }
-    
-    // remove user from the view
-    $personUI.fadeOut('fast', function(){
-        $(this).remove();
-        $.pt.pickSPUser.storeListOfUsers(cntr);
-    });
-    
-    // if AllowMultiple is false, then make the picker input visible
-    if (o.allowMultiples === false) {
-        o.elePickInput.show("fast", function(){
-            o.elePickInput.find("input").focus();
-        });
-    }
-    
-    // trigger event
-    o.eleUserInput.trigger(
-        $.Event("spwidget:peoplePickerRemove"),
-        [ o.eleUserInput, personObj ]
-    );
-    
-    return;
-};// $.pt.pickSPUser.removeUser()
-
-
-/**
- * Method will look at the container that holds the currently selected
- * users and will populate the initial input field given to
- * <jQuery.fn.pickSPUser()> with a sting representing those users.
- *   
- * 
- * @param {Object} ele -   The HTML element from where this method was
- *                         called. Used to find both the div.pt-pickSPUser
- *                         overall parent element as well as the specific
- *                         .pt-pickSPUser-person element for the user that
- *                         was clicked on.
- * 
- * @return {undefined}
- * 
- */
-$.pt.pickSPUser.storeListOfUsers = function(ele, noEvents){
-    
-    var cntr    = $(ele).closest("div.pt-pickSPUser"),
-        opt     = cntr.data("pickSPUserContainerOpt"),
-        newVal  = "",
-        // isDone: keep track of the user already selected,
-        // so we don't add them twice to the input field.
-        isDone  = {}; 
-    
-    cntr.find("div.pt-pickSPUser-selected div.pt-pickSPUser-person")
-        .each(function(){
-            if (isDone[$(this).attr("data-pickSPUserID")]) {return;};
-            isDone[$(this).attr("data-pickSPUserID")] = true;
-            if (newVal) {
-                newVal += ";#";
-            }
-            newVal += $(this).attr("data-pickSPUserID");
-            newVal += ";#";
-            newVal += $(this).attr("data-pickSPUserNAME");
-        });
-    opt.eleUserInput.val(newVal);
-    
-    if (!noEvents) {
-        
-        opt.eleUserInput.change();
-        
-    } 
-    
-    return;
-};// $.pt.pickSPUser.storeListOfUsers()
-
-/**
- * Handles method actions given to $().pickSPUser()
- * 
- * @param {String} type
- * @param {String} action
- * @param {Object} options
- * 
- * @return {this}
- * 
- */
-$.pt.pickSPUser.handleAction = function(type, action, options) {
-    
-    var type    = String(type).toLowerCase();
-        action  = String(action).toLowerCase(),
-        o       = $(this)
-                    .data("pickSPUserContainer")
-                    .data("pickSPUserContainerOpt")
-        ret     = this;
-    
-    if (type === "method") {
-        
-        switch (action) {
-            
-            case "clear":
                 
-                o.eleUserInput.val("");
-                o.eleSelected.empty();
-                
+                $.pt.addHoverEffect(
+                    o.eleSelected.find("div.pt-pickSPUser-person-cntr") );
+            
+                // if we don't allow multiple, then hide the input area
                 if (o.allowMultiples === false) {
                     
-                    o.eleSelected.css("display", "none");
-                    o.elePickInput.show();
+                    o.elePickInput.css("display", "none");
                     
                 }
                 
-                break;
+                $.pt.pickSPUser.storeListOfUsers(o.eleSelected, noEvents);
                 
-            case "destroy":
+            }; //end: o.addPeopleToList()
+            
+            /**
+             * Searches SP for the value providedon input
+             * 
+             * @param {String} searchString
+             * 
+             * @return {jQuery.Promise}
+             *  
+             */
+            o.getSearchResults = function(searchString) {
                 
-                if ( $(this).hasClass('hasPickSPUser')) {
+                return $.Deferred(function(dfd){
                     
-                    $(this).removeClass('hasPickSPUser')
-                            .next('.pt-pickSPUser').remove()
-                            .show()
-                            .trigger('change');
+                    $().SPServices({
+                        operation:      "SearchPrincipals",
+                        searchText:     searchString,
+                        maxResults:     o.maxSearchResults,
+                        async:          true,
+                        webURL:         o.webURL,
+                        completefunc:   function(xData, status){
                             
-                }
-                
-                break;
-            
-            case "add":
-                
-                o.addPeopleToList(options);
-            
-                break;
-            
-            case "remove":
-                
-                if (options) {
+                            var resp = $(xData.responseXML),
+                                rows = [];
+                            
+                            resp.find("PrincipalInfo").each(function(){
+                                
+                                var thisEle = $(this);
+                                
+                                rows.push({
+                                    displayName:    thisEle.find("DisplayName").text(),
+                                    accountId:      thisEle.find("UserInfoID").text(),
+                                    accountName:    thisEle.find("AccountName").text(),
+                                    accountType:    thisEle.find("PrincipalType").text(),
+                                    // needed attributes for autocomplete
+                                    value:          thisEle.find("DisplayName").text(),
+                                    label:          thisEle.find("DisplayName").text()
+                                });
+                                
+                            });
+                            
+                            dfd.resolveWith(xData, [rows, xData, status]);
+                            
+                        }
+                    });
                     
-                    var rmEle = o.eleSelected
-                            .find(
+                })
+                .promise();
+                
+            }; //end: o.getSearchResults()
+            
+            // If multiple user are allowed to be picked, then add style to
+            // selected input area
+            if (o.allowMultiples === true) {
+                
+                o.eleSelected.addClass("pt-pickSPUser-selected-multiple");
+                
+            }
+            
+            // If the current input field has a value defined, then parse it
+            // and display the currently defined values
+            if (ele.val()) {
+                
+                o.addPeopleToList(ele.val(), noEvents);
+                
+            }
+            
+            // Variable that store all search results
+            var cache = {};
+            
+            // Add the AutoComplete functionality to the input field
+            o.elePickInput.find("input[name='pickSPUserInputField']")
+                .attr("placeholder", o.inputPlaceholder)
+                .autocomplete({
+                    minLength: 3,
+                    source: function(request, response){
+                        // If search term is in cache, return it now
+                        if (request.term in cache) {
+                            response(cache[request.term]);
+                            return;
+                        }
+                        
+                        cache[request.term] = [];
+                        
+                        // Search SP
+                        o.getSearchResults(request.term)
+                            .then(function(rows, xData, status){
+                                
+                                cache[request.term].push
+                                    .apply(
+                                        cache[request.term],
+                                        rows
+                                   );
+                                   
+                                response(cache[request.term]);
+                                
+                            });
+                        
+                    },//end:source()
+                    /**
+                     * Event bound to an autocomplete suggestion.
+                     * 
+                     * @param {jQuery} ev   -   jQuery event.
+                     * @param {Object} u    -   An object containing the element generated above
+                     *                          by the <source> method that represents the person
+                     *                          that was selected.
+                     */
+                    select: function(ev, u){
+                        // If we store only 1 user, then clear out the current values
+                        if (o.allowMultiples === false) {
+                            
+                            o.eleSelected.empty();
+                            
+                        // Check if already displayed.
+                        } else if (
+                            o.eleSelected.find(
                                 "div[data-pickspuserid='" + 
-                                options + "']" );
-                    
-                    if (!rmEle.length) {
+                                u.item.accountId + "']" ).length
+                        ) {
+                            
+                            return;
+                            
+                        }
                         
-                        rmEle = o.eleSelected
-                            .find(
-                                "div[data-pickspusername='" + 
-                                options + "']" );
+                        var $newPersonUI = $.pt.pickSPUser.getUserHtmlElement(
+                                    o, u.item.accountId, u.item.displayName
+                                )
+                                .appendTo( o.eleSelected );
+                        
+                        // Store a copy of the user object on the UI
+                        $newPersonUI.data("pickspuser_object", u.item);
+                        
+                        $.pt.pickSPUser.storeListOfUsers(cntr);
+                        
+                        $.pt.addHoverEffect(
+                            cntr.find("div.pt-pickSPUser-person-cntr") );
+                        
+                        // clear out the autocomplete box
+                        setTimeout(function(){ev.target.value = "";}, 50);
+                        
+                        if (o.allowMultiples === false) {
+                            o.elePickInput.hide();
+                        }
+                        
+                        // if a callback was defined, call it now
+                        if ($.isFunction(o.onPickUser)) {
+                            o.onPickUser.call(o.eleUserInput, $.extend({},u.item));
+                        }
+                        
+                        // Triggere event
+                        ele.trigger(
+                            $.Event("spwidget:peoplePickerAdd"),
+                            [ o.eleUserInput, $.extend({},u.item) ]
+                        );
                         
                     }
-                    
-                    if (rmEle.length) {
-                        
-                        $.pt.pickSPUser.removeUser(rmEle);
-                        
-                    }
-                    
-                }
-                
-                break;
+                });//end:autocomplete 
             
-            case "getSelected":
+            // Store the options for this call on the container and include a pointer
+            // in the input field to this element
+            cntr.data("pickSPUserContainerOpt", o);
+            ele.data("pickSPUserContainer", cntr);
+            
+            // call onCreate if defined
+            if ($.isFunction(o.onCreate)) {
                 
-                ret = $.SPWidgets.parseLookupFieldValue(o.eleUserInput.val());
+                o.onCreate.call(ele, ele);
                 
-                break;
-                
+            }
+            
+            // Trigger create event on this instance
+            ele.trigger(
+                $.Event("spwidget:peoplePickerCreate"),
+                [o.eleUserInput]
+            );
+            
+            return this;
+        });
+        
+        return this;
+        
+    };// $.fn.pickSPUser()
+    
+    /**
+     * Builds the html element that surrounds a user for display on the page.
+     * 
+     * @param {Object} opt     -   The options object given to <jQuery.fn.pickSPUser()>
+     * @param {String} id      -   The User's Sharepoint UID
+     * @param {String} name    -   The User's name.
+     * 
+     * @return {jQuery} Html element
+     * 
+     */
+    $.pt.pickSPUser.getUserHtmlElement = function(opt, id, name){
+        // TODO: clean up
+        // var ele = $(opt.htmlTemplateSelector + " .pt-pickSPUser-person").clone(1);
+        var ele = $($.pt.pickSPUser.htmlTemplate)
+                    .find(".pt-pickSPUser-person").clone(1);
+        ele.attr("data-pickSPUserID", id);
+        ele.find("span.pt-person-name")
+                .append(name)
+                .end()
+            .attr("data-pickSPUserNAME", name);
+        return ele;    
+        
+    };// $.pt.pickSPUser.getUserHtmlElement()
+    
+    
+    /**
+     * Method is bound to the X (remove) button that appears when the one 
+     * hovers over the names curerntly displayed. Removes the user from
+     * the UI and updates the input field to reflect what is currently
+     * displayed. 
+     * 
+     * @param {Object} ele -   The HTML element from where this method was
+     *                         called. Used to find both the div.pt-pickSPUser
+     *                         overall parent element as well as the specific
+     *                         .pt-pickSPUser-person element for the user that
+     *                         was clicked on.
+     * 
+     * @return {undefined}
+     * 
+     */
+    $.pt.pickSPUser.removeUser = function(ele){
+        
+        var cntr        = $(ele).closest("div.pt-pickSPUser"),
+            o           = cntr.data("pickSPUserContainerOpt"),
+            $personUI   = $(ele).closest("div.pt-pickSPUser-person"),
+            personObj   = $personUI.data("pickspuser_object"),
+            doRemove    = true;
+        
+        // If an onRemoveUser is defined, then call method
+        // and capture response
+        if ($.isFunction(o.onRemoveUser)) {
+            
+            o.onRemoveUser.call(
+                o.ele, 
+                o.ele, 
+                $personUI, 
+                personObj );
+            
         }
         
-    }//end:type===method
+        if (doRemove === false) {
+            
+            return;
+            
+        }
+        
+        // remove user from the view
+        $personUI.fadeOut('fast', function(){
+            $(this).remove();
+            $.pt.pickSPUser.storeListOfUsers(cntr);
+        });
+        
+        // if AllowMultiple is false, then make the picker input visible
+        if (o.allowMultiples === false) {
+            o.elePickInput.show("fast", function(){
+                o.elePickInput.find("input").focus();
+            });
+        }
+        
+        // trigger event
+        o.eleUserInput.trigger(
+            $.Event("spwidget:peoplePickerRemove"),
+            [ o.eleUserInput, personObj ]
+        );
+        
+        return;
+    };// $.pt.pickSPUser.removeUser()
     
-    return ret;
     
-};// $.pt.pickSPUser.handleAction() 
-
-
-/**
- * @property
- * Stores the Style sheet that is inserted into the page the first
- * time pickSPUser is called.
- * Value is set at build time.
- * 
- */
-$.pt.pickSPUser.styleSheet = "/**\n"
+    /**
+     * Method will look at the container that holds the currently selected
+     * users and will populate the initial input field given to
+     * <jQuery.fn.pickSPUser()> with a sting representing those users.
+     *   
+     * 
+     * @param {Object} ele -   The HTML element from where this method was
+     *                         called. Used to find both the div.pt-pickSPUser
+     *                         overall parent element as well as the specific
+     *                         .pt-pickSPUser-person element for the user that
+     *                         was clicked on.
+     * 
+     * @return {undefined}
+     * 
+     */
+    $.pt.pickSPUser.storeListOfUsers = function(ele, noEvents){
+        
+        var cntr    = $(ele).closest("div.pt-pickSPUser"),
+            opt     = cntr.data("pickSPUserContainerOpt"),
+            newVal  = "",
+            // isDone: keep track of the user already selected,
+            // so we don't add them twice to the input field.
+            isDone  = {}; 
+        
+        cntr.find("div.pt-pickSPUser-selected div.pt-pickSPUser-person")
+            .each(function(){
+                if (isDone[$(this).attr("data-pickSPUserID")]) {return;};
+                isDone[$(this).attr("data-pickSPUserID")] = true;
+                if (newVal) {
+                    newVal += ";#";
+                }
+                newVal += $(this).attr("data-pickSPUserID");
+                newVal += ";#";
+                newVal += $(this).attr("data-pickSPUserNAME");
+            });
+        opt.eleUserInput.val(newVal);
+        
+        if (!noEvents) {
+            
+            opt.eleUserInput.change();
+            
+        } 
+        
+        return;
+    };// $.pt.pickSPUser.storeListOfUsers()
+    
+    /**
+     * Handles method actions given to $().pickSPUser()
+     * 
+     * @param {String} type
+     * @param {String} action
+     * @param {Object} options
+     * 
+     * @return {this}
+     * 
+     */
+    $.pt.pickSPUser.handleAction = function(type, action, options) {
+        
+        var type    = String(type).toLowerCase();
+            action  = String(action).toLowerCase(),
+            o       = $(this)
+                        .data("pickSPUserContainer")
+                        .data("pickSPUserContainerOpt")
+            ret     = this;
+        
+        if (type === "method") {
+            
+            switch (action) {
+                
+                case "clear":
+                    
+                    o.eleUserInput.val("");
+                    o.eleSelected.empty();
+                    
+                    if (o.allowMultiples === false) {
+                        
+                        o.eleSelected.css("display", "none");
+                        o.elePickInput.show();
+                        
+                    }
+                    
+                    break;
+                    
+                case "destroy":
+                    
+                    if ( $(this).hasClass('hasPickSPUser')) {
+                        
+                        $(this).removeClass('hasPickSPUser')
+                                .next('.pt-pickSPUser').remove()
+                                .show()
+                                .trigger('change');
+                                
+                    }
+                    
+                    break;
+                
+                case "add":
+                    
+                    o.addPeopleToList(options);
+                
+                    break;
+                
+                case "remove":
+                    
+                    if (options) {
+                        
+                        var rmEle = o.eleSelected
+                                .find(
+                                    "div[data-pickspuserid='" + 
+                                    options + "']" );
+                        
+                        if (!rmEle.length) {
+                            
+                            rmEle = o.eleSelected
+                                .find(
+                                    "div[data-pickspusername='" + 
+                                    options + "']" );
+                            
+                        }
+                        
+                        if (rmEle.length) {
+                            
+                            $.pt.pickSPUser.removeUser(rmEle);
+                            
+                        }
+                        
+                    }
+                    
+                    break;
+                
+                case "getSelected":
+                    
+                    ret = $.SPWidgets.parseLookupFieldValue(o.eleUserInput.val());
+                    
+                    break;
+                    
+            }
+            
+        }//end:type===method
+        
+        return ret;
+        
+    };// $.pt.pickSPUser.handleAction() 
+    
+    
+    /**
+     * @property
+     * Stores the Style sheet that is inserted into the page the first
+     * time pickSPUser is called.
+     * Value is set at build time.
+     * 
+     */
+    $.pt.pickSPUser.styleSheet = "/**\n"
 + " * Styles for the Pick User Widget\n"
 + " */\n"
 + ".pt-pickSPUser .pt-pickSPUser-selected-multiple {\n"
@@ -5239,6 +5250,9 @@ $.pt.pickSPUser.styleSheet = "/**\n"
 + "    font-size: .9em;\n"
 + "}\n"
 + "\n"
++ ".pt-pickSPUser div.pt-pickSPUser-input input.ui-autocomplete {\n"
++ "    width: 99%;\n"
++ "}\n"
 + "\n"
 + ".pt-pickSPUser .pt-pickSPUser-person-cntr {\n"
 + "    margin: .2em 0em;\n"
@@ -5278,15 +5292,15 @@ $.pt.pickSPUser.styleSheet = "/**\n"
 + "\n"
 + "\n";
 //_HAS_PICKSPUSER_CSS_TEMPLATE_
-
-
-/**
- * @property
- * Stores the HTML template for each people picker.
- * Value is set at build time.
- * 
- */
-$.pt.pickSPUser.htmlTemplate = "<!--\n"
+    
+    
+    /**
+     * @property
+     * Stores the HTML template for each people picker.
+     * Value is set at build time.
+     * 
+     */
+    $.pt.pickSPUser.htmlTemplate = "<!--\n"
 + "    Html Templates for the PickSPUser plugin.\n"
 + "    \n"
 + "    |\n"
@@ -5324,38 +5338,38 @@ $.pt.pickSPUser.htmlTemplate = "<!--\n"
 + "    </div>\n"
 + "</div>\n";
 //_HAS_PICKSPUSER_HTML_TEMPLATE_
-
-/**
- * Given a list of elements, this will add a hover affect to 
- * those elements by toggling some classes from jQuery UI
- * 
- * @memberof jQuery.pt
- * 
- * @param {jQuery|String} ele   A jQuery selector or object containing
- *                              the list of elements to receive the hover
- *                              effect.
- * @return {jQuery}
- * 
- * @example
- * 
- *      $(".tt-hover-animate").addHoverEffect();
- *      $(".container a").addHoverEffect();
- * 
- */
-$.pt.addHoverEffect = function(ele){
-    return $(ele).each(function(){
-            if ($(this).hasClass("addHoverEffectDone")) {
-                return;
-            } else {
-                $(this).addClass("addHoverEffectDone");
-            };
-            var e = this;
-            $(e).mouseenter(function(){$(e).toggleClass("ui-state-hover");});
-            $(e).mouseleave(function(){$(e).toggleClass("ui-state-hover");});
-        });
-};// $.pt.addHoverEffect()
-
-
+    
+    /**
+     * Given a list of elements, this will add a hover affect to 
+     * those elements by toggling some classes from jQuery UI
+     * 
+     * @memberof jQuery.pt
+     * 
+     * @param {jQuery|String} ele   A jQuery selector or object containing
+     *                              the list of elements to receive the hover
+     *                              effect.
+     * @return {jQuery}
+     * 
+     * @example
+     * 
+     *      $(".tt-hover-animate").addHoverEffect();
+     *      $(".container a").addHoverEffect();
+     * 
+     */
+    $.pt.addHoverEffect = function(ele){
+        return $(ele).each(function(){
+                if ($(this).hasClass("addHoverEffectDone")) {
+                    return;
+                } else {
+                    $(this).addClass("addHoverEffectDone");
+                };
+                var e = this;
+                $(e).mouseenter(function(){$(e).toggleClass("ui-state-hover");});
+                $(e).mouseleave(function(){$(e).toggleClass("ui-state-hover");});
+            });
+    };// $.pt.addHoverEffect()
+    
+})(jQuery);
 
 /**
  * @fileOverview jquery.SPControlUpload.js
@@ -5366,7 +5380,7 @@ $.pt.addHoverEffect = function(ele){
  * through the many SP pages and without having to leave the user's current page.
  *      
  *  
- * @version 20130727014448NUMBER_
+ * @version 20130803112455NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
@@ -5374,7 +5388,7 @@ $.pt.addHoverEffect = function(ele){
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date July 27, 2013 - 01:44 PM
+ * Build Date Paul:August 03, 2013 11:24 PM
  * 
  */
 
@@ -6074,9 +6088,631 @@ $.pt.SPUploadStyleSheet = "/**\n"
 + "\n";
 //_HAS_SPUPLOAD_CSS_TEMPLATE_
 /**
+ * 
+ */
+;(function($){
+    
+    "use strict";
+    /*jslint nomen: true, plusplus: true */
+    /*global SPWidgets */
+    
+    /**
+     * @class SPDate
+     * @namespace
+     */
+    var SPDate = {};
+    
+    /** @property {Boolean} Is initialization done */
+    SPDate.isInitDone = false;
+    
+    /**
+     * Default options. 
+     * @member Inst.opt
+     * @memberOf Inst.opt
+     */
+    $.SPWidgets.defaults.date = {
+        allowMultiples: false,
+        delimeter:      ";",
+        remainOpen:     true,
+        datepicker:     {
+            dateFormat:         'mm/dd/yy',
+            buttonImage:        '/_layouts/images/CALENDAR.GIF',
+            showOn:             "both",
+            buttonImageOnly:    true
+        },
+        dateTemplate: '{{date}} <span class="spwidgets-item-remove">[x]</span>',
+        onReady:        null
+    };
+    
+    
+    /**
+     * Inserts a jQuery datepicker into the UI that allows the user to
+     * pick a date and save the Sharepoint format of that date to the
+     * original input field that this widget was bound to.
+     * Display format could be defined as the local locale while the
+     * value that will actually be stored in the input value will be
+     * the format expected by SharePoint webservices mainly ISO format
+     * YYYY-MM-DD.
+     * 
+     * @param {Object} [options]
+     * @param {Object} [options.allowMultiples=false]
+     * @param {Object} [options.delimeter=";"]
+     * @param {Object} [options.remainOpen=true]
+     * @param {Object} [options.datepicker={...}]
+     * @param {Object} [options.dateTemplate=""]
+     * 
+     * return {jQuery} this
+     * 
+     * This widget supports the following methods:
+     * 
+     * $().SPDateField("reset");
+     * $().SPDateField("getDate");
+     * $().SPDateField("setDate", dates[], "format");
+     * $().SPDateField("removeDate", dates[], "format");
+     * 
+     */
+    $.fn.SPDateField = function(options){
+        
+        var arg         = arguments,
+            inputEle    = this;
+        
+        // If initialization is not yet done, then do it now
+        if ( !SPDate.isInitDone ) {
+            
+            SPDate.isInitDone = true;
+            
+            if ( SPDate.styleSheet !== "" ) {
+                
+                $('<style type="text/css">' + "\n\n" +
+                        SPDate.styleSheet + "\n\n</style>" )
+                    .prependTo("head");
+                
+            }
+            
+        }
+        
+        // Process Methods
+        if (typeof options === "string") {
+            
+            return (function(){
+                
+                var action  = String(arg[0]).toLowerCase(),
+                    resp    = inputEle;
+                    
+                // Loop through all inputs and process the method
+                // on it. Note that for methods that return data
+                // if user defined more than one element in the
+                // selection, only the data for the last item on
+                // that selection will be returned.
+                $(inputEle).each(function(i, thisInput){
+                    
+                    if (!$(inputEle).hasClass("hasSPDateField")) {
+                        
+                        return;
+                        
+                    }
+                    
+                    var $this   = $(thisInput),
+                        Inst    = $this.data("SPDateFieldInstance");
+                    
+                    if (Inst && $this.length > 0) {
+                        
+                        switch(action) {
+                            
+                            //------> GET DATE METHOD: dateObj = $().SPDateField("getDate")
+                            case "getdate":
+                                
+                                resp = Inst.getDate();
+                                
+                                break;
+                            
+                            //------> SET DATE METHOD: $().SPDateField("setDate", dates, format)
+                            case "setdate":
+                                
+                                if (arg[1]) {
+                                    
+                                    Inst.setDate({
+                                        date:   arg[1],
+                                        format: (arg[2] || Inst.opt.datepicker.dateFormat)
+                                    });
+                                    
+                                }
+                                
+                                break;
+                                
+                            //------> REMOVE DATE METHOD: $().SPDateField("removeDate", dates, format)
+                            case "removedate":
+                                
+                                if (arg[1]) {
+                                    
+                                    Inst.removeDate({
+                                        date:   arg[1],
+                                        format: (arg[2] || Inst.opt.datepicker.dateFormat)
+                                    });
+                                    
+                                }
+                                
+                                break;
+                                
+                            //------> RESET METHOD: $().SPDateField("reset")
+                            case "reset":
+                                
+                                Inst.reset();
+                                
+                                break;
+                            
+                        } //end: switch()
+                        
+                    }
+                    
+                });
+                
+                return resp;
+                
+            })();
+            
+        } //end: Method? ---------------------------
+        
+        // BUILD the widget on each input element 
+        // provided by the user's selection
+        return this.each(function(){
+            
+           /**
+            * @class SPDate
+            */
+            var Inst = {
+                
+                /** @property {jQuery} The input element used by the user */
+                $ele:   $(this).addClass("hasSPDateField")
+                
+            };
+            
+            if (!Inst.$ele.is("input[type='text']")) {
+                
+                return;
+                
+            }
+            
+            /**
+             * @property {String} The original value in the input
+             * @member Inst
+             * @memberOf Inst
+             */
+            Inst.eleOrigVal = Inst.$ele.val();
+            
+            /**
+             * @property {Object} The input options after defaults
+             * @member Inst
+             * @memberOf Inst
+             */
+            Inst.opt = $.extend(true, {}, $.SPWidgets.defaults.date, options);
+            
+            /**
+             * @property {jQuery} the UI container for the Date field.
+             * @member Inst
+             * @memberOf Inst
+             */
+            Inst.$ui = $(SPDate.htmlTemplate)
+                        .filter("div.spwidget-date-cntr")
+                        .clone()
+                            .insertAfter(Inst.$ele)
+                            .css("display", "none");
+            
+            /**
+             * @property {jQuery} the Datepicker input field.
+             * @member Inst
+             * @memberOf Inst
+             */
+            Inst.$input = Inst.$ui
+                            .find("input[name='SPDateFieldInput']")
+                            .val(Inst.$ele.val());
+            
+            /**
+             * @property {jQuery} The container used to display date when allowMuliples is true.
+             * @member Inst
+             * @memberOf Inst
+             */
+            Inst.$dtCntr = Inst.$ui.find("div.spwidget-date-selected-cntr");
+            
+            /**
+             * Returns the date selected by the user. An object is returned
+             * with the date formatted in differnt ways. See below.
+             * 
+             * @return {Object} 
+             *      The returned objec will have the following format:
+             *  
+             *      {
+             *          input: 'value of input',
+             *          dates: [
+             *              'date 1',
+             *              'date 2'
+             *          ]
+             *      }
+             * 
+             */
+            Inst.getDate = function() {
+                
+                var dtObj = {
+                        input:  Inst.$ele.val(),
+                        dates:  []
+                    };
+                
+                if (dtObj.input) {
+                    
+                    if (Inst.opt.allowMultiples) {
+                        
+                        dtObj.dates = dtObj.input.split(Inst.opt.delimeter);
+                        
+                    } else {
+                        
+                        dtObj.dates.push(dtObj.input);
+                        
+                    }
+                    
+                }
+                
+                return dtObj;
+                
+            }; //end: Inst.getDate()
+            
+            /**
+             * Resets the widget to its initial state, which could have
+             * had a prepopluated value on it.
+             * 
+             * @return {Object} Inst
+             */
+            Inst.reset = function() {
+                
+                Inst.$input.val("").datepicker("hide");
+                Inst.$ele.val("").change();
+                Inst.$dtCntr.empty();
+                
+                return Inst;
+                
+            }; //end: Inst.reset()
+            
+            /**
+             * Sets a date on the date widgets. Upon setting the date, the
+             * input's change() event is triggered.
+             * 
+             * @param {Object} setDateOpt
+             * 
+             * @param {Object|Array|String} setDateOpt.date
+             *          The date or array of dates to set on the picker.
+             * 
+             * @param {Boolean} [setDateOpt.setDatepicker=true]
+             *          Then true, the datepicker jQuery UI widget input will
+             *          be set to the value that was provided via this method.
+             *          Used only when allowMultiples is false
+             * 
+             * @param {String} [setDateOpt.format=Inst.opt.datepicker.dateFormat]
+             *          The format of the dates provided on input. This param
+             *          is used only if the input date (or one of them) is a
+             *          string.
+             * 
+             * @return {Object} Inst
+             */
+            Inst.setDate = function(setDateOpt) {
+                
+                var opt     = $.extend(
+                                {},
+                                {
+                                    date:           '',
+                                    format:         Inst.opt.datepicker.dateFormat,
+                                    setDatepicker:  true
+                                },
+                                setDateOpt
+                            ),
+                    eleVal  = Inst.$ele.val(),
+                    dtShow  = '';
+                
+                if (!opt.date) {
+                    
+                    return Inst;
+                    
+                }
+                
+                if (!$.isArray(opt.date)) {
+                    
+                    opt.date = [ opt.date ];
+                    
+                }
+                
+                // Loop through each date and create the string that will be used
+                // to set the date on the widget.
+                $.each(opt.date, function(i, dt){
+                    
+                    var dtObj   = dt,
+                        dt1     = '',
+                        dt2     = '';
+                    
+                    if (!(dtObj instanceof Date)) {
+                        
+                        dtObj = $.datepicker.parseDate(opt.format, dt);
+                         
+                    }
+
+                    dt1 = $.datepicker.formatDate('yy-mm-dd', dtObj);
+                    
+                    // AllowMultiples = false
+                    if (!Inst.opt.allowMultiples) {
+                        
+                        eleVal = dt1;
+                        
+                    // allowMultiples = true and date not yet stored
+                    } else if (eleVal.indexOf(dt1) < 0) {
+                        
+                        if (eleVal) {
+                            
+                            eleVal += Inst.opt.delimeter;
+                            
+                        }
+                        
+                        dt2 = $.datepicker
+                                .formatDate(Inst.opt.datepicker.dateFormat, dtObj);
+                        
+                        eleVal += dt1;
+                        
+                        dtShow += '<span class="spwidgets-item" data-spwidget_dt1="' +
+                                    dt1 + '" data-spwidget_dt2="' + dt2 + '">' +
+                                    $.SPWidgets.fillTemplate({
+                                        tmplt: Inst.opt.dateTemplate,
+                                        data: { date: dt2 }
+                                    }) + 
+                                ' </span>';
+                        
+                    }
+                    
+                });
+                
+                // If allow multiple is true, then set teh multiple dates
+                // on the display area. Then set the input value and trigger
+                // change event
+                if (Inst.opt.allowMultiples) {
+                    
+                    Inst.$dtCntr.append(dtShow);
+                    
+                } else if (opt.setDatepicker) {
+                    
+                    Inst.$input.val(dtShow);
+                    
+                }
+                
+                Inst.$ele.val(eleVal).change();
+                
+                return Inst;
+                
+            }; //end: Inst.setDate()
+            
+            /**
+             * Removes a date from the list of selected dates.
+             * 
+             * @param {Object} removeDateOpt
+             * 
+             * @param {Date|String|Array} date
+             *          The date or array of dates to be removed. Can be
+             *          Date objects or strings. If defined as a string
+             *          the 'format' option should be set accordingly
+             * 
+             * @return {Object} Inst 
+             */
+            Inst.removeDate = function(removeDateOpt){
+                
+                var opt     = $.extend(
+                                {},
+                                {
+                                    date:           '',
+                                    format:         Inst.opt.datepicker.dateFormat
+                                },
+                                removeDateOpt
+                        ),
+                    eleDtObj    = Inst.getDate();
+                
+                if (!opt.date) {
+                    
+                    return Inst;
+                    
+                }
+                
+                if (!$.isArray(opt.date)) {
+                    
+                    opt.date = [ opt.date ];
+                    
+                }
+                
+                $.each(opt.date, function(i, dt){
+                    
+                    var dtObj       = dt,
+                        dt1         = '',
+                        dt1Regex    = '';
+                    
+                    if (!(dtObj instanceof Date)) {
+                        
+                        dtObj = $.datepicker.parseDate(opt.format, dt);
+                         
+                    }
+
+                    dt1         = $.datepicker.formatDate('yy-mm-dd', dtObj);
+                    dt1Regex    = new RegExp(
+                                    "(" + Inst.opt.delimeter + ")?" + dt1, 
+                                    "g");
+                    
+                    eleDtObj.input = eleDtObj.input.replace(dt1Regex, "");
+                    
+                    if (Inst.opt.allowMultiples) {
+                        
+                        dt1Regex = $.datepicker.formatDate('yy-mm-dd', dtObj);
+                        
+                        Inst.$dtCntr
+                            .find("span[data-spwidget_dt1='" + dt1 + "']")
+                            .remove();
+                        
+                    }
+                    
+                });
+                
+                // Clean up the new string, set it to
+                // the input field and trigger event.
+                eleDtObj.input = eleDtObj.input
+                                    .replace((new RegExp("^" + Inst.opt.delimeter)), "")
+                                    .replace((new RegExp(Inst.opt.delimeter + "$")), "");
+                                    
+                Inst.$ele.val(eleDtObj.input).change();
+                
+                return Inst;
+                
+            }; //end: Inst.removeDate()
+            
+            //------------------------------------------------------
+            //-----------    INITIATE THIS INSTANCE    -------------
+            //------------------------------------------------------
+            
+            // Setup the datepicker options
+            // TODO: should we allow the user to manipulate this?
+            Inst.opt.datepicker.altFormat   = 'yy-mm-dd';
+            Inst.opt.datepicker.altField    = Inst.$ele;
+            
+            // If allowMultiples is true, then set special processing for storing
+            // multiple dates - both on display and in the input field.
+            if (Inst.opt.allowMultiples){
+                
+                Inst.opt.datepicker.altFormat   = '';
+                Inst.opt.datepicker.altField    = '';
+                
+                // If remainOpen option is true, then turn off picker animation
+                if (Inst.opt.remainOpen) {
+                    
+                    Inst.opt.datepicker.showAnim = '';
+                    
+                }
+                
+                // Setup listener for removing selected dates.
+                Inst.$dtCntr
+                    .css("display", "")
+                    .on("click", ".spwidgets-item-remove", function(ev){
+                        
+                        var $dt = $(ev.target).closest(".spwidgets-item");
+                        
+                        Inst.removeDate({
+                            date:   $dt.data("spwidget_dt1"),
+                            format: 'yy-mm-dd'
+                        });
+                        
+                    });
+                
+                // Store a reference to teh original onSelect method (if defined)
+                // and set our own here.  Our function will take the date selected
+                // by the user in their own locale and format it to ISO 8601
+                if ($.isFunction(Inst.opt.datepicker.onSelect)) {
+                    
+                    Inst.opt.datepicker._onSelect = Inst.opt.datepicker.onSelect;
+                    
+                }
+                
+                Inst.opt.datepicker.onSelect = function(dateText, dtPicker){
+                    
+                    Inst.setDate({
+                        date:           dateText,
+                        format:         dtPicker.settings.dateFormat,
+                        setDatepicker:  false
+                    });
+                    
+                    // Call the user defined onSelect if one was defined.
+                    if ($.isFunction(Inst.opt.datepicker._onSelect)) {
+                        
+                        Inst.opt.datepicker._onSelect.call(this, dateText, dtPicker );
+                        
+                    }
+                    
+                    Inst.$input.val("");
+                    
+                    if (Inst.opt.remainOpen) {
+                        
+                        setTimeout(function(){
+                            Inst.$input.datepicker("show");
+                        }, 5);
+                        
+                    }
+                    
+                };
+                
+            } //end: if(): allowMultiples
+            
+            // Hide the input used by the caller and display our datepicker input.
+            Inst.$ele
+                .css("display", "none")
+                .data("SPDateFieldInstance", Inst);
+            
+            Inst.$input.datepicker(Inst.opt.datepicker);
+            
+            // On date change, trigger event on original
+            // element and cancel this one
+            Inst.$input.on("change", function(ev){
+                
+                ev.stopPropagation();
+                Inst.$ele.change();
+                
+            });
+            
+            Inst.$ui.css("display", "");
+            
+        }); //end: return.each()
+        
+    }; //end: $.fn.SPDateField()
+    
+    
+    /**
+     * @property
+     * Stores the Style sheet for the Date widget
+     * @member SPDate
+     * @memberOf SPDate
+     */
+    SPDate.styleSheet = ".spwidget-date-cntr {\n"
++ "    display: inline-block;   \n"
++ "    position: relative;\n"
++ "}\n"
++ ".spwidget-date-cntr div.spwidget-date-input-cntr {\n"
++ "    position: relative;\n"
++ "}\n"
++ ".spwidget-date-cntr input {\n"
++ "    width: 99%;\n"
++ "}\n"
++ ".spwidget-date-cntr img.ui-datepicker-trigger {\n"
++ "    display: block;\n"
++ "    position: absolute;\n"
++ "    right: 2%;\n"
++ "    top: .3em;\n"
++ "}\n"
++ "\n"
++ ".spwidget-date-cntr .spwidgets-item-remove {\n"
++ "    color: red;\n"
++ "    font-size: xx-small;\n"
++ "    vertical-align: super;\n"
++ "    cursor: pointer;\n"
++ "}\n";
+//_HAS_DATE_CSS_TEMPLATE_
+    
+    /**
+     * @property
+     * Stores the HTML templates for the Date widget
+     * @member SPDate
+     * @memberOf SPDate
+     */
+    SPDate.htmlTemplate = "<div class=\"spwidget-date-cntr\">\n"
++ "    <div class=\"spwidget-date-selected-cntr\" style=\"display:none;\"></div>\n"
++ "    <div class=\"spwidget-date-input-cntr\">\n"
++ "        <input class=\"spwidget-date-datepicker\" name=\"SPDateFieldInput\" value=\"\" />\n"
++ "    </div>\n"
++ "</div>\n";
+//_HAS_DATE_HTML_TEMPLATE_
+    
+    
+})(jQuery); /***** End of module: jquery.SPDateField.js */
+
+/**
  * @fileOverview - List filter panel widget
  * 
- * BUILD: July 27, 2013 - 01:44 PM
+ * BUILD: Paul:August 03, 2013 11:43 PM
  * 
  */
 (function($){
@@ -6412,6 +7048,17 @@ $.pt.SPUploadStyleSheet = "/**\n"
                                         
                                     }
                                     
+                                case "DateTime":
+                                    
+                                    if (model.type === null) {
+                                        
+                                        model.type = 'date';
+                                        
+                                        model.otherFilterTypes = 
+                                            '<option value="Gt">After</option>' + 
+                                            '<option value="Lt">Before</option>'; 
+                                            
+                                    }
                                     
                                 case "User":
                                 case "UserMulti":
@@ -6510,10 +7157,37 @@ $.pt.SPUploadStyleSheet = "/**\n"
                                 
                             });
                         
-                        // Setup the DateTime fields
-                        Inst.$ele.find("div.spwidget-type-date input")
-                            .datepicker({});
+                        // Setup PEOPLE fields
+                        Inst.$ele.find("div.spwidget-type-people input")
+                            .each(function(){
+                                
+                                var $field = $(this);
+                                
+                                $field.pickSPUser({ allowMultiple: true });
+                                    
+                                $field.parent().find(".spwidget-tooltip").remove();
+                                
+                            });
                         
+                        // Setup DATE fields
+                        Inst.$ele.find("div.spwidget-type-date")
+                            .each(function(){
+                                
+                                var $column = $(this),
+                                    $field  = $column.find("input");
+                                
+                                $field.SPDateField({
+                                    allowMultiples: true
+                                });
+                                
+                                $column.find(".spwidget-tooltip").remove();
+                                $column.find("select.spwidget-filter-type")
+                                    .val("Eq")
+                                    .find("option[value='Contains']").remove();
+                                
+                                return this;
+                                
+                            });
                         
                         // Setup the Button on the UI (if applicable)
                         if (Inst.opt.showFilterButton || Inst.opt.showFilterButtonTop) {
@@ -6802,6 +7476,10 @@ $.pt.SPUploadStyleSheet = "/**\n"
             .find(".hasPickSPUser")
                 .pickSPUser("method", "clear")
                 .end()
+            // reset date fields
+            .find(".hasSPDateField")
+                .SPDateField("reset")
+                .end()
             // reset lookup fields
             .find(".hasLookupSPField")
                 .SPLookupField("method", "clear");
@@ -7016,6 +7694,40 @@ $.pt.SPUploadStyleSheet = "/**\n"
                         
                         break;
                     
+                    // -------------------- DATE FIELDS
+                    case "date":
+                        
+                        $input.each(function(){
+                            
+                            var dtObj = $input.SPDateField("getDate");
+                            
+                            if (dtObj.dates.length) {
+                                
+                                thisColFilter.values    = dtObj.dates;
+                                thisColFilter.count     = thisColFilter.values.length;
+                                thisColFilter.CAMLQuery = $.SPWidgets.getCamlLogical({
+                                    type:           'OR',
+                                    values:         thisColFilter.values,
+                                    onEachValue:    function(filterVal){
+                                        
+                                        return "<" + thisColFilter.matchType + 
+                                                "><FieldRef Name='" + 
+                                                thisColFilter.columnName + 
+                                                "'/><Value Type='DateTime'>" +
+                                                filterVal + "</Value></" + 
+                                                thisColFilter.matchType + ">";
+                                        
+                                    }
+                                });
+                                
+                            }
+                            
+                            return false;
+                            
+                        });
+                        
+                        break;
+                        
                     // -------------------- TEXT COLUMNS
                     case "text":
                         
@@ -7040,7 +7752,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
                                         thisColFilter.values.push(thisKeyword);
                                         
                                     }
-                                };
+                                }
                                 
                                 thisColFilter.CAMLQuery = getColumnCAMLQuery(thisColFilter);
                                 
@@ -7215,17 +7927,20 @@ $.pt.SPUploadStyleSheet = "/**\n"
     Filter.styleSheet = "/** \n"
 + " * Stylesheet for the Board widget\n"
 + " * \n"
-+ " * BUILD: July 27, 2013 - 01:44 PM\n"
++ " * BUILD: Paul:August 03, 2013 01:25 PM\n"
 + " */\n"
 + "div.spwidget-filter {\n"
 + "    width: 100%;\n"
 + "    position: relative;\n"
 + "}\n"
++ "div.spwidget-filter .spwidget-date-cntr,\n"
 + "div.spwidget-filter .spwidgets-lookup-cntr {\n"
 + "    display: block;\n"
 + "}\n"
 + "div.spwidget-filter .spwidget-filter-input[type='text'],\n"
++ "div.spwidget-filter .spwidget-type-people input.ui-autocomplete-input,\n"
 + "div.spwidget-filter .spwidgets-lookup-cntr,\n"
++ "div.spwidget-filter .spwidget-date-cntr,\n"
 + "div.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input {\n"
 + "    width: 97%;\n"
 + "}\n"
