@@ -3,7 +3,7 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *  
- * @version 20130803115505
+ * @version 20130804031424
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  * 
@@ -11,8 +11,8 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date:  August 03, 2013 - 11:55 PM
- * Version:     20130803115505
+ * Build Date:  August 04, 2013 - 03:14 PM
+ * Version:     20130804031424
  * 
  */
 ;(function($){
@@ -53,7 +53,7 @@
         }
         
         $.SPWidgets             = {};
-        $.SPWidgets.version     = "20130803115505";
+        $.SPWidgets.version     = "20130804031424";
         $.SPWidgets.defaults    = {};
         
         /**
@@ -161,7 +161,7 @@
             var opt = {},i,j,x,y,item;
             
             // If user used an object to define input param, then parse that now
-            if (typeof tmplt === "object") {
+            if (typeof tmplt === "object" && arguments.length === 1) {
                 
                 data    = tmplt.data;
                 tmplt   = tmplt.tmplt;
@@ -171,7 +171,8 @@
             opt.response    = "";
             opt.template    = (     typeof tmplt !== "string"
                                 ?   String($("<div/>").append(tmplt).html())
-                                :   tmplt );
+                                :   tmplt
+                            );
             opt.tokens      = opt.template.match(/(\{\{.*?\}\})/g);
             
             if (!$.isArray(data)) {
@@ -6088,6 +6089,10 @@ $.pt.SPUploadStyleSheet = "/**\n"
 + "\n";
 //_HAS_SPUPLOAD_CSS_TEMPLATE_
 /**
+ * jquery.SPDateField.js
+ * The SPDateField widget. Introduced with v2.2, August 2013
+ * 
+ * BUILD: August 04, 2013 - 03:14 PM
  * 
  */
 ;(function($){
@@ -6120,8 +6125,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
             showOn:             "both",
             buttonImageOnly:    true
         },
-        dateTemplate: '{{date}} <span class="spwidgets-item-remove">[x]</span>',
-        onReady:        null
+        dateTemplate: '{{date}} <span class="spwidgets-item-remove">[x]</span>'
     };
     
     
@@ -6149,6 +6153,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
      * $().SPDateField("getDate");
      * $().SPDateField("setDate", dates[], "format");
      * $().SPDateField("removeDate", dates[], "format");
+     * $().SPDateField("destroy");
      * 
      */
     $.fn.SPDateField = function(options){
@@ -6241,6 +6246,13 @@ $.pt.SPUploadStyleSheet = "/**\n"
                                 
                                 break;
                             
+                            //------> DESTROY METHOD: $().SPDateField("destroy")
+                            case "destroy":
+                                
+                                Inst.destroy();
+                                
+                                break;
+                            
                         } //end: switch()
                         
                     }
@@ -6279,7 +6291,8 @@ $.pt.SPUploadStyleSheet = "/**\n"
              * @memberOf Inst
              */
             Inst.eleOrigVal = Inst.$ele.val();
-            
+            Inst.$ele.val("");
+                
             /**
              * @property {Object} The input options after defaults
              * @member Inst
@@ -6399,7 +6412,8 @@ $.pt.SPUploadStyleSheet = "/**\n"
                                 {
                                     date:           '',
                                     format:         Inst.opt.datepicker.dateFormat,
-                                    setDatepicker:  true
+                                    setDatepicker:  true,
+                                    triggerEvent:   true
                                 },
                                 setDateOpt
                             ),
@@ -6428,16 +6442,28 @@ $.pt.SPUploadStyleSheet = "/**\n"
                     
                     if (!(dtObj instanceof Date)) {
                         
-                        dtObj = $.datepicker.parseDate(opt.format, dt);
+                        try {
+                            
+                            dtObj = $.datepicker.parseDate(opt.format, dt);
+                            
+                        } catch(e){
+                            
+                            return Inst;
+                            
+                        }
                          
                     }
 
                     dt1 = $.datepicker.formatDate('yy-mm-dd', dtObj);
+                    dt2 = $.datepicker
+                            .formatDate(Inst.opt.datepicker.dateFormat, dtObj);
+                    
                     
                     // AllowMultiples = false
                     if (!Inst.opt.allowMultiples) {
                         
-                        eleVal = dt1;
+                        eleVal  = dt1;
+                        dtShow  = dt2;
                         
                     // allowMultiples = true and date not yet stored
                     } else if (eleVal.indexOf(dt1) < 0) {
@@ -6447,9 +6473,6 @@ $.pt.SPUploadStyleSheet = "/**\n"
                             eleVal += Inst.opt.delimeter;
                             
                         }
-                        
-                        dt2 = $.datepicker
-                                .formatDate(Inst.opt.datepicker.dateFormat, dtObj);
                         
                         eleVal += dt1;
                         
@@ -6478,7 +6501,13 @@ $.pt.SPUploadStyleSheet = "/**\n"
                     
                 }
                 
-                Inst.$ele.val(eleVal).change();
+                Inst.$ele.val(eleVal);
+                
+                if (opt.triggerEvent) {
+                    
+                    Inst.$ele.change();
+                    
+                }
                 
                 return Inst;
                 
@@ -6528,7 +6557,15 @@ $.pt.SPUploadStyleSheet = "/**\n"
                     
                     if (!(dtObj instanceof Date)) {
                         
-                        dtObj = $.datepicker.parseDate(opt.format, dt);
+                        try {
+                            
+                            dtObj = $.datepicker.parseDate(opt.format, dt);
+                            
+                        } catch(e){
+                            
+                            return Inst;
+                            
+                        }
                          
                     }
 
@@ -6562,6 +6599,21 @@ $.pt.SPUploadStyleSheet = "/**\n"
                 return Inst;
                 
             }; //end: Inst.removeDate()
+            
+            /**
+             * Removes the widget from the page and makes the original
+             * Element visible
+             */
+            Inst.destroy = function() {
+                
+                Inst.$ele.removeData("SPDateFieldInstance");
+                Inst.$ele.removeClass("hasSPDateField").css("display", "");
+                Inst.$ui.css("display", "none");
+                Inst.$input.datepicker("hide");
+                Inst.$input.datepicker("destroy");
+                Inst.$ui.remove();
+                
+            }; //end: Inst.destroy()
             
             //------------------------------------------------------
             //-----------    INITIATE THIS INSTANCE    -------------
@@ -6637,13 +6689,25 @@ $.pt.SPUploadStyleSheet = "/**\n"
                 };
                 
             } //end: if(): allowMultiples
+
             
             // Hide the input used by the caller and display our datepicker input.
             Inst.$ele
                 .css("display", "none")
                 .data("SPDateFieldInstance", Inst);
-            
+                
             Inst.$input.datepicker(Inst.opt.datepicker);
+            
+            // If input field already has some date, then prepopulate the widget
+            if (Inst.eleOrigVal) {
+                
+                Inst.setDate({
+                    date:           (Inst.eleOrigVal.split(Inst.opt.delimeter)),
+                    format:         'yy-mm-dd',
+                    triggerEvent:   false
+                });
+                
+            }
             
             // On date change, trigger event on original
             // element and cancel this one
