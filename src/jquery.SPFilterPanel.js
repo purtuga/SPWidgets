@@ -337,6 +337,17 @@
                                         
                                     }
                                     
+                                case "DateTime":
+                                    
+                                    if (model.type === null) {
+                                        
+                                        model.type = 'date';
+                                        
+                                        model.otherFilterTypes = 
+                                            '<option value="Gt">After</option>' + 
+                                            '<option value="Lt">Before</option>'; 
+                                            
+                                    }
                                     
                                 case "User":
                                 case "UserMulti":
@@ -435,10 +446,37 @@
                                 
                             });
                         
-                        // Setup the DateTime fields
-                        Inst.$ele.find("div.spwidget-type-date input")
-                            .datepicker({});
+                        // Setup PEOPLE fields
+                        Inst.$ele.find("div.spwidget-type-people input")
+                            .each(function(){
+                                
+                                var $field = $(this);
+                                
+                                $field.pickSPUser({ allowMultiple: true });
+                                    
+                                $field.parent().find(".spwidget-tooltip").remove();
+                                
+                            });
                         
+                        // Setup DATE fields
+                        Inst.$ele.find("div.spwidget-type-date")
+                            .each(function(){
+                                
+                                var $column = $(this),
+                                    $field  = $column.find("input");
+                                
+                                $field.SPDateField({
+                                    allowMultiples: true
+                                });
+                                
+                                $column.find(".spwidget-tooltip").remove();
+                                $column.find("select.spwidget-filter-type")
+                                    .val("Eq")
+                                    .find("option[value='Contains']").remove();
+                                
+                                return this;
+                                
+                            });
                         
                         // Setup the Button on the UI (if applicable)
                         if (Inst.opt.showFilterButton || Inst.opt.showFilterButtonTop) {
@@ -727,6 +765,10 @@
             .find(".hasPickSPUser")
                 .pickSPUser("method", "clear")
                 .end()
+            // reset date fields
+            .find(".hasSPDateField")
+                .SPDateField("reset")
+                .end()
             // reset lookup fields
             .find(".hasLookupSPField")
                 .SPLookupField("method", "clear");
@@ -941,6 +983,40 @@
                         
                         break;
                     
+                    // -------------------- DATE FIELDS
+                    case "date":
+                        
+                        $input.each(function(){
+                            
+                            var dtObj = $input.SPDateField("getDate");
+                            
+                            if (dtObj.dates.length) {
+                                
+                                thisColFilter.values    = dtObj.dates;
+                                thisColFilter.count     = thisColFilter.values.length;
+                                thisColFilter.CAMLQuery = $.SPWidgets.getCamlLogical({
+                                    type:           'OR',
+                                    values:         thisColFilter.values,
+                                    onEachValue:    function(filterVal){
+                                        
+                                        return "<" + thisColFilter.matchType + 
+                                                "><FieldRef Name='" + 
+                                                thisColFilter.columnName + 
+                                                "'/><Value Type='DateTime'>" +
+                                                filterVal + "</Value></" + 
+                                                thisColFilter.matchType + ">";
+                                        
+                                    }
+                                });
+                                
+                            }
+                            
+                            return false;
+                            
+                        });
+                        
+                        break;
+                        
                     // -------------------- TEXT COLUMNS
                     case "text":
                         
@@ -965,7 +1041,7 @@
                                         thisColFilter.values.push(thisKeyword);
                                         
                                     }
-                                };
+                                }
                                 
                                 thisColFilter.CAMLQuery = getColumnCAMLQuery(thisColFilter);
                                 
