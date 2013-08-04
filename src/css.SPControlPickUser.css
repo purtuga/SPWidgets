@@ -13,6 +13,9 @@
     font-size: .9em;
 }
 
+.pt-pickSPUser div.pt-pickSPUser-input input.ui-autocomplete {
+    width: 99%;
+}
 
 .pt-pickSPUser .pt-pickSPUser-person-cntr {
     margin: .2em 0em;
