@@ -361,21 +361,33 @@ SPWidgets - Widgets for building custom UIs
             <div class="spwidget-demo-fluid spwidget-demo-float-cntr">
                 <div class="ui-widget-content ui-corner-all spwidget-demo-float">
                     
-                    <p>
-                        About this demo
-                    </p>
                     <div class="spwidget-demo-samples">
                         
-                        <div>
+                        <p>
                             <h3>Example 1</h3>
+                            <p>Default functionality.</p>
                             <div class="spwidget-demo-example1">
-                                
                                 <input type="text" name="example1" value="" />
-                                
                             </div>
-                        </div>
+                        </p>
+                        <hr>
+                        <p>
+                            <h3>Exmaple 2</h3>
+                            <p>Allow multiple dates.</p>
+                            <div>
+                                <input type="text" name="example2" value="" />
+                            </div>
+                        </p>
+                        <hr>
+                        <p>
+                            <h3>Exmaple 3</h3>
+                            <p>Override date input format to Euro - mm/dd/yyyy</p>
+                            <div>
+                                <input type="text" name="example3" value="" />
+                            </div>
+                        </p>
                         
-                        
+                        <p style="height: 15em;"></p>
                     </div>
                     
                 </div>
@@ -388,11 +400,6 @@ SPWidgets - Widgets for building custom UIs
                                 </a>
                             </li>
                             <li>
-                                <a href="#spwidgets_demo_date_output">
-                                    <span>CAML XML</span>
-                                </a>
-                            </li>
-                            <li>
                                 <a href="#spwidgets_demo_date_about">
                                     <span>About</span>
                                 </a>
@@ -400,17 +407,22 @@ SPWidgets - Widgets for building custom UIs
                         </ul>
                         
                         <div id="spwidgets_demo_date_results">
-                            
-                            
-                            
-                        </div>
-                        
-                        <div id="spwidgets_demo_date_output">
-                            output here
+                            <p>
+                                As the dates are selected, the demo will output data to this 
+                                area when the input element's change event is triggered.
+                            </p>
+                            <div class="spwidget-output">
+                                
+                            </div>
                         </div>
                         
                         <div id="spwidgets_demo_date_about">
-                            About here
+                            <p>
+                                SPDateField is a widgets wrapped around jQuery UI Datepicker that 
+                                allows the user to pick one or more dates using their own locale 
+                                format, while storing the SharePoint friendly format (YYY-MM-DD) 
+                                in the input field to which this widget was bound to.
+                            </p>
                         </div>
                         
                     </div>

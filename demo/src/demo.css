@@ -373,6 +373,9 @@
     padding: .5em;
 }
 
+#spwidgets_demo_cntr .spwidget-demo-samples {
+    padding: .5em;
+}
 
 /** LIST PICKER **/
 #spwidgets_demo_cntr div.spwidgets-demo-list-picker {
