@@ -46,11 +46,9 @@ div.spwidget-board div.spwidget-board-state div.spwidget-board-state-item {
     overflow: auto;
 }
 div.spwidget-board div.spwidget-board-state-item div.spwidget-board-item-actions{
-    margin-top: .5em;
+    margin-top: .2em;
     padding: .2em .5em;
-    width: 25%;
     overflow: hidden;
-    text-align: center;
 }
 div.spwidget-board .spwidget-board-placeholder {
     height: 3em;
