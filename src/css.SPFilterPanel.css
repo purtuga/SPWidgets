@@ -7,11 +7,14 @@ div.spwidget-filter {
     width: 100%;
     position: relative;
 }
+div.spwidget-filter .spwidget-date-cntr,
 div.spwidget-filter .spwidgets-lookup-cntr {
     display: block;
 }
 div.spwidget-filter .spwidget-filter-input[type='text'],
+div.spwidget-filter .spwidget-type-people input.ui-autocomplete-input,
 div.spwidget-filter .spwidgets-lookup-cntr,
+div.spwidget-filter .spwidget-date-cntr,
 div.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input {
     width: 97%;
 }
