@@ -33,6 +33,8 @@
 }
 .spwidgets-lookup-cntr .spwidgets-item-remove {
     color: red;
+    font-size: xx-small;
+    vertical-align: super;
     cursor: pointer;
 }
 
