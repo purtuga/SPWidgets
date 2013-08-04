@@ -134,7 +134,7 @@ Methods
 -------
 
 
--   **getFilter()**</br />
+-   **getFilter()**<br />
     Returns a Filter object with the values entered by the user. The object will have CAML Query ready string values as well as properties that hold the individual values entered by the user.
     
     Usage:
@@ -164,7 +164,7 @@ Methods
         }
 
 
--   **setFiler(ObjectWithFilters)**</br />
+-   **setFiler(ObjectWithFilters)**<br />
     Clears the existing set of filters defind on the panel and sets the filter panel with the criteria defined on input to this method.  Input will be an object with similar format as the _filters_ attribute of the _getFilter_ method.
     
     Usage:
@@ -197,7 +197,7 @@ Methods
             }
 
 
--   **destroy()**</br />
+-   **destroy()**<br />
     Removes the widget from the UI.
     
     Usage:
