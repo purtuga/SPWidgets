@@ -149,6 +149,9 @@
                 <uptodate 
                     srcfile="${src.base}${/}src${/}css.SPFilterPanel.css"
                     targetfile="${build.src}${/}css.SPFilterPanel.css" />
+                <uptodate 
+                    srcfile="${src.base}${/}src${/}css.SPDateField.css"
+                    targetfile="${build.src}${/}css.SPDateField.css" />
             </and>
         </condition>
         <echo message="forceCssCopyNotNeeded set to: ${forceCssCopyNotNeeded}" />
@@ -167,6 +170,9 @@
                 <uptodate 
                     srcfile="${src.base}${/}src${/}html.SPFilterPanel.html"
                     targetfile="${build.src}${/}html.SPFilterPanel.html" />
+                <uptodate 
+                    srcfile="${src.base}${/}src${/}html.SPDateField.html"
+                    targetfile="${build.src}${/}html.SPDateField.html" />
             </and>
         </condition>
         <echo message="forceHtmlCopyNotNeeded set to: ${forceHtmlCopyNotNeeded}" />
@@ -223,6 +229,9 @@
             <fileset dir="${build.src}">
                 <contains text="//_HAS_LOOKUP_CSS_TEMPLATE_" casesensitive="yes"/>
             </fileset>
+            <fileset dir="${build.src}">
+                <contains text="//_HAS_DATE_CSS_TEMPLATE_" casesensitive="yes"/>
+            </fileset>
         </delete>
         <echo message="doCssForceCopy -------------------------------- [END]" />
     </target>
@@ -247,6 +256,9 @@
             </fileset>
             <fileset dir="${build.src}">
                 <contains text="//_HAS_FILTER_HTML_TEMPLATE_" casesensitive="yes"/>
+            </fileset>
+            <fileset dir="${build.src}">
+                <contains text="//_HAS_DATE_HTML_TEMPLATE_" casesensitive="yes"/>
             </fileset>
         	
         	
@@ -399,6 +411,16 @@
                 summary="Yes">
         </replace>
     	
+    	<!-- Load the SPDatefield File and replaced where its token appears -->
+    	<getFileAsJsString 
+    		file="${build.src}${/}css.SPDateField.css" 
+    		property="css.SPDate"/>
+        <replace dir="${build.src}" 
+                token='"_INCLUDE_DATE_CSS_TEMPLATE_";'
+                value="${css.SPDate};${line.separator}//_HAS_DATE_CSS_TEMPLATE_"
+                summary="Yes">
+        </replace>
+    	
         
         <echo message="embedCssTemplates -------------------------------- [END]" />       
     </target>
@@ -441,6 +463,16 @@
         <replace dir="${build.src}" 
                 token='"_INCLUDE_FILTER_HTML_TEMPLATE_";'
                 value="${html.SPFilter};${line.separator}//_HAS_FILTER_HTML_TEMPLATE_"
+                summary="Yes">
+        </replace>
+    	
+        <!-- Load the SPDateField HTML File and replaced where its token appears -->
+    	<getFileAsJsString 
+    		file="${build.src}${/}html.SPDateField.html" 
+    		property="html.SPDate"/>
+        <replace dir="${build.src}" 
+                token='"_INCLUDE_DATE_HTML_TEMPLATE_";'
+                value="${html.SPDate};${line.separator}//_HAS_DATE_HTML_TEMPLATE_"
                 summary="Yes">
         </replace>
     	
