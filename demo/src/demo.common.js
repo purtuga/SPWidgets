@@ -307,7 +307,52 @@
         
     }; //end: getListColumns()
     
-    
+    /**
+     * Given an element, this method will setup it up for logging data,
+     * and return an object ready to interact with it.
+     */
+    Main.setupLogOutput = function(options) {
+        
+        var opt     = $.extend({}, {
+                        container: null,
+                        fixHeight: true,
+                        height:     '40em'
+                    }, options),
+            Inst    = {},
+            css     = {
+                        padding: ".2em",
+                        position: "relative"
+                    };
+        
+        if (!opt.container) {
+            
+            return;
+            
+        }
+        
+        opt.container = $(opt.container);
+        
+        if (opt.fixHeight){
+            
+            css.height      = opt.height;
+            css.overflow    = "auto";
+            
+        }
+        
+        opt.container
+            .addClass("ui-widget-content")
+            .css(css);
+        
+        Inst.log = function(data) {
+            
+            opt.container.append('<div>' + data + '<div>');
+            opt.container.scrollTop(opt.container.children(":last").position().top);
+            
+        }; //end: log()
+        
+        return Inst;
+        
+    }; //end: Main.setupLogOutput()
     
     Main.$ui = $("#spwidgets_demo_cntr")
             .css("display", "")
