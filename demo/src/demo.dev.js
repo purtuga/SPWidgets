@@ -10,6 +10,10 @@
  */
 (function(){
     
+    "use strict";
+    /*jslint nomen: true, plusplus: true */
+    /*global SPWidgets, SPWIDGET_DEMO */
+    
     var Main = SPWIDGET_DEMO.Dev = {};
     
     Main._version = '_BUILD_VERSION_NUMBER_'; 
@@ -186,7 +190,12 @@
                             // 11. jquery.SPFilterPanel.js
                             Main.loadScript(
                                 SPWIDGET_DEMO.BIN_DIR + 
-                                "src/jquery.SPFilterPanel.js?rev=" + Main._version)
+                                "src/jquery.SPFilterPanel.js?rev=" + Main._version),
+                            
+                            // 11.a. jquery.SPDateField.js
+                            Main.loadScript(
+                                SPWIDGET_DEMO.BIN_DIR + 
+                                "src/jquery.SPDateField.js?rev=" + Main._version)
                             
                         )
                         .then(function(){
@@ -233,6 +242,11 @@
                                                 Main.loadScript(
                                                     SPWIDGET_DEMO.BIN_DIR + 
                                                     "demo/src/widget.filter.demo.js?rev=" + Main._version);
+                                                
+                                                // 19. widget.filter.demo.js
+                                                Main.loadScript(
+                                                    SPWIDGET_DEMO.BIN_DIR + 
+                                                    "demo/src/widget.date.demo.js?rev=" + Main._version);
                                                 
                                             });
                                         

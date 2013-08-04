@@ -1,0 +1,23 @@
+.spwidget-date-cntr {
+    display: inline-block;   
+    position: relative;
+}
+.spwidget-date-cntr div.spwidget-date-input-cntr {
+    position: relative;
+}
+.spwidget-date-cntr input {
+    width: 99%;
+}
+.spwidget-date-cntr img.ui-datepicker-trigger {
+    display: block;
+    position: absolute;
+    right: 2%;
+    top: .3em;
+}
+
+.spwidget-date-cntr .spwidgets-item-remove {
+    color: red;
+    font-size: xx-small;
+    vertical-align: super;
+    cursor: pointer;
+}
