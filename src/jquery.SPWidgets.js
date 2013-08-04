@@ -160,6 +160,14 @@
             
             var opt = {},i,j,x,y,item;
             
+            // If user used an object to define input param, then parse that now
+            if (typeof tmplt === "object") {
+                
+                data    = tmplt.data;
+                tmplt   = tmplt.tmplt;
+                
+            }
+            
             opt.response    = "";
             opt.template    = (     typeof tmplt !== "string"
                                 ?   String($("<div/>").append(tmplt).html())
