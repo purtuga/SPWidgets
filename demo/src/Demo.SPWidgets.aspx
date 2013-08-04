@@ -70,6 +70,7 @@ SPWidgets - Widgets for building custom UIs
             <li><a href="#SPControlBoardDemo"><span>Board</span></a></li>
             <li><a href="#SPControlLookupFieldDemo"><span>Lookup Field</span></a></li>
             <li><a href="#SPControlListFilterPanel"><span>List Filter Panel</span></a></li>
+            <li><a href="#SPDateField"><span>Date Field</span></a></li>
             <li><a href="#SPWidgetsAbout"><span class="ui-icon ui-icon-info">Info</span></a></li>
         </ul>
         <div id="SPControlUploadDemo">
@@ -352,6 +353,71 @@ SPWidgets - Widgets for building custom UIs
             </div>
             
         </div><!-- end: #SPControlListFilterPanel -->
+        
+        <div id="SPDateField">
+            
+            <h2>Date Widget</h2>
+            
+            <div class="spwidget-demo-fluid spwidget-demo-float-cntr">
+                <div class="ui-widget-content ui-corner-all spwidget-demo-float">
+                    
+                    <p>
+                        About this demo
+                    </p>
+                    <div class="spwidget-demo-samples">
+                        
+                        <div>
+                            <h3>Example 1</h3>
+                            <div class="spwidget-demo-example1">
+                                
+                                <input type="text" name="example1" value="" />
+                                
+                            </div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="spwidget-demo-float">
+                    <div class="spwidget-demo-tabs">
+                        <ul>
+                            <li>
+                                <a href="#spwidgets_demo_date_results">
+                                    <span>Results</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#spwidgets_demo_date_output">
+                                    <span>CAML XML</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#spwidgets_demo_date_about">
+                                    <span>About</span>
+                                </a>
+                            </li>
+                        </ul>
+                        
+                        <div id="spwidgets_demo_date_results">
+                            
+                            
+                            
+                        </div>
+                        
+                        <div id="spwidgets_demo_date_output">
+                            output here
+                        </div>
+                        
+                        <div id="spwidgets_demo_date_about">
+                            About here
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            
+        </div> <!-- end: #SPDateField -->
         
         <div id="SPWidgetsAbout">
             

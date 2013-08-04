@@ -91,7 +91,9 @@ window.SPWIDGET_DEMO = {
             '<h1 style="color:red;">' +
                 'BIN_DIR not defined. Add the following parameter to the URL and refresh the page:<br><br>' +
                 '<code>?BIN_DIR=url_to_src_folder</code><br><br>' +
-                'Url to source folder should include the trailing forward slash.' +
+                'Replace <code>url_to_src_folder</code> with the URL to folder that' +
+                ' contains the src, demo folders. URL value must include the trailing' +
+                ' forward slash. Ex: <code>http://yoursite/Documents/AppBin/SPWidgets/</code>' +
             '</h1>'
         );
         
