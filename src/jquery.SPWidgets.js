@@ -161,7 +161,7 @@
             var opt = {},i,j,x,y,item;
             
             // If user used an object to define input param, then parse that now
-            if (typeof tmplt === "object") {
+            if (typeof tmplt === "object" && arguments.length === 1) {
                 
                 data    = tmplt.data;
                 tmplt   = tmplt.tmplt;
@@ -171,7 +171,8 @@
             opt.response    = "";
             opt.template    = (     typeof tmplt !== "string"
                                 ?   String($("<div/>").append(tmplt).html())
-                                :   tmplt );
+                                :   tmplt
+                            );
             opt.tokens      = opt.template.match(/(\{\{.*?\}\})/g);
             
             if (!$.isArray(data)) {
