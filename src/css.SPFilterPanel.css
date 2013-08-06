@@ -11,13 +11,20 @@ div.spwidget-filter .spwidget-date-cntr,
 div.spwidget-filter .spwidgets-lookup-cntr {
     display: block;
 }
-div.spwidget-filter .spwidget-filter-input[type='text'],
+/* Adjust the width of the widget inputs inside the filter panel */
+div.spwidget-filter .spwidget-type-text input.spwidget-filter-input,
 div.spwidget-filter .spwidget-type-people input.ui-autocomplete-input,
-div.spwidget-filter .spwidgets-lookup-cntr,
-div.spwidget-filter .spwidget-date-cntr,
 div.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input {
-    width: 97%;
+    width: 95%;
 }
+
+div.spwidget-filter .spwidgets-lookup-cntr {
+    width: 96%;
+}
+div.spwidget-filter .spwidget-date-cntr div.spwidget-date-input-cntr {
+    width: 97%
+}
+
 div.spwidget-filter div.spwidget-column {
     padding: .5em;
     margin: .5em;
@@ -29,7 +36,6 @@ div.spwidget-filter div.spwidget-filter-type-cntr {
     right: 4%;
     margin-top: 0.2em;
     position: absolute;
-    z-index: 5;
 }
 div.spwidget-filter div.spwidget-filter-value-cntr {
     margin-top: .5em;
