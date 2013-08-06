@@ -45,5 +45,13 @@
             output.log("Example 3: input change: " + $(this).val());
         });
     
+    $demoCntr.find("input[name='example4']")
+        .SPDateField({
+            allowMultiples: true
+        })
+        .on("change", function(){
+            output.log("Example 4: input change: " + $(this).val());
+        });
+    
     
 })(SPWIDGET_DEMO.JQUERY || jQuery);

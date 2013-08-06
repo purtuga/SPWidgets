@@ -387,6 +387,17 @@ SPWidgets - Widgets for building custom UIs
                             </div>
                         </p>
                         
+                        <p>
+                            <h3>Exmaple 4</h3>
+                            <p>
+                                In this example, the input field used to bind SPDateField widget
+                                was already storing 2 dates: August 1, 2013 and August 2, 2013.
+                            </p>
+                            <div>
+                                <input type="text" name="example4" value="2013-08-01;2013-08-02" />
+                            </div>
+                        </p>
+                        
                         <p style="height: 15em;"></p>
                     </div>
                     
