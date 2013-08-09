@@ -1197,6 +1197,12 @@
                     
                     break;
                 
+                case "date":
+                    
+                    $input.SPDateField('setDate', filter.values);
+                    
+                    break;
+                
             }
             
             $input.change();
