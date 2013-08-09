@@ -174,9 +174,13 @@ Methods
                 "setFilter",
                 {
                     ID: { 
-                        values: [ 3, 4, 5]
+                        values: [ 3, 4, 5],
+                        matchType: 'Eq'
                     },
-                    matchType: 'Eq'
+                    Title: {
+                        values:     'test',
+                        matchType:  'Contains'
+                    }
                 }
             );
     
