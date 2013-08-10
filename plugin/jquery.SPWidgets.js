@@ -3,7 +3,7 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *  
- * @version 20130804031424
+ * @version 20130810010723
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  * 
@@ -11,8 +11,8 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date:  August 04, 2013 - 03:14 PM
- * Version:     20130804031424
+ * Build Date:  August 10, 2013 - 01:07 PM
+ * Version:     20130810010723
  * 
  */
 ;(function($){
@@ -53,7 +53,7 @@
         }
         
         $.SPWidgets             = {};
-        $.SPWidgets.version     = "20130804031424";
+        $.SPWidgets.version     = "20130810010723";
         $.SPWidgets.defaults    = {};
         
         /**
@@ -621,7 +621,7 @@
  *  -   jQuery-UI Draggable
  * 
  * 
- * BUILD: Paul:August 03, 2013 11:24 PM
+ * BUILD: Paul:August 09, 2013 06:00 PM
  */
 
 ;(function($){
@@ -2991,7 +2991,7 @@
  * THe user, however, is presented with the existing items
  * and has the ability to Remove them and add new ones.
  * 
- * BUILD: Paul:August 03, 2013 11:24 PM
+ * BUILD: Paul:August 09, 2013 06:00 PM
  * 
  */
 
@@ -4545,7 +4545,7 @@
  * on jQuery UI's Autocomplete and SPServices library.
  *      
  *  
- * @version 20130803112455NUMBER_
+ * @version 20130809060018NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
@@ -4553,7 +4553,7 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date Paul:August 03, 2013 11:24 PM
+ * Build Date Paul:August 09, 2013 06:00 PM
  * 
  */
 (function(){
@@ -5381,7 +5381,7 @@
  * through the many SP pages and without having to leave the user's current page.
  *      
  *  
- * @version 20130803112455NUMBER_
+ * @version 20130809060018NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
@@ -5389,7 +5389,7 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date Paul:August 03, 2013 11:24 PM
+ * Build Date Paul:August 09, 2013 06:00 PM
  * 
  */
 
@@ -6092,7 +6092,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
  * jquery.SPDateField.js
  * The SPDateField widget. Introduced with v2.2, August 2013
  * 
- * BUILD: August 04, 2013 - 03:14 PM
+ * BUILD: Paul:August 09, 2013 06:00 PM
  * 
  */
 ;(function($){
@@ -6776,7 +6776,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
 /**
  * @fileOverview - List filter panel widget
  * 
- * BUILD: Paul:August 03, 2013 11:43 PM
+ * BUILD: August 10, 2013 - 01:07 PM
  * 
  */
 (function($){
@@ -7972,6 +7972,12 @@ $.pt.SPUploadStyleSheet = "/**\n"
                     
                     break;
                 
+                case "date":
+                    
+                    $input.SPDateField('setDate', filter.values);
+                    
+                    break;
+                
             }
             
             $input.change();
@@ -7991,7 +7997,7 @@ $.pt.SPUploadStyleSheet = "/**\n"
     Filter.styleSheet = "/** \n"
 + " * Stylesheet for the Board widget\n"
 + " * \n"
-+ " * BUILD: Paul:August 03, 2013 01:25 PM\n"
++ " * BUILD: Paul:August 09, 2013 06:00 PM\n"
 + " */\n"
 + "div.spwidget-filter {\n"
 + "    width: 100%;\n"
@@ -8001,13 +8007,20 @@ $.pt.SPUploadStyleSheet = "/**\n"
 + "div.spwidget-filter .spwidgets-lookup-cntr {\n"
 + "    display: block;\n"
 + "}\n"
-+ "div.spwidget-filter .spwidget-filter-input[type='text'],\n"
++ "/* Adjust the width of the widget inputs inside the filter panel */\n"
++ "div.spwidget-filter .spwidget-type-text input.spwidget-filter-input,\n"
 + "div.spwidget-filter .spwidget-type-people input.ui-autocomplete-input,\n"
-+ "div.spwidget-filter .spwidgets-lookup-cntr,\n"
-+ "div.spwidget-filter .spwidget-date-cntr,\n"
 + "div.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input {\n"
-+ "    width: 97%;\n"
++ "    width: 95%;\n"
 + "}\n"
++ "\n"
++ "div.spwidget-filter .spwidgets-lookup-cntr {\n"
++ "    width: 96%;\n"
++ "}\n"
++ "div.spwidget-filter .spwidget-date-cntr div.spwidget-date-input-cntr {\n"
++ "    width: 97%\n"
++ "}\n"
++ "\n"
 + "div.spwidget-filter div.spwidget-column {\n"
 + "    padding: .5em;\n"
 + "    margin: .5em;\n"
@@ -8019,7 +8032,6 @@ $.pt.SPUploadStyleSheet = "/**\n"
 + "    right: 4%;\n"
 + "    margin-top: 0.2em;\n"
 + "    position: absolute;\n"
-+ "    z-index: 5;\n"
 + "}\n"
 + "div.spwidget-filter div.spwidget-filter-value-cntr {\n"
 + "    margin-top: .5em;\n"
