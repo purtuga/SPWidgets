@@ -34,18 +34,17 @@ div.spwidget-filter div.spwidget-column {
 }
 div.spwidget-filter div.spwidget-filter-type-cntr {
     right: 4%;
-    margin-top: 0.2em;
     position: absolute;
+    font-size: .8em;
+    margin-top: .1em;
 }
 div.spwidget-filter div.spwidget-filter-value-cntr {
-    margin-top: .5em;
     width: 100%;
 }
 
 div.spwidget-filter div.spwidget-filter-value-cntr > label {
     display: block;
     padding: .2em;
-    font-size: 1.1em;
     font-weight: bold;
 }
 div.spwidget-filter div.spwidget-column-dirty div.spwidget-filter-value-cntr > label {
