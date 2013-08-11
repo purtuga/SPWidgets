@@ -86,7 +86,7 @@ $.pt._isSPUploadCssDone = false;
  *                  True or False indicating if document being uploaded should
  *                  overwrite any existing one. Default is False (don't overwrite)
  * 
- * @param {String} [options.uploadPage="/_layouts/Upload.aspx"]
+ * @param {String} [options.uploadPage=""]
  *                  The relative URL from the WebSite root to the upload page.
  *                  Default is "/_layouts/Upload.aspx". This value is appended to
  *                  to the website full url, which is retrieved using SPServices
@@ -120,11 +120,11 @@ $.fn.SPControlUpload = function (options) {
     var o = $.extend({}, {
                 listName:       '',
                 folderPath:     '',
-                uploadDonePage: '/_layouts/viewlsts.aspx',
+                uploadDonePage: '/undefined',
                 onPageChange:   null,
                 uploadUrlOpt:   '',
                 overwrite:      false,
-                uploadPage:     '/_layouts/Upload.aspx',
+                uploadPage:     '',
                 overlayClass:   '',
                 overlayBgColor: 'white',
                 overlayMessage: '<div class="loadingOverlayMsg">Loading...</div>'
@@ -149,20 +149,54 @@ $.fn.SPControlUpload = function (options) {
 
     // get current site URL
     // TODO: use WebUrlFromPageUrl to get the url baed on siteUrl
-    o.siteUrl       = $().SPServices.SPGetCurrentSite();
+    o.siteUrl = $().SPServices.SPGetCurrentSite();
     
-    // set the url of the upload page based on the siteUrl
-    if (String(o.uploadPage).toLowerCase().indexOf("http") == -1) {
-        var s = "/";
-        if (o.uploadPage.indexOf('/') == 0) {
-            s = "";
+    // If user did not define the Upload page on input, then set it depending
+    // on SP version. Else, if the user defined the upload page, ensure it 
+    // is a full url starting at http... 
+    o.spVersion     = $.SPWidgets.getSPVersion(true);
+    o.uploadPage    = String(o.uploadPage);
+    
+    if (!o.uploadPage) {
+        
+        switch(o.spVersion) {
+            
+            case "2013":
+                
+                o.uploadPage = o.siteUrl + '/_layouts/15/Upload.aspx';
+                
+                break;
+            
+            case "2010":
+                
+                
+                o.uploadPage2 = o.siteUrl + "/_layouts/UploadEx.aspx";
+                
+                break;
+            
+            // Default: SP 2007
+            default: 
+                
+                o.uploadPage = o.siteUrl + '/_layouts/Upload.aspx';
+                
+                break;
+            
         }
+        
+    } else if (o.uploadPage.toLowerCase().indexOf("http") === -1) {
+        
+        var s = "/";
+        
+        if (o.uploadPage.indexOf('/') == 0) {
+            
+            s = "";
+            
+        }
+        
         o.uploadPage = o.siteUrl + s + o.uploadPage;
         
-        // Define SP2010 alternate upload form
-        o.uploadPage2 = o.siteUrl + "/_layouts/UploadEx.aspx";
-        
     }
+    
     // Set the uploadDonePage url
     if (String(o.uploadDonePage).toLowerCase().indexOf("http") == -1) {
         var s = "/";
@@ -404,9 +438,6 @@ $.pt._onIFramePageChange = function(ele){
                     $.pt.isSameUrlpage(
                         $.pt.getUnEscapedUrl(ev.pageUrl),
                         $.pt.getUnEscapedUrl(opt.uploadPage))
-                ||  $.pt.isSameUrlpage(
-                        $.pt.getUnEscapedUrl(ev.pageUrl),
-                        $.pt.getUnEscapedUrl(opt.uploadPage2))
             ) {
 //                console.debug("_onIFramePageChange() URL is the same as the one originally requested.");
                 
@@ -502,68 +533,76 @@ $.pt._onIFramePageChange = function(ele){
             // iframe document's form element (which in turn calls the user defined 
             // onPageChange event prior to sending the form on.
             } else {
+                
                 ev.state            = 3;
                 ev.action           = "postLoad";
                 ev.hideOverlay      = true;
-                var form            = page.find("form").eq(0);
-                var formOnSubmit    = form.prop("onsubmit");
                 
                 // If the current page is the 'uploadDonePage', then set
                 // flag in the event, set flag to not hide the overlay
                 // and insert message indicating upload is done.
                 if ($.pt.isSameUrlpage(ev.pageUrl, opt.uploadDonePage)) {
+                    
                     ev.isUploadDone = true;
                     ev.hideOverlay  = false;
+                    
                     e.find(".loadingOverlay")
                         .empty()
                         .append('<div class="ui-state-highlight" style="width:80%;">' +
                                 'Upload Complete!</div>');
-                }
                 
-//                console.debug("_onIFramePageChange(): Binding function to form!");
-                
-                // SP seems to have a good hold of the Form, because
-                // we are unable o bind an event via $. Thus:
-                // The form's onsubmit has to be overriden with our
-                // own function... The original function was captured
-                // above, thus it will triggered... but we now control
-                // when we trigger it.
-                form[0].onsubmit = function(){
-
-//                    console.debug("_onIFramePageChange(): in custom onsubmit... ");
+                // Else, page is not the uploadDonePage... manipulate the form's
+                // onsubmit event.
+                } else {
                     
-                    // Show the overlay without animation.
-                    e.find(".loadingOverlay").css("display", "block");
+                    var form            = page.find("form").eq(0);
+                    var formOnSubmit    = form.prop("onsubmit");
                     
-                    var allowFormToContinue = true;
+    //                console.debug("_onIFramePageChange(): Binding function to form!");
                     
-                    // if the user defined a function, then run it now and
-                    // exit if the resposne is false (stop submition)
-                    if ($.isFunction(opt.onPageChange)) {
-                        allowFormToContinue = opt.onPageChange.call(
-                                    e.closest(".hasSPControlUploadUI"),
-                                    $.extend({}, ev, {state: 3, action: "preLoad"}));
-                    }
-                    if (allowFormToContinue === false) {
-                        e.find(".loadingOverlay").fadeOut();
+                    // SP seems to have a good hold of the Form, because
+                    // we are unable o bind an event via $. Thus:
+                    // The form's onsubmit has to be overriden with our
+                    // own function... The original function was captured
+                    // above, thus it will triggered... but we now control
+                    // when we trigger it.
+                    form[0].onsubmit = function(){
+    
+    //                    console.debug("_onIFramePageChange(): in custom onsubmit... ");
+                        
+                        // Show the overlay without animation.
+                        e.find(".loadingOverlay").css("display", "block");
+                        
+                        var allowFormToContinue = true;
+                        
+                        // if the user defined a function, then run it now and
+                        // exit if the resposne is false (stop submition)
+                        if ($.isFunction(opt.onPageChange)) {
+                            allowFormToContinue = opt.onPageChange.call(
+                                        e.closest(".hasSPControlUploadUI"),
+                                        $.extend({}, ev, {state: 3, action: "preLoad"}));
+                        }
+                        if (allowFormToContinue === false) {
+                            e.find(".loadingOverlay").fadeOut();
+                            return allowFormToContinue;
+                        };
+                        
+                        // if SP had a onSubmit defined, then execute it now and 
+                        // exit if the resposne is false (stop submition)
+                        if ($.isFunction(formOnSubmit)) {
+                            allowFormToContinue = formOnSubmit();
+                        }
+                        if (allowFormToContinue === false) {
+                            e.find(".loadingOverlay").fadeOut();
+                            return allowFormToContinue;
+                        };
+    
+                        // Return true, allowing the form to be submitted.
                         return allowFormToContinue;
+                        
                     };
                     
-                    // if SP had a onSubmit defined, then execute it now and 
-                    // exit if the resposne is false (stop submition)
-                    if ($.isFunction(formOnSubmit)) {
-                        allowFormToContinue = formOnSubmit();
-                    }
-                    if (allowFormToContinue === false) {
-                        e.find(".loadingOverlay").fadeOut();
-                        return allowFormToContinue;
-                    };
-
-                    // Return true, allowing the form to be submitted.
-                    return allowFormToContinue;
-                    
-                };
-
+                } //end: if(): onUpdateDonePage? or not?
                               
                 // Bind a function to the iframe WINDOW object for when it is
                 // unloaded.. At this point, nothing can be done to prevent
