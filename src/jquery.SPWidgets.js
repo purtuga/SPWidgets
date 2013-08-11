@@ -609,6 +609,40 @@
             
         }; //end: $.SPWidgets.getRuntimeInfo()
         
+        /**
+         * Returns the SharePoint version number. This is accomplished by
+         * looking for  the SP namespace and if it is define, parsing the
+         * SP.ClientSchemeversions value.
+         * 
+         * @param {Boolean} returnExternal
+         *          If true, then the external version (ex. 2007, 2010) is
+         *          returned. Default is to return the internal version number
+         *          (ex. 12, 14)
+         *                      
+         * @return {String}
+         * 
+         */
+        $.SPWidgets.getSPVersion = function(returnExternal) {
+            
+            var versionMap = {
+                                12: '2007',
+                                14: '2010',
+                                15: '2013'
+                        },
+                version     = (typeof SP !== 'undefined')
+                            ?   parseInt(SP.ClientSchemaVersions.currentVersion) 
+                            :   12;
+            
+            if (returnExternal) {
+                
+                version = versionMap[version] || version;
+                
+            }
+            
+            return version
+            
+        }; //end: $.SPWidgets.getSPVersion();
+        
         
     })(jQuery); /** *********** END: $.SPWidgets common */
     
