@@ -216,7 +216,9 @@ SPWidgets - Widgets for building custom UIs
                             <p>Field below allows user to select
                                 mulitple values (multi-select) and displays
                                 the selector, which allows the user the ability
-                                to "browse" the list looking for the correct value.</p>
+                                to "browse" the list looking for the correct value. 
+                                In addition, the List items are sorted by ID in 
+                                Descending order.</p>
                             <div>
                                 <input name="example3" value="" />
                             </div>

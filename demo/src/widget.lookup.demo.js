@@ -65,6 +65,8 @@
                         allowMultiples: true,
                         showSelector:   true,
                         maxResults:     10,
+                        listTemplate:   '#{{ID}}: {{Title}}',
+                        filterOrderBy:  '<OrderBy><FieldRef Name="ID" Ascending="FALSE"/></OrderBy>',
                         onItemAdd:      function($newItemSelection, itemObject, widgetCntr){
                             
                             $output.append(

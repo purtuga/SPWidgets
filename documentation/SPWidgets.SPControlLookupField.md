@@ -98,6 +98,15 @@ The default options for this widget can be manipulated/set via the following obj
             <Value Type="Text">New</Value>
         </Contains>
 
+-   **filterOrderBy**      :   *String. Optional. Default=""* <br>
+    The OrderBy (sort) CAML string used when retrieving values from the List.
+    
+    Example:
+    
+        <OrderBy>
+            <FieldRef Name="Title" Ascending="TRUE"/>
+        </OrderBy>
+    
 -   **filterFields**      :   *Array. Optional. Default=["Title"]* <br>
     Array of column names (internal names) that will be used to attempt to match the user's typed input.
     Example: If wanting to search the Title, "Job Description" and Notes fields for the value that the user typed in, this field would be set as follows: 

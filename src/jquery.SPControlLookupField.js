@@ -38,6 +38,7 @@
         selectFields:       ['Title'],
         filter:             '',
         filterFields:       ['Title'],
+        filterOrderBy:      '',
         template:           '<div>{{Title}} <span class="spwidgets-item-remove">[x]</span></div>',
         listTemplate:       '{{Title}}',
         listHeight:         0,
@@ -95,9 +96,17 @@
      *              from the list.
      *              Example:
      *                  <Contains>
-     *                      <FieldRef Name="Title" />\
+     *                      <FieldRef Name="Title" />
      *                      <Value Type="Text">New</Value>
      *                  </Contains>
+     * 
+     * @param {String} [options.filterOrderBy='']
+     *              The OrderBy (sort) CAML string used when retrieving values
+     *              from the List.
+     *              Example: 
+     *                  <OrderBy>
+     *                      <FieldRef Name="Title" Ascending="TRUE"/>
+     *                  </OrderBy>
      * 
      * @param {Array} [options.filterFields=["Title"]]
      *              Array of fields name (internal names) that will be used
@@ -936,7 +945,8 @@
                             operation:      "GetListItems",
                             listName:       o.list,
                             async:          true,
-                            CAMLQuery:      '<Query><Where>' + camlFilter + '</Where></Query>',
+                            CAMLQuery:      '<Query><Where>' + camlFilter + '</Where>' + 
+                                            o.filterOrderBy + '</Query>',
                             CAMLRowLimit:   o.maxResults,
                             CAMLViewFields: "<ViewFields>" + o._selectFields + "</ViewFields>",
                             completefunc:   function(xData, status){
@@ -1191,8 +1201,8 @@
                 queryXml:       (
                                     Inst.filter
                                     ?   '<Query><Where>' + Inst.filter +
-                                        '</Where></Query>'
-                                    :   '<Query></Query>' 
+                                        '</Where>' + Inst.filterOrderBy + '</Query>'
+                                    :   '<Query>' + Inst.filterOrderBy + '</Query>' 
                                 )
             };
         
