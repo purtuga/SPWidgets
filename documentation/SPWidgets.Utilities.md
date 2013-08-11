@@ -308,4 +308,26 @@ Given a string, this utility will un-escape any special characters that were esc
     
     "This is <text>."
 
+$.SPWidgets.getSPVersion
+------------------------
+
+Returns the SharePoint version number (Since v2.2).
+
+### Input Parameters
+
+-   **returnExternal**      :   *Boolean. Optional. Default=false* <br />
+    By default, this function returns the SharePoint internal version number (ex. 12 for SP2007, or 14 for SP2010). Setting this value to true will return instead the external version (ex. 2007 or 2010)
+ 
+### Return Value
+
+-   String. The SharePoint version.
+
+### Example
+    
+    // Under SP 2010, the following returns 14
+    $.SPWidgets.getSPVersion();
+    
+    // Under SP2013, the following returns 2013
+    $.SPWidgets.getSPVersion(true);
+    
 
