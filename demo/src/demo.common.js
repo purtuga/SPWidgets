@@ -58,11 +58,11 @@
                 opt._lists = null;
                 
                 // Get a set (array) of lists to work with
-                if (opt.inclueLibraries && opt.includeLists) {
+                if (opt.includeLibraries && opt.includeLists) {
                     
                     opt._lists = $siteLists.find("_sList");
                     
-                } else if (opt.inclueLibraries) {
+                } else if (opt.includeLibraries) {
                     
                     opt._lists = $siteLists
                                 .find("_sList BaseType:contains('DocumentLibrary')")

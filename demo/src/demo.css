@@ -358,13 +358,23 @@
 
 
 /** ==================================================================== */
+/** ==================================================================== */
 /** ==[[   SPWIDGETS DEMO   ]]========================================== */
+/** ==================================================================== */
+/** ==================================================================== */
 /** ==================================================================== */
 
 #spwidgets_demo_cntr {
     padding: 1em;
     minHeight: 100em;;
 }
+#spwidgets_demo_cntr thead {
+    display:table-header-group;
+}
+#spwidgets_demo_cntr tbody {
+    display:table-row-group;
+} 
+
 #spwidgets_demo_cntr .spwidgets-demo-top-banner {
     padding:1em;
     margin:.5em;
@@ -477,4 +487,24 @@
 #SPControlLookupFieldDemo div.spwidget-demo-float-cntr div.spwidget-demo-float {
     min-height: 70em;
 }    
+
+
+/** UPLOAD WIDGET */
+#SPControlUploadDemo .spwidget-demo-upload-cntr {
+    display: none;
+}
+#SPControlUploadDemo .spwidget-demo-library-files {
+    min-height: 60em;
+    margin-top: 1em;
+}
+#SPControlUploadDemo .spwidget-demo-library-files table,
+#SPControlUploadDemo .spwidget-demo-library-files table tr,
+#SPControlUploadDemo .spwidget-demo-library-files table td,
+#SPControlUploadDemo .spwidget-demo-library-files table th {
+    border-collapse: collapse;
+}
+#SPControlUploadDemo .spwidget-demo-library-files table th {
+    font-size: 1.1em;
+    font-weight: bold;
+}
 

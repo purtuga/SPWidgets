@@ -80,17 +80,27 @@ SPWidgets - Widgets for building custom UIs
                 with an upload button that will allow you to upload files to the 
                 root of the library selected.
             </div>
-            <div>
-                <div id="sp_control_library_name"></div>
-                <div id="sp_control_file_list" style="margin-bottom:2em;padding:.5em;padding-left:1.5em;"></div>
-            </div>
             <hr/>
-            <h3>Upload New File</h3>
-            <div id="sp_control_upload_file">
-                <div>
-                    <button type="button" name="upload" value="">Upload</button>
+            <div>
+                <div class="spwidgets-demo-lists"></div>
+                <div class="spwidget-demo-upload-cntr">
+                    <h3></h3>
+                    <div class="spwidget-demo-upload-widget"></div>
+                    <div class="spwidget-demo-library-files">
+                        <table width="100%" cellpadding="4" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th class="ui-widget-header">File</th>
+                                    <th class="ui-widget-header">Last Modified</th>
+                                    <th class="ui-widget-header">Last Modified By</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div id="sp_upload_widget"></div>
             </div>
         </div>
         
