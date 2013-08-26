@@ -1,7 +1,7 @@
 SPControlUpload Widget
 ======================
 
-jQuery plugin that inserts a widget into page for uploading a file to a SharePoint location (library) without having to leave the page that the user is currently on. This plugin provides a behavior similar to an async ajax call.
+jQuery plugin that inserts a widget into page for uploading a file to a SharePoint Document Library without having to leave the page that the user is currently on. This plugin provides a behavior similar to an async ajax call.
 
 At its core, this plugin is simply uses the default SharePoint upload.aspx page inside an iframe, but manipulating it from the hosted page, so that the user is shown only a minimalist UI.  Code hooks are provided for allowing a developer to further manipulate the page(s) that may be shown after the initial upload _(ex. some libraries require users to fill in additional information and then check in the document. This can all be automated without user input.)_
 
@@ -12,11 +12,10 @@ In a normal flow, the upload process follows this sequence:
 3.  File is checked in and file upload is complete. Page is redirected to display/list view.
 
 
-
 Usage
 -----
 
-    $("input[name='users']").SPControlUpload({
+    $("div.file_upload").SPControlUpload({
         listName: "Shared Documents",
         onPageChange: function(ev){
             if (ev.state === 3) {
@@ -35,7 +34,7 @@ This method takes as input an object containing the following options
 -   **listName**  :   _String. **REQUIRED.**_ <br />
     The name or UID of the list.
     Example 'Shared Documents' or '{67587-89284-93884-78827-78823}'
-                    
+    
 -   **folderPath** :  *String. Optional. Default="/"* <br />
     The path to the folder inside of the Document Library where
     the document should be uploaded to. Value can be either relative to the
@@ -43,12 +42,13 @@ This method takes as input an object containing the following options
     document at the root of the Document Library
     Examples 'http://yourdomain.com/sites/site1/Shared Documents' or
     '/sites/site1/Shared Documents'
-                     
--   **uploadDonePage** : *String. Optional. Default="/_layouts/viewlsts.aspx".* <br />
+
+-   **uploadDonePage** : *String. Optional. Default="/undefined".* <br />
     The url of the page that should be loaded after the
-    file has been uploaded successful. Value MUTST start with http.
-    Default is 'http://yourdomain.com/sites/site1/_layouts/viewlsts.aspx'
-  
+    file has been uploaded successful. Under normal use, there should be
+    no need to change the default on this input parameter, and it may be
+    depricated in the future.
+
 -   **onPageChange** :  *Function. Optional. Default=null.* <br />
     Function that is called each time the form in the
     iFrame is changed. The function 'this' keyword points to the
@@ -62,42 +62,55 @@ This method takes as input an object containing the following options
     returning false (boolean) will stop flow from continuing. The
     check is strict; meaning that it has to be a boolean false in
     order for flow to stop. 
-                    
+
         onPageChange: function(ev){
             // this=original $(selector)
             // so some processing
             return true; // allow form to proceed.
         }
-                    
+
 -   **uploadUrlOpt** :  *String. Optional. Default="".* <br />
     String of data that should be appended to the upload page url,
     following this '?".
     This string value is assumed to have already been properly 
     escaped for use in the url.<br />
     _NOTE_: The option "MultipleUpload=1" is NOT SUPPORTED.
-                    
+
 -   **overwrite** :   *Boolean. Optional. Default=False.* <br />
     True or False indicating if document being uploaded should
     overwrite any existing one. Default is False (don't overwrite)
-                    
+
 -   **uploadPage** :  *String. Optional. Default="/_layouts/Upload.aspx".* <br />
     The relative URL from the WebSite root to the upload page.
     Default is "/_layouts/Upload.aspx". This value is appended to
     to the website full url, which is retrieved using SPServices
     utility.
-                    
+
 -   **overlayClass** :  *String. Optional. Default="".* <br />
     A css class to be associated with the overlay that is displayed
     over the iframe while loading of the page is going on.
-                    
+
 -   **overlayBgColor** : *String. Optional. Default="white".* <br />
-    A color to be used for the overlay area that is displayed over
-    the iframe wile loading of the page is going on. Default is
-    white. Set this to null if wanting only to use a class.
-                    
--   **overlayMessage** : *String|HTMLElement|jQuery. Optional. Default="Loading...".* <br />
-    String or object/element to be displayed inside of the overlay
-    when it is displayed. 
+    A color to be used for the overlay area that is displayed over the iframe wile loading of the page is going on. Default is white. Set this to null if wanting only to use a class.
+
+-   **checkInFormHeight** : *String. Optional. Default="25em"* <br />
+    The height of the displayed Form that is displayed when a file required CheckIn. The form is displayed after the file has been uploaded to the document library. The display of the form does not impact the layout of the page (it is displayed using position:absolute). New with v2.2
+
+-   **overlayMessage** : *String|HTMLElement|jQuery. Optional. Default="Working on it".* <br />
+    String or object/element to be displayed inside of the overlay when it is displayed. 
+
+-   **selectFileLabel** : *String. Optional. Default="Click here to select file..."* <br />
+    The label to display when no file is selected. New with v2.2
+
+-   **uploadDoneMessage** : *String. Optional. Default="Upload Successful!"* <br />
+    Message to display when file upload is completed. New with v2.2
+
+-   **fileNameErrorMessage** : *String. Optional. Default="The file name is invalid or the file is empty. A file name cannot contain any of the following characters: \\ / : * ? \" &lt; &gt; | # { } % ~ &amp;"* <br />
+    Error to display when file name is invalid (ex. contains unsupported characters). New with v2.2
+
+-   **noFileErrorMessage** : *String. Optional. Default=""* <br />
+    Error to display when no file is selected (but user clicks Upload). New with v2.2
+
 
 
 Event Object
