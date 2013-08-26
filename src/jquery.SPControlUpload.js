@@ -105,6 +105,12 @@ $.pt._isSPUploadCssDone = false;
  *                  String or object/element to be displayed inside of the overlay
  *                  when it is displayed. Default is "Loading..."
  * 
+ * @param {String|HTMLElement|jQuery} [options.selectFileMessage="Click here to select file..."]
+ *              The message displayed for user to select file
+ * 
+ * @param {String} [options.checkInFormHeight='20em']
+ *              The height of the form when a checkin is required.
+ * 
  * @return {jQuery}
  * 
  * @example
@@ -117,209 +123,453 @@ $.pt._isSPUploadCssDone = false;
  * 
  */
 $.fn.SPControlUpload = function (options) {
-    var o = $.extend({}, {
-                listName:       '',
-                folderPath:     '',
-                uploadDonePage: '/undefined',
-                onPageChange:   null,
-                uploadUrlOpt:   '',
-                overwrite:      false,
-                uploadPage:     '',
-                overlayClass:   '',
-                overlayBgColor: 'white',
-                overlayMessage: '<div class="loadingOverlayMsg">Loading...</div>'
-            }, options);
     
-    // if the global styles have not yet been inserted into the page, do it now
-    if (!$.pt._isSPUploadCssDone) {
-        $.pt._isSPUploadCssDone = true;
-        $('<style type="text/css">' + "\n\n" +
-        $.pt.SPUploadStyleSheet + "\n\n</style>").prependTo("head");
-    }
+    return $(this).each(function(){
     
-    // If list Name is not the UID, then get it now
-    if (o.listName && o.listName.indexOf("{") != 0) {
-        o.listName = $.pt.getListUID(o.listName);
-    }
-    // If list name is not defined - error
-    if (!o.listName) {
-        $(this).html('<div class="ui-state-error">Input parameter [listName] not valid!</div>');
-        return this;
-    }
-
-    // get current site URL
-    // TODO: use WebUrlFromPageUrl to get the url baed on siteUrl
-    o.siteUrl = $().SPServices.SPGetCurrentSite();
-    
-    // If user did not define the Upload page on input, then set it depending
-    // on SP version. Else, if the user defined the upload page, ensure it 
-    // is a full url starting at http... 
-    o.spVersion     = $.SPWidgets.getSPVersion(true);
-    o.uploadPage    = String(o.uploadPage);
-    
-    if (!o.uploadPage) {
+        var opt = $.extend({}, {
+                        listName:           '',
+                        folderPath:         '',
+                        uploadDonePage:     '/undefined',
+                        onPageChange:       null,
+                        uploadUrlOpt:       '',
+                        overwrite:          false,
+                        uploadPage:         '',
+                        overlayClass:       '',
+                        overlayBgColor:     'white',
+                        overlayMessage:     '<div>Working on it</div>',
+                        selectFileMessage:  "Click here to select file...",
+                        uploadDoneMessage:  "Upload Successful!",
+                        fileNameErrorMessage: "The file name is invalid or the file is empty. A file name cannot contain any of the following characters: \\ / : * ? \" &lt; &gt; | # { } % ~ &amp;",
+                        noFileErrorMessage: "No file selected!",
+                        checkInFormHeight:  '25em'
+                    },
+                    options),
+            overlayCss;
         
-        switch(o.spVersion) {
+        // if the global styles have not yet been inserted into the page, do it now
+        if (!$.pt._isSPUploadCssDone) {
             
-            case "2013":
-                
-                o.uploadPage = o.siteUrl + '/_layouts/15/Upload.aspx';
-                
-                break;
+            $.pt._isSPUploadCssDone = true;
             
-            case "2010":
-                
-                
-                o.uploadPage2 = o.siteUrl + "/_layouts/UploadEx.aspx";
-                
-                break;
-            
-            // Default: SP 2007
-            default: 
-                
-                o.uploadPage = o.siteUrl + '/_layouts/Upload.aspx';
-                
-                break;
+            $('<style type="text/css">' + "\n\n" +
+                $.pt.SPUploadStyleSheet + "\n\n</style>"
+            )
+            .prependTo("head");
             
         }
         
-    } else if (o.uploadPage.toLowerCase().indexOf("http") === -1) {
-        
-        var s = "/";
-        
-        if (o.uploadPage.indexOf('/') == 0) {
+        /**
+         * Shows or hides the Busy loading animation.
+         * 
+         * @param {Boolean} hide
+         *      if True, then loading busy animation will be hidden.
+         * 
+         * @return {jQuery.Promise} 
+         */
+        opt.showHideBusy = function(hide) {
             
-            s = "";
+            return $.Deferred(function(dfd){
+                
+                if (hide) {
+                    
+                    opt.$busyOverlay.fadeOut("fast").promise().then(function(){
+                        
+                        dfd.resolve();
+                        
+                    });
+                    
+                } else {
+                    
+                    opt.$busyOverlay.fadeIn("slow").promise().then(function(){
+                        
+                        dfd.resolve();
+                        
+                    });
+                    
+                }            
+                
+            })
+            .promise();
+            
+        }; //end: showHideBusy()
+        
+        /**
+         * Shows or hides the full Upload form. Used when the document has
+         * been upload and perhaps there is a CheckIn page to go through.
+         * 
+         * @param {Boolean} hide
+         * 
+         * @return {Object} opt
+         *  
+         */
+        opt.showHideFullForm = function(hide) {
+            
+            // HIde full form
+            if (hide) {
+                
+                opt.$content.removeClass("spwidget-show-full-form");
+                
+                opt.$iframeCntr
+                    .css({
+                        overflow:   "",
+                        height:     ""
+                    });
+            
+            
+            // SHOW full form
+            } else {
+                
+                opt.$content.addClass("spwidget-show-full-form");
+                
+                opt.$iframeCntr
+                    .css({
+                        overflow:   "auto",
+                        height:     "auto" // (opt.$iframe.outerHeight() + 5) + "px"
+                    });
+                
+            }
+            
+            return opt;
+            
+        }; //end: opt.showHideFullForm
+        
+        /**
+         * Shows or hides the Upload Success message.
+         * 
+         * @param {Boolean} [hide=false]
+         * 
+         * @return {Object} opt
+         *  
+         */
+        opt.showHideSuccess = function(hide){
+            
+            // HIDE
+            if (hide) {
+                
+                opt.$successCntr
+                    .stop()
+                    .fadeOut()
+                    .promise(function(){
+                        
+                        opt.$successCntr.css("display", "none");
+                        
+                    });
+                
+            // DEFAULT: SHOW
+            } else {
+                
+                opt.$successCntr
+                    .stop()
+                    .show()
+                    .promise(function(){
+                        
+                        opt.$successCntr.css("display", "block");
+                        
+                    });
+                
+            }
+            
+            return opt;
+            
+        }; //end: opt.showHideSuccess()
+        
+        /**
+         * Shows an error on the widget. 
+         * 
+         * @param {Object} showErrorOptions
+         * 
+         * @param {String} showErrorOptions.message
+         * @param {Boolean} [showErrorOptions.autoHide=true]
+         * 
+         * @return {Object} opt
+         * 
+         */
+        opt.showError = function(showErrorOptions){
+            
+            var thisOpt = $.extend({}, {
+                                message:    '',
+                                autoHide:   true
+                            },
+                            showErrorOptions);
+            
+            opt.$errorCntrMsg.html(thisOpt.message);
+            opt.$errorCntr
+                .stop()
+                .css("display", "block");
+            
+            if (thisOpt.autoHide) {
+                
+                opt.$errorCntr.animate(
+                    { opacity: 1 },
+                    5000,
+                    function(){
+                        
+                        opt.clearError();
+                        
+                    }
+                );
+                
+            }
+            
+            return opt;
+            
+        }; //end: opt.showError()
+        
+        /**
+         * Clears any error currently displayed on the widget.
+         *  
+         * @return {Object} opt
+         * 
+         */
+        opt.clearError = function() {
+            
+            opt.$errorCntr.css("display", "none");
+            
+            return opt;
+            
+        }; //end: opt.clearError
+        
+        /**
+         * Resets the Upload widget after the upload.
+         * 
+         * @return {Object} opt 
+         */
+        opt.resetWidget = function() {
+            
+            opt.ev = {
+                state:          1,
+                action:         "uploading",
+                hideOverlay:    true,
+                pageUrl:        "",
+                page:           null, // a jquery object
+                isUploadDone:   false
+            };
+            
+            opt.$iframe.attr("src", opt.uploadPage);
+            
+            return opt;
+            
+        }; //end: opt.resetWidget()
+        
+        /** ---------------------------------------------------------- **/
+        /** -------------[        SETUP WIDGET      ]----------------- **/
+        /** ---------------------------------------------------------- **/
+        
+        // If list Name is not the UID, then get it now
+        if (opt.listName && opt.listName.indexOf("{") !== 0) {
+            
+            opt.listName = $.pt.getListUID(opt.listName);
+            
+        }
+        // If list name is not defined - error
+        if (!opt.listName) {
+            
+            $(this).html('<div class="ui-state-error">Input parameter [listName] not valid!</div>');
+            return this;
+            
+        }
+    
+        // get current site URL
+        // TODO: use WebUrlFromPageUrl to get the url baed on siteUrl
+        opt.siteUrl = $().SPServices.SPGetCurrentSite();
+        
+        // If user did not define the Upload page on input, then set it depending
+        // on SP version. Else, if the user defined the upload page, ensure it 
+        // is a full url starting at http... 
+        opt.spVersion     = $.SPWidgets.getSPVersion(true);
+        opt.uploadPage    = String(opt.uploadPage);
+        
+        if (!opt.uploadPage) {
+            
+            switch(opt.spVersion) {
+                
+                case "2013":
+                    
+                    opt.uploadPage = opt.siteUrl + '/_layouts/15/UploadEx.aspx';
+                    
+                    break;
+                
+                case "2010":
+                    
+                    opt.uploadPage2 = opt.siteUrl + "/_layouts/UploadEx.aspx";
+                    
+                    break;
+                
+                // Default: SP 2007
+                default: 
+                    
+                    opt.uploadPage = opt.siteUrl + '/_layouts/Upload.aspx';
+                    
+                    break;
+                
+            }
+            
+        } else if (opt.uploadPage.toLowerCase().indexOf("http") === -1) {
+            
+            var s = "/";
+            
+            if (opt.uploadPage.indexOf('/') == 0) {
+                
+                s = "";
+                
+            }
+            
+            opt.uploadPage = opt.siteUrl + s + opt.uploadPage;
             
         }
         
-        o.uploadPage = o.siteUrl + s + o.uploadPage;
-        
-    }
-    
-    // Set the uploadDonePage url
-    if (String(o.uploadDonePage).toLowerCase().indexOf("http") == -1) {
-        var s = "/";
-        if (o.uploadDonePage.indexOf('/') == 0) {
-            s = "";
+        // Set the uploadDonePage url
+        if (String(opt.uploadDonePage).toLowerCase().indexOf("http") == -1) {
+            var s = "/";
+            if (opt.uploadDonePage.indexOf('/') == 0) {
+                s = "";
+            }
+            opt.uploadDonePage = opt.siteUrl + s + opt.uploadDonePage;
         }
-        o.uploadDonePage = o.siteUrl + s + o.uploadDonePage;
-    }
-    
-    // Create additional non-overridable options
-    o._uploadUrlParams  = "?List=" + 
-                      $.pt.getEscapedUrl(o.listName) + "&RootFolder=" +
-                      $.pt.getEscapedUrl(o.folderPath) + "&Source=" +
-                      $.pt.getEscapedUrl(o.uploadDonePage) + "&" + o.uploadUrlOpt;
-    o.uploadPage    = o.uploadPage + o._uploadUrlParams;
-    o.uploadPage2   = o.uploadPage2 + o._uploadUrlParams;
-    o._lastError    = "";
-    o._reloadCount  = 0;
-   
-    /** 
-     * @name SPControlLoadEvent
-     * Event object that is given as input to the function defined in the
-     * $.fn.SPControlUpload-onPageChange parameter.
-     * 
-     * @event
-     * @memberof $.fn.SPControlUpload
-     * 
-     * @param {SPControlLoadEvent} ev
-     * 
-     * @param {Integer} ev.state
-     *          A value from 1 through 3 that represents the state of
-     *          the file upload form.
-     *          1 = is set when the form is initially loaded and the 
-     *          File html element is ready for the user to attach the file.
-     *          File has not yet been uploaded.
-     *          2 = is set when the form is ready to be submitted to the server
-     *          along with the file set by the user. File has not yet been
-     *          uploaded.
-     *          3 = is set when the user has successfully uploaded the file to
-     *          the server and no errors were encountered.
-     *          File has been uploaded and now sits on the server.
-     * 
-     * @param {String} ev.action
-     *          The event action as it pertains to this plugin. 
-     *          preLoad        =    action is taking place before the page is sent
-     *          to the server.
-     *          postLoad    =    action is taking place after page has completed
-     *          loading, but is not yet "visible" to the user.
-     * 
-     * @param {Boolean} ev.hideOverlay
-     *          Used when action=postLoad. Can be set by
-     *          a callback function to false, so that the busy overlay remains
-     *          displayed and is not automaticaly hidden. Default value is "true".
-     * 
-     * @param {String} ev.pageUrl
-     *          The url of the page currently loaded in the iframe.
-     * 
-     * @param {jQuery} ev.page
-     *          An object representing the page loaded inside the
-     *          iFrame. This can be used to further manipulate the iframe's
-     *          page content.
-     * 
-     * @param {Boolean} ev.isUploadDone
-     *          Indicates if the upload process is done. Basically,
-     *          this means that the processess has reached the page defined
-     *          in the updatePageDone parameter.
-     * 
-     */
-    o.ev            = {
-        state:          1,
-        action:         "uploading",
-        hideOverlay:    true,
-        pageUrl:        "",
-        page:           null, // a jquery object
-        isUploadDone:   false
-    };
-    
-    var overlayStyle = "";
-    if (o.overlayBgColor) {
-        overlayStyle = "style='background-color:" + o.overlayBgColor + ";' ";
-    }
-    
-    $(this).each(function(){
         
-        // Create the UI on the element given used by the SPCOntrolUpload plugin
-        var e = $(this);
-        var h = (e.outerHeight() - 75);
-        var c = {
-            top:        0, //e.offset().top
-            left:       0, //e.offset().left
-            height:     e.outerHeight(true) - 15,
-            display:    "block"
+        // Create additional non-overridable options
+        opt._uploadUrlParams    = "?List=" + 
+                                  $.pt.getEscapedUrl(opt.listName) + "&RootFolder=" +
+                                  $.pt.getEscapedUrl(opt.folderPath) + "&Source=" +
+                                  $.pt.getEscapedUrl(opt.uploadDonePage) + "&" + opt.uploadUrlOpt;
+        opt.uploadPage          = opt.uploadPage + opt._uploadUrlParams;
+        opt._lastError          = "";
+        opt._reloadCount        = 0;
+       
+        /** 
+         * @name SPControlLoadEvent
+         * Event object that is given as input to the function defined in the
+         * $.fn.SPControlUpload-onPageChange parameter.
+         * 
+         * @event
+         * @memberof $.fn.SPControlUpload
+         * 
+         * @param {SPControlLoadEvent} ev
+         * 
+         * @param {Integer} ev.state
+         *          A value from 1 through 3 that represents the state of
+         *          the file upload form.
+         *          1 = is set when the form is initially loaded and the 
+         *          File html element is ready for the user to attach the file.
+         *          File has not yet been uploaded.
+         *          2 = is set when the form is ready to be submitted to the server
+         *          along with the file set by the user. File has not yet been
+         *          uploaded.
+         *          3 = is set when the user has successfully uploaded the file to
+         *          the server and no errors were encountered.
+         *          File has been uploaded and now sits on the server.
+         * 
+         * @param {String} ev.action
+         *          The event action as it pertains to this plugin. 
+         *          preLoad        =    action is taking place before the page is sent
+         *          to the server.
+         *          postLoad    =    action is taking place after page has completed
+         *          loading, but is not yet "visible" to the user.
+         * 
+         * @param {Boolean} ev.hideOverlay
+         *          Used when action=postLoad. Can be set by
+         *          a callback function to false, so that the busy overlay remains
+         *          displayed and is not automaticaly hidden. Default value is "true".
+         * 
+         * @param {String} ev.pageUrl
+         *          The url of the page currently loaded in the iframe.
+         * 
+         * @param {jQuery} ev.page
+         *          An object representing the page loaded inside the
+         *          iFrame. This can be used to further manipulate the iframe's
+         *          page content.
+         * 
+         * @param {Boolean} ev.isUploadDone
+         *          Indicates if the upload process is done. Basically,
+         *          this means that the processess has reached the page defined
+         *          in the updatePageDone parameter.
+         * 
+         */
+        opt.ev            = {
+            state:          1,
+            action:         "uploading",
+            hideOverlay:    true,
+            pageUrl:        "",
+            page:           null, // a jquery object
+            isUploadDone:   false
         };
+    
+        // Create the UI on the element given used by the SPCOntrolUpload plugin
+        opt.$ele    = $(this);
+        overlayCss  = {};
         
-        e.empty()
-            .addClass("hasSPControlUploadUI")
-            .append("<div class='SPControlUploadUI spcontrolupload'>" +
-                "<div class='mainContainer'><div class='iFrameWindow'>" +
-                "<iframe name='SPControlUploadUI' frameborder='0' scrollbars='yes' " +
-                "scrolling='yes'></iframe></div><div class='buttonPane'>" + 
-                "<button type='button' class='ui-state-default' " +
-                "name='upload_button' value='upload' onclick='$.pt._onUpload(this);'>" +
-                "Upload</button></div><div class='loadingOverlay " + o.overlayClass + 
-                "' " + overlayStyle + "></div></div></div>" )
-            .find(".SPControlUploadUI")
-                .data("SPControlUploadOptions", o)
-                .end()
-            .find("iframe")
-                .css("height", h)
-                .load(function(ev){
-                    $.pt._onIFramePageChange(e.find(".SPControlUploadUI"));
-                })
-                .attr("src", o.uploadPage)
-                .end()
-            .find(".loadingOverlay")
-                .append(o.overlayMessage)
-                .css(c);
+        if (opt.overlayBgColor) {
+            
+            overlayCss["background-color"] = opt.overlayBgColor;
+            
+        }
+        
+        // Create the UI on the page
+        opt.$cntr = $(
+                $($.pt.SPUploadHtml).filter("div.SPControlUploadUI").clone()
+            )
+            .appendTo(opt.$ele.addClass("hasSPControlUploadUI").empty())
+            .data("SPControlUploadOptions", opt);
+            
+        opt.$buttonCntr = opt.$cntr.find("div.buttonPane")
+                .click(function(ev){
+                    
+                    $.pt._onUpload(this);
+                    
+                });
                 
+        // Store references
+        opt.$content        = opt.$cntr.find("div.mainContainer");
+        opt.$iframeCntr     = opt.$cntr.find("div.iFrameWindow");
+        opt.$iframe         = opt.$iframeCntr.children('iframe');
+        opt.$busyOverlay    = opt.$cntr.find("div.loadingOverlay");
+        opt.$busyOverlayMsg = opt.$busyOverlay.find("div.loadingOverlayMsg");
+        opt.$successCntr    = opt.$cntr.find("div.spwidget-success-cntr");
+        opt.$errorCntr      = opt.$cntr.find("div.spwidget-error-cntr");
+        opt.$errorCntrMsg   = opt.$errorCntr.find(".spwidget-msg");
+        opt.reInvalidChr    = new RegExp("[\\\/\:\*\?\"\<\>\|\#\{\}\%\~\&]");
+        
+        // Setup success message closure listner and include user's message
+        opt.$successCntr
+            .on("click", ".spwidget-close", function(ev){
+                
+                opt.showHideSuccess(true);
+                
+            })
+            .find(".spwidget-msg")
+                .html(opt.uploadDoneMessage);
+        
+        // Setup error message closure
+        opt.$errorCntr.on("click", ".spwidget-close", function(ev){
+            
+            opt.clearError();
+            
+        });
+        
+        // Setup the overlay 
+        opt.$busyOverlay
+            .addClass(opt.overlayClass)
+            .css(overlayCss);
+        
+        opt.$busyOverlayMsg.html(opt.overlayMessage);
+        
+        // Show the loading animation and load the UI
+        opt.showHideBusy();
+        
+        opt.$cntr.find("iframe")
+                .css("height", opt.checkInFormHeight)
+                .load(function(ev){
+                    
+                    $.pt._onIFramePageChange(opt.$ele.find(".SPControlUploadUI"));
+                    
+                })
+                .attr("src", opt.uploadPage)
+                .end();
+               
         return this;
+        
     });//each()
 
-    return this;
-    
 };// $.fn.SPControlUpload
     
 /**
@@ -339,11 +589,12 @@ $.fn.SPControlUpload = function (options) {
  *
  */
 $.pt._onUpload = function(ele){
-    var e       = $(ele).closest(".SPControlUploadUI");
-    var page    = e.find("iframe").contents();
-    var msgs    = page.find("input[type='file']").closest("tr").siblings().find("span");
-    var o       = e.data("SPControlUploadOptions");
-    var ev      = o.ev;
+    
+    var e       = $(ele).closest(".SPControlUploadUI"),
+        page    = e.find("iframe").contents(),
+        msgs    = page.find("input[type='file']").closest("tr").siblings().find("span"),
+        opt     = e.data("SPControlUploadOptions"),
+        ev      = opt.ev;
     
     // Insure all messages are initially hidden (these might have been
     // visible from any prior call to upload the document where it failed.)
@@ -351,7 +602,18 @@ $.pt._onUpload = function(ele){
     
     // If no file was entered, then there is nothing to upload.
     if (!page.find("input[type='file']").val()) {
+        
+        opt.showError({message: opt.noFileErrorMessage});
         return;
+        
+    }
+    
+    // If file contains invalid charactors, then error
+    if (opt.reInvalidChr.test(page.find("div.SPControlUploadModUIFileSelected").text())) {
+        
+        opt.showError({message: opt.fileNameErrorMessage});
+        return;
+        
     }
     
     // Set the event info
@@ -363,33 +625,38 @@ $.pt._onUpload = function(ele){
     // object defined above.
     // If fucntion returns a boolean false, then we exit here and never submit
     // the form.
-    if (o.onPageChange) {
-        if (o.onPageChange.call(e.closest(".hasSPControlUploadUI"), ev) === false){
+    if (opt.onPageChange) {
+        
+        if (opt.onPageChange.call(opt.$ele, ev) === false){
+            
             return false;
+            
         }
+        
     }
     
-    // Hide the upload button, and Submit the form
-    e.find(".buttonPane")
-            .css("display", "none")
-            .end()
-        .find(".loadingOverlay")
-            .fadeIn("slow", function(){
-                page.find("input[type='button'][id$='btnOK']").click();
+    opt.showHideFullForm(true);
+    
+    // Hide the upload button, and Submit the form after showing the busy animation
+    // e.find(".buttonPane").css("display", "none")
+    
+    opt.showHideBusy().then(function(){
+        
+        page.find("input[type='button'][id$='btnOK']").click();
 
-                // If error message are displayed (after we click upload button), 
-                // then just return control back to the user.
-                if (msgs.is(":visible")) {
-//                    console.debug("_onUpload() msgs.is(visible) return true. showing button pane.");
-                    e.find(".loadingOverlay")
-                            .css("display", "none")
-                            .end()
-                        .find(".buttonPane")
-                            .show(0)
-                            .end();
-                    return false;
-                }
-            });
+        // If error message are displayed (after we click upload button), 
+        // then just return control back to the user.
+        if (msgs.is(":visible")) {
+            
+            e.find(".loadingOverlay")
+                    .css("display", "none")
+                    .end();
+
+            return false;
+            
+        }
+        
+    });
     
 };//* $.pt._onUpload()
 
@@ -416,7 +683,8 @@ $.pt._onIFramePageChange = function(ele){
     var e       = $(ele).closest(".SPControlUploadUI"),
         page    = e.find("iframe").contents(),
         opt     = e.data("SPControlUploadOptions"),
-        ev      = opt.ev;
+        ev      = opt.ev,
+        form    = page.find("form").eq(0);
     
     ev.pageUrl  = page[0].location.href;
     ev.page     = page;
@@ -429,7 +697,9 @@ $.pt._onIFramePageChange = function(ele){
     // should be in a state that is useful.
     setTimeout(
         function(){
-
+            
+            opt.$iframeCntr.scrollTop(0);
+            
             // If the URL of the page in the iFrame is the same as the 
             // upload page then this is either the
             // initial load of the page or an error has occured...
@@ -441,11 +711,18 @@ $.pt._onIFramePageChange = function(ele){
             ) {
 //                console.debug("_onIFramePageChange() URL is the same as the one originally requested.");
                 
-                page.find("form").children(":visible").hide();
-                page.find("form").append(
-                        "<div id='SPControlUploadModUI' style='position:"
-                    +    "absolute;width:99.9%;height:99.9%x;left:0px;top:0px;"
-                    +    "background-color:white;padding-top:3em;'></div>");
+                page.find("body").css({
+                    overflow: "hidden"
+                });
+                
+                form
+                    .children(":visible")
+                        .hide()
+                        .end()
+                    .append(
+                        $($.pt.SPUploadHtml).filter("div#SPControlUploadModUI").clone() )
+                    .find("div.SPControlUploadModUIFileSelected")
+                        .html(opt.selectFileMessage);
                 
                 // Is the page displaying an error page without the upload interface?
                 // Capture error message and reload the page.
@@ -482,46 +759,123 @@ $.pt._onIFramePageChange = function(ele){
                         return;
                     }
                     
-                    page.find("input[type='file']")
-                        .closest("table")
+                    page.find("input[type='file']").closest("table")
                             .appendTo(page.find("#SPControlUploadModUI"))
-                            .removeClass("ms-authoringcontrols")
-                            .find("a[id$='UploadMultipleLink']")
-                                .closest("tr")
+                            .removeClass("ms-authoringcontrols");
+                            
+                    // setup upload input field on the iframe page, including
+                    // setting up the change, focus and click event to update
+                    // the input div that shows the file name selected to the
+                    // user.
+                    var $fileInput = page.find("#SPControlUploadModUI")
+                        .find("input[type='file']")
+                            .closest('tr')
+                                .siblings()
                                     .css("display", "none")
                                     .end()
                                 .end()
-                            .find("input[type='checkbox'][name$='OverwriteSingle']")
-                                .closest("tr")
-                                    .css("display", "none")
+                                .siblings("tr .ms-error")
+                                    .css("display", "")
                                     .end()
-                                .end()
-                            .find(".ms-fileinput")
-                                .css("font-size", "13pt");
+                            .on("change focus click", function(ev){
+                                    
+                                    var $this       = $(this),
+                                        filePath    = $this.val(),
+                                        fileExt     = '',
+                                        icon        = '/_layouts/images/urn-content-classes-smartfolder16.gif';
+                                    
+                                    if (filePath) {
+                                        
+                                        try {
+                                            
+                                            fileExt = filePath.substr(filePath.lastIndexOf(".") + 1);
+                                            
+                                        } catch(e) {
+                                            
+                                            fileExt = 'GEN';
+                                            
+                                        }
+                                        
+                                        icon = "/_layouts/images/IC" + 
+                                                fileExt.toUpperCase() + ".GIF";
+                                        
+                                        // Get only the file name
+                                        filePath =  (filePath.replace(/\\/g, '/').split('/').pop())
+                                                    || filePath;
+                                        
+                                    } else {
+                                        
+                                        filePath = opt.selectFileMessage;
+                                        
+                                    }
+                                    
+                                    page.find("#SPControlUploadModUI > div")
+                                        .html(filePath)
+                                        .css("background-image",
+                                            "url('" + icon + "')");
+                                    
+                                    
+                            }) //end: .on()
+                            .css({
+                                cursor:         "pointer",
+                                height:         "100px",
+                                position:       "absolute",
+                                left:           "0px",
+                                top:            "0px",
+                                filter:         "alpha(opacity=1)",
+                                opacity:        "0.01",
+                                outline:        "none",
+                                "-moz-opacity": "0.01",
+                                "font-size":    "100px",
+                                'z-index':      "5"
+                            });
                     
+                    
+                    // Setup the mouseover event so that the input file field 
+                    // follows the mouse around while user hovers over
+                    // the iframe.
+                    form.on("mousemove", function(ev){
+                        
+                        $fileInput
+                            .css({
+                                left:   (ev.pageX - ($fileInput.width() - 50)),
+                                top:    (ev.pageY - 30)
+                            })
+                            .blur();
+                        
+                    });
+                    
+                            
                     // If there were any errors found during a previous call, then 
                     // display them now
                     if (opt._lastError) {
-                        page.find("input[type='file']")
-                            .after('<div style="color:red;"><div class="ui-state-error">ERROR: '
-                                +    opt._lastError + '</div></div>');
+                        
+                        opt.showError({message: opt._lastError});
+                        
+           // TODO: cleanup
+                        // page.find("input[type='file']")
+                            // .after('<div style="color:red;"><div class="ui-state-error">ERROR: '
+                                // +    opt._lastError + '</div></div>');
+                        
                         opt._lastError = "";
+                        
                     }
                     opt._reloadCount = 0;
                     
                     // Set the override checkbox
                     if (opt.overwrite) {
+                        
                         page.find("input[type='checkbox'][name$='OverwriteSingle']")
                             .prop("checked", "checked");
+                            
                     } else {
+                        
                         page.find("input[type='checkbox'][name$='OverwriteSingle']")
                             .prop("checked", "");
+                            
                     }
                     
-                    // Make sure the buttons are displayed and set proper event 
-                    // param (for user defined functions)
-//                    console.debug("_onIFramePageChange() Making buttons panel visible. state[1], action[postload], showoverlay[true].");
-                    e.find(".buttonPane").show();
+                    // Set proper event values for user's callback
                     ev.state        = 1;
                     ev.action        = "postLoad";
                     ev.hideOverlay    = true;
@@ -546,19 +900,25 @@ $.pt._onIFramePageChange = function(ele){
                     ev.isUploadDone = true;
                     ev.hideOverlay  = false;
                     
-                    e.find(".loadingOverlay")
-                        .empty()
-                        .append('<div class="ui-state-highlight" style="width:80%;">' +
-                                'Upload Complete!</div>');
-                
+                    // Show the busy indicator and success message.
+                    opt.showHideBusy();
+                    opt.showHideSuccess();
+                    
                 // Else, page is not the uploadDonePage... manipulate the form's
                 // onsubmit event.
                 } else {
                     
-                    var form            = page.find("form").eq(0);
                     var formOnSubmit    = form.prop("onsubmit");
                     
-    //                console.debug("_onIFramePageChange(): Binding function to form!");
+                    // Show only the form in the page
+                    form
+                        .children(":visible")
+                            .css("display", "none")
+                            .addClass("ptWasVisible")
+                            .end()
+                        .find("input[title='Name']")
+                            .closest("div[id^='WebPart']")
+                                .appendTo(page.find("form"));
                     
                     // SP seems to have a good hold of the Form, because
                     // we are unable o bind an event via $. Thus:
@@ -566,12 +926,11 @@ $.pt._onIFramePageChange = function(ele){
                     // own function... The original function was captured
                     // above, thus it will triggered... but we now control
                     // when we trigger it.
+                    // FIXME: this does not seem to do anything (at least in FF)
                     form[0].onsubmit = function(){
     
-    //                    console.debug("_onIFramePageChange(): in custom onsubmit... ");
-                        
                         // Show the overlay without animation.
-                        e.find(".loadingOverlay").css("display", "block");
+                        opt.showHideBusy();
                         
                         var allowFormToContinue = true;
                         
@@ -579,24 +938,35 @@ $.pt._onIFramePageChange = function(ele){
                         // exit if the resposne is false (stop submition)
                         if ($.isFunction(opt.onPageChange)) {
                             allowFormToContinue = opt.onPageChange.call(
-                                        e.closest(".hasSPControlUploadUI"),
+                                        opt.$ele,
                                         $.extend({}, ev, {state: 3, action: "preLoad"}));
                         }
+                        
                         if (allowFormToContinue === false) {
-                            e.find(".loadingOverlay").fadeOut();
+                            
+                            opt.showHideBusy(true);
                             return allowFormToContinue;
-                        };
+                            
+                        }
                         
                         // if SP had a onSubmit defined, then execute it now and 
                         // exit if the resposne is false (stop submition)
                         if ($.isFunction(formOnSubmit)) {
+                            
                             allowFormToContinue = formOnSubmit();
+                            
                         }
+                        
                         if (allowFormToContinue === false) {
-                            e.find(".loadingOverlay").fadeOut();
+                            
+                            opt.showHideBusy(true);
                             return allowFormToContinue;
-                        };
-    
+                            
+                        }
+                        
+                        // hide the form before continuing
+                        opt.showHideFullForm(true);
+                        
                         // Return true, allowing the form to be submitted.
                         return allowFormToContinue;
                         
@@ -611,27 +981,63 @@ $.pt._onIFramePageChange = function(ele){
                 $(e.find("iframe")[0].contentWindow).unload(function(evv){
                     
                     // Make the busy panel visible without animation
-                    e.find(".loadingOverlay").css("display", "block");
+                    // opt.$buttonCntr.css("display", "");
+                    opt.showHideBusy();
+                    opt.showHideFullForm(true);
                     
                     if ($.isFunction(opt.onPageChange)) {
-                        return opt.onPageChange
-                            .call(
-                                e.closest(".hasSPControlUploadUI"),
+                        
+                        return opt.onPageChange.call(
+                                opt.$ele,
                                 $.extend({}, ev, {state: 3, action: "preLoad"}) );
+                                
                     }
+                    
                 });
                 
             }//end:if
             
-            // Call user event function    
+            // Call user event function
             if (opt.onPageChange) {
-                opt.onPageChange.call(e.closest(".hasSPControlUploadUI"), ev);
+                
+                opt.onPageChange.call(opt.$ele, ev);
+                
             }
+            
             // Hide our overlay area
-            if (ev.action.toLowerCase() != "postload" || ev.hideOverlay == true) {
-                e.find(".loadingOverlay").fadeOut();
+            if (ev.action.toLowerCase() !== "postload" || ev.hideOverlay === true) {
+                
+                opt.showHideBusy(true);
+                
+                if (ev.isUploadDone === false && ev.state === 3) {
+                    
+                    opt.showHideFullForm();
+                    
+                }
+                
             }
+            
+            // If Upload is DONE, then reset form
+            if (ev.isUploadDone) {
+                
+                // Reset upload form
+                opt.resetWidget();
+                
+                // Wait 4 seconds then hide success message
+                opt.$successCntr.animate(
+                    { opacity: 1 },
+                    3000,
+                    function(){
+                        
+                        opt.showHideSuccess(true);
+                        
+                    }
+                );
+                
+            }
+            
             return;
+            
         },
         500);//end:setTimeout()
 
@@ -716,3 +1122,13 @@ $.pt.getListUID = function(listName) {
  * 
  */
 $.pt.SPUploadStyleSheet = "_INCLUDE_SPUPLOAD_CSS_TEMPLATE_";
+
+/**
+ * @property
+ * Stores the HTML templates used by this widget.
+ * Populated during the build process from the 
+ * html.SPControlUpload.html file 
+ */
+$.pt.SPUploadHtml = "_INCLUDE_SPUPLOAD_HTML_TEMPLATE_";
+
+

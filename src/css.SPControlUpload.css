@@ -6,32 +6,94 @@
 .spcontrolupload .mainContainer {
 	position: relative;
 	display:block;
-}
-.spcontrolupload iframe {
-	overflow: auto;
-	width: 99%;
-	height: 99%;
-}
-.spcontrolupload iframe .ms-fileinput {
-	font-size:14pt;
+	height: 4em;
 }
 
-.spcontrolupload .buttonPane {
-	display: none;
-}
-.spcontrolupload button {
-	padding: .5em;
-	margin: .2em;
-}
+.spcontrolupload .iFrameWindow,
+.spcontrolupload .buttonPane,
+.spcontrolupload .spwidget-success-cntr,
 .spcontrolupload .loadingOverlay {
-	position: absolute;
+    position: absolute;
+    top: 0px;
+    height: 3em;
+    width: 100%;
+}
+.spcontrolupload .buttonPane {
+    left: 0px;
+    width: 10%;
+    overflow: hidden;
+    cursor: pointer;
+}
+.spcontrolupload .buttonPane .upload_button {
+    font-weight: bold;
+    font-size: 1.1em;
+    text-align: center;
+    margin-top: .8em;
+}
+
+.spcontrolupload .iFrameWindow {
+    width: 90%;
+    left: 10%;
+    overflow: hidden;
+}
+.spcontrolupload .iFrameWindow iframe {
+	overflow: auto;
 	width: 100%;
-	height: 100%;
-	display: none;
+	height: 99%;
 }
+
+.spcontrolupload .spwidget-show-full-form .iFrameWindow {
+    overflow: auto;
+    width: 100%;
+    margin: 0em;
+    left: 0px;
+    right: auto;
+}
+
+.spcontrolupload .loadingOverlay {
+	width: 99%;
+	left: 1px;
+	top: 1px;
+}
+
 .spcontrolupload .loadingOverlayMsg {
-	margin: auto;
-	padding: 5em;
-	font-size: 1.2em;
+	font-size: 1em;
+	background-position: left top;
+    background-repeat: no-repeat;
+    background-image: url('/_layouts/images/loadingcirclests16.gif');
+    margin: 0.5em;
+    padding-left: 25px;
 }
+
+.spcontrolupload .spwidget-success-cntr,
+.spcontrolupload .spwidget-error-cntr {
+    display: none;
+}
+.spcontrolupload div.spwidget-msg-cntr {
+    margin: 0.5em .5em .5em 3em;
+	font-size: 1em;
+	background-position: left top;
+    background-repeat: no-repeat;    
+}
+.spcontrolupload .spwidget-close {
+    color: red;
+    font-size: xx-small;
+    font-weight: bold;
+    vertical-align: super;
+    cursor: pointer;
+}
+
+.spcontrolupload .spwidget-success-cntr div.spwidget-msg-cntr {
+    background-image: url('/_layouts/images/STS_ListItem_43216.gif');
+    padding-left: 30px;
+}
+
+.spcontrolupload .spwidget-error-cntr {
+    bottom: -1.5em;
+    left: 0px;
+    width: 100%;
+    position: absolute;
+}
+
+
 
