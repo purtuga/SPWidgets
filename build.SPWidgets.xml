@@ -173,6 +173,9 @@
                 <uptodate 
                     srcfile="${src.base}${/}src${/}html.SPDateField.html"
                     targetfile="${build.src}${/}html.SPDateField.html" />
+                <uptodate 
+                    srcfile="${src.base}${/}src${/}html.SPControlUpload.html"
+                    targetfile="${build.src}${/}html.SPControlUpload.html" />
             </and>
         </condition>
         <echo message="forceHtmlCopyNotNeeded set to: ${forceHtmlCopyNotNeeded}" />
@@ -247,6 +250,9 @@
         <delete verbose="yes">
             <fileset dir="${build.src}">
                 <contains text="//_HAS_PICKSPUSER_HTML_TEMPLATE_" casesensitive="yes"/>
+            </fileset>
+            <fileset dir="${build.src}">
+                <contains text="//_HAS_SPUPLOAD_HTML_TEMPLATE_" casesensitive="yes"/>
             </fileset>
             <fileset dir="${build.src}">
                 <contains text="//_HAS_BOARD_HTML_TEMPLATE_" casesensitive="yes"/>
@@ -430,6 +436,15 @@
     <target name="embedHtmlTemplates">
         <echo message="embedHtmlTemplates ------------------------------ [START]" />
         
+        <!-- Load the SPControlUpload HTML File and replaced where its token appears -->
+    	<getFileAsJsString file="${build.src}${/}html.SPControlUpload.html" 
+    		   property="html.SPUpload"/>
+        <replace dir="${build.src}" 
+                token='"_INCLUDE_SPUPLOAD_HTML_TEMPLATE_";'
+                value="${html.SPUpload};${line.separator}//_HAS_SPUPLOAD_HTML_TEMPLATE_"
+                summary="Yes">
+        </replace>
+    	
         <!-- Load the SPControlPickUser HTML File and replaced where its token appears -->
     	<getFileAsJsString file="${build.src}${/}html.SPControlPickUser.html" 
     		   property="html.SPPickUser"/>
