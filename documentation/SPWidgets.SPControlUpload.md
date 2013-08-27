@@ -15,53 +15,74 @@ In a normal flow, the upload process follows this sequence:
 Usage
 -----
 
-    $("div.file_upload").SPControlUpload({
-        listName: "Shared Documents",
-        onPageChange: function(ev){
-            if (ev.state === 3) {
-                ev.hideOverlay = false;
-                alert("Upload Done!");
-            }
-        }
-    });
-    
+    $("div.file_upload").SPControlUpload({ listName: "Shared Documents" });
+
 
 Input Parameters
 ----------------
 
-This method takes as input an object containing the following options
+This method takes as input an object containing the following options:
+
+        $("div.file_upload").SPControlUpload({
+            listName:               '',
+            folderPath:             '',
+            uploadDonePage:         '/undefined',
+            onPageChange:           null,
+            onUploadDone:           null,
+            uploadUrlOpt:           '',
+            overwrite:              false,
+            uploadPage:             '',
+            overlayClass:           '',
+            overlayBgColor:         'white',
+            overlayMessage:         '<div>Working on it</div>',
+            selectFileMessage:      "Click here to select file...",
+            uploadDoneMessage:      "Upload Successful!",
+            fileNameErrorMessage:   "A file name cannot contain any of the following characters: \\ / : * ? \" &lt; &gt; | # { } % ~ &amp;",
+            noFileErrorMessage:     "No file selected!",
+            checkInFormHeight:      '25em',
+            webURL:                 currentSiteUrl
+        });
+
+
+The default options for this widget can be manipulated/set via the following object:
+
+        $.SPWidgets.defaults.upload = {}
+
+
+### Options
 
 -   **listName**  :   _String. **REQUIRED.**_ <br />
-    The name or UID of the list.
-    Example 'Shared Documents' or '{67587-89284-93884-78827-78823}'
+    The name or UID of the Document Library to where this files will be uploaded. This value is used in conjuction with the _folderPath_ parameter.
     
--   **folderPath** :  *String. Optional. Default="/"* <br />
-    The path to the folder inside of the Document Library where
-    the document should be uploaded to. Value can be either relative to the
-    document library root or absolute. Default is to place the
-    document at the root of the Document Library
-    Examples 'http://yourdomain.com/sites/site1/Shared Documents' or
-    '/sites/site1/Shared Documents'
+    Example:
+    
+        'Shared Documents'
+    
+    or
+    
+        '{67587-89284-93884-78827-78823}'
 
--   **uploadDonePage** : *String. Optional. Default="/undefined".* <br />
-    The url of the page that should be loaded after the
-    file has been uploaded successful. Under normal use, there should be
-    no need to change the default on this input parameter, and it may be
-    depricated in the future.
+-   **webURL** :  *String. Optional. Default="currentSiteUrl"* <br />
+    The url of the Site or Sub-site to where the file will be uploaded.
+
+-   **folderPath** :  *String. Optional. Default="/"* <br />
+    The path to the folder inside of the Document Library where the document should be uploaded to. Value can be either relative to the document library root or absolute. Default is to place the document at the root of the Document Library
+    
+    Examples:
+    
+        'http://yourdomain.com/sites/site1/Shared Documents'
+    
+    or
+    
+        '/sites/site1/Shared Documents'
+
+-   **onUploadDone** :  *Function. Optional. Default=null.* <br />
+    Triggered when file is successfully uploaded - or when it reaches the _uploadDonePage_. This function is triggered after a file is checkedIn (if library requires it to be checked in). Function will have a scope of the element used on input and be given 1 parameter:  An object with the upload file metadata. New with v2.2
 
 -   **onPageChange** :  *Function. Optional. Default=null.* <br />
-    Function that is called each time the form in the
-    iFrame is changed. The function 'this' keyword points to the
-    element that was used when this method was called.
-    The function is given one param - the event object created 
-    by this plugin that includes information about the state
-    of the upload. See Event Object below for more information.
-    Return value of this function will control flow of plugin.
-    Returning true (boolean), will allow processing to continue
-    at different stages (see the event object below), while 
-    returning false (boolean) will stop flow from continuing. The
-    check is strict; meaning that it has to be a boolean false in
-    order for flow to stop. 
+    Function that is called each time the state of the upload changes. The function scope (this) points to the element that was used when this method was called. The function is given one param - the event object created by this plugin that includes information about the state of the upload. See Event Object below for more information. 
+    
+    Return value of this function will control flow of plugin. Returning true (boolean), will allow processing to continue at different stages (see the event object below), while returning false (boolean) will stop flow from continuing. The check is strict; meaning that it has to be a boolean false in order for flow to stop. 
 
         onPageChange: function(ev){
             // this=original $(selector)
@@ -70,25 +91,14 @@ This method takes as input an object containing the following options
         }
 
 -   **uploadUrlOpt** :  *String. Optional. Default="".* <br />
-    String of data that should be appended to the upload page url,
-    following this '?".
-    This string value is assumed to have already been properly 
-    escaped for use in the url.<br />
-    _NOTE_: The option "MultipleUpload=1" is NOT SUPPORTED.
+    String of data that should be appended to the upload page url as search parameters. This string value is assumed to have already been properly escaped for use in the url.<br />
+    _NOTE_: The option _MultipleUpload_ is NOT SUPPORTED.
 
 -   **overwrite** :   *Boolean. Optional. Default=False.* <br />
-    True or False indicating if document being uploaded should
-    overwrite any existing one. Default is False (don't overwrite)
-
--   **uploadPage** :  *String. Optional. Default="/_layouts/Upload.aspx".* <br />
-    The relative URL from the WebSite root to the upload page.
-    Default is "/_layouts/Upload.aspx". This value is appended to
-    to the website full url, which is retrieved using SPServices
-    utility.
+    True or False indicating if document being uploaded should overwrite any existing one. Default is False (don't overwrite)
 
 -   **overlayClass** :  *String. Optional. Default="".* <br />
-    A css class to be associated with the overlay that is displayed
-    over the iframe while loading of the page is going on.
+    A css class to be associated with the overlay that is displayed over the iframe while loading of the page is going on.
 
 -   **overlayBgColor** : *String. Optional. Default="white".* <br />
     A color to be used for the overlay area that is displayed over the iframe wile loading of the page is going on. Default is white. Set this to null if wanting only to use a class.
@@ -111,6 +121,12 @@ This method takes as input an object containing the following options
 -   **noFileErrorMessage** : *String. Optional. Default=""* <br />
     Error to display when no file is selected (but user clicks Upload). New with v2.2
 
+-   **uploadDonePage** : *String. Optional. Default="/undefined".* <br />
+    The url of the page that should be loaded after the file has been uploaded successful. Under normal use, there should be no need to change the default on this input parameter, and it may be depricated in the future.
+
+-   **uploadPage** :  *String. Optional. Default="/_layouts/Upload.aspx".* <br />
+    The relative URL from the WebSite root to the upload page. Default is "/_layouts/Upload.aspx". This value is appended to
+    to the website full url, which is retrieved using SPServices utility. Parameter should, in normal conditions, not be changed and it may be depricated in the future.
 
 
 Event Object
@@ -121,55 +137,40 @@ The function defined for the *onPageChange* input parameter will receive as inpu
 The following attributes can be found in the event object: 
 
 -   **ev.state**  : *Integer. 1|2|3* <br />
-    A value from 1 through 3 that represents the state of
-    the phisical file. This value, along with the 
-    _ev.action_ value can be used to validate user input
-    and if appropriate, cancel the send request to the
-    server.
-    
-    1.  No File uploaded. Upload form is ready for user input.
-        This is set when the form is initially loaded and the 
-        File html element is ready for the user to attach the file.
-        
-    2.  No File uploaded. User has defined a file for upload and
-        form is now ready to be submitted to the server. This state
-        could be used in the _onPageChange_ to (for example) prevent
-        the upload of certain file types.  
-        
-    3.  File has been uploaded and is now available on the server (note
-        that it may not be checked in yet).  This state is set when the
-        user has successfully uploaded the file to the server and no 
-        errors were encountered (example invalid file characters).
-        This state will remain through subsequent pages if the file
-        requires check in.
-      
+    A value from 1 through 3 that represents the state of the phisical file. This value, along with the _ev.action_ value can be used to validate user input and if appropriate, cancel the send request to the server.
+
+    1.  No File uploaded. Upload form is ready for user input. This is set when the form is initially loaded and the File html element is ready for the user to attach the file.
+
+    2.  No File uploaded. User has defined a file for upload and form is now ready to be submitted to the server. This state could be used in the _onPageChange_ to (for example) prevent the upload of certain file types.  See example below.
+
+    3.  File has been uploaded and is now available on the server (note that it may not be checked in yet).  This state is set when the user has successfully uploaded the file to the server and no errors were encountered (example invalid file characters). This state will remain through subsequent pages if the file requires check in.
+
 -   **ev.action** : *String. preLoad|postLoad*  <br /> 
-    The event action as it pertains to this plugin. Use this value in
-    conjuction with the _ev.state_ to do additional validations on user
-    input.
-    *   _preLoad_   - action is taking place before the page is sent to
-                      the server. The user (or code) must have initiated
-                      an action that requires sending data to the server.
-    *   _postLoad_  - action is taking place after page has completed
-                      loading, but is not yet "visible" to the user.
-      
+    The event action as it pertains to this plugin. Use this value in conjuction with the _ev.state_ to do additional validations on user input.
+    
+    _preLoad_
+    
+    Action is taking place before the page is sent to the server. The user (or code) must have initiated an action that requires sending data to the server.
+    
+    _postLoad_
+    
+    Action is taking place after page has completed loading, but is not yet visible to the user.
+
 -   **ev.hideOverlay** : *Boolean. Default=true.*  <br />
-    Used when action=postLoad. Can be set by a callback function to false, 
-    so that the busy overlay remains displayed and is not automatically 
-    hidden.
-      
+    Used when action=postLoad. Can be set by a callback function to false, so that the busy overlay remains displayed and is not automatically hidden.
+
 -   **ev.pageUrl** : *String.* <br />
     The url of the page currently loaded in the iframe.
-      
+
 -   **ev.page** : *jQuery Object.*  <br />
-    An object representing the page loaded inside the iFrame. This can be
-    used to further manipulate the iframe's page content.
-      
+    An object representing the page loaded inside the iFrame. This can be used to further manipulate the iframe's page content.
+
 -   **ev.isUploadDone** : *Boolean.* <br />
-    Indicates if the upload process is done. Basically, this means that 
-    the processes has reached the page defined in the *updatePageDone* 
-    parameter.
-  
+    Indicates if the upload process is done. Basically, this means that the processes has reached the page defined in the *updatePageDone* parameter.
+
+-   **ev.file** : *Object.* <br />
+    An object that contains the metadata for the file that was successfuly uploaded. This event attribute is only populated with data once the file is uploaded to the server.
+
 
 Return Value
 ------------
@@ -183,7 +184,19 @@ Examples
 
 ### Example 1
 
-The following example creates a jQuery UI dialog to display the upload interface to the user.  The dialog closes after the file is sucessfuly uploaded. It demostrates the use of the event object's _state_ and _isUploadDone_ attributes. 
+Simple example. Upload a file to the Share Documents library and display an alert when complete.
+
+    $("#uploadContainer")
+        .SPControlUpload({
+            listName: 'Shared Documents',
+            onUploadDone: function(file){
+                alert("File upload Done. File url: " & file.EncodedAbsUrl);
+            }
+        });
+
+### Example 2
+
+The following example creates a jQuery UI dialog to display the upload interface to the user. This example uses the onPageCHange event to do certain validations through out the upload process. The dialog closes after the file is sucessfuly uploaded. It demostrates the use of the event object's _state_ and _isUploadDone_ attributes. 
 
     $('<div style="height:350px;width;100%;padding:.5em;"></div>')
         .appendTo("body")
@@ -227,7 +240,7 @@ The following example creates a jQuery UI dialog to display the upload interface
             }//end: onPageChange()
         });
 
-### Example 2
+### Example 3
 
 In this example the file that the user is attempting to upload will be checked and if not a PDF file, then an error is displayed and the file is not uploaded.
 
