@@ -36,7 +36,7 @@ div.spwidget-filter div.spwidget-filter-type-cntr {
     right: 4%;
     position: absolute;
     font-size: .8em;
-    margin-top: .1em;
+    top: .6em;
 }
 div.spwidget-filter div.spwidget-filter-value-cntr {
     width: 100%;

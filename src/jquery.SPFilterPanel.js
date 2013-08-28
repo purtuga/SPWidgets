@@ -683,21 +683,30 @@
     Filter.onFilterTypeChange = function(ev) {
         
         var $ele        = $(this),
-            $colValCntr = $ele
-                            .closest("div.spwidget-column")
-                            .find("div.spwidget-filter-value-cntr"),
+            $col        = $ele.closest("div.spwidget-column"),
+            $colValCntr = $col.find("div.spwidget-filter-value-cntr"),
             $colInput   = $colValCntr.find(".spwidget-input"),
-            eleValue    = $ele.val();
+            eleValue    = $ele.val(),
+            Inst        = $ele
+                            .closest("div.spwidget-filter")
+                            .data("SPFilterPanelInst");
         
         if (eleValue === "IsNull" || eleValue === "IsNotNull") {
             
             $colValCntr.addClass("spwidget-disabled");
             $colInput.attr("disabled", "disabled");
+            $col.addClass(Inst.opt.definedClass);
             
         } else {
             
             $colValCntr.removeClass("spwidget-disabled");
             $colInput.removeAttr("disabled", "disabled");
+            
+            if (!$colInput.val()) {
+                
+                $col.removeClass(Inst.opt.definedClass);
+                
+            }
             
         }
         
@@ -773,6 +782,7 @@
             .find(".hasLookupSPField")
                 .SPLookupField("method", "clear");
         
+        // Remove the Defined class
         if (Inst.opt.definedClass !== "") {
             
             Inst.$ui
@@ -780,6 +790,24 @@
                 .removeClass(Inst.opt.definedClass);
             
         }
+        
+        // Reset any IsNull and IsNotNull filters
+        Inst.$ui.find("select.spwidget-filter-type").each(function(){
+            
+            var $ele    = $(this),
+                value   = $ele.val();
+            
+            if (value === "IsNull" || value === "IsNotNull") {
+                
+                $ele.val("Eq");
+                $ele.change();
+                
+            }
+            
+        });
+        
+        // Focus the on the first input
+        Inst.$ui.find(":input.spwidget-input:first").focus();
         
         return Inst;
         

@@ -9,6 +9,12 @@
 </div>
 <div id="filter_column">
     <div class="spwidget-column spwidget-type-{{type}}" data-spwidget_column_type="{{type}}">
+        <div class="spwidget-filter-value-cntr">
+            <label>{{DisplayName}}</label>
+            <div class="spwidget-filter-value-input">
+                __COLUMN__UI__
+            </div>
+        </div>
         <div class="spwidget-filter-type-cntr" title="Match Type">
             <select name="{{Name}}_type" class="spwidget-filter-type" tabindex="-1">
                 <option value="Contains">Contains</option>
@@ -18,12 +24,6 @@
                 <option value="IsNotNull">Is Not Blank</option>
                 __OTHER_FILTER_TYPES__
             </select>
-        </div>
-        <div class="spwidget-filter-value-cntr">
-            <label>{{DisplayName}}</label>
-            <div class="spwidget-filter-value-input">
-                __COLUMN__UI__
-            </div>
         </div>
     </div>
 </div>
