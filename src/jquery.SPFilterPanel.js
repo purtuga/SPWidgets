@@ -56,6 +56,7 @@
      * @param {String}  [options.onFilterClick=null]
      * @param {String}  [options.onReady=null]
      * @param {String}  [options.ignoreKeywords=RegEx]
+     * @param {String}  [options.delimeter=';']
      * 
      * @return {jQuery} this
      * 
@@ -688,6 +689,8 @@
             $logicalType    = $col.find("div.spwidget-filter-type-cntr select.spwidget-match-type"),
             $colValCntr     = $col.find("div.spwidget-filter-value-cntr"),
             $colInput       = $colValCntr.find(".spwidget-input"),
+            inputVal        = '',
+            colType         = $col.data("spwidget_column_type"),
             eleValue        = $ele.val(),
             Inst            = $ele
                                 .closest("div.spwidget-filter")
@@ -706,7 +709,32 @@
             $colInput.removeAttr("disabled", "disabled");
             $logicalType.removeAttr("disabled");
             
-            if (!$colInput.val()) {
+            // Remove the higlight class from the column if
+            // no value is defined for it. For Checkboxes (choice)
+            // we need to first grab the checkboxes and then see
+            // if they are checked.
+            if (colType === "choice") {
+                
+                $colInput.filter(":checkbox").each(function(){
+                    
+                    var $this = $(this);
+                    
+                    if ($this.is(":checked")) {
+                        
+                        inputVal += $this.val();
+                        return false;
+                        
+                    }
+                    
+                });
+                
+            } else {
+                
+                inputVal += $colInput.val();
+                
+            }
+            
+            if (!inputVal ) {
                 
                 $col.removeClass(Inst.opt.definedClass);
                 
@@ -1173,11 +1201,7 @@
         
         $.each(filters, function(column, filter){
             
-            var $input          = Inst.$ui
-                                    .find(
-                                        ".spwidget-filter-input[name='" + 
-                                        column + "']"
-                                    ),
+            var $input          = Inst.$ui.find(".spwidget-filter-input[name='" + column + "']"),
                 $colUI          = $input.closest("div.spwidget-column"),
                 type            = $colUI.data("spwidget_column_type"),
                 $match          = $colUI.find("select[name='" + column + "_type']"),
@@ -1203,7 +1227,7 @@
                 
                     if (filter.values instanceof Array) {
                         
-                        $input.val(filter.values.join(";"));
+                        $input.val(filter.values.join(Inst.opt.delimeter));
                         
                     } else {
                         

@@ -38,6 +38,7 @@ div.spwidget-filter div.spwidget-filter-type-cntr {
     font-size: .8em;
     top: .6em;
     opacity: .6;
+    filter: Alpha(opacity=60);
 }
 div.spwidget-filter div.spwidget-filter-type-cntr:hover {
     opacity: 1;

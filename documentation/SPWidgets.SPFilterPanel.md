@@ -70,7 +70,6 @@ The default options for this widget can be manipulated/set via the following obj
 
 -   **columns** :   *Array. Optional. Default=['Title']* <br />
     An array with the list of columns that should be displayed. Default is the Title column. Any column can be used.
- 
 
 -   **textFieldTooltip**    :   *String. Optional. Default='Use a semicolon to delimiter multiple keywords.'* <br />
     The text that appear below Text fields, which instructs the user that a semicolon can be used to delimiter multiple keywords.
@@ -123,6 +122,9 @@ The default options for this widget can be manipulated/set via the following obj
 -   **ignoreKeywords**      :   *RegEx. Optional. Default=/^(of|and|a|an|to|by|the|or|from)$/i* <br />
     A regular expression with the list of keywords to ignore. RegEx is used when parsing the values entered by the user in text fields. Default setting ignores the following: of, and, a, an, to, by, the, or, from
 
+-   **delimeter**      :   *String. Optional. Default=;* <br />
+    The delimeter that should be used by the user when entering multiple keywords into a text input field. Note, if changing this from the default semicolon, the _textFieldTooltip_ input parameter should also be adjusted. Since v2.2
+    
 
 Return Value
 ------------
