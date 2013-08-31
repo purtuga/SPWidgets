@@ -466,7 +466,7 @@
                     
                     case "2010":
                         
-                        opt.uploadPage2 = opt.webURL + "/_layouts/UploadEx.aspx";
+                        opt.uploadPage = opt.webURL + "/_layouts/UploadEx.aspx";
                         
                         break;
                     
