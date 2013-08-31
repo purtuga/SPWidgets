@@ -9,7 +9,6 @@
  *  
  * @version _BUILD_VERSION_NUMBER_NUMBER_
  * @author  Paul Tavares, www.purtuga.com
- * @see     TODO: site url
  * 
  * @requires jQuery.js {@link http://jquery.com}
  * @requires jQuery-ui.js {@link http://jqueryui.com}
@@ -38,11 +37,17 @@
      * @class       jQuery Library public method anchor
      * @memberOf    jQuery
      */
+
+    /**
+     * @name        Upload
+     * @class       Upload widget
+     */    
+    var Upload = {};
     
     /**
      * Tracks if the CSS injection into the page has been done.
      */
-    $.pt._isSPUploadCssDone = false;
+    Upload.isSPUploadCssDone = false;
     
     /**
      * Defaults 
@@ -50,7 +55,7 @@
     $.SPWidgets.defaults.upload = {
         listName:               '',
         folderPath:             '',
-        uploadDonePage:         '/undefined',
+        uploadDonePage:         '/_layouts/images/STS_ListItem_43216.gif',
         onPageChange:           null,
         onUploadDone:           null,
         uploadUrlOpt:           '',
@@ -169,12 +174,12 @@
                 overlayCss;
             
             // if the global styles have not yet been inserted into the page, do it now
-            if (!$.pt._isSPUploadCssDone) {
+            if (!Upload.isSPUploadCssDone) {
                 
-                $.pt._isSPUploadCssDone = true;
+                Upload.isSPUploadCssDone = true;
                 
                 $('<style type="text/css">' + "\n\n" +
-                    $.pt.SPUploadStyleSheet + "\n\n</style>"
+                    Upload.StyleSheet + "\n\n</style>"
                 )
                 .prependTo("head");
                 
@@ -583,7 +588,7 @@
             
             // Create the UI on the page
             opt.$cntr = $(
-                    $($.pt.SPUploadHtml).filter("div.SPControlUploadUI").clone()
+                    $(Upload.HtmlUI).filter("div.SPControlUploadUI").clone()
                 )
                 .appendTo(opt.$ele.addClass("hasSPControlUploadUI").empty())
                 .data("SPControlUploadOptions", opt);
@@ -591,7 +596,7 @@
             opt.$buttonCntr = opt.$cntr.find("div.buttonPane")
                     .click(function(ev){
                         
-                        $.pt._onUpload(this);
+                        Upload.onUpload(this);
                         
                     });
                     
@@ -634,14 +639,14 @@
             opt.showHideBusy();
             
             opt.$cntr.find("iframe")
-                    .css("height", opt.checkInFormHeight)
-                    .load(function(ev){
-                        
-                        $.pt._onIFramePageChange(opt.$ele.find(".SPControlUploadUI"));
-                        
-                    })
-                    .attr("src", opt.uploadPage)
-                    .end();
+                .css("height", opt.checkInFormHeight)
+                .load(function(ev){
+                    
+                    Upload.onIframeChange(opt.$ele.find(".SPControlUploadUI"));
+                    
+                })
+                .attr("src", opt.uploadPage)
+                .end();
                    
             return this;
             
@@ -650,7 +655,7 @@
     };// $.fn.SPControlUpload
         
     /**
-     * FUNCTION: $.pt._onUpload()
+     * FUNCTION: Upload.onUpload()
      * 
      *  Submits the upload form that is loaded in the iframe window.
      *  Also calls any callback function defined by the user.
@@ -665,7 +670,7 @@
      *  @return {undefined} Nothing.
      *
      */
-    $.pt._onUpload = function(ele){
+    Upload.onUpload = function(ele){
         
         var e       = $(ele).closest(".SPControlUploadUI"),
             page    = e.find("iframe").contents(),
@@ -735,11 +740,11 @@
             
         });
         
-    };//* $.pt._onUpload()
+    };//* Upload.onUpload()
     
     
     /**
-     * FUNTION: $.pt._onIFramePageChange()
+     * FUNTION: Upload.onIframeChange()
      * 
      *  Called when ever the iframe is "load"ed. Function is bound to
      *  the iframe html element's _load event so that it is called each
@@ -755,18 +760,11 @@
      *  @return {undefined} nothing.
      * 
      */
-    $.pt._onIFramePageChange = function(ele){
+    Upload.onIframeChange = function(ele){
         
-        var e       = $(ele).closest(".SPControlUploadUI"),
-            page    = e.find("iframe").contents(),
-            opt     = e.data("SPControlUploadOptions"),
-            ev      = opt.ev,
-            form    = page.find("form").eq(0);
+        var e = $(ele).closest(".SPControlUploadUI");
         
-        ev.pageUrl  = page[0].location.href;
-        ev.page     = page;
-        
-    //    console.debug("$.pt._onIFramePageChange(): In...");
+    //    console.debug("Upload.onIframeChange(): In...");
         
         // Because just about every browser differs on how the load() event
         // is triggered, we do all our work in a function that is triggered
@@ -775,14 +773,24 @@
         setTimeout(
             function(){
                 
+                var page    = e.find("iframe").contents(),
+                    opt     = e.data("SPControlUploadOptions"),
+                    ev      = opt.ev,
+                    form    = page.find("form").eq(0);
+                
+                ev.pageUrl  = page[0].location.href;
+                ev.page     = page;
+                
+                // Focus at the top of the form
                 opt.$iframeCntr.scrollTop(0);
+                page.scrollTop(0);
                 
                 // If the URL of the page in the iFrame is the same as the 
                 // upload page then this is either the
                 // initial load of the page or an error has occured...
                 // Hide the page and show only the upload form element.
                 if (
-                        $.pt.isSameUrlpage(
+                        Upload.isSameUrlPage(
                             $.pt.getUnEscapedUrl(ev.pageUrl),
                             $.pt.getUnEscapedUrl(opt.uploadPage))
                 ) {
@@ -797,7 +805,7 @@
                             .hide()
                             .end()
                         .append(
-                            $($.pt.SPUploadHtml).filter("div#SPControlUploadModUI").clone() )
+                            $(Upload.HtmlUI).filter("div#SPControlUploadModUI").clone() )
                         .find("div.SPControlUploadModUIFileSelected")
                             .html(opt.selectFileMessage);
                     
@@ -928,15 +936,10 @@
                         if (opt._lastError) {
                             
                             opt.showError({message: opt._lastError});
-                            
-               // TODO: cleanup
-                            // page.find("input[type='file']")
-                                // .after('<div style="color:red;"><div class="ui-state-error">ERROR: '
-                                    // +    opt._lastError + '</div></div>');
-                            
                             opt._lastError = "";
                             
                         }
+                        
                         opt._reloadCount = 0;
                         
                         // Set the override checkbox
@@ -968,12 +971,12 @@
                     ev.state            = 3;
                     ev.action           = "postLoad";
                     ev.hideOverlay      = true;
-                    ev.file             = opt.getUploadedFileRow();
+                    // ev.file             = opt.getUploadedFileRow();
                     
                     // If the current page is the 'uploadDonePage', then set
                     // flag in the event, set flag to not hide the overlay
                     // and insert message indicating upload is done.
-                    if ($.pt.isSameUrlpage(ev.pageUrl, opt.uploadDonePage)) {
+                    if (Upload.isSameUrlPage(ev.pageUrl, opt.uploadDonePage)) {
                         
                         ev.isUploadDone = true;
                         ev.hideOverlay  = false;
@@ -996,7 +999,11 @@
                                 .end()
                             .find("input[title='Name']")
                                 .closest("div[id^='WebPart']")
-                                    .appendTo(page.find("form"));
+                                    .appendTo(page.find("form"))
+                                    // 8/30/2013: ensure the UI is visible.
+                                    // Just in case it was at root of form
+                                    .css("display", "")
+                                    .removeClass("ptWasVisible");
                         
                         // SP seems to have a good hold of the Form, because
                         // we are unable o bind an event via $. Thus:
@@ -1125,7 +1132,7 @@
             },
             500);//end:setTimeout()
     
-    };// $.pt._onIFramePageChange
+    };// Upload.onIframeChange
     
     /**
      * Determines whether two URLs are the same page. URLs could be the same page, but
@@ -1138,7 +1145,7 @@
      * @memberOf jQuery.pt
      *
      */
-    $.pt.isSameUrlpage = function(u1, u2) {
+    Upload.isSameUrlPage = function(u1, u2) {
         if (!u1 || !u2) { return false; }
         var matchString = u1;
         if (u1.indexOf("?") > -1) {
@@ -1149,7 +1156,7 @@
         } else {
             return false;
         }
-    };// $.pt.isSameUrlpage()
+    };// Upload.isSameUrlPage()
     
     
     /**
@@ -1205,7 +1212,7 @@
      * Value is set at build time.
      * 
      */
-    $.pt.SPUploadStyleSheet = "_INCLUDE_SPUPLOAD_CSS_TEMPLATE_";
+    Upload.StyleSheet = "_INCLUDE_SPUPLOAD_CSS_TEMPLATE_";
     
     /**
      * @property
@@ -1213,6 +1220,6 @@
      * Populated during the build process from the 
      * html.SPControlUpload.html file 
      */
-    $.pt.SPUploadHtml = "_INCLUDE_SPUPLOAD_HTML_TEMPLATE_";
+    Upload.HtmlUI = "_INCLUDE_SPUPLOAD_HTML_TEMPLATE_";
     
 })(jQuery);
