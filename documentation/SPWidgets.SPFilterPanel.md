@@ -149,6 +149,7 @@ Methods
             filters: {
                 columnInternalName: {
                     matchType: 'Eq',
+                    logicalType: 'Or',
                     values: [
                         'filter value 1',
                         'filter value 2',

@@ -36,7 +36,8 @@
         onFilterClick:          null,
         onReady:                null,
         onReset:                null,
-        ignoreKeywords:         /^(of|and|a|an|to|by|the|or|from)$/i
+        ignoreKeywords:         /^(of|and|a|an|to|by|the|or|from)$/i,
+        delimeter:              ';'
     };
     
     /**
@@ -682,25 +683,28 @@
      */
     Filter.onFilterTypeChange = function(ev) {
         
-        var $ele        = $(this),
-            $col        = $ele.closest("div.spwidget-column"),
-            $colValCntr = $col.find("div.spwidget-filter-value-cntr"),
-            $colInput   = $colValCntr.find(".spwidget-input"),
-            eleValue    = $ele.val(),
-            Inst        = $ele
-                            .closest("div.spwidget-filter")
-                            .data("SPFilterPanelInst");
+        var $ele            = $(this),
+            $col            = $ele.closest("div.spwidget-column"),
+            $logicalType    = $col.find("div.spwidget-filter-type-cntr select.spwidget-match-type"),
+            $colValCntr     = $col.find("div.spwidget-filter-value-cntr"),
+            $colInput       = $colValCntr.find(".spwidget-input"),
+            eleValue        = $ele.val(),
+            Inst            = $ele
+                                .closest("div.spwidget-filter")
+                                .data("SPFilterPanelInst");
         
         if (eleValue === "IsNull" || eleValue === "IsNotNull") {
             
             $colValCntr.addClass("spwidget-disabled");
             $colInput.attr("disabled", "disabled");
+            $logicalType.attr("disabled", "disabled");
             $col.addClass(Inst.opt.definedClass);
             
         } else {
             
             $colValCntr.removeClass("spwidget-disabled");
             $colInput.removeAttr("disabled", "disabled");
+            $logicalType.removeAttr("disabled");
             
             if (!$colInput.val()) {
                 
@@ -805,7 +809,7 @@
             }
             
         });
-        
+
         // Focus the on the first input
         Inst.$ui.find(":input.spwidget-input:first").focus();
         
@@ -872,7 +876,7 @@
         function getColumnCAMLQuery(colFilterObj) {
             
             return $.SPWidgets.getCamlLogical({
-                    type:           'OR',
+                    type:           colFilterObj.logicalType,
                     values:         colFilterObj.values,
                     onEachValue:    function(filterVal){
                         
@@ -894,14 +898,17 @@
                 $input          = $thisCol.find(".spwidget-input"),
                 colName         = $input.attr("name"),
                 thisColFilter   = {
-                        columnName: colName,
-                        matchType:  $thisCol
-                                        .find("select.spwidget-filter-type")
+                        columnName:     colName,
+                        matchType:      $thisCol
+                                            .find("select.spwidget-filter-type")
                                             .val(),
-                        values:     [],
-                        count:      0,
-                        CAMLQuery:  '',
-                        URLParams:  ''
+                        logicalType:    $thisCol
+                                            .find("select.spwidget-match-type")
+                                            .val(),
+                        values:         [],
+                        count:          0,
+                        CAMLQuery:      '',
+                        URLParams:      ''
                     },
                 colFilterWasSet = false,
                 colType         = $thisCol.data("spwidget_column_type"),
@@ -984,7 +991,7 @@
                                          
                                     }
                                     
-                                };
+                                }
                                 
                             });
                             
@@ -992,7 +999,7 @@
                                 
                                 thisColFilter.count     = thisColFilter.values.length;
                                 thisColFilter.CAMLQuery = $.SPWidgets.getCamlLogical({
-                                        type:           'OR',
+                                        type:           thisColFilter.logicalType,
                                         values:         lookupIDs,
                                         onEachValue:    function(filterVal){
                                             
@@ -1023,7 +1030,7 @@
                                 thisColFilter.values    = dtObj.dates;
                                 thisColFilter.count     = thisColFilter.values.length;
                                 thisColFilter.CAMLQuery = $.SPWidgets.getCamlLogical({
-                                    type:           'OR',
+                                    type:           thisColFilter.logicalType,
                                     values:         thisColFilter.values,
                                     onEachValue:    function(filterVal){
                                         
@@ -1053,7 +1060,7 @@
                             
                             (function(){
                                 
-                                var keywords = $input.val().split(';'),
+                                var keywords = $input.val().split(Inst.opt.delimeter),
                                     i,j,
                                     thisKeyword;
                                 
@@ -1166,19 +1173,26 @@
         
         $.each(filters, function(column, filter){
             
-            var $input  = Inst.$ui
-                            .find(
-                                ".spwidget-filter-input[name='" + 
-                                column + "']"
-                            ),
-                $colUI  = $input.closest("div.spwidget-column"),
-                type    = $colUI.data("spwidget_column_type"),
-                $match  = $colUI.find("select[name='" + column + "_type']");
+            var $input          = Inst.$ui
+                                    .find(
+                                        ".spwidget-filter-input[name='" + 
+                                        column + "']"
+                                    ),
+                $colUI          = $input.closest("div.spwidget-column"),
+                type            = $colUI.data("spwidget_column_type"),
+                $match          = $colUI.find("select[name='" + column + "_type']"),
+                $logicalType    = $colUI.find("div.spwidget-filter-type-cntr select.spwidget-match-type");
             
-            // If we have a matchType, then set it
+            // If we have a matchType or logicalType, then set it
             if (filter.matchType) {
                 
                 $match.val(filter.matchType);
+                
+            }
+            
+            if (filter.logicalType) {
+                
+                $logicalType.val(filter.logicalType);
                 
             }
             

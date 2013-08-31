@@ -37,6 +37,10 @@ div.spwidget-filter div.spwidget-filter-type-cntr {
     position: absolute;
     font-size: .8em;
     top: .6em;
+    opacity: .6;
+}
+div.spwidget-filter div.spwidget-filter-type-cntr:hover {
+    opacity: 1;
 }
 div.spwidget-filter div.spwidget-filter-value-cntr {
     width: 100%;
