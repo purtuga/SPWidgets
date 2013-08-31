@@ -3,7 +3,7 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *  
- * @version 20130830081913
+ * @version 20130831083730
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  * 
@@ -11,8 +11,8 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date:  August 30, 2013 - 08:19 PM
- * Version:     20130830081913
+ * Build Date:  Paul:August 31, 2013 08:37 AM
+ * Version:     20130831083730
  * 
  */
 ;(function($){
@@ -53,7 +53,7 @@
         }
         
         $.SPWidgets             = {};
-        $.SPWidgets.version     = "20130830081913";
+        $.SPWidgets.version     = "20130831083730";
         $.SPWidgets.defaults    = {};
         
         /**
@@ -655,7 +655,7 @@
  *  -   jQuery-UI Draggable
  * 
  * 
- * BUILD: Paul:August 30, 2013 06:52 AM
+ * BUILD: Paul:August 31, 2013 08:22 AM
  */
 
 ;(function($){
@@ -3025,7 +3025,7 @@
  * THe user, however, is presented with the existing items
  * and has the ability to Remove them and add new ones.
  * 
- * BUILD: Paul:August 30, 2013 06:52 AM
+ * BUILD: Paul:August 31, 2013 08:22 AM
  * 
  */
 
@@ -4589,7 +4589,7 @@
  * on jQuery UI's Autocomplete and SPServices library.
  *      
  *  
- * @version 20130830065250NUMBER_
+ * @version 20130831082230NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
@@ -4597,7 +4597,7 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date Paul:August 30, 2013 06:52 AM
+ * Build Date Paul:August 31, 2013 08:22 AM
  * 
  */
 (function(){
@@ -5425,14 +5425,14 @@
  * through the many SP pages and without having to leave the user's current page.
  *      
  *  
- * @version 20130830081913NUMBER_
+ * @version 20130831082230NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * 
  * @requires jQuery.js {@link http://jquery.com}
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date August 30, 2013 - 08:19 PM
+ * Build Date Paul:August 31, 2013 08:22 AM
  * 
  */
 ;(function($){
@@ -6682,12 +6682,6 @@
 + "    right: auto;\n"
 + "}\n"
 + "\n"
-+ ".spcontrolupload .loadingOverlay {\n"
-+ "	width: 99%;\n"
-+ "	left: 1px;\n"
-+ "	top: 1px;\n"
-+ "}\n"
-+ "\n"
 + ".spcontrolupload .loadingOverlayMsg {\n"
 + "	font-size: 1em;\n"
 + "	background-position: left top;\n"
@@ -6747,7 +6741,7 @@
 + "        <div class=\"iFrameWindow ui-state-default\">\n"
 + "            <iframe name=\"SPControlUploadUI\" frameborder=\"0\" scrollbars=\"yes\" scrolling=\"yes\"></iframe>\n"
 + "        </div>\n"
-+ "        <div class=\"loadingOverlay\">\n"
++ "        <div class=\"loadingOverlay ui-widget-content\">\n"
 + "            <div class=\"loadingOverlayMsg\"></div>\n"
 + "        </div>\n"
 + "        <div class=\"spwidget-success-cntr ui-widget-content\">\n"
@@ -6788,7 +6782,7 @@
  * jquery.SPDateField.js
  * The SPDateField widget. Introduced with v2.2, August 2013
  * 
- * BUILD: Paul:August 30, 2013 06:52 AM
+ * BUILD: Paul:August 31, 2013 08:22 AM
  * 
  */
 ;(function($){
@@ -7472,7 +7466,7 @@
 /**
  * @fileOverview - List filter panel widget
  * 
- * BUILD: August 30, 2013 - 04:46 PM
+ * BUILD: Paul:August 31, 2013 08:37 AM
  * 
  */
 (function($){
@@ -8159,6 +8153,8 @@
             $logicalType    = $col.find("div.spwidget-filter-type-cntr select.spwidget-match-type"),
             $colValCntr     = $col.find("div.spwidget-filter-value-cntr"),
             $colInput       = $colValCntr.find(".spwidget-input"),
+            inputVal        = '',
+            colType         = $col.data("spwidget_column_type"),
             eleValue        = $ele.val(),
             Inst            = $ele
                                 .closest("div.spwidget-filter")
@@ -8177,7 +8173,32 @@
             $colInput.removeAttr("disabled", "disabled");
             $logicalType.removeAttr("disabled");
             
-            if (!$colInput.val()) {
+            // Remove the higlight class from the column if
+            // no value is defined for it. For Checkboxes (choice)
+            // we need to first grab the checkboxes and then see
+            // if they are checked.
+            if (colType === "choice") {
+                
+                $colInput.filter(":checkbox").each(function(){
+                    
+                    var $this = $(this);
+                    
+                    if ($this.is(":checked")) {
+                        
+                        inputVal += $this.val();
+                        return false;
+                        
+                    }
+                    
+                });
+                
+            } else {
+                
+                inputVal += $colInput.val();
+                
+            }
+            
+            if (!inputVal ) {
                 
                 $col.removeClass(Inst.opt.definedClass);
                 
@@ -8644,11 +8665,7 @@
         
         $.each(filters, function(column, filter){
             
-            var $input          = Inst.$ui
-                                    .find(
-                                        ".spwidget-filter-input[name='" + 
-                                        column + "']"
-                                    ),
+            var $input          = Inst.$ui.find(".spwidget-filter-input[name='" + column + "']"),
                 $colUI          = $input.closest("div.spwidget-column"),
                 type            = $colUI.data("spwidget_column_type"),
                 $match          = $colUI.find("select[name='" + column + "_type']"),
@@ -8674,7 +8691,7 @@
                 
                     if (filter.values instanceof Array) {
                         
-                        $input.val(filter.values.join(";"));
+                        $input.val(filter.values.join(Inst.opt.delimeter));
                         
                     } else {
                         
@@ -8735,7 +8752,7 @@
     Filter.styleSheet = "/** \n"
 + " * Stylesheet for the Board widget\n"
 + " * \n"
-+ " * BUILD: Paul:August 30, 2013 06:52 AM\n"
++ " * BUILD: Paul:August 31, 2013 08:22 AM\n"
 + " */\n"
 + "div.spwidget-filter {\n"
 + "    width: 100%;\n"
@@ -8772,6 +8789,7 @@
 + "    font-size: .8em;\n"
 + "    top: .6em;\n"
 + "    opacity: .6;\n"
++ "    filter: Alpha(opacity=60);\n"
 + "}\n"
 + "div.spwidget-filter div.spwidget-filter-type-cntr:hover {\n"
 + "    opacity: 1;\n"
