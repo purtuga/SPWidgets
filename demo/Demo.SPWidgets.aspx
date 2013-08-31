@@ -1,5 +1,5 @@
 <%-- SPWIDGETS DEMO PAGE --%>
-<%-- BUILD 20130830080440 --%>
+<%-- BUILD 20130830081913 --%>
 <%@ Page language="C#" MasterPageFile="~masterurl/default.master"    Inherits="Microsoft.SharePoint.WebPartPages.WebPartPage,Microsoft.SharePoint,Version=12.0.0.0,Culture=neutral,PublicKeyToken=71e9bce111e9429c" %> 
 <%@ Register Tagprefix="SharePoint" Namespace="Microsoft.SharePoint.WebControls" Assembly="Microsoft.SharePoint, Version=12.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %>
 <%@ Register Tagprefix="Utilities" Namespace="Microsoft.SharePoint.Utilities" Assembly="Microsoft.SharePoint, Version=12.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %>
@@ -44,8 +44,8 @@ SPWidgets - Widgets for building custom UIs
 /** 
  * SPWidgets Demo
  * 
- * Build Date:  August 30, 2013 - 08:04 PM
- * Version:     20130830080440 
+ * Build Date:  August 30, 2013 - 08:19 PM
+ * Version:     20130830081913 
  * 
  */
 </script>
@@ -468,7 +468,7 @@ SPWidgets - Widgets for building custom UIs
         
     </div>
     <div>
-        <span>Build: </span><span>20130830080440</span>
+        <span>Build: </span><span>20130830081913</span>
     </div>
     <div>
         <div id="themeSwitchWidget"></div>
@@ -501,7 +501,7 @@ setTimeout(function(){
  * @fileOverview demo.common.js
  * Common file for all demos. Initiates the UI on the page.
  * 
- * @version 20130830080440
+ * @version 20130830081913
  * 
  */
 (function($){
@@ -2435,7 +2435,7 @@ window.vkbeautify = new vkbeautify();
 
 //-------- START SPWidgets plugin: inserted by build script ----------------- 
 
-(function(g){var r=g;document.head||(document.head=document.getElementsByTagName("head")[0]);(function(){try{g.pt||(g.pt={})}catch(c){g.pt={}}void 0===g.pt._cache&&(g.pt._cache={});g.SPWidgets={};g.SPWidgets.version="20130830080440";g.SPWidgets.defaults={};g.fn.SPMsgHasError=function(){var c=g(this).find("ErrorCode"),d=!1;if(!c.length)return g(this).find("faultcode").length?!0:!1;c.each(function(){if("0x00000000"!==g(this).text())return d=!0,!1});return d};g.fn.SPGetMsgError=function(){var c=
+(function(g){var r=g;document.head||(document.head=document.getElementsByTagName("head")[0]);(function(){try{g.pt||(g.pt={})}catch(c){g.pt={}}void 0===g.pt._cache&&(g.pt._cache={});g.SPWidgets={};g.SPWidgets.version="20130830081913";g.SPWidgets.defaults={};g.fn.SPMsgHasError=function(){var c=g(this).find("ErrorCode"),d=!1;if(!c.length)return g(this).find("faultcode").length?!0:!1;c.each(function(){if("0x00000000"!==g(this).text())return d=!0,!1});return d};g.fn.SPGetMsgError=function(){var c=
 g(this),d="",b=c.find("ErrorCode"),f=0;b.length||(b=c.find("faultcode"));if(!b.length)return"";b.each(function(){var a=g(this);"0x00000000"!==a.text()&&(f+=1,d+="("+f+") "+a.text()+": "+a.parent().children().not(a).text()+"\n")});return d=f+" error(s) encountered! \n"+d};g.SPWidgets.fillTemplate=function(c,d){var b,f,a,h,e,n,m,p;"object"===typeof c&&1===arguments.length&&(d=c.data,c=c.tmplt);b="";f="string"!==typeof c?String(g("<div/>").append(c).html()):c;a=f.match(/(\{\{.*?\}\})/g);g.isArray(d)||
 (d=[d]);if(null!==a)for(n=0,m=d.length;n<m;n++){p=f;h=0;for(e=a.length;h<e;h++)a[h]=a[h].replace(/[\{\{\}\}]/g,""),p=p.replace("{{"+a[h]+"}}",d[n][a[h]]);b+=p}return b};g.SPWidgets.parseLookupFieldValue=function(c){var d=[],b=String(c).split(";#"),f=b.length,a,h;if(void 0===c)return d;for(c=0;c<f;c++)a=b[c],c++,h=b[c],(a||h)&&d.push({id:a,title:h});return d};g.SPWidgets.getCamlLogical=function(c){c=g.extend({},{type:"AND",values:[],onEachValue:null},c);var d="<And>",b="</And>",f="",a=0,h=0,e=!1;c.type=
 String(c.type).toUpperCase();g.isArray(c.values)||(c.values=[c.values]);"AND"!==c.type&&(d="<Or>",b="</Or>");f=d;a=c.values.length;h=a-1;e=g.isFunction(c.onEachValue);2>a&&(f="");for(d=0;d<a;d++)if(f=e?f+String(c.onEachValue(c.values[d])).toString():f+String(c.values[d]).toString(),1<h-d){f+=g.SPWidgets.getCamlLogical(g.extend({},c,{values:c.values.slice(d+1,a-d)}));break}1<a&&(f+=b);return f};g.SPWidgets.SPGetDateString=function(c,d){function b(a){return 10>a?"0"+a:a}d=String(d||"local").toLowerCase();
@@ -2515,7 +2515,7 @@ d),f;g.isSPUploadCssDone||(g.isSPUploadCssDone=!0,c('<style type="text/css">\n\n
 b.$iframeCntr.css({overflow:"auto",height:"auto"}));return b};b.showHideSuccess=function(a){a?b.$successCntr.stop().fadeOut().promise(function(){b.$successCntr.css("display","none")}):b.$successCntr.stop().show().promise(function(){b.$successCntr.css("display","block")});return b};b.showError=function(a){a=c.extend({},{message:"",autoHide:!0},a);b.$errorCntrMsg.html(a.message);b.$errorCntr.stop().css("display","block");a.autoHide&&b.$errorCntr.animate({opacity:1},5E3,function(){b.clearError()});return b};
 b.clearError=function(){b.$errorCntr.css("display","none");return b};b.resetWidget=function(){b.ev={state:1,action:"uploading",hideOverlay:!0,pageUrl:"",page:null,isUploadDone:!1,file:{}};b.$iframe.attr("src",b.uploadPage);return b};b.getUploadedFileRow=function(){var a={};c().SPServices({operation:"GetListItems",async:!1,webURL:b.webURL,listName:b.listName,CAMLQuery:"<Query><Where><Eq><FieldRef Name='Author' LookupId='TRUE'/><Value Type='Integer'><UserID/></Value></Eq></Where><OrderBy><FieldRef Name='Created' Ascending='FALSE'/></OrderBy></Query>",
 CAMLViewFields:"<ViewFields><FieldRef Name='ID'/><FieldRef Name='EncodedAbsUrl'/><FieldRef Name='FileLeafRef' /><FieldRef Name='Author' /><FieldRef Name='Editor' /><FieldRef Name='Created' /><FieldRef Name='Modified' /></ViewFields>",CAMLRowLimit:1,CAMLQueryOptions:"<QueryOptions><ViewAttributes Scope='Recursive' /></QueryOptions>",completefunc:function(b,d){var f=c(b.responseXML).SPFilterNode("z:row").SPXmlToJson({includeAllAttrs:!0});f.length&&(a=f[0])}});return a};b.listName&&0!==b.listName.indexOf("{")&&
-(b.listName=c.pt.getListUID(b.listName));if(!b.listName)return c(this).html('<div class="ui-state-error">Input parameter [listName] not valid!</div>'),this;b.spVersion=c.SPWidgets.getSPVersion(!0);b.uploadPage=String(b.uploadPage);if(b.uploadPage)-1===b.uploadPage.toLowerCase().indexOf("http")&&(f="/",0==b.uploadPage.indexOf("/")&&(f=""),b.uploadPage=b.webURL+f+b.uploadPage);else switch(b.spVersion){case "2013":b.uploadPage=b.webURL+"/_layouts/15/UploadEx.aspx";break;case "2010":b.uploadPage2=b.webURL+
+(b.listName=c.pt.getListUID(b.listName));if(!b.listName)return c(this).html('<div class="ui-state-error">Input parameter [listName] not valid!</div>'),this;b.spVersion=c.SPWidgets.getSPVersion(!0);b.uploadPage=String(b.uploadPage);if(b.uploadPage)-1===b.uploadPage.toLowerCase().indexOf("http")&&(f="/",0==b.uploadPage.indexOf("/")&&(f=""),b.uploadPage=b.webURL+f+b.uploadPage);else switch(b.spVersion){case "2013":b.uploadPage=b.webURL+"/_layouts/15/UploadEx.aspx";break;case "2010":b.uploadPage=b.webURL+
 "/_layouts/UploadEx.aspx";break;default:b.uploadPage=b.webURL+"/_layouts/Upload.aspx"}-1===String(b.uploadDonePage).toLowerCase().indexOf("http")&&(f="/",0==b.uploadDonePage.indexOf("/")&&(f=""),b.uploadDonePage=b.webURL+f+b.uploadDonePage);b._uploadUrlParams="?List="+c.pt.getEscapedUrl(b.listName)+"&RootFolder="+c.pt.getEscapedUrl(b.folderPath)+"&Source="+c.pt.getEscapedUrl(b.uploadDonePage)+"&"+b.uploadUrlOpt;b.uploadPage+=b._uploadUrlParams;b._lastError="";b._reloadCount=0;b.ev={state:1,action:"uploading",
 hideOverlay:!0,pageUrl:"",page:null,isUploadDone:!1,file:{}};b.$ele=c(this);f={};b.overlayBgColor&&(f["background-color"]=b.overlayBgColor);b.$cntr=c(c(g.HtmlUI).filter("div.SPControlUploadUI").clone()).appendTo(b.$ele.addClass("hasSPControlUploadUI").empty()).data("SPControlUploadOptions",b);b.$buttonCntr=b.$cntr.find("div.buttonPane").click(function(a){g.onUpload(this)});b.$content=b.$cntr.find("div.mainContainer");b.$iframeCntr=b.$cntr.find("div.iFrameWindow");b.$iframe=b.$iframeCntr.children("iframe");
 b.$busyOverlay=b.$cntr.find("div.loadingOverlay");b.$busyOverlayMsg=b.$busyOverlay.find("div.loadingOverlayMsg");b.$successCntr=b.$cntr.find("div.spwidget-success-cntr");b.$errorCntr=b.$cntr.find("div.spwidget-error-cntr");b.$errorCntrMsg=b.$errorCntr.find(".spwidget-msg");b.reInvalidChr=/[\/:*?"<>|#{}%~&]/;b.$successCntr.on("click",".spwidget-close",function(a){b.showHideSuccess(!0)}).find(".spwidget-msg").html(b.uploadDoneMessage);b.$errorCntr.on("click",".spwidget-close",function(a){b.clearError()});

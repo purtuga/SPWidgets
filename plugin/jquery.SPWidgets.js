@@ -3,7 +3,7 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *  
- * @version 20130830080440
+ * @version 20130830081913
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  * 
@@ -11,8 +11,8 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date:  August 30, 2013 - 08:04 PM
- * Version:     20130830080440
+ * Build Date:  August 30, 2013 - 08:19 PM
+ * Version:     20130830081913
  * 
  */
 ;(function($){
@@ -53,7 +53,7 @@
         }
         
         $.SPWidgets             = {};
-        $.SPWidgets.version     = "20130830080440";
+        $.SPWidgets.version     = "20130830081913";
         $.SPWidgets.defaults    = {};
         
         /**
@@ -5425,14 +5425,14 @@
  * through the many SP pages and without having to leave the user's current page.
  *      
  *  
- * @version 20130830080440NUMBER_
+ * @version 20130830081913NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * 
  * @requires jQuery.js {@link http://jquery.com}
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date August 30, 2013 - 08:04 PM
+ * Build Date August 30, 2013 - 08:19 PM
  * 
  */
 ;(function($){
@@ -5884,7 +5884,7 @@
                     
                     case "2010":
                         
-                        opt.uploadPage2 = opt.webURL + "/_layouts/UploadEx.aspx";
+                        opt.uploadPage = opt.webURL + "/_layouts/UploadEx.aspx";
                         
                         break;
                     
