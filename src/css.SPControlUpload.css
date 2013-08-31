@@ -50,12 +50,6 @@
     right: auto;
 }
 
-.spcontrolupload .loadingOverlay {
-	width: 99%;
-	left: 1px;
-	top: 1px;
-}
-
 .spcontrolupload .loadingOverlayMsg {
 	font-size: 1em;
 	background-position: left top;
