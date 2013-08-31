@@ -3,7 +3,7 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *  
- * @version 20130827071743
+ * @version 20130830080440
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  * 
@@ -11,8 +11,8 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date:  August 27, 2013 - 07:17 PM
- * Version:     20130827071743
+ * Build Date:  August 30, 2013 - 08:04 PM
+ * Version:     20130830080440
  * 
  */
 ;(function($){
@@ -53,7 +53,7 @@
         }
         
         $.SPWidgets             = {};
-        $.SPWidgets.version     = "20130827071743";
+        $.SPWidgets.version     = "20130830080440";
         $.SPWidgets.defaults    = {};
         
         /**
@@ -655,7 +655,7 @@
  *  -   jQuery-UI Draggable
  * 
  * 
- * BUILD: Paul:August 25, 2013 06:23 PM
+ * BUILD: Paul:August 30, 2013 06:52 AM
  */
 
 ;(function($){
@@ -3025,7 +3025,7 @@
  * THe user, however, is presented with the existing items
  * and has the ability to Remove them and add new ones.
  * 
- * BUILD: Paul:August 25, 2013 06:23 PM
+ * BUILD: Paul:August 30, 2013 06:52 AM
  * 
  */
 
@@ -4589,7 +4589,7 @@
  * on jQuery UI's Autocomplete and SPServices library.
  *      
  *  
- * @version 20130825062351NUMBER_
+ * @version 20130830065250NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
@@ -4597,7 +4597,7 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date Paul:August 25, 2013 06:23 PM
+ * Build Date Paul:August 30, 2013 06:52 AM
  * 
  */
 (function(){
@@ -5425,15 +5425,14 @@
  * through the many SP pages and without having to leave the user's current page.
  *      
  *  
- * @version 20130827071743NUMBER_
+ * @version 20130830080440NUMBER_
  * @author  Paul Tavares, www.purtuga.com
- * @see     TODO: site url
  * 
  * @requires jQuery.js {@link http://jquery.com}
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date August 27, 2013 - 07:17 PM
+ * Build Date August 30, 2013 - 08:04 PM
  * 
  */
 ;(function($){
@@ -5456,11 +5455,17 @@
      * @class       jQuery Library public method anchor
      * @memberOf    jQuery
      */
+
+    /**
+     * @name        Upload
+     * @class       Upload widget
+     */    
+    var Upload = {};
     
     /**
      * Tracks if the CSS injection into the page has been done.
      */
-    $.pt._isSPUploadCssDone = false;
+    Upload.isSPUploadCssDone = false;
     
     /**
      * Defaults 
@@ -5468,7 +5473,7 @@
     $.SPWidgets.defaults.upload = {
         listName:               '',
         folderPath:             '',
-        uploadDonePage:         '/undefined',
+        uploadDonePage:         '/_layouts/images/STS_ListItem_43216.gif',
         onPageChange:           null,
         onUploadDone:           null,
         uploadUrlOpt:           '',
@@ -5587,12 +5592,12 @@
                 overlayCss;
             
             // if the global styles have not yet been inserted into the page, do it now
-            if (!$.pt._isSPUploadCssDone) {
+            if (!Upload.isSPUploadCssDone) {
                 
-                $.pt._isSPUploadCssDone = true;
+                Upload.isSPUploadCssDone = true;
                 
                 $('<style type="text/css">' + "\n\n" +
-                    $.pt.SPUploadStyleSheet + "\n\n</style>"
+                    Upload.StyleSheet + "\n\n</style>"
                 )
                 .prependTo("head");
                 
@@ -6001,7 +6006,7 @@
             
             // Create the UI on the page
             opt.$cntr = $(
-                    $($.pt.SPUploadHtml).filter("div.SPControlUploadUI").clone()
+                    $(Upload.HtmlUI).filter("div.SPControlUploadUI").clone()
                 )
                 .appendTo(opt.$ele.addClass("hasSPControlUploadUI").empty())
                 .data("SPControlUploadOptions", opt);
@@ -6009,7 +6014,7 @@
             opt.$buttonCntr = opt.$cntr.find("div.buttonPane")
                     .click(function(ev){
                         
-                        $.pt._onUpload(this);
+                        Upload.onUpload(this);
                         
                     });
                     
@@ -6052,14 +6057,14 @@
             opt.showHideBusy();
             
             opt.$cntr.find("iframe")
-                    .css("height", opt.checkInFormHeight)
-                    .load(function(ev){
-                        
-                        $.pt._onIFramePageChange(opt.$ele.find(".SPControlUploadUI"));
-                        
-                    })
-                    .attr("src", opt.uploadPage)
-                    .end();
+                .css("height", opt.checkInFormHeight)
+                .load(function(ev){
+                    
+                    Upload.onIframeChange(opt.$ele.find(".SPControlUploadUI"));
+                    
+                })
+                .attr("src", opt.uploadPage)
+                .end();
                    
             return this;
             
@@ -6068,7 +6073,7 @@
     };// $.fn.SPControlUpload
         
     /**
-     * FUNCTION: $.pt._onUpload()
+     * FUNCTION: Upload.onUpload()
      * 
      *  Submits the upload form that is loaded in the iframe window.
      *  Also calls any callback function defined by the user.
@@ -6083,7 +6088,7 @@
      *  @return {undefined} Nothing.
      *
      */
-    $.pt._onUpload = function(ele){
+    Upload.onUpload = function(ele){
         
         var e       = $(ele).closest(".SPControlUploadUI"),
             page    = e.find("iframe").contents(),
@@ -6153,11 +6158,11 @@
             
         });
         
-    };//* $.pt._onUpload()
+    };//* Upload.onUpload()
     
     
     /**
-     * FUNTION: $.pt._onIFramePageChange()
+     * FUNTION: Upload.onIframeChange()
      * 
      *  Called when ever the iframe is "load"ed. Function is bound to
      *  the iframe html element's _load event so that it is called each
@@ -6173,18 +6178,11 @@
      *  @return {undefined} nothing.
      * 
      */
-    $.pt._onIFramePageChange = function(ele){
+    Upload.onIframeChange = function(ele){
         
-        var e       = $(ele).closest(".SPControlUploadUI"),
-            page    = e.find("iframe").contents(),
-            opt     = e.data("SPControlUploadOptions"),
-            ev      = opt.ev,
-            form    = page.find("form").eq(0);
+        var e = $(ele).closest(".SPControlUploadUI");
         
-        ev.pageUrl  = page[0].location.href;
-        ev.page     = page;
-        
-    //    console.debug("$.pt._onIFramePageChange(): In...");
+    //    console.debug("Upload.onIframeChange(): In...");
         
         // Because just about every browser differs on how the load() event
         // is triggered, we do all our work in a function that is triggered
@@ -6193,14 +6191,24 @@
         setTimeout(
             function(){
                 
+                var page    = e.find("iframe").contents(),
+                    opt     = e.data("SPControlUploadOptions"),
+                    ev      = opt.ev,
+                    form    = page.find("form").eq(0);
+                
+                ev.pageUrl  = page[0].location.href;
+                ev.page     = page;
+                
+                // Focus at the top of the form
                 opt.$iframeCntr.scrollTop(0);
+                page.scrollTop(0);
                 
                 // If the URL of the page in the iFrame is the same as the 
                 // upload page then this is either the
                 // initial load of the page or an error has occured...
                 // Hide the page and show only the upload form element.
                 if (
-                        $.pt.isSameUrlpage(
+                        Upload.isSameUrlPage(
                             $.pt.getUnEscapedUrl(ev.pageUrl),
                             $.pt.getUnEscapedUrl(opt.uploadPage))
                 ) {
@@ -6215,7 +6223,7 @@
                             .hide()
                             .end()
                         .append(
-                            $($.pt.SPUploadHtml).filter("div#SPControlUploadModUI").clone() )
+                            $(Upload.HtmlUI).filter("div#SPControlUploadModUI").clone() )
                         .find("div.SPControlUploadModUIFileSelected")
                             .html(opt.selectFileMessage);
                     
@@ -6346,15 +6354,10 @@
                         if (opt._lastError) {
                             
                             opt.showError({message: opt._lastError});
-                            
-               // TODO: cleanup
-                            // page.find("input[type='file']")
-                                // .after('<div style="color:red;"><div class="ui-state-error">ERROR: '
-                                    // +    opt._lastError + '</div></div>');
-                            
                             opt._lastError = "";
                             
                         }
+                        
                         opt._reloadCount = 0;
                         
                         // Set the override checkbox
@@ -6386,12 +6389,12 @@
                     ev.state            = 3;
                     ev.action           = "postLoad";
                     ev.hideOverlay      = true;
-                    ev.file             = opt.getUploadedFileRow();
+                    // ev.file             = opt.getUploadedFileRow();
                     
                     // If the current page is the 'uploadDonePage', then set
                     // flag in the event, set flag to not hide the overlay
                     // and insert message indicating upload is done.
-                    if ($.pt.isSameUrlpage(ev.pageUrl, opt.uploadDonePage)) {
+                    if (Upload.isSameUrlPage(ev.pageUrl, opt.uploadDonePage)) {
                         
                         ev.isUploadDone = true;
                         ev.hideOverlay  = false;
@@ -6414,7 +6417,11 @@
                                 .end()
                             .find("input[title='Name']")
                                 .closest("div[id^='WebPart']")
-                                    .appendTo(page.find("form"));
+                                    .appendTo(page.find("form"))
+                                    // 8/30/2013: ensure the UI is visible.
+                                    // Just in case it was at root of form
+                                    .css("display", "")
+                                    .removeClass("ptWasVisible");
                         
                         // SP seems to have a good hold of the Form, because
                         // we are unable o bind an event via $. Thus:
@@ -6543,7 +6550,7 @@
             },
             500);//end:setTimeout()
     
-    };// $.pt._onIFramePageChange
+    };// Upload.onIframeChange
     
     /**
      * Determines whether two URLs are the same page. URLs could be the same page, but
@@ -6556,7 +6563,7 @@
      * @memberOf jQuery.pt
      *
      */
-    $.pt.isSameUrlpage = function(u1, u2) {
+    Upload.isSameUrlPage = function(u1, u2) {
         if (!u1 || !u2) { return false; }
         var matchString = u1;
         if (u1.indexOf("?") > -1) {
@@ -6567,7 +6574,7 @@
         } else {
             return false;
         }
-    };// $.pt.isSameUrlpage()
+    };// Upload.isSameUrlPage()
     
     
     /**
@@ -6623,7 +6630,7 @@
      * Value is set at build time.
      * 
      */
-    $.pt.SPUploadStyleSheet = "/**\n"
+    Upload.StyleSheet = "/**\n"
 + " * FILE: jquery.SPControlUpload.css\n"
 + " * \n"
 + " * \n"
@@ -6730,7 +6737,7 @@
      * Populated during the build process from the 
      * html.SPControlUpload.html file 
      */
-    $.pt.SPUploadHtml = "<div class=\"SPControlUploadUI spcontrolupload\">\n"
+    Upload.HtmlUI = "<div class=\"SPControlUploadUI spcontrolupload\">\n"
 + "    <div class=\"mainContainer\">\n"
 + "        <div class=\"buttonPane ui-state-default\">\n"
 + "            <div class=\"upload_button\">\n"
@@ -6781,7 +6788,7 @@
  * jquery.SPDateField.js
  * The SPDateField widget. Introduced with v2.2, August 2013
  * 
- * BUILD: Paul:August 25, 2013 06:23 PM
+ * BUILD: Paul:August 30, 2013 06:52 AM
  * 
  */
 ;(function($){
@@ -7465,7 +7472,7 @@
 /**
  * @fileOverview - List filter panel widget
  * 
- * BUILD: Paul:August 25, 2013 06:23 PM
+ * BUILD: August 30, 2013 - 04:46 PM
  * 
  */
 (function($){
@@ -7500,7 +7507,8 @@
         onFilterClick:          null,
         onReady:                null,
         onReset:                null,
-        ignoreKeywords:         /^(of|and|a|an|to|by|the|or|from)$/i
+        ignoreKeywords:         /^(of|and|a|an|to|by|the|or|from)$/i,
+        delimeter:              ';'
     };
     
     /**
@@ -8146,22 +8154,34 @@
      */
     Filter.onFilterTypeChange = function(ev) {
         
-        var $ele        = $(this),
-            $colValCntr = $ele
-                            .closest("div.spwidget-column")
-                            .find("div.spwidget-filter-value-cntr"),
-            $colInput   = $colValCntr.find(".spwidget-input"),
-            eleValue    = $ele.val();
+        var $ele            = $(this),
+            $col            = $ele.closest("div.spwidget-column"),
+            $logicalType    = $col.find("div.spwidget-filter-type-cntr select.spwidget-match-type"),
+            $colValCntr     = $col.find("div.spwidget-filter-value-cntr"),
+            $colInput       = $colValCntr.find(".spwidget-input"),
+            eleValue        = $ele.val(),
+            Inst            = $ele
+                                .closest("div.spwidget-filter")
+                                .data("SPFilterPanelInst");
         
         if (eleValue === "IsNull" || eleValue === "IsNotNull") {
             
             $colValCntr.addClass("spwidget-disabled");
             $colInput.attr("disabled", "disabled");
+            $logicalType.attr("disabled", "disabled");
+            $col.addClass(Inst.opt.definedClass);
             
         } else {
             
             $colValCntr.removeClass("spwidget-disabled");
             $colInput.removeAttr("disabled", "disabled");
+            $logicalType.removeAttr("disabled");
+            
+            if (!$colInput.val()) {
+                
+                $col.removeClass(Inst.opt.definedClass);
+                
+            }
             
         }
         
@@ -8237,6 +8257,7 @@
             .find(".hasLookupSPField")
                 .SPLookupField("method", "clear");
         
+        // Remove the Defined class
         if (Inst.opt.definedClass !== "") {
             
             Inst.$ui
@@ -8244,6 +8265,24 @@
                 .removeClass(Inst.opt.definedClass);
             
         }
+        
+        // Reset any IsNull and IsNotNull filters
+        Inst.$ui.find("select.spwidget-filter-type").each(function(){
+            
+            var $ele    = $(this),
+                value   = $ele.val();
+            
+            if (value === "IsNull" || value === "IsNotNull") {
+                
+                $ele.val("Eq");
+                $ele.change();
+                
+            }
+            
+        });
+
+        // Focus the on the first input
+        Inst.$ui.find(":input.spwidget-input:first").focus();
         
         return Inst;
         
@@ -8308,7 +8347,7 @@
         function getColumnCAMLQuery(colFilterObj) {
             
             return $.SPWidgets.getCamlLogical({
-                    type:           'OR',
+                    type:           colFilterObj.logicalType,
                     values:         colFilterObj.values,
                     onEachValue:    function(filterVal){
                         
@@ -8330,14 +8369,17 @@
                 $input          = $thisCol.find(".spwidget-input"),
                 colName         = $input.attr("name"),
                 thisColFilter   = {
-                        columnName: colName,
-                        matchType:  $thisCol
-                                        .find("select.spwidget-filter-type")
+                        columnName:     colName,
+                        matchType:      $thisCol
+                                            .find("select.spwidget-filter-type")
                                             .val(),
-                        values:     [],
-                        count:      0,
-                        CAMLQuery:  '',
-                        URLParams:  ''
+                        logicalType:    $thisCol
+                                            .find("select.spwidget-match-type")
+                                            .val(),
+                        values:         [],
+                        count:          0,
+                        CAMLQuery:      '',
+                        URLParams:      ''
                     },
                 colFilterWasSet = false,
                 colType         = $thisCol.data("spwidget_column_type"),
@@ -8420,7 +8462,7 @@
                                          
                                     }
                                     
-                                };
+                                }
                                 
                             });
                             
@@ -8428,7 +8470,7 @@
                                 
                                 thisColFilter.count     = thisColFilter.values.length;
                                 thisColFilter.CAMLQuery = $.SPWidgets.getCamlLogical({
-                                        type:           'OR',
+                                        type:           thisColFilter.logicalType,
                                         values:         lookupIDs,
                                         onEachValue:    function(filterVal){
                                             
@@ -8459,7 +8501,7 @@
                                 thisColFilter.values    = dtObj.dates;
                                 thisColFilter.count     = thisColFilter.values.length;
                                 thisColFilter.CAMLQuery = $.SPWidgets.getCamlLogical({
-                                    type:           'OR',
+                                    type:           thisColFilter.logicalType,
                                     values:         thisColFilter.values,
                                     onEachValue:    function(filterVal){
                                         
@@ -8489,7 +8531,7 @@
                             
                             (function(){
                                 
-                                var keywords = $input.val().split(';'),
+                                var keywords = $input.val().split(Inst.opt.delimeter),
                                     i,j,
                                     thisKeyword;
                                 
@@ -8602,19 +8644,26 @@
         
         $.each(filters, function(column, filter){
             
-            var $input  = Inst.$ui
-                            .find(
-                                ".spwidget-filter-input[name='" + 
-                                column + "']"
-                            ),
-                $colUI  = $input.closest("div.spwidget-column"),
-                type    = $colUI.data("spwidget_column_type"),
-                $match  = $colUI.find("select[name='" + column + "_type']");
+            var $input          = Inst.$ui
+                                    .find(
+                                        ".spwidget-filter-input[name='" + 
+                                        column + "']"
+                                    ),
+                $colUI          = $input.closest("div.spwidget-column"),
+                type            = $colUI.data("spwidget_column_type"),
+                $match          = $colUI.find("select[name='" + column + "_type']"),
+                $logicalType    = $colUI.find("div.spwidget-filter-type-cntr select.spwidget-match-type");
             
-            // If we have a matchType, then set it
+            // If we have a matchType or logicalType, then set it
             if (filter.matchType) {
                 
                 $match.val(filter.matchType);
+                
+            }
+            
+            if (filter.logicalType) {
+                
+                $logicalType.val(filter.logicalType);
                 
             }
             
@@ -8686,7 +8735,7 @@
     Filter.styleSheet = "/** \n"
 + " * Stylesheet for the Board widget\n"
 + " * \n"
-+ " * BUILD: Paul:August 10, 2013 02:57 PM\n"
++ " * BUILD: Paul:August 30, 2013 06:52 AM\n"
 + " */\n"
 + "div.spwidget-filter {\n"
 + "    width: 100%;\n"
@@ -8721,7 +8770,11 @@
 + "    right: 4%;\n"
 + "    position: absolute;\n"
 + "    font-size: .8em;\n"
-+ "    margin-top: .1em;\n"
++ "    top: .6em;\n"
++ "    opacity: .6;\n"
++ "}\n"
++ "div.spwidget-filter div.spwidget-filter-type-cntr:hover {\n"
++ "    opacity: 1;\n"
 + "}\n"
 + "div.spwidget-filter div.spwidget-filter-value-cntr {\n"
 + "    width: 100%;\n"
@@ -8798,6 +8851,12 @@
 + "</div>\n"
 + "<div id=\"filter_column\">\n"
 + "    <div class=\"spwidget-column spwidget-type-{{type}}\" data-spwidget_column_type=\"{{type}}\">\n"
++ "        <div class=\"spwidget-filter-value-cntr\">\n"
++ "            <label>{{DisplayName}}</label>\n"
++ "            <div class=\"spwidget-filter-value-input\">\n"
++ "                __COLUMN__UI__\n"
++ "            </div>\n"
++ "        </div>\n"
 + "        <div class=\"spwidget-filter-type-cntr\" title=\"Match Type\">\n"
 + "            <select name=\"{{Name}}_type\" class=\"spwidget-filter-type\" tabindex=\"-1\">\n"
 + "                <option value=\"Contains\">Contains</option>\n"
@@ -8807,12 +8866,10 @@
 + "                <option value=\"IsNotNull\">Is Not Blank</option>\n"
 + "                __OTHER_FILTER_TYPES__\n"
 + "            </select>\n"
-+ "        </div>\n"
-+ "        <div class=\"spwidget-filter-value-cntr\">\n"
-+ "            <label>{{DisplayName}}</label>\n"
-+ "            <div class=\"spwidget-filter-value-input\">\n"
-+ "                __COLUMN__UI__\n"
-+ "            </div>\n"
++ "            <select name=\"{{Name}}_match\" class=\"spwidget-match-type\" tabindex=\"-1\">\n"
++ "                <option value=\"Or\" selected=\"selected\">Any</option>\n"
++ "                <option value=\"And\">All</option>\n"
++ "            </select>\n"
 + "        </div>\n"
 + "    </div>\n"
 + "</div>\n"
