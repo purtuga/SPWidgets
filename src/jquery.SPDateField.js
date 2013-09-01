@@ -20,6 +20,9 @@
     /** @property {Boolean} Is initialization done */
     SPDate.isInitDone = false;
     
+    /** @property {String} Event namespace */
+    SPDate.evNamespace = '.spwidgets.spdatefield';
+    
     /**
      * Default options. 
      * @member Inst.opt
@@ -35,7 +38,9 @@
             showOn:             "both",
             buttonImageOnly:    true
         },
-        dateTemplate: '{{date}} <span class="spwidgets-item-remove">[x]</span>'
+        dateTemplate:   '{{date}} <span class="spwidgets-item-remove">[x]</span>',
+        showTimepicker: false,
+        timeFormat:     ' {{hour}}:{{minutes}} {{ampm}}'
     };
     
     
@@ -49,11 +54,14 @@
      * YYYY-MM-DD.
      * 
      * @param {Object} [options]
-     * @param {Object} [options.allowMultiples=false]
-     * @param {Object} [options.delimeter=";"]
-     * @param {Object} [options.remainOpen=true]
+     * 
+     * @param {Boolean} [options.allowMultiples=false]
+     * @param {String} [options.delimeter=";"]
+     * @param {Boolean} [options.remainOpen=true]
      * @param {Object} [options.datepicker={...}]
-     * @param {Object} [options.dateTemplate=""]
+     * @param {String} [options.dateTemplate=""]
+     * @param {Boolean} [options.showTimepicker=false]
+     * @param {String} [options.timeFormat='h:m T']
      * 
      * return {jQuery} this
      * 
@@ -83,6 +91,8 @@
                     .prependTo("head");
                 
             }
+            
+            $("body").on("click" + SPDate.evNamespace, SPDate.onPageClick);
             
         }
         
@@ -185,7 +195,7 @@
             var Inst = {
                 
                 /** @property {jQuery} The input element used by the user */
-                $ele:   $(this).addClass("hasSPDateField")
+                $ele: $(this).addClass("hasSPDateField")
                 
             };
             
@@ -300,7 +310,7 @@
              * 
              * @param {Object} setDateOpt
              * 
-             * @param {Object|Array|String} setDateOpt.date
+             * @param {Date|Array|String} setDateOpt.date
              *          The date or array of dates to set on the picker.
              * 
              * @param {Boolean} [setDateOpt.setDatepicker=true]
@@ -313,6 +323,10 @@
              *          is used only if the input date (or one of them) is a
              *          string.
              * 
+             * @param {Boolean} [setDateOpt.triggerEvent=true]
+             *          
+             * 
+             * 
              * @return {Object} Inst
              */
             Inst.setDate = function(setDateOpt) {
@@ -321,6 +335,7 @@
                                 {},
                                 {
                                     date:           '',
+                                    time:           '',
                                     format:         Inst.opt.datepicker.dateFormat,
                                     setDatepicker:  true,
                                     triggerEvent:   true
@@ -374,6 +389,13 @@
                         
                         eleVal  = dt1;
                         dtShow  = dt2;
+                        
+                        if (Inst.opt.showTimepicker) {
+                            
+                            eleVal = $.SPWidgets.SPGetDateString(dtObj);
+                            dtShow += Inst.$timepicker.formatTime(dtObj);
+                            
+                        }
                         
                     // allowMultiples = true and date not yet stored
                     } else if (eleVal.indexOf(dt1) < 0) {
@@ -525,6 +547,299 @@
                 
             }; //end: Inst.destroy()
             
+            /**
+             * Creates the date picker on this field. Depending on the 
+             * input options, this could be a strait jQuery UI datepicker
+             * or a customized picker that allows selection of time as well.
+             * 
+             * @return {Object} Date time Picker (if showTimepicker is true)
+             */
+            Inst.createDatePicker = function() {
+                
+                var wdg = {};
+                
+                // If showTimepicker is true, then lets build our own
+                // date and time picker, which wraps jQuery datepicker.
+                if (Inst.opt.showTimepicker) {
+                    
+                    wdg.$selectorCntr   = $(SPDate.htmlTemplate)
+                                            .filter("div.spwidget-datetime-selector")
+                                            .clone()
+                                                .appendTo(Inst.$input.parent())
+                                                .css("display", "none");
+                    wdg.$datePicker     = wdg.$selectorCntr.find("div.spwidget-date-selector");
+                    wdg.$timePicker     = wdg.$selectorCntr.find("div.spwidget-time-selector");
+                    wdg.$hourSelect     = wdg.$timePicker.find("select.spwidget-hour");
+                    wdg.$minSelect      = wdg.$timePicker.find("select.spwidget-min");
+                    wdg.$ampmSelect     = wdg.$timePicker.find("select.spwidget-ampm");
+                    wdg.heightDone      = false;
+                    
+                    /**
+                     * Returns an object with the time currently selected.
+                     * 
+                     * @return {Object}
+                     *      An object with the following format:
+                     * 
+                     *          {
+                     *              hour:       '',
+                     *              hour24:     '',
+                     *              minutes:    ''
+                     *              ampm:       ''
+                     *          }
+                     */
+                    wdg.getTime = function() {
+                        
+                        var time = {
+                                hour:       wdg.$hourSelect.val(),
+                                minutes:    wdg.$minSelect.val(),
+                                ampm:       wdg.$ampmSelect.val()
+                            };
+                        
+                        time.hour24 = time.hour;
+                        
+                        if (time.ampm === "PM" && time.hour !== "12") {
+                            
+                            time.hour24 = String(parseInt(time.hour) + 12);
+                            
+                        } else if (time.ampm === "AM" && time.hour === "12") {
+                            
+                            time.hour24 = "0";
+                            
+                        }
+                        
+                        return time;
+                        
+                    }; //end: wdg.getTime()
+                    
+                    /**
+                     * Formats the time on the widget, either based on the
+                     * values returned from getTime() or a Date object.
+                     * 
+                     * @param {Date|Object} time
+                     *      The object that will be used to format the Time.
+                     * 
+                     * @return {String}
+                     *      Date formated with the dateFormat input parameter
+                     */
+                    wdg.formatTime = function(time) {
+                        
+                        var timeObj         = time,
+                            timeFormated    = '';
+                        
+                        if (time instanceof Date) {
+                            
+                            timeObj = {
+                                hour:       time.getHours(),
+                                hour24:     String(time.getHours()),
+                                minutes:    String(time.getMinutes()),
+                                ampm:       'AM'
+                            };
+                            
+                            if (timeObj.hour > 12) {
+                                
+                                timeObj.hour = String(timeObj.hour - 12);
+                                timeObj.ampm = 'PM';
+                                
+                            } else if (timeObj.hour === 12) {
+                                
+                                timeObj.ampm = 'PM';
+                                
+                            }
+                            
+                            timeObj.hour = String(timeObj.hour);
+                            
+                            if (timeObj.hour === "0") {
+                                
+                                timeObj.hour = "12";
+                                
+                            }
+                            
+                            if (String(timeObj.minutes).length < 2) {
+                                
+                                timeObj.minutes = "0" + timeObj.minutes;
+                                
+                            }
+                            
+                            
+                        } else if (!time) {
+                            
+                            timeObj = wdg.getTime();
+                            
+                        }
+                        
+                        timeFormated = $.SPWidgets.fillTemplate(
+                            Inst.opt.timeFormat,
+                            timeObj
+                        );
+                        
+                        return timeFormated;
+                        
+                    }; //end: wdg.formatTime()
+                    
+                    /**
+                     * Updates the widget date/time with what's currently selected.
+                     * If no date is selected, Today will be used.
+                     * 
+                     * @return {undefined}
+                     */
+                    wdg.updateDateTime = function(dtObj){
+                        
+                        var time    = wdg.getTime();
+                        
+                        // If dtObj is not a Date object, then create it now.
+                        // First try to get it from the Datepicker... If thats
+                        // Null (not yet selected by user), then just create a
+                        // default Date.
+                        if (!(dtObj instanceof Date)) {
+                            
+                            dtObj = wdg.$datePicker.datepicker("getDate");
+                            
+                            if (dtObj === null) {
+                                
+                                dtObj = new Date();
+                                
+                            }
+                            
+                        }
+                        
+                        // Add time elements to date object
+                        dtObj.setHours(time.hour24);
+                        dtObj.setMinutes(time.minutes);
+                        
+                        Inst.setDate({
+                            date:           dtObj,
+                            format:         Inst.opt.datepicker.dateFormat,
+                            setDatepicker:  true
+                        });
+                        
+                        return;
+                        
+                    }; //end: wdg.updateDateTime()
+                    
+                    /**
+                     * Makes the Time picker visible on the page.
+                     * 
+                     * @return {undefined}
+                     */
+                    wdg.showPicker = function() {
+                        
+                        wdg.$selectorCntr
+                                .show(function(){
+                                    
+                                    if (!wdg.heightDone) {
+                                        
+                                        wdg.heightDone = true;
+                                        
+                                        $.SPWidgets.makeSameHeight(
+                                            wdg.$datePicker
+                                                .find("div.ui-datepicker-inline")
+                                                .add(wdg.$timePicker)
+                                        );
+                                        
+                                    }
+                                    
+                                })
+                                .position({
+                                    my: "left top",
+                                    at: "left bottom",
+                                    of: Inst.$input
+                                });
+                        
+                        return;
+                        
+                    }; //end: wdg.showPicker()
+                    
+                    
+                    /* ------------------------------------------------------ */
+                    
+                    // If user set the icon option in the Datepicker, then need
+                    // to build it manually
+                    if (Inst.opt.datepicker.buttonImage) {
+                        
+                        $('<img class="ui-datepicker-trigger" src="' + 
+                                Inst.opt.datepicker.buttonImage + 
+                                '" alt="..." title="...">'
+                            )
+                            .appendTo(Inst.$input.parent())
+                            .on("click" + SPDate.evNamespace, function(){
+                                
+                                wdg.showPicker();
+                                
+                            });
+                        
+                    }
+                    
+                    // Set up a listener on the datepicker widget so that when user picks
+                    // a date, we catch it and add the time portion to it.
+                    // Let's also save the existing onSelect function, if one was defined
+                    // on input, so we can call it later.
+                    if ($.isFunction(Inst.opt.datepicker.onSelect)) {
+                        
+                        Inst.opt.datepicker._onSelect = Inst.opt.datepicker.onSelect;
+                        
+                    }
+                    
+                    // Setup the Datepicker 
+                    Inst.opt.datepicker.onSelect = function(dateText, dtPicker){
+                        
+                        var newDate = new Date(
+                                            dtPicker.currentYear,
+                                            dtPicker.currentMonth,
+                                            dtPicker.currentDay
+                                        );
+                        
+                        wdg.updateDateTime(newDate);
+                        
+                        // Call the user defined onSelect if one was defined.
+                        if ($.isFunction(Inst.opt.datepicker._onSelect)) {
+                            
+                            Inst.opt.datepicker._onSelect.call(this, dateText, dtPicker );
+                            
+                        }
+                        
+                    };
+                    
+                    wdg.$datePicker.datepicker(Inst.opt.datepicker);
+                    
+                    // Setup listeners on the time selectors so that we can trigger
+                    // an update to the widget.
+                    wdg.$timePicker
+                        .on("change" + SPDate.evNamespace + " keyup" + SPDate.evNamespace,
+                            "select",
+                            function(){
+                        
+                                wdg.updateDateTime();
+                                
+                            });
+                    
+                    // now that we have the datepicker setup, add listeners to the
+                    // input field so that the date and time picker is shown.
+                    Inst.$input
+                        .on("focus" + SPDate.evNamespace + " click" + SPDate.evNamespace, function(){
+                            
+                            wdg.showPicker();
+                            
+                        })
+                        .on("blur", function(){
+                            
+                            // TODO: need to hide only if not this widget's selector
+                            // wdg.$selectorCntr.hide();
+                            
+                        });
+                    
+                
+                // ELSE: showTimePicker is false. Just show regular
+                // jQuery UI date widget. 
+                } else {
+                    
+                    Inst.$input.datepicker(Inst.opt.datepicker);
+                    
+                }
+                
+                return wdg;
+                
+            }; //end: createDatePicker()
+                        
             //------------------------------------------------------
             //-----------    INITIATE THIS INSTANCE    -------------
             //------------------------------------------------------
@@ -571,6 +886,7 @@
                     
                 }
                 
+                // Setup the Datepicker 
                 Inst.opt.datepicker.onSelect = function(dateText, dtPicker){
                     
                     Inst.setDate({
@@ -600,13 +916,12 @@
                 
             } //end: if(): allowMultiples
 
-            
             // Hide the input used by the caller and display our datepicker input.
             Inst.$ele
                 .css("display", "none")
                 .data("SPDateFieldInstance", Inst);
-                
-            Inst.$input.datepicker(Inst.opt.datepicker);
+            
+            Inst.$timepicker = Inst.createDatePicker();
             
             // If input field already has some date, then prepopulate the widget
             if (Inst.eleOrigVal) {
@@ -633,7 +948,50 @@
         }); //end: return.each()
         
     }; //end: $.fn.SPDateField()
-    
+        
+    /**
+     * When user clicks on the page, this method will close the
+     * Timepicker if it is open.
+     * 
+     * @param {jQuery.Event}
+     * 
+     * @return {Object} this
+     */
+    SPDate.onPageClick = function(ev) {
+        
+        var $ele            = $(ev.target),
+            $allSelectors   = $("div.spwidget-datetime-selector:visible"),
+            $clickArea      = null;
+        
+        // JQuery UI Datepicker FWD/BAKC button are recreate everytime a
+        // user clicks on them... if this 
+        if (!$.contains(document.documentElement, $ele[0])) {
+            
+            return this;
+            
+        }
+        
+        // If Date and Time selectors are visible, then lets check if the user
+        // clicked on an element that is associated with the current time picker.
+        // This is used later to ensure we close all other pickers *except* the
+        // one associated with this element.
+        if ($allSelectors.length) {
+            
+            $clickArea = $ele.closest("div.spwidget-datetime-selector");
+            
+            if (!$clickArea.length && $ele.is("input.spwidget-date-datepicker,.ui-datepicker-trigger")) {
+                
+                $clickArea = $ele.parent().find("div.spwidget-datetime-selector");
+                
+            }
+            
+            $allSelectors.not($clickArea).hide();
+            
+        }
+        
+        return this;
+        
+    }; //end: SPDate.onPageClick()
     
     /**
      * @property
@@ -650,7 +1008,6 @@
      * @memberOf SPDate
      */
     SPDate.htmlTemplate = "_INCLUDE_DATE_HTML_TEMPLATE_";
-    
     
 })(jQuery); /***** End of module: jquery.SPDateField.js */
 

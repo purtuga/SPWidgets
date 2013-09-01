@@ -238,7 +238,7 @@
 #spwidgets_demo_cntr select,
 #spwidgets_demo_cntr textarea {
     font-family: inherit; /* 1 */
-    font-size: 100%; /* 2 */
+    /* font-size: 100%; */ /* 2 */
     margin: 0; /* 3 */
 }
 
@@ -506,5 +506,10 @@
 #SPControlUploadDemo .spwidget-demo-library-files table th {
     font-size: 1.1em;
     font-weight: bold;
+}
+
+/** DATE WIDGET **/
+#SPDateField div.spwidget-date-cntr {
+    display: block;
 }
 

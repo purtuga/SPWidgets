@@ -376,37 +376,52 @@ SPWidgets - Widgets for building custom UIs
                     <div class="spwidget-demo-samples">
                         
                         <p>
-                            <h3>Example 1</h3>
+                            <h3>Example 1: Default</h3>
                             <p>Default functionality.</p>
                             <div class="spwidget-demo-example1">
-                                <input type="text" name="example1" value="" />
+                                <input class="spwidget-demo-input" type="text" name="example1" value="" />
                             </div>
                         </p>
                         <hr>
                         <p>
-                            <h3>Exmaple 2</h3>
+                            <h3>Exmaple 2: Allow Multiples</h3>
                             <p>Allow multiple dates.</p>
                             <div>
-                                <input type="text" name="example2" value="" />
+                                <input class="spwidget-demo-input" type="text" name="example2" value="" />
                             </div>
                         </p>
                         <hr>
                         <p>
-                            <h3>Exmaple 3</h3>
+                            <h3>Exmaple 3: Change Date Format</h3>
                             <p>Override date input format to Euro - mm/dd/yyyy</p>
                             <div>
-                                <input type="text" name="example3" value="" />
+                                <input class="spwidget-demo-input" type="text" name="example3" value="" />
                             </div>
                         </p>
                         
+                        <hr>
                         <p>
-                            <h3>Exmaple 4</h3>
+                            <h3>Exmaple 4: Pre-Defined Inputs</h3>
                             <p>
                                 In this example, the input field used to bind SPDateField widget
                                 was already storing 2 dates: August 1, 2013 and August 2, 2013.
                             </p>
                             <div>
-                                <input type="text" name="example4" value="2013-08-01;2013-08-02" />
+                                <input class="spwidget-demo-input" type="text" name="example4" value="2013-08-01;2013-08-02" />
+                            </div>
+                        </p>
+                        
+                        <hr>
+                        <p>
+                            <h3>Exmaple 5: Date and Time Picker</h3>
+                            <p>
+                                In this example, the widget is set to also show a time picker
+                                along with the date picker. Time is displayed along with date
+                                and the date string for use with SharePoint's API will include
+                                the time element in it.
+                            </p>
+                            <div>
+                                <input class="spwidget-demo-input" type="text" name="example5" value="" />
                             </div>
                         </p>
                         

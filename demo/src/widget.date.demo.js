@@ -53,5 +53,16 @@
             output.log("Example 4: input change: " + $(this).val());
         });
     
+    $demoCntr.find("input[name='example5']")
+        .SPDateField({
+            showTimepicker: true,
+            datepicker:     {
+                dateFormat: "mm/dd/yy"
+            }
+        })
+        .on("change", function(){
+            output.log("Example 4: input change: " + $(this).val());
+        });
+    
     
 })(SPWIDGET_DEMO.JQUERY || jQuery);
