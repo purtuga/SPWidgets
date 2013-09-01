@@ -679,7 +679,7 @@ DEPLOYING TO: ${me.deploy.location}
             </fileset>
         </copy>
         
-        <echo message="deploy complete!."/>
+        <echo message="deploy complete! [ BUILD.VERSION: ${build.version} ]"/>
     </target> <!-- END target name="deploy" -->
 
    
