@@ -365,37 +365,53 @@
                         dt1     = '',
                         dt2     = '';
                     
+                    // If this date object is not an instance of Date, then
+                    // parse it into a Date object.
+                    // If the string has a T on it, then we assume that it is
+                    // an ISO 8601 compliant string and use the $.SPWidgets.parseDateString
+                    // to get a Date object.
+                    // Else, it could be a date in the format defined by the datepicker
+                    // date format param.
                     if (!(dtObj instanceof Date)) {
                         
-                        try {
+                        dtObj = String(dtObj);
+                        
+                        if (dtObj.indexOf("T") > -1) {
                             
-                            dtObj = $.datepicker.parseDate(opt.format, dt);
+                            dtObj = $.SPWidgets.parseDateString(dtObj);
                             
-                        } catch(e){
+                        } else {
                             
-                            return Inst;
+                            try {
+                                
+                                dtObj = $.datepicker.parseDate(opt.format, dt);
+                                
+                            } catch(e){
+                                
+                                return Inst;
+                                
+                            }
                             
                         }
-                         
+                        
                     }
 
                     dt1 = $.datepicker.formatDate('yy-mm-dd', dtObj);
                     dt2 = $.datepicker
                             .formatDate(Inst.opt.datepicker.dateFormat, dtObj);
                     
+                    if (Inst.opt.showTimepicker) {
+                        
+                        dt1  = $.SPWidgets.SPGetDateString(dtObj);
+                        dt2 += Inst.$timepicker.formatTime(dtObj);
+                        
+                    }
                     
                     // AllowMultiples = false
                     if (!Inst.opt.allowMultiples) {
                         
                         eleVal  = dt1;
                         dtShow  = dt2;
-                        
-                        if (Inst.opt.showTimepicker) {
-                            
-                            eleVal = $.SPWidgets.SPGetDateString(dtObj);
-                            dtShow += Inst.$timepicker.formatTime(dtObj);
-                            
-                        }
                         
                     // allowMultiples = true and date not yet stored
                     } else if (eleVal.indexOf(dt1) < 0) {
@@ -501,7 +517,21 @@
                          
                     }
 
-                    dt1         = $.datepicker.formatDate('yy-mm-dd', dtObj);
+                    // Get the internal representation of the date (ISO 8601)
+                    // so that we can remove it from the list of selected
+                    // dates. The dt1Regex is used to search and replace the
+                    // date in the input to where this widget was bound, which
+                    // could include multiple dates.
+                    if (Inst.opt.allowMultiples) {
+                        
+                        dt1 = $.SPWidgets.SPGetDateString(dtObj);
+                        
+                    } else {
+                        
+                        dt1 = $.datepicker.formatDate('yy-mm-dd', dtObj);
+                        
+                    }
+                    
                     dt1Regex    = new RegExp(
                                     "(" + Inst.opt.delimeter + ")?" + dt1, 
                                     "g");
@@ -509,8 +539,6 @@
                     eleDtObj.input = eleDtObj.input.replace(dt1Regex, "");
                     
                     if (Inst.opt.allowMultiples) {
-                        
-                        dt1Regex = $.datepicker.formatDate('yy-mm-dd', dtObj);
                         
                         Inst.$dtCntr
                             .find("span[data-spwidget_dt1='" + dt1 + "']")
@@ -520,8 +548,9 @@
                     
                 });
                 
-                // Clean up the new string, set it to
-                // the input field and trigger event.
+                // Set the value on bound input.
+                // Clean up the new string (misc. delimeteres at begining or
+                // end of string), set it to the input field and trigger event.
                 eleDtObj.input = eleDtObj.input
                                     .replace((new RegExp("^" + Inst.opt.delimeter)), "")
                                     .replace((new RegExp(Inst.opt.delimeter + "$")), "");
@@ -543,6 +572,14 @@
                 Inst.$ui.css("display", "none");
                 Inst.$input.datepicker("hide");
                 Inst.$input.datepicker("destroy");
+                
+                if (Inst.$timepicker) {
+                    
+                    Inst.$timepicker.$timePicker.off(".spdatefield");
+                    Inst.$input.off(".spdatefield");
+                    
+                }
+                
                 Inst.$ui.remove();
                 
             }; //end: Inst.destroy()
@@ -569,10 +606,12 @@
                                                 .css("display", "none");
                     wdg.$datePicker     = wdg.$selectorCntr.find("div.spwidget-date-selector");
                     wdg.$timePicker     = wdg.$selectorCntr.find("div.spwidget-time-selector");
+                    wdg.$setButton      = wdg.$selectorCntr.find("div.spwidget-btn-set");
                     wdg.$hourSelect     = wdg.$timePicker.find("select.spwidget-hour");
                     wdg.$minSelect      = wdg.$timePicker.find("select.spwidget-min");
                     wdg.$ampmSelect     = wdg.$timePicker.find("select.spwidget-ampm");
                     wdg.heightDone      = false;
+                    wdg.firstShowDone   = false;
                     
                     /**
                      * Returns an object with the time currently selected.
@@ -726,6 +765,8 @@
                         wdg.$selectorCntr
                                 .show(function(){
                                     
+                                    var currentDate, tmpVal;
+                                    
                                     if (!wdg.heightDone) {
                                         
                                         wdg.heightDone = true;
@@ -738,6 +779,61 @@
                                         
                                     }
                                     
+                                    // If this is the first time showing the picker,
+                                    // then pre-set the picker to the last date that
+                                    // was selected.
+                                    // If no date was selected (or was pre-set on the
+                                    // input), then create a new date object (now)
+                                    if (!wdg.firstShowDone) {
+                                        
+                                        wdg.firstShowDone = true;
+                                        
+                                        currentDate = Inst.getDate();
+                                        
+                                        if (currentDate.dates.length) {
+                                            
+                                            currentDate = $.SPWidgets
+                                                            .parseDateString(
+                                                                currentDate.dates[
+                                                                    currentDate.dates.length - 1
+                                                                ]
+                                                            );
+                                            
+                                        } else {
+                                            
+                                            currentDate = new Date();
+                                            
+                                        }
+                                        
+                                        tmpVal = currentDate.getHours();
+                                        
+                                        if (tmpVal === 0) {
+                                            
+                                            tmpVal = "12";
+                                            
+                                        } else if (tmpVal > 12) {
+                                            
+                                            tmpVal = (tmpVal - 12);
+                                            
+                                        }
+                                        
+                                        wdg.$hourSelect.val(tmpVal);
+                                        wdg.$minSelect.val("00");
+                                        
+                                        if (currentDate.getHours() > 11) {
+                                            
+                                            wdg.$ampmSelect.val("PM");
+                                            
+                                        } else {
+                                            
+                                            wdg.$ampmSelect.val("AM");
+                                            
+                                        }
+                                        
+                                        wdg.$datePicker.datepicker("setDate", currentDate);
+                                        
+                                    }//end: if(): pre-set the picker values
+                                    
                                 })
                                 .position({
                                     my: "left top",
@@ -749,9 +845,14 @@
                         
                     }; //end: wdg.showPicker()
                     
-                    
+                    /* ------------------------------------------------------ */
                     /* ------------------------------------------------------ */
                     
+                    // Remove alt field updates from datepicker. We'll handle it
+                    // with the time picker
+                    Inst.opt.datepicker.altFormat   = '';
+                    Inst.opt.datepicker.altField    = '';
+                        
                     // If user set the icon option in the Datepicker, then need
                     // to build it manually
                     if (Inst.opt.datepicker.buttonImage) {
@@ -769,6 +870,22 @@
                         
                     }
                     
+                    // If allowMultiples is true, then make set button visible
+                    if (Inst.opt.allowMultiples) {
+                        
+                        wdg.$selectorCntr.addClass("spwidget-date-multiples-cntr");
+                        wdg.$setButton.find("div.spwidget-btn")
+                            .button()
+                            .on("click" + SPDate.evNamespace, function(ev){
+                                
+                                wdg.updateDateTime();
+                                
+                                return this;
+                                
+                            });
+                        
+                    }
+                    
                     // Set up a listener on the datepicker widget so that when user picks
                     // a date, we catch it and add the time portion to it.
                     // Let's also save the existing onSelect function, if one was defined
@@ -779,8 +896,21 @@
                         
                     }
                     
-                    // Setup the Datepicker 
+                    // Ensure only 1 month
+                    Inst.opt.datepicker.numberOfMonths = 1;
+                    
+                    // Setup the Datepicker onSelect event, which will build a Date
+                    // object of the date the user selected and call updateDateTime()
+                    // to set teh widget. 
                     Inst.opt.datepicker.onSelect = function(dateText, dtPicker){
+                        
+                        // If allowMultiples is true, then exit if 
+                        // this click is not the SET button 
+                        if (Inst.opt.allowMultiples) {
+                            
+                            return this;
+                            
+                        }
                         
                         var newDate = new Date(
                                             dtPicker.currentYear,
@@ -806,31 +936,79 @@
                     wdg.$timePicker
                         .on("change" + SPDate.evNamespace + " keyup" + SPDate.evNamespace,
                             "select",
-                            function(){
-                        
+                            function(ev){
+                                
+                                // If allowMultiples is true, then exit if 
+                                // this click is not the SET button 
+                                if (Inst.opt.allowMultiples) {
+                                    
+                                    return this;
+                                    
+                                }
+                                
                                 wdg.updateDateTime();
+                                
+                                return this;
                                 
                             });
                     
                     // now that we have the datepicker setup, add listeners to the
                     // input field so that the date and time picker is shown.
                     Inst.$input
-                        .on("focus" + SPDate.evNamespace + " click" + SPDate.evNamespace, function(){
+                        .on("focus" + SPDate.evNamespace, function(){
                             
                             wdg.showPicker();
-                            
-                        })
-                        .on("blur", function(){
-                            
-                            // TODO: need to hide only if not this widget's selector
-                            // wdg.$selectorCntr.hide();
                             
                         });
                     
                 
+                /////////////////////////////////////////////////////
                 // ELSE: showTimePicker is false. Just show regular
                 // jQuery UI date widget. 
                 } else {
+                    
+                    // If remainOpen option is true, then turn off picker animation
+                    if (Inst.opt.remainOpen) {
+                        
+                        Inst.opt.datepicker.showAnim = '';
+                        
+                    }
+                    // Store a reference to teh original onSelect method (if defined)
+                    // and set our own here.  Our function will take the date selected
+                    // by the user in their own locale and format it to ISO 8601
+                    if ($.isFunction(Inst.opt.datepicker.onSelect)) {
+                        
+                        Inst.opt.datepicker._onSelect = Inst.opt.datepicker.onSelect;
+                        
+                    }
+                    
+                    // Setup the Datepicker 
+                    Inst.opt.datepicker.onSelect = function(dateText, dtPicker){
+                        
+                        Inst.setDate({
+                            date:           dateText,
+                            format:         dtPicker.settings.dateFormat,
+                            setDatepicker:  false
+                        });
+                        
+                        // Call the user defined onSelect if one was defined.
+                        if ($.isFunction(Inst.opt.datepicker._onSelect)) {
+                            
+                            Inst.opt.datepicker._onSelect.call(this, dateText, dtPicker );
+                            
+                        }
+                        
+                        Inst.$input.val("");
+                        
+                        if (Inst.opt.remainOpen) {
+                            
+                            setTimeout(function(){
+                                Inst.$input.datepicker("show");
+                            }, 5);
+                            
+                        }
+                        
+                    }; 
                     
                     Inst.$input.datepicker(Inst.opt.datepicker);
                     
@@ -839,7 +1017,7 @@
                 return wdg;
                 
             }; //end: createDatePicker()
-                        
+            
             //------------------------------------------------------
             //-----------    INITIATE THIS INSTANCE    -------------
             //------------------------------------------------------
@@ -856,63 +1034,28 @@
                 Inst.opt.datepicker.altFormat   = '';
                 Inst.opt.datepicker.altField    = '';
                 
-                // If remainOpen option is true, then turn off picker animation
-                if (Inst.opt.remainOpen) {
-                    
-                    Inst.opt.datepicker.showAnim = '';
-                    
-                }
-                
                 // Setup listener for removing selected dates.
                 Inst.$dtCntr
                     .css("display", "")
                     .on("click", ".spwidgets-item-remove", function(ev){
                         
-                        var $dt = $(ev.target).closest(".spwidgets-item");
+                        var $dtItem = $(ev.target).closest(".spwidgets-item"),
+                            date    = $dtItem.data("spwidget_dt1");
+                        
+                        // If allowMultiples is true, then convert the date string
+                        // to a date object
+                        if (Inst.opt.allowMultiples) {
+                            
+                            date = $.SPWidgets.parseDateString(date);
+                            
+                        }
                         
                         Inst.removeDate({
-                            date:   $dt.data("spwidget_dt1"),
+                            date:   date,
                             format: 'yy-mm-dd'
                         });
                         
                     });
-                
-                // Store a reference to teh original onSelect method (if defined)
-                // and set our own here.  Our function will take the date selected
-                // by the user in their own locale and format it to ISO 8601
-                if ($.isFunction(Inst.opt.datepicker.onSelect)) {
-                    
-                    Inst.opt.datepicker._onSelect = Inst.opt.datepicker.onSelect;
-                    
-                }
-                
-                // Setup the Datepicker 
-                Inst.opt.datepicker.onSelect = function(dateText, dtPicker){
-                    
-                    Inst.setDate({
-                        date:           dateText,
-                        format:         dtPicker.settings.dateFormat,
-                        setDatepicker:  false
-                    });
-                    
-                    // Call the user defined onSelect if one was defined.
-                    if ($.isFunction(Inst.opt.datepicker._onSelect)) {
-                        
-                        Inst.opt.datepicker._onSelect.call(this, dateText, dtPicker );
-                        
-                    }
-                    
-                    Inst.$input.val("");
-                    
-                    if (Inst.opt.remainOpen) {
-                        
-                        setTimeout(function(){
-                            Inst.$input.datepicker("show");
-                        }, 5);
-                        
-                    }
-                    
-                };
                 
             } //end: if(): allowMultiples
 
