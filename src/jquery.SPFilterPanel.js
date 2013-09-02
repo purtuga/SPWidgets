@@ -264,7 +264,9 @@
                                 values    = null,
                                 model     = {
                                     type:               null,
-                                    otherFilterTypes:   ''
+                                    otherFilterTypes:   '',
+                                    sp_type:            $thisCol.attr("Type"),
+                                    sp_format:          $thisCol.attr("Format")
                                 };
                             
                             if (!$thisCol.length) {
@@ -468,7 +470,12 @@
                                     $field  = $column.find("input");
                                 
                                 $field.SPDateField({
-                                    allowMultiples: true
+                                    allowMultiples: true,
+                                    showTimepicker: (
+                                            $field.data("spwidget_sp_format") === "DateTime"
+                                            ?   true
+                                            :   false
+                                        )
                                 });
                                 
                                 $column.find(".spwidget-tooltip").remove();
