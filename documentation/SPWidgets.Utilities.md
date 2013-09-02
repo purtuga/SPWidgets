@@ -104,8 +104,8 @@ This method return a String containing the concatenated filter values in the app
     })
 
 
-$.SPWidgets.makeSameHeight
---------------------------
+$.SPWidgets.makeSameHeight(ele, pad)
+------------------------------------
 
 Given a group of elements, this plugin will set their css *height* attribute to be at least equal to the tallest item among them.
 (Since v. 2.0) 
@@ -139,8 +139,8 @@ The above elements height would be set to 102px by the following:
     $.SPWidgets.makeSameHeight( $("div.spwidgets-demo") );
 
 
-$.SPWidgets.parseLookupFieldValue 
----------------------------------
+$.SPWidgets.parseLookupFieldValue(value)
+----------------------------------------
 
 Parses a SharePoint lookup values as returned by webservices (id;#title;#id;#Title) into an array of objects where each object contains the lookup item data (ID and TITLE).
 (Since v. 2.0) 
@@ -177,8 +177,8 @@ An array of objects will be returned where each object has two keys; title and i
 
 
 
-$.SPWidgets.SPGetDateString
----------------------------
+$.SPWidgets.SPGetDateString(dateObj, formatType)
+------------------------------------------------
 
 Returns a date string in the format expected by SharePoint Date/time fields. Useful when wanting to obtain a date/time string for use in CAML Queries.
 (Since v. 2.0) 
@@ -316,7 +316,7 @@ Returns the SharePoint version number (Since v2.2).
 ### Input Parameters
 
 -   **returnExternal**      :   *Boolean. Optional. Default=false* <br />
-    By default, this function returns the SharePoint internal version number (ex. 12 for SP2007, or 14 for SP2010). Setting this value to true will return instead the external version (ex. 2007 or 2010)
+    By default, this function returns the SharePoint internal version number (ex. 12 for SP2007, or 14 for SP2010). Setting this value to true will return instead the external version (ex. 2007 or 2010). Note that this method is meant to get you the version of SP's client - the UI... SharePoint server version could be different.
  
 ### Return Value
 
@@ -330,4 +330,26 @@ Returns the SharePoint version number (Since v2.2).
     // Under SP2013, the following returns 2013
     $.SPWidgets.getSPVersion(true);
     
+
+$.SPWidgets.parseDateString(dateString)
+---------------------------------------
+
+Parses the date providedon input, which is assumed to be in ISO 8601 format, and return a JavaScript Date object.
+
+### Input Parameters
+
+-   **dateString**      :   *String. Required* <br />
+    A string with the ISO 8601 compliant date to be parsed.
+
+### Return Value
+
+-   _{Date|Null}_ A JavaScript Date object or, if unable to parse date, a Null object. 
+
+
+### Example
+
+    $.SPWidgets.parseDateString('2013-09-02T12:00:00Z');
+
+    $.SPWidgets.parseDateString('2013-09-02T05:35:00');
+
 
