@@ -418,10 +418,37 @@ SPWidgets - Widgets for building custom UIs
                                 In this example, the widget is set to also show a time picker
                                 along with the date picker. Time is displayed along with date
                                 and the date string for use with SharePoint's API will include
-                                the time element in it.
+                                the time element in it. When picker is displayed, it will have
+                                the currently selected date pre-selected or if not has been set
+                                yet, it will defaul to current time/date.                               
                             </p>
                             <div>
                                 <input class="spwidget-demo-input" type="text" name="example5" value="" />
+                            </div>
+                        </p>
+                        
+                        <hr>
+                        <p>
+                            <h3>Exmaple 6: Date and Time Picker - Allow Multiples</h3>
+                            <p>
+                                Similar to Example 5, where a date and Time picker is displayed, but
+                                allows user to define multiples.
+                            </p>
+                            <div>
+                                <input class="spwidget-demo-input" type="text" name="example6" value="" />
+                            </div>
+                        </p>
+                        
+                        <hr>
+                        <p>
+                            <h3>Exmaple 7: Date adn Time Picker - Pre-Defined Inputs</h3>
+                            <p>
+                                In this example, the input field used to bind SPDateField widget
+                                was already storing 2 dates: August 1, 2013 1:05 AM and August 2, 2013 4:30PM.
+                            </p>
+                            <div>
+                                <input class="spwidget-demo-input" type="text" name="example7" 
+                                    value="2013-08-01T01:05:00;2013-08-02T16:30:00" />
                             </div>
                         </p>
                         

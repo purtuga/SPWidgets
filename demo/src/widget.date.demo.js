@@ -61,7 +61,26 @@
             }
         })
         .on("change", function(){
-            output.log("Example 4: input change: " + $(this).val());
+            output.log("Example 5: input change: " + $(this).val());
+        });
+    
+    $demoCntr.find("input[name='example6']")
+        .SPDateField({
+            showTimepicker: true,
+            allowMultiples: true
+        })
+        .on("change", function(){
+            output.log("Example 6: input change: " + $(this).val());
+        });
+    
+    
+    $demoCntr.find("input[name='example7']")
+        .SPDateField({
+            showTimepicker: true,
+            allowMultiples: true
+        })
+        .on("change", function(){
+            output.log("Example 7: input change: " + $(this).val());
         });
     
     
