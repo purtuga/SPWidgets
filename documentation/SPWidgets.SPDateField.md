@@ -130,7 +130,8 @@ Methods
 -------
 
 
--   **reset()** : The reset method erases any dates defined on the input.<br/>
+-   **reset()**<br>
+    The reset method erases any dates defined on the input.
     
     **Usage:**
     
@@ -145,7 +146,8 @@ Methods
     This method returns a JQuery object with the initial selections, thus maintaining jQuery's chainability.     
 
 
--   **getDate()** : Returns an object with the dates currently set on the widget.<br />
+-   **getDate()**<br>
+    Returns an object with the dates currently set on the widget.
     
     **Usage:**
     
@@ -170,7 +172,8 @@ Methods
     Dates are provided in the SharePoint format: yyyy-mm-dd.
 
 
--   **setDate([dates], "format")** : Sets one or more dates on the widget.<br /> 
+-   **setDate([dates], "format")**<br>
+    Sets one or more dates on the widget. 
     
     **Usage:**
     
@@ -188,16 +191,19 @@ Methods
     
     _{Array|Date|String} dates_<br>
         Dates can be defined either as a string (ex. _08/01/2013_) or as a JavaScript Date Object.  This input parameter can be either a single value or an array of values to be set.
+        
+        When _showTimepicker_ option is _true_, if providing the dates as a string, they must be defined in the SharePoint internal format [ISO 8601][iso8601] (ex. 2013-09-05T0600Z).    
     
     _{String} format_<br>
-        Used only when dates are defined as a string. The format of the dates defined. Used with jQuery UI Datepicker _parseDate_ utiltiy. For more information on the format definition, see the [jQuery UI Datepicker][jqueryuidatepicker] widget documentation.  
+        Used only when dates are defined as a string and _showTimepicker_ option is _false_. The format of the dates defined. Used with jQuery UI Datepicker _parseDate_ utiltiy. For more information on the format definition, see the [jQuery UI Datepicker][jqueryuidatepicker] widget documentation. 
     
     **Return Value:**
     
     This method returns a JQuery object with the initial selections, thus maintaining jQuery's chainability.     
     
 
--   **removeDate(dates[], "format")** : Removes one or more dates from the Widget.<br /> 
+-   **removeDate(dates[], "format")**<br>
+    Removes one or more dates from the Widget. 
     
     **Usage:**
     
@@ -215,16 +221,19 @@ Methods
     
     _{Array|Date|String} dates_<br>
         Dates can be defined either as a string (ex. _08/01/2013_) or as a JavaScript Date Object.  This input parameter can be either a single value or an array of values to be set.
+        
+        When _showTimepicker_ option is _true_, if providing the dates as a string, they must be defined in the SharePoint internal format [ISO 8601][iso8601] (ex. 2013-09-05T0600Z).    
     
     _{String} format_<br>
-        Used only when dates are defined as a string. The format of the dates defined. Used with jQuery UI Datepicker _parseDate_ utiltiy. For more information on the format definition, see the [jQuery UI Datepicker][jqueryuidatepicker] widget documentation.  
+        Used only when dates are defined as a string and _showTimepicker_ option is _false_. The format of the dates defined. Used with jQuery UI Datepicker _parseDate_ utiltiy. For more information on the format definition, see the [jQuery UI Datepicker][jqueryuidatepicker] widget documentation.
     
     **Return Value:**
     
     This method returns a JQuery object with the initial selections, thus maintaining jQuery's chainability.     
 
 
--   **destroy()** : Removes the SPDateWidget from the bound element. Note that any dates stored on the input element will not be removed.<br />
+-   **destroy()**<br>
+    Removes the SPDateWidget from the bound element. Note that any dates stored on the input element will not be removed.
     
     **Usage:**
     
