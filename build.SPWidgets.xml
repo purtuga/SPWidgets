@@ -94,7 +94,20 @@
         <file name="SPWidgets.SPControlBoard.md.html"/>
         <file name="SPWidgets.SPControlLookupField.md.html"/>
         <file name="SPWidgets.SPFilterPanel.md.html"/>
+        <file name="SPWidgets.SPDateField.md.html"/>
         <file name="SPWidgets.Utilities.md.html"/>
+    </filelist>
+    
+    <filelist id="filelist.build.doc.md" 
+        dir="${build.doc}">
+        <file name="SPWidgets.md"/>
+        <file name="SPWidgets.pickSPUser.md"/>
+        <file name="SPWidgets.SPControlUpload.md"/>
+        <file name="SPWidgets.SPControlBoard.md"/>
+        <file name="SPWidgets.SPControlLookupField.md"/>
+        <file name="SPWidgets.SPFilterPanel.md"/>
+        <file name="SPWidgets.SPDateField.md"/>
+        <file name="SPWidgets.Utilities.md"/>
     </filelist>
     
 	<!--*******************************************
@@ -623,8 +636,10 @@
             token="_BUILD_INCLUDE_DOCUMENTATION_"
             value="${build.doc.out}"
             />
+        <concat destfile="${build.tmp}${/}all.doc.md" append="false">
+            <filelist refid="filelist.build.doc.md" />
+        </concat>
         
-    	
         <echo message="DOC ---------------------- [END]" />
     </target>
 	
