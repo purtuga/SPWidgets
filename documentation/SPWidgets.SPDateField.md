@@ -1,7 +1,7 @@
 SPDateField Widget
 ====================
 
-SPDateField is a widgets wrapped around [jQuery UI's Datepicker][jqueryuidatepicker] that allows the user to pick one or more dates using their own locale format, while storing the SharePoint friendly format (YYY-MM-DD) in the input field to which this widget was bound to.
+SPDateField is a widgets wrapped around [jQuery UI's Datepicker][jqueryuidatepicker] that allows the user to pick one or more dates using their own locale format, while storing the SharePoint friendly format (YYY-MM-DD) in the input field to which this widget was bound to. In addition to wrapping the jQuery UI's datepicker, this widget also provide a timepicker which in turn returns both the date and time in the date format used by SharePoint ([ISO 8601][iso8601])
 
 Below is a screen capture of this widget's being used in a Filter Panel: 
 
@@ -31,7 +31,15 @@ This method takes as input an object containing the supported options:
                 showOn:             "both",
                 buttonImageOnly:    true
             },
-            dateTemplate: '{{date}} &lt;span class="spwidgets-item-remove"&gt;[x]&lt;/span&gt;'
+            dateTemplate: '{{date}} &lt;span class="spwidgets-item-remove"&gt;[x]&lt;/span&gt;',
+            showTimepicker: false,
+            timeFormat:     ' {{hour}}:{{minutes}} {{ampm}}',
+            timeUTC:        true,
+            labelHour:      'Hour',
+            labelMinutes:   'Minutes',
+            labelAMPM:      'AM|PM',
+            labelTime:      'Time',
+            labelSet:       'Set'
         });
 
 All input options are optional. The default options for this widget can be manipulated/set via the following object:
@@ -66,8 +74,50 @@ All input options are optional. The default options for this widget can be manip
 
     The template is rendered using SPWidgets _$.SPWidgets.fillTemplate_ utility and given an object with one property, _date_, which can be used in the defined template. The date is formatted according to _dateFormat_ defined with the _datepicker_ options. When defining a template, an html element with a class of _spwidgets-item-remove_ can be used to provide the user with the means to remove a date from the selection.
     
-    
     See section titled _Allow Multiples Display_ for more information on how dates are displayed on the UI, case further manipulation is desired.
+
+-   **showTimepicker**    :   *Boolean. Optional. Default: false<br />
+    If set to true, then a datepicker along with a timepicker will be displayed for user to select both. Note that when the timepicker is used, the time selected will be appended to the date string provided by the jQuery datepicker when displayed. 
+    
+    **NOTE:** The time picker is not as robust as the jQuery Datepicker widget. As an example, if user chooses to not use the picker and opts to type in the date and time manually, this widget will be able to parse that input.  When showTimePicker is set to _true_ the used of the picker widget is assumed. 
+
+-   **timeFormat**    :   *String. Optional. Default: ' {{hour}}:{{minutes}} {{ampm}}'<br />
+    Used when _showTimepicker_ is set to _true_. The format that the date should be displayed with. The time string defined here will be displayed on the widget following the date selected. The following tokens can be used to define the display format:
+    
+    _{{hour}}_<br>
+    The token will be replaced with the digit(s) representing the hour selected (ex. 4 for 4PM).
+    
+    _{{hour24}}_<br>
+    The token will be replaced with the digits(s) representing the hour in 24h format (ex. 16 for 4PM).
+    
+    _{{minutes}}_<br>
+    The token will be replaced with the digits representing the minutes (ex. 05 for 5 minutes).
+    
+    _{{ampm}}_<br>
+    The token will be replaced with the words letters _AM_ or _PM_ depending on what time was selected.
+
+
+    Example:
+    
+        timeFormat: ' at {{minutes}} past {{hour}}{{ampm}}'
+
+-   **timeUTC**    :   *Boolean. Optional. Default: true<br />
+    Used when _showTimepicker_ is set to _true_. Option affects the format of the date string generated (not the visible date and time). When set to true, a UTC compliant date and time string will be generated. Setting this to false, will generate a date in user's local time.
+    
+-   **labelHour**    :   *String. Optional. Default: 'Hour'<br />
+    Used when _showTimepicker_ is set to _true_. The label to be displayed next to the Hour select dropdown. 
+
+-   **labelMinutes**    :   *String. Optional. Default: 'Minutes'<br />
+    Used when _showTimepicker_ is set to _true_. The label to be displayed next to the Minutes select dropdown.
+
+-   **labelAMPM**    :   *String. Optional. Default: 'AM|PM'<br />
+    Used when _showTimepicker_ is set to _true_. The label to be displayed next to the AM, PM select dropdown.
+
+-   **labelTime**    :   *String. Optional. Default: 'Time'<br />
+    Used when _showTimepicker_ is set to _true_. The label to be shown at the top of the timepicker section.
+
+-   **labelSet**    :   *String. Optional. Default: 'Time'<br />
+    Used when _showTimepicker_ and _allowMultiples_ are both set to _true_. The label of the button displayed on the widget to set a date time combination.
 
 
 Return Value
@@ -136,10 +186,10 @@ Methods
     
     **Input**
     
-    1.  _{Array|Date|String} dates_<br>
+    _{Array|Date|String} dates_<br>
         Dates can be defined either as a string (ex. _08/01/2013_) or as a JavaScript Date Object.  This input parameter can be either a single value or an array of values to be set.
     
-    2.  _{String} format_<br>
+    _{String} format_<br>
         Used only when dates are defined as a string. The format of the dates defined. Used with jQuery UI Datepicker _parseDate_ utiltiy. For more information on the format definition, see the [jQuery UI Datepicker][jqueryuidatepicker] widget documentation.  
     
     **Return Value:**
@@ -163,10 +213,10 @@ Methods
     
     **Input**
     
-    1.  _{Array|Date|String} dates_<br>
+    _{Array|Date|String} dates_<br>
         Dates can be defined either as a string (ex. _08/01/2013_) or as a JavaScript Date Object.  This input parameter can be either a single value or an array of values to be set.
     
-    2.  _{String} format_<br>
+    _{String} format_<br>
         Used only when dates are defined as a string. The format of the dates defined. Used with jQuery UI Datepicker _parseDate_ utiltiy. For more information on the format definition, see the [jQuery UI Datepicker][jqueryuidatepicker] widget documentation.  
     
     **Return Value:**
@@ -225,3 +275,4 @@ Examples
 
 
 [jqueryuidatepicker]: http://api.jqueryui.com/datepicker/   "jQuery UI Datepicker"
+[iso8601]: http://en.wikipedia.org/wiki/ISO_8601 "ISO 8601"
