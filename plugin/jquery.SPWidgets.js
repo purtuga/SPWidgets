@@ -3,7 +3,7 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *  
- * @version 20130902051236
+ * @version 20130907013019
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  * 
@@ -11,8 +11,8 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date:  Paul:September 02, 2013 05:12 PM
- * Version:     20130902051236
+ * Build Date:  Paul:September 07, 2013 01:30 PM
+ * Version:     20130907013019
  * 
  */
 ;(function($){
@@ -53,7 +53,7 @@
         }
         
         $.SPWidgets             = {};
-        $.SPWidgets.version     = "20130902051236";
+        $.SPWidgets.version     = "20130907013019";
         $.SPWidgets.defaults    = {};
         
         /**
@@ -780,7 +780,7 @@
  *  -   jQuery-UI Draggable
  * 
  * 
- * BUILD: Paul:September 02, 2013 05:12 PM
+ * BUILD: Paul:September 07, 2013 01:28 PM
  */
 
 ;(function($){
@@ -3150,7 +3150,7 @@
  * THe user, however, is presented with the existing items
  * and has the ability to Remove them and add new ones.
  * 
- * BUILD: Paul:September 02, 2013 05:12 PM
+ * BUILD: Paul:September 07, 2013 01:28 PM
  * 
  */
 
@@ -4714,7 +4714,7 @@
  * on jQuery UI's Autocomplete and SPServices library.
  *      
  *  
- * @version 20130902051236NUMBER_
+ * @version 20130907012815NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
@@ -4722,7 +4722,7 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date Paul:September 02, 2013 05:12 PM
+ * Build Date Paul:September 07, 2013 01:28 PM
  * 
  */
 (function(){
@@ -5550,14 +5550,14 @@
  * through the many SP pages and without having to leave the user's current page.
  *      
  *  
- * @version 20130902051236NUMBER_
+ * @version 20130907012815NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * 
  * @requires jQuery.js {@link http://jquery.com}
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date Paul:September 02, 2013 05:12 PM
+ * Build Date Paul:September 07, 2013 01:28 PM
  * 
  */
 ;(function($){
@@ -6907,7 +6907,7 @@
  * jquery.SPDateField.js
  * The SPDateField widget. Introduced with v2.2, August 2013
  * 
- * BUILD: Paul:September 02, 2013 05:12 PM
+ * BUILD: Paul:September 07, 2013 01:28 PM
  * 
  */
 ;(function($){
@@ -6945,7 +6945,13 @@
         },
         dateTemplate:   '{{date}} <span class="spwidgets-item-remove">[x]</span>',
         showTimepicker: false,
-        timeFormat:     ' {{hour}}:{{minutes}} {{ampm}}'
+        timeFormat:     ' {{hour}}:{{minutes}} {{ampm}}',
+        timeUTC:        true,
+        labelHour:      'Hour',
+        labelMinutes:   'Minutes',
+        labelAMPM:      'AM|PM',
+        labelTime:      'Time',
+        labelSet:       'Set'
     };
     
     
@@ -6966,7 +6972,13 @@
      * @param {Object} [options.datepicker={...}]
      * @param {String} [options.dateTemplate=""]
      * @param {Boolean} [options.showTimepicker=false]
-     * @param {String} [options.timeFormat='h:m T']
+     * @param {String} [options.timeFormat='{{our}}:{{minutes}} {{ampm}}']
+     * @param {Boolean} [options.timeUTC=true]
+     * @param {String} [options.labelHour='Hour']
+     * @param {String} [options.labelMinutes='Minutes']
+     * @param {String} [options.labelAMPM='AM|PM']
+     * @param {String} [options.labelTime='Time']
+     * @param {String} [options.labelSet='Set']
      * 
      * return {jQuery} this
      * 
@@ -7307,7 +7319,7 @@
                     
                     if (Inst.opt.showTimepicker) {
                         
-                        dt1  = $.SPWidgets.SPGetDateString(dtObj);
+                        dt1  = $.SPWidgets.SPGetDateString(dtObj, Inst.opt._timeFmt);
                         dt2 += Inst.$timepicker.formatTime(dtObj);
                         
                     }
@@ -7429,7 +7441,7 @@
                     // could include multiple dates.
                     if (Inst.opt.allowMultiples) {
                         
-                        dt1 = $.SPWidgets.SPGetDateString(dtObj);
+                        dt1 = $.SPWidgets.SPGetDateString(dtObj, Inst.opt._timeFmt);
                         
                     } else {
                         
@@ -7780,7 +7792,7 @@
                         
                         wdg.$selectorCntr.addClass("spwidget-date-multiples-cntr");
                         wdg.$setButton.find("div.spwidget-btn")
-                            .button()
+                            .button({label: Inst.opt.labelSet})
                             .on("click" + SPDate.evNamespace, function(ev){
                                 
                                 wdg.updateDateTime();
@@ -7790,6 +7802,21 @@
                             });
                         
                     }
+                    
+                    // Apply the Labels for the time picker for this instance
+                    wdg.$timePicker
+                        .find("div.ui-widget-header")
+                            .html(Inst.opt.labelTime)
+                            .end()
+                        .find("div.spwidget-time-hour > label")
+                            .html(Inst.opt.labelHour)
+                            .end()
+                        .find("div.spwidget-time-min > label")
+                            .html(Inst.opt.labelMinutes)
+                            .end()
+                        .find("div.spwidget-time-ampm > label")
+                            .html(Inst.opt.labelAMPM)
+                            .end();
                     
                     // Set up a listener on the datepicker widget so that when user picks
                     // a date, we catch it and add the time portion to it.
@@ -7926,6 +7953,10 @@
             //------------------------------------------------------
             //-----------    INITIATE THIS INSTANCE    -------------
             //------------------------------------------------------
+            
+            // Define time string format (local or utc) 
+            // param that is used with SPGetDateString
+            Inst.opt._timeFmt = ( Inst.opt.timeUTC ? 'utc' : 'local' );
             
             // Setup the datepicker options
             // TODO: should we allow the user to manipulate this?
@@ -8219,7 +8250,7 @@
 /**
  * @fileOverview - List filter panel widget
  * 
- * BUILD: Paul:September 02, 2013 05:12 PM
+ * BUILD: Paul:September 07, 2013 01:28 PM
  * 
  */
 (function($){
@@ -8655,7 +8686,9 @@
                                 var $field = $(this);
                                 
                                 $field.SPLookupField({
-                                    list:           $field.data("spwidget_list"),
+                                    list:           $field
+                                                        .closest("div.spwidget-column")
+                                                        .data("spwidget_list"),
                                     template:       '<div>{{Title}} <span class="spwidgets-item-remove">[x]</span></div>',
                                     listTemplate:   '{{Title}}',
                                     allowMultiples: true,
@@ -8690,7 +8723,7 @@
                                 $field.SPDateField({
                                     allowMultiples: true,
                                     showTimepicker: (
-                                            $field.data("spwidget_sp_format") === "DateTime"
+                                            $column.data("spwidget_sp_format") === "DateTime"
                                             ?   true
                                             :   false
                                         )
@@ -8867,13 +8900,14 @@
      */
     Filter.onFilterInputChange = function(ev){
         
-        var $input  = $(this),
-            $cntr   = $input.closest("div.spwidget-filter-value-input"),
-            $col    = $cntr.closest("div.spwidget-column"),
-            val     = $input.val(),
-            Inst    = $cntr
-                        .closest("div.spwidget-filter")
-                        .data("SPFilterPanelInst");
+        var $input      = $(this),
+            $cntr       = $input.closest("div.spwidget-filter-value-input"),
+            $col        = $cntr.closest("div.spwidget-column"),
+            matchType   = $col.find("div.spwidget-filter-type-cntr select.spwidget-filter-type").val(),
+            val         = $input.val(),
+            Inst        = $cntr
+                            .closest("div.spwidget-filter")
+                            .data("SPFilterPanelInst");
         
         if ($col.is(".spwidget-type-choice")) {
             
@@ -8889,7 +8923,7 @@
             
             $col.addClass(Inst.opt.definedClass);
             
-        } else {
+        } else if (matchType !== 'IsNull' && matchType !== 'IsNotNull') {
             
             $col.removeClass(Inst.opt.definedClass);
             
@@ -9150,19 +9184,15 @@
             var $thisCol        = $(v),
                 $input          = $thisCol.find(".spwidget-input"),
                 colName         = $input.attr("name"),
-                thisColFilter   = {
-                        columnName:     colName,
-                        matchType:      $thisCol
-                                            .find("select.spwidget-filter-type")
-                                            .val(),
-                        logicalType:    $thisCol
-                                            .find("select.spwidget-match-type")
-                                            .val(),
-                        values:         [],
-                        count:          0,
-                        CAMLQuery:      '',
-                        URLParams:      ''
-                    },
+                thisColFilter   = (new Filter.ColumnFilter({
+                                        columnName:     colName,
+                                        matchType:      $thisCol
+                                                            .find("select.spwidget-filter-type")
+                                                            .val(),
+                                        logicalType:    $thisCol
+                                                            .find("select.spwidget-match-type")
+                                                            .val()
+                                    })),
                 colFilterWasSet = false,
                 colType         = $thisCol.data("spwidget_column_type"),
                 thisColUrlParam = {};
@@ -9430,79 +9460,138 @@
                 $colUI          = $input.closest("div.spwidget-column"),
                 type            = $colUI.data("spwidget_column_type"),
                 $match          = $colUI.find("select[name='" + column + "_type']"),
-                $logicalType    = $colUI.find("div.spwidget-filter-type-cntr select.spwidget-match-type");
+                $logicalType    = $colUI.find("div.spwidget-filter-type-cntr select.spwidget-match-type"),
+                thisFilter      = new Filter.ColumnFilter();
+            
+            $.extend(thisFilter, filter);
             
             // If we have a matchType or logicalType, then set it
-            if (filter.matchType) {
+            if (thisFilter.matchType) {
                 
-                $match.val(filter.matchType);
-                
-            }
-            
-            if (filter.logicalType) {
-                
-                $logicalType.val(filter.logicalType);
+                $match.val(thisFilter.matchType);
                 
             }
             
-            // Populate the values
-            switch (type) {
+            if (thisFilter.logicalType) {
                 
-                case "text":
-                
-                    if (filter.values instanceof Array) {
-                        
-                        $input.val(filter.values.join(Inst.opt.delimeter));
-                        
-                    } else {
-                        
-                        $input.val(filter.values);
-                        
-                    }
-                    
-                    break;
-                
-                case "choice":
-                    
-                    $.each(filter.values, function(i, colVal){
-                        
-                        $input
-                            .filter("[value='" + colVal + "']")
-                                .prop("checked", true);
-                        
-                    });
-                    
-                    break;
-                
-                case "lookup":
-                    
-                    $input.SPLookupField("method", "add", 
-                        filter.values.join(";#") );
-                    
-                    break;
-                
-                case "people":
-                    
-                    $input.pickSPUser("method", "add", 
-                        filter.values.join(";#") );
-                    
-                    break;
-                
-                case "date":
-                    
-                    $input.SPDateField('setDate', filter.values);
-                    
-                    break;
+                $logicalType.val(thisFilter.logicalType);
                 
             }
+            
+            // if match type is IsNull or IsNotNull, then no need to set column value
+            if (filter.matchType !== "IsNull" && filter.matchType !== "IsNotNull") {
+                
+                // Populate the values
+                switch (type) {
+                    
+                    case "text":
+                    
+                        if (thisFilter.values instanceof Array) {
+                            
+                            $input.val(thisFilter.values.join(Inst.opt.delimeter));
+                            
+                        } else {
+                            
+                            $input.val(thisFilter.values);
+                            
+                        }
+                        
+                        break;
+                    
+                    case "choice":
+                        
+                        $.each(thisFilter.values, function(i, colVal){
+                            
+                            $input
+                                .filter("[value='" + colVal + "']")
+                                    .prop("checked", true);
+                            
+                        });
+                        
+                        break;
+                    
+                    case "lookup":
+                        
+                        $input.SPLookupField("method", "add", 
+                            thisFilter.values.join(";#") );
+                        
+                        break;
+                    
+                    case "people":
+                        
+                        $input.pickSPUser("method", "add", 
+                            thisFilter.values.join(";#") );
+                        
+                        break;
+                    
+                    case "date":
+                        
+                        // If dateTime value, then let SPDateField parse values
+                        if ($colUI.data("spwidget_sp_format") === "DateTime") {
+                            
+                            
+                            $input.SPDateField('setDate', thisFilter.values);
+                            
+                        // Regular dates - Provide format input
+                        } else {
+                            
+                            $input.SPDateField('setDate', thisFilter.values, 'yy-mm-dd');
+                            
+                        }
+                        
+                        break;
+                    
+                }
+                
+            // ELSE: Must have been IsNull or IsNotNull. trigger change 
+            // event on dropdown so that column can be properly highlighted.
+            } else {
+                
+                $match.change();
+                
+            } //end: if()
             
             $input.change();
             
-        }); //end: each(): filter
+        }); //end: each(): thisFilter
         
         return Inst;
         
     }; //end: Filter.setFilterValues()
+    
+    /**
+     * Create a new instance of a Column object.
+     * 
+     * @constructor
+     * 
+     * @param {Object} inst
+     *      The initial object of values 
+     * 
+     * @return {Filter.ColumnFilter}
+     * 
+     */
+    Filter.ColumnFilter = function(inst) {
+        
+        var Column = function(){},
+            newCol = new Column();
+        
+        if (typeof inst !== "object") {
+            
+            inst = {};
+            
+        }
+        
+        newCol.columnName   = inst.columnName || '';
+        newCol.matchType    = inst.matchType || '';
+        newCol.logicalType  = inst.logicalType || '';
+        newCol.values       = inst.values || [];
+        newCol.CAMLQuery    = inst.CAMLQuery || '';
+        newCol.URLParams    = inst.URLParams || '';
+        newCol.count        = inst.count || 0;
+        
+        return newCol;
+        
+    }; //end: ColumnFilter()
     
     /**
      * @property
@@ -9629,7 +9718,11 @@
 + "    </div>\n"
 + "</div>\n"
 + "<div id=\"filter_column\">\n"
-+ "    <div class=\"spwidget-column spwidget-type-{{type}}\" data-spwidget_column_type=\"{{type}}\">\n"
++ "    <div class=\"spwidget-column spwidget-type-{{type}}\" \n"
++ "            data-spwidget_column_type=\"{{type}}\" \n"
++ "            data-spwidget_list=\"{{list}}\" \n"
++ "            data-spwidget_sp_type=\"{{sp_type}}\" \n"
++ "            data-spwidget_sp_format=\"{{sp_format}}\" >\n"
 + "        <div class=\"spwidget-filter-value-cntr\">\n"
 + "            <label>{{DisplayName}}</label>\n"
 + "            <div class=\"spwidget-filter-value-input\">\n"
@@ -9653,7 +9746,7 @@
 + "    </div>\n"
 + "</div>\n"
 + "<div id=\"filter_text_field\">\n"
-+ "    <input name=\"{{Name}}\" title=\"{{DisplayName}}\" type=\"text\" value=\"\" data-spwidget_list=\"{{list}}\" data-spwidget_sp_type=\"{{sp_type}}\" data-spwidget_sp_format=\"{{sp_format}}\" class=\"spwidget-input spwidget-filter-input\" />\n"
++ "    <input name=\"{{Name}}\" title=\"{{DisplayName}}\" type=\"text\" value=\"\" class=\"spwidget-input spwidget-filter-input\" />\n"
 + "    <span class=\"spwidget-tooltip\">{{tooltip}}</span>\n"
 + "</div>\n"
 + "<div id=\"filter_choice_field\">\n"
