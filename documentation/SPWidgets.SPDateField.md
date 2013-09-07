@@ -190,12 +190,12 @@ Methods
     **Input**
     
     _{Array|Date|String} dates_<br>
-        Dates can be defined either as a string (ex. _08/01/2013_) or as a JavaScript Date Object.  This input parameter can be either a single value or an array of values to be set.
+    Dates can be defined either as a string (ex. _08/01/2013_) or as a JavaScript Date Object.  This input parameter can be either a single value or an array of values to be set.
         
-        When _showTimepicker_ option is _true_, if providing the dates as a string, they must be defined in the SharePoint internal format [ISO 8601][iso8601] (ex. 2013-09-05T0600Z).    
+    When _showTimepicker_ option is _true_, if providing the dates as a string, they must be defined in the SharePoint internal format [ISO 8601][iso8601] (ex. 2013-09-05T0600Z).    
     
     _{String} format_<br>
-        Used only when dates are defined as a string and _showTimepicker_ option is _false_. The format of the dates defined. Used with jQuery UI Datepicker _parseDate_ utiltiy. For more information on the format definition, see the [jQuery UI Datepicker][jqueryuidatepicker] widget documentation. 
+    Used only when dates are defined as a string and _showTimepicker_ option is _false_. The format of the dates defined. Used with jQuery UI Datepicker _parseDate_ utiltiy. For more information on the format definition, see the [jQuery UI Datepicker][jqueryuidatepicker] widget documentation. 
     
     **Return Value:**
     
@@ -220,12 +220,12 @@ Methods
     **Input**
     
     _{Array|Date|String} dates_<br>
-        Dates can be defined either as a string (ex. _08/01/2013_) or as a JavaScript Date Object.  This input parameter can be either a single value or an array of values to be set.
+    Dates can be defined either as a string (ex. _08/01/2013_) or as a JavaScript Date Object.  This input parameter can be either a single value or an array of values to be set.
         
-        When _showTimepicker_ option is _true_, if providing the dates as a string, they must be defined in the SharePoint internal format [ISO 8601][iso8601] (ex. 2013-09-05T0600Z).    
+    When _showTimepicker_ option is _true_, if providing the dates as a string, they must be defined in the SharePoint internal format [ISO 8601][iso8601] (ex. 2013-09-05T0600Z).    
     
     _{String} format_<br>
-        Used only when dates are defined as a string and _showTimepicker_ option is _false_. The format of the dates defined. Used with jQuery UI Datepicker _parseDate_ utiltiy. For more information on the format definition, see the [jQuery UI Datepicker][jqueryuidatepicker] widget documentation.
+    Used only when dates are defined as a string and _showTimepicker_ option is _false_. The format of the dates defined. Used with jQuery UI Datepicker _parseDate_ utiltiy. For more information on the format definition, see the [jQuery UI Datepicker][jqueryuidatepicker] widget documentation.
     
     **Return Value:**
     
