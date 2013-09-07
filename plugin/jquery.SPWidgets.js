@@ -3,7 +3,7 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *  
- * @version 20130907013019
+ * @version 2.2
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  * 
@@ -11,8 +11,8 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date:  Paul:September 07, 2013 01:30 PM
- * Version:     20130907013019
+ * Build Date:  September 07, 2013 - 03:52 PM
+ * Version:     2.2
  * 
  */
 ;(function($){
@@ -53,7 +53,7 @@
         }
         
         $.SPWidgets             = {};
-        $.SPWidgets.version     = "20130907013019";
+        $.SPWidgets.version     = "2.2";
         $.SPWidgets.defaults    = {};
         
         /**
@@ -780,7 +780,7 @@
  *  -   jQuery-UI Draggable
  * 
  * 
- * BUILD: Paul:September 07, 2013 01:28 PM
+ * BUILD: September 07, 2013 - 03:52 PM
  */
 
 ;(function($){
@@ -2968,7 +2968,7 @@
     Board.styleSheet = "/** \n"
 + " * Stylesheet for the Board widget\n"
 + " * \n"
-+ " * BUILD: Paul:July 28, 2013 10:15 AM\n"
++ " * BUILD: September 07, 2013 - 03:52 PM\n"
 + " */\n"
 + "div.spwidget-board {\n"
 + "    width: 100%;\n"
@@ -3150,7 +3150,7 @@
  * THe user, however, is presented with the existing items
  * and has the ability to Remove them and add new ones.
  * 
- * BUILD: Paul:September 07, 2013 01:28 PM
+ * BUILD: September 07, 2013 - 03:52 PM
  * 
  */
 
@@ -4714,7 +4714,7 @@
  * on jQuery UI's Autocomplete and SPServices library.
  *      
  *  
- * @version 20130907012815NUMBER_
+ * @version 2.2NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
@@ -4722,7 +4722,7 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date Paul:September 07, 2013 01:28 PM
+ * Build Date September 07, 2013 - 03:52 PM
  * 
  */
 (function(){
@@ -5550,14 +5550,14 @@
  * through the many SP pages and without having to leave the user's current page.
  *      
  *  
- * @version 20130907012815NUMBER_
+ * @version 2.2NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * 
  * @requires jQuery.js {@link http://jquery.com}
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date Paul:September 07, 2013 01:28 PM
+ * Build Date September 07, 2013 - 03:52 PM
  * 
  */
 ;(function($){
@@ -6907,7 +6907,7 @@
  * jquery.SPDateField.js
  * The SPDateField widget. Introduced with v2.2, August 2013
  * 
- * BUILD: Paul:September 07, 2013 01:28 PM
+ * BUILD: September 07, 2013 - 03:52 PM
  * 
  */
 ;(function($){
@@ -8250,7 +8250,7 @@
 /**
  * @fileOverview - List filter panel widget
  * 
- * BUILD: Paul:September 07, 2013 01:28 PM
+ * BUILD: September 07, 2013 - 03:52 PM
  * 
  */
 (function($){
@@ -9602,7 +9602,7 @@
     Filter.styleSheet = "/** \n"
 + " * Stylesheet for the Board widget\n"
 + " * \n"
-+ " * BUILD: Paul:August 31, 2013 08:22 AM\n"
++ " * BUILD: September 07, 2013 - 03:52 PM\n"
 + " */\n"
 + "div.spwidget-filter {\n"
 + "    width: 100%;\n"
