@@ -523,6 +523,8 @@
     	<!-- Make sure that no console.log() statement exist -->
         <fileset dir="${build.base}" id="fileset.filesUsingConsole">
         	<patternset refid="patternset.sourceFiles"/>
+        	<exclude name="**${/}*.html"/>
+        	<exclude name="**${/}*.md"/>
         	<containsregexp expression="^\s*?console\."/>
         </fileset>
         <pathconvert pathsep="${line.separator}" property="prop.filesUsingConsole" refid="fileset.filesUsingConsole"/>
