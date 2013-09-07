@@ -8,7 +8,11 @@
     </div>
 </div>
 <div id="filter_column">
-    <div class="spwidget-column spwidget-type-{{type}}" data-spwidget_column_type="{{type}}">
+    <div class="spwidget-column spwidget-type-{{type}}" 
+            data-spwidget_column_type="{{type}}" 
+            data-spwidget_list="{{list}}" 
+            data-spwidget_sp_type="{{sp_type}}" 
+            data-spwidget_sp_format="{{sp_format}}" >
         <div class="spwidget-filter-value-cntr">
             <label>{{DisplayName}}</label>
             <div class="spwidget-filter-value-input">
@@ -32,7 +36,7 @@
     </div>
 </div>
 <div id="filter_text_field">
-    <input name="{{Name}}" title="{{DisplayName}}" type="text" value="" data-spwidget_list="{{list}}" data-spwidget_sp_type="{{sp_type}}" data-spwidget_sp_format="{{sp_format}}" class="spwidget-input spwidget-filter-input" />
+    <input name="{{Name}}" title="{{DisplayName}}" type="text" value="" class="spwidget-input spwidget-filter-input" />
     <span class="spwidget-tooltip">{{tooltip}}</span>
 </div>
 <div id="filter_choice_field">

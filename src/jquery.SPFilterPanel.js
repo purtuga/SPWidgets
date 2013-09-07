@@ -437,7 +437,9 @@
                                 var $field = $(this);
                                 
                                 $field.SPLookupField({
-                                    list:           $field.data("spwidget_list"),
+                                    list:           $field
+                                                        .closest("div.spwidget-column")
+                                                        .data("spwidget_list"),
                                     template:       '<div>{{Title}} <span class="spwidgets-item-remove">[x]</span></div>',
                                     listTemplate:   '{{Title}}',
                                     allowMultiples: true,
@@ -472,7 +474,7 @@
                                 $field.SPDateField({
                                     allowMultiples: true,
                                     showTimepicker: (
-                                            $field.data("spwidget_sp_format") === "DateTime"
+                                            $column.data("spwidget_sp_format") === "DateTime"
                                             ?   true
                                             :   false
                                         )
@@ -649,13 +651,14 @@
      */
     Filter.onFilterInputChange = function(ev){
         
-        var $input  = $(this),
-            $cntr   = $input.closest("div.spwidget-filter-value-input"),
-            $col    = $cntr.closest("div.spwidget-column"),
-            val     = $input.val(),
-            Inst    = $cntr
-                        .closest("div.spwidget-filter")
-                        .data("SPFilterPanelInst");
+        var $input      = $(this),
+            $cntr       = $input.closest("div.spwidget-filter-value-input"),
+            $col        = $cntr.closest("div.spwidget-column"),
+            matchType   = $col.find("div.spwidget-filter-type-cntr select.spwidget-filter-type").val(),
+            val         = $input.val(),
+            Inst        = $cntr
+                            .closest("div.spwidget-filter")
+                            .data("SPFilterPanelInst");
         
         if ($col.is(".spwidget-type-choice")) {
             
@@ -671,7 +674,7 @@
             
             $col.addClass(Inst.opt.definedClass);
             
-        } else {
+        } else if (matchType !== 'IsNull' && matchType !== 'IsNotNull') {
             
             $col.removeClass(Inst.opt.definedClass);
             
@@ -932,19 +935,15 @@
             var $thisCol        = $(v),
                 $input          = $thisCol.find(".spwidget-input"),
                 colName         = $input.attr("name"),
-                thisColFilter   = {
-                        columnName:     colName,
-                        matchType:      $thisCol
-                                            .find("select.spwidget-filter-type")
-                                            .val(),
-                        logicalType:    $thisCol
-                                            .find("select.spwidget-match-type")
-                                            .val(),
-                        values:         [],
-                        count:          0,
-                        CAMLQuery:      '',
-                        URLParams:      ''
-                    },
+                thisColFilter   = (new Filter.ColumnFilter({
+                                        columnName:     colName,
+                                        matchType:      $thisCol
+                                                            .find("select.spwidget-filter-type")
+                                                            .val(),
+                                        logicalType:    $thisCol
+                                                            .find("select.spwidget-match-type")
+                                                            .val()
+                                    })),
                 colFilterWasSet = false,
                 colType         = $thisCol.data("spwidget_column_type"),
                 thisColUrlParam = {};
@@ -1212,79 +1211,138 @@
                 $colUI          = $input.closest("div.spwidget-column"),
                 type            = $colUI.data("spwidget_column_type"),
                 $match          = $colUI.find("select[name='" + column + "_type']"),
-                $logicalType    = $colUI.find("div.spwidget-filter-type-cntr select.spwidget-match-type");
+                $logicalType    = $colUI.find("div.spwidget-filter-type-cntr select.spwidget-match-type"),
+                thisFilter      = new Filter.ColumnFilter();
+            
+            $.extend(thisFilter, filter);
             
             // If we have a matchType or logicalType, then set it
-            if (filter.matchType) {
+            if (thisFilter.matchType) {
                 
-                $match.val(filter.matchType);
-                
-            }
-            
-            if (filter.logicalType) {
-                
-                $logicalType.val(filter.logicalType);
+                $match.val(thisFilter.matchType);
                 
             }
             
-            // Populate the values
-            switch (type) {
+            if (thisFilter.logicalType) {
                 
-                case "text":
-                
-                    if (filter.values instanceof Array) {
-                        
-                        $input.val(filter.values.join(Inst.opt.delimeter));
-                        
-                    } else {
-                        
-                        $input.val(filter.values);
-                        
-                    }
-                    
-                    break;
-                
-                case "choice":
-                    
-                    $.each(filter.values, function(i, colVal){
-                        
-                        $input
-                            .filter("[value='" + colVal + "']")
-                                .prop("checked", true);
-                        
-                    });
-                    
-                    break;
-                
-                case "lookup":
-                    
-                    $input.SPLookupField("method", "add", 
-                        filter.values.join(";#") );
-                    
-                    break;
-                
-                case "people":
-                    
-                    $input.pickSPUser("method", "add", 
-                        filter.values.join(";#") );
-                    
-                    break;
-                
-                case "date":
-                    
-                    $input.SPDateField('setDate', filter.values);
-                    
-                    break;
+                $logicalType.val(thisFilter.logicalType);
                 
             }
+            
+            // if match type is IsNull or IsNotNull, then no need to set column value
+            if (filter.matchType !== "IsNull" && filter.matchType !== "IsNotNull") {
+                
+                // Populate the values
+                switch (type) {
+                    
+                    case "text":
+                    
+                        if (thisFilter.values instanceof Array) {
+                            
+                            $input.val(thisFilter.values.join(Inst.opt.delimeter));
+                            
+                        } else {
+                            
+                            $input.val(thisFilter.values);
+                            
+                        }
+                        
+                        break;
+                    
+                    case "choice":
+                        
+                        $.each(thisFilter.values, function(i, colVal){
+                            
+                            $input
+                                .filter("[value='" + colVal + "']")
+                                    .prop("checked", true);
+                            
+                        });
+                        
+                        break;
+                    
+                    case "lookup":
+                        
+                        $input.SPLookupField("method", "add", 
+                            thisFilter.values.join(";#") );
+                        
+                        break;
+                    
+                    case "people":
+                        
+                        $input.pickSPUser("method", "add", 
+                            thisFilter.values.join(";#") );
+                        
+                        break;
+                    
+                    case "date":
+                        
+                        // If dateTime value, then let SPDateField parse values
+                        if ($colUI.data("spwidget_sp_format") === "DateTime") {
+                            
+                            
+                            $input.SPDateField('setDate', thisFilter.values);
+                            
+                        // Regular dates - Provide format input
+                        } else {
+                            
+                            $input.SPDateField('setDate', thisFilter.values, 'yy-mm-dd');
+                            
+                        }
+                        
+                        break;
+                    
+                }
+                
+            // ELSE: Must have been IsNull or IsNotNull. trigger change 
+            // event on dropdown so that column can be properly highlighted.
+            } else {
+                
+                $match.change();
+                
+            } //end: if()
             
             $input.change();
             
-        }); //end: each(): filter
+        }); //end: each(): thisFilter
         
         return Inst;
         
     }; //end: Filter.setFilterValues()
+    
+    /**
+     * Create a new instance of a Column object.
+     * 
+     * @constructor
+     * 
+     * @param {Object} inst
+     *      The initial object of values 
+     * 
+     * @return {Filter.ColumnFilter}
+     * 
+     */
+    Filter.ColumnFilter = function(inst) {
+        
+        var Column = function(){},
+            newCol = new Column();
+        
+        if (typeof inst !== "object") {
+            
+            inst = {};
+            
+        }
+        
+        newCol.columnName   = inst.columnName || '';
+        newCol.matchType    = inst.matchType || '';
+        newCol.logicalType  = inst.logicalType || '';
+        newCol.values       = inst.values || [];
+        newCol.CAMLQuery    = inst.CAMLQuery || '';
+        newCol.URLParams    = inst.URLParams || '';
+        newCol.count        = inst.count || 0;
+        
+        return newCol;
+        
+    }; //end: ColumnFilter()
     
     /**
      * @property
