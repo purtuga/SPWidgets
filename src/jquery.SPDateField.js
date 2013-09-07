@@ -40,7 +40,13 @@
         },
         dateTemplate:   '{{date}} <span class="spwidgets-item-remove">[x]</span>',
         showTimepicker: false,
-        timeFormat:     ' {{hour}}:{{minutes}} {{ampm}}'
+        timeFormat:     ' {{hour}}:{{minutes}} {{ampm}}',
+        timeUTC:        true,
+        labelHour:      'Hour',
+        labelMinutes:   'Minutes',
+        labelAMPM:      'AM|PM',
+        labelTime:      'Time',
+        labelSet:       'Set'
     };
     
     
@@ -61,7 +67,13 @@
      * @param {Object} [options.datepicker={...}]
      * @param {String} [options.dateTemplate=""]
      * @param {Boolean} [options.showTimepicker=false]
-     * @param {String} [options.timeFormat='h:m T']
+     * @param {String} [options.timeFormat='{{our}}:{{minutes}} {{ampm}}']
+     * @param {Boolean} [options.timeUTC=true]
+     * @param {String} [options.labelHour='Hour']
+     * @param {String} [options.labelMinutes='Minutes']
+     * @param {String} [options.labelAMPM='AM|PM']
+     * @param {String} [options.labelTime='Time']
+     * @param {String} [options.labelSet='Set']
      * 
      * return {jQuery} this
      * 
@@ -402,7 +414,7 @@
                     
                     if (Inst.opt.showTimepicker) {
                         
-                        dt1  = $.SPWidgets.SPGetDateString(dtObj);
+                        dt1  = $.SPWidgets.SPGetDateString(dtObj, Inst.opt._timeFmt);
                         dt2 += Inst.$timepicker.formatTime(dtObj);
                         
                     }
@@ -524,7 +536,7 @@
                     // could include multiple dates.
                     if (Inst.opt.allowMultiples) {
                         
-                        dt1 = $.SPWidgets.SPGetDateString(dtObj);
+                        dt1 = $.SPWidgets.SPGetDateString(dtObj, Inst.opt._timeFmt);
                         
                     } else {
                         
@@ -875,7 +887,7 @@
                         
                         wdg.$selectorCntr.addClass("spwidget-date-multiples-cntr");
                         wdg.$setButton.find("div.spwidget-btn")
-                            .button()
+                            .button({label: Inst.opt.labelSet})
                             .on("click" + SPDate.evNamespace, function(ev){
                                 
                                 wdg.updateDateTime();
@@ -885,6 +897,21 @@
                             });
                         
                     }
+                    
+                    // Apply the Labels for the time picker for this instance
+                    wdg.$timePicker
+                        .find("div.ui-widget-header")
+                            .html(Inst.opt.labelTime)
+                            .end()
+                        .find("div.spwidget-time-hour > label")
+                            .html(Inst.opt.labelHour)
+                            .end()
+                        .find("div.spwidget-time-min > label")
+                            .html(Inst.opt.labelMinutes)
+                            .end()
+                        .find("div.spwidget-time-ampm > label")
+                            .html(Inst.opt.labelAMPM)
+                            .end();
                     
                     // Set up a listener on the datepicker widget so that when user picks
                     // a date, we catch it and add the time portion to it.
@@ -1021,6 +1048,10 @@
             //------------------------------------------------------
             //-----------    INITIATE THIS INSTANCE    -------------
             //------------------------------------------------------
+            
+            // Define time string format (local or utc) 
+            // param that is used with SPGetDateString
+            Inst.opt._timeFmt = ( Inst.opt.timeUTC ? 'utc' : 'local' );
             
             // Setup the datepicker options
             // TODO: should we allow the user to manipulate this?

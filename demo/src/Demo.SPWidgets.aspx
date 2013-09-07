@@ -444,7 +444,9 @@ SPWidgets - Widgets for building custom UIs
                             <h3>Exmaple 7: Date adn Time Picker - Pre-Defined Inputs</h3>
                             <p>
                                 In this example, the input field used to bind SPDateField widget
-                                was already storing 2 dates: August 1, 2013 1:05 AM and August 2, 2013 4:30PM.
+                                was already storing 2 dates: August 1, 2013 1:05 AM and 
+                                August 2, 2013 4:30PM.  This instance also shows the use of 
+                                localized labels, like Time, Hour, Minutes.
                             </p>
                             <div>
                                 <input class="spwidget-demo-input" type="text" name="example7" 

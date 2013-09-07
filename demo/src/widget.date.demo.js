@@ -77,7 +77,13 @@
     $demoCntr.find("input[name='example7']")
         .SPDateField({
             showTimepicker: true,
-            allowMultiples: true
+            allowMultiples: true,
+            labelAMPM:      'T. Day',
+            labelTime:      'Select',
+            labelMinutes:   'Min',
+            labelHour:      'Hr',
+            labelSet:       'Pick',
+            timeUTC:        false
         })
         .on("change", function(){
             output.log("Example 7: input change: " + $(this).val());
