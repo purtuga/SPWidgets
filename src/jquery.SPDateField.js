@@ -995,11 +995,12 @@
                 } else {
                     
                     // If remainOpen option is true, then turn off picker animation
-                    if (Inst.opt.remainOpen) {
+                    if (Inst.opt.allowMultiples && Inst.opt.remainOpen) {
                         
                         Inst.opt.datepicker.showAnim = '';
                         
                     }
+                    
                     // Store a reference to teh original onSelect method (if defined)
                     // and set our own here.  Our function will take the date selected
                     // by the user in their own locale and format it to ISO 8601
@@ -1025,9 +1026,14 @@
                             
                         }
                         
-                        Inst.$input.val("");
+                        // If allow multiples is true, then clear out date picker input
+                        if (Inst.opt.allowMultiples) {
+                            
+                            Inst.$input.val("");
+                            
+                        }
                         
-                        if (Inst.opt.remainOpen) {
+                        if (Inst.opt.allowMultiples && Inst.opt.remainOpen) {
                             
                             setTimeout(function(){
                                 Inst.$input.datepicker("show");
