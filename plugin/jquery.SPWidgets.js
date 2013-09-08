@@ -3,7 +3,7 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *  
- * @version 2.2
+ * @version 20130907113411
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  * 
@@ -11,8 +11,8 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date:  September 07, 2013 - 03:52 PM
- * Version:     2.2
+ * Build Date:  Paul:September 07, 2013 11:34 PM
+ * Version:     20130907113411
  * 
  */
 ;(function($){
@@ -53,7 +53,7 @@
         }
         
         $.SPWidgets             = {};
-        $.SPWidgets.version     = "2.2";
+        $.SPWidgets.version     = "20130907113411";
         $.SPWidgets.defaults    = {};
         
         /**
@@ -6907,7 +6907,7 @@
  * jquery.SPDateField.js
  * The SPDateField widget. Introduced with v2.2, August 2013
  * 
- * BUILD: September 07, 2013 - 03:52 PM
+ * BUILD: Paul:September 07, 2013 11:34 PM
  * 
  */
 ;(function($){
@@ -7900,11 +7900,12 @@
                 } else {
                     
                     // If remainOpen option is true, then turn off picker animation
-                    if (Inst.opt.remainOpen) {
+                    if (Inst.opt.allowMultiples && Inst.opt.remainOpen) {
                         
                         Inst.opt.datepicker.showAnim = '';
                         
                     }
+                    
                     // Store a reference to teh original onSelect method (if defined)
                     // and set our own here.  Our function will take the date selected
                     // by the user in their own locale and format it to ISO 8601
@@ -7930,9 +7931,14 @@
                             
                         }
                         
-                        Inst.$input.val("");
+                        // If allow multiples is true, then clear out date picker input
+                        if (Inst.opt.allowMultiples) {
+                            
+                            Inst.$input.val("");
+                            
+                        }
                         
-                        if (Inst.opt.remainOpen) {
+                        if (Inst.opt.allowMultiples && Inst.opt.remainOpen) {
                             
                             setTimeout(function(){
                                 Inst.$input.datepicker("show");
