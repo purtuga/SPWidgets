@@ -25,7 +25,7 @@
 
 
         <ul>
-          <li id="ptLatestDownload"><a href="https://github.com/purtuga/SPWidgets/archive/v2.1.zip">Download <strong>v2.1</strong></a></li>
+          <li id="ptLatestDownload"><a href="https://github.com/purtuga/SPWidgets/archive/v2.2.zip">Download <strong>v2.2</strong></a></li>
           <li><a href="https://github.com/purtuga/SPWidgets/tags">Download <strong>Other</strong></a></li>
           <li><a href="https://github.com/purtuga/SPWidgets">View On <strong>GitHub</strong></a></li>
         </ul>
@@ -39,19 +39,15 @@
       <section>
 <!-- ===============[[ doc below ]]================ --> 
 
-       
 <h2>About</h2>
 
 <p>SPWidgets is a jQuery plugin that provides SharePoint Widgets that can be used for creating customized User Interfaces (UI) on the SharePoint platform using Client Side scripting (javascript).</p>
 
 <p>For the latest information on this plugin, see the <a href="http://purtuga.github.com/SPWidgets/">project page on GIT</a>.</p>
 
-
 <h2>Demo Showcase</h2>
 
-<p>Want to try them now and not worry about installation/setup etc. A self contained Single Page Application (SPA) is available that you can quickly upload to a Sharepoint library and see the widgets in action. </p>
-
-<p><a href="https://github.com/purtuga/SPWidgets/blob/master/demo/demo.about.md#spwidgets-demo"><strong>GO HERE</strong></a> for more information.</p>
+<p>Want to try them now and not worry about installation/setup etc. A self contained Single Page Application (SPA) is available that you can quickly upload to a Sharepoint library and see the widgets in action. <a href="https://github.com/purtuga/SPWidgets/blob/master/demo/demo.about.md#spwidgets-demo"><strong>GO HERE</strong></a> for more information.</p>
 
 <h2>Dependencies</h2>
 
@@ -62,7 +58,6 @@
 <li><a href="http://jqueryui.com">jQuery UI</a></li>
 <li><a href="http://spservices.codeplex.com">SPServices</a></li>
 </ol>
-
 
 <h2>Usage</h2>
 
@@ -108,8 +103,8 @@ and does'nt not have to contact me.</p>
 <h2>Version</h2>
 
 <ul>
-<li>Version: 20130720033254</li>
-<li>Build Date: July 20, 2013</li>
+<li>Version: 2.2</li>
+<li>Build Date: September 07, 2013</li>
 </ul>
 
 <h2>Install</h2>
@@ -127,6 +122,7 @@ The minified version of SPWidgets, usually the preferred version for production 
 
 <pre><code>&lt;script type="text/javascript" src='yoursite/path/to/jquery.SPWidgets.min.js'&gt;&lt;/script&gt;
 </code></pre>
+
 <h1>pickSPUser Widget</h1>
 
 <p>Given an input field, this method will display an interface that allows the users to select one or more users from SharePoint and stores the selected user information into the input field in the format expected when making an update via webservices.</p>
@@ -156,11 +152,7 @@ Function that is called when user makes a selection. Function will have a contex
 
 <pre><code>onPickUser: function(personObj) {
     // this = input element
-
-
-<pre><code>alert(personObj.displayName + " was selected!");
-</code></pre>
-
+    alert(personObj.displayName + " was selected!");
 }
 </code></pre></li>
 <li><p><strong>onCreate</strong>            :   <em>Function. Optional. Default=null.</em> <br />
@@ -175,11 +167,9 @@ Function that is called after the widget has been initiated on an input element.
 <li><p><strong>onRemoveUser</strong>    :   <em>Function. Optional. Default=null.</em> <br />
 (Since v2.1) Function that is called when user makes removes a person from the selected list. Function will have a context (<em>this</em> keyword) of the input field to which this plugin was bound, and will be given the following two input parameters:</p>
 
-<ul>
-<li>Original Input field as jQuery object</li>
+<ul><li>Original Input field as jQuery object</li>
 <li>The UI of the person (as jQuery object)</li>
-<li>An object with data about the user that was selected </li>
-</ul>
+<li>An object with data about the user that was selected </li></ul>
 
 <p>Returning a (boolean) false will cancel the removal of the person from the selected list.</p>
 
@@ -193,14 +183,14 @@ Function that is called after the widget has been initiated on an input element.
 <li><p><strong>inputPlaceholder</strong>    :   <em>String. Optional. Default=Type and Pick.</em> <br />
 The text to appear in the HTML5 placeholder attribute of the input field.  Since v2.1.</p></li>
 </ul>
+
 <h2>Return Value</h2>
 
-This plugin will return a jQuery object that contains the initially selected set of node, thus maintaining chainability.
-
+<p>This plugin will return a jQuery object that contains the initially selected set of node, thus maintaining chainability.</p>
 
 <h2>Methods</h2>
 
-All methods are called using the original input element where the People Picker widget was bound with the word 'method' as the first parameter:
+<p>All methods are called using the original input element where the People Picker widget was bound with the word 'method' as the first parameter:</p>
 
 <pre><code>$("input[name='user']").pickSPUser("method", "method name here");
 </code></pre>
@@ -225,22 +215,16 @@ Clears out all selected people</p>
 <li><p><strong>add('id;#name')</strong><br />
 (Since v2.1) Adds a person to the seletion list. Method accepts one input:</p>
 
-<ul>
-<li><em>{String}</em> A string with people to add in the format of <em>id;#name</em></li>
-</ul>
+<ol><li><em>{String}</em> A string with people to add in the format of <em>id;#name</em></li></ol>
 
 <p>Example:</p>
 
 <pre><code>$("input[name='user']").pickSPUser("method", "add", '4;#John Smith');
 </code></pre></li>
-<li><p><strong>remove('id')</strong><br />
-(Since v2.1) Removes a person from the selection.  Method accepts 1 input paramater:</p>
+<li><p><strong>remove(id)</strong><br />
+(Since v2.1) Removes a person from the selection.  Method accepts 1 input paramater.</p>
 
-
-
-79ba7e9150495b6ed4e5d82aea2229d6
-
-
+<ol><li><em>{String}</em> The ID or Display Name of the person that should be removed.</li></ol>
 
 <p>Example:</p>
 
@@ -270,15 +254,17 @@ $("input[name='user']").pickSPUser("method", "remove", "John Smith");
 alert("There are " + selected.length + " people selected!");
 </code></pre></li>
 </ul>
+
 <h2>Events</h2>
 
-The following Events are triggered by this widget:
+<p>The following Events are triggered by this widget</p>
 
+<ul>
+<li><p><strong>spwidget:peoplePickerCreate</strong> <br/>
+(Since v2.1) Event is triggered after widget is initiated on an element. Event is given two input parameters:</p>
 
-
-bf6912aa82f5cf75d9a3b58b7e6116db
-
-
+<ol><li>jQuery Event Object</li>
+<li>Original Input field as jQuery object </li></ol>
 
 <p>Example:</p>
 
@@ -291,11 +277,9 @@ bf6912aa82f5cf75d9a3b58b7e6116db
 <li><p><strong>spwidget:peoplePickerAdd</strong><br />
 (Since v2.1) Event is triggered anytime the user selects a person/group. Event is given three input parameters:</p>
 
-
-
-4f197c07f3908af6ef62ad7013df77e7
-
-
+<ol><li>jQuery Event Object</li>
+<li>Original Input field as jQuery object</li>
+<li>An object with data about the user that was selected </li></ol>
 
 <p>Example:</p>
 
@@ -308,11 +292,9 @@ bf6912aa82f5cf75d9a3b58b7e6116db
 <li><p><strong>spwidget:peoplePickerRemove</strong><br />
 (Since v2.1) Event is triggered anytime the user removes a person/group from the selected list. Returning False (Boolean) will canceld the removal and leave the person in the selected list. Event is given three input parameters:</p>
 
-
-
-4f197c07f3908af6ef62ad7013df77e7
-
-
+<ol><li>jQuery Event Object</li>
+<li>Original Input field as jQuery object</li>
+<li>An object with data about the user that was selected </li></ol>
 
 <p>Example:</p>
 
@@ -323,9 +305,10 @@ bf6912aa82f5cf75d9a3b58b7e6116db
     .pickSPUser()
 </code></pre></li>
 </ul>
+
 <h2>Examples</h2>
 
-Bind people picker and allow only 1 person to be selected/stored.
+<p>Bind people picker and allow only 1 person to be selected/stored.</p>
 
 <pre><code>$("input[name='users']").pickSPUser({
     allowMultiples: false
@@ -336,17 +319,23 @@ Bind people picker and allow only 1 person to be selected/stored.
 
 <pre><code>$("input[name='users']").pickSPUser({
     onPickUser: function(person){
-        alert("User selected: \n displayName: " + 
-            person.displayName + "\n accountId: " +
-            person.accountId + "\n accountName: " +
-            person.accountName + "\n accountType:" +
-            person.accountType);
-    }
-});
+        alert("User selected: 
 </code></pre>
+
+<p>displayName: " + 
+                person.displayName + "
+ accountId: " +
+                person.accountId + "
+ accountName: " +
+                person.accountName + "
+ accountType:" +
+                person.accountType);
+        }
+    });</p>
+
 <h1>SPControlUpload Widget</h1>
 
-<p>jQuery plugin that inserts a widget into page for uploading a file to a SharePoint location (library) without having to leave the page that the user is currently on. This plugin provides a behavior similar to an async ajax call.</p>
+<p>jQuery plugin that inserts a widget into page for uploading a file to a SharePoint Document Library without having to leave the page that the user is currently on. This plugin provides a behavior similar to an async ajax call.</p>
 
 <p>At its core, this plugin is simply uses the default SharePoint upload.aspx page inside an iframe, but manipulating it from the hosted page, so that the user is shown only a minimalist UI.  Code hooks are provided for allowing a developer to further manipulate the page(s) that may be shown after the initial upload <em>(ex. some libraries require users to fill in additional information and then check in the document. This can all be automated without user input.)</em></p>
 
@@ -360,49 +349,74 @@ Bind people picker and allow only 1 person to be selected/stored.
 
 <h2>Usage</h2>
 
-<pre><code>$("input[name='users']").SPControlUpload({
-    listName: "Shared Documents",
-    onPageChange: function(ev){
-        if (ev.state === 3) {
-            ev.hideOverlay = false;
-            alert("Upload Done!");
-        }
-    }
-});
+<pre><code>$("div.file_upload").SPControlUpload({ listName: "Shared Documents" });
 </code></pre>
 
 <h2>Input Parameters</h2>
 
-<p>This method takes as input an object containing the following options</p>
+<p>This method takes as input an object containing the following options:</p>
+
+<pre><code>    $("div.file_upload").SPControlUpload({
+        listName:               '',
+        folderPath:             '',
+        uploadDonePage:         '/undefined',
+        onPageChange:           null,
+        onUploadDone:           null,
+        uploadUrlOpt:           '',
+        overwrite:              false,
+        uploadPage:             '',
+        overlayClass:           '',
+        overlayBgColor:         'white',
+        overlayMessage:         '&lt;div&gt;Working on it&lt;/div&gt;',
+        selectFileMessage:      "Click here to select file...",
+        uploadDoneMessage:      "Upload Successful!",
+        fileNameErrorMessage:   "A file name cannot contain any of the following characters: \ / : * ? \" &amp;lt; &amp;gt; | # { } % ~ &amp;amp;",
+        noFileErrorMessage:     "No file selected!",
+        checkInFormHeight:      '25em',
+        webURL:                 currentSiteUrl
+    });
+</code></pre>
+
+<p>The default options for this widget can be manipulated/set via the following object:</p>
+
+<pre><code>    $.SPWidgets.defaults.upload = {}
+</code></pre>
+
+<h3>Options</h3>
 
 <ul>
 <li><p><strong>listName</strong>  :   <em>String. <strong>REQUIRED.</strong></em> <br />
-The name or UID of the list.
-Example 'Shared Documents' or '{67587-89284-93884-78827-78823}'</p></li>
+The name or UID of the Document Library to where this files will be uploaded. This value is used in conjuction with the <em>folderPath</em> parameter.</p>
+
+<p>Example:</p>
+
+<pre><code>'Shared Documents'
+</code></pre>
+
+<p>or</p>
+
+<pre><code>'{67587-89284-93884-78827-78823}'
+</code></pre></li>
+<li><p><strong>webURL</strong> :  <em>String. Optional. Default="currentSiteUrl"</em> <br />
+The url of the Site or Sub-site to where the file will be uploaded.</p></li>
 <li><p><strong>folderPath</strong> :  <em>String. Optional. Default="/"</em> <br />
-The path to the folder inside of the Document Library where
-the document should be uploaded to. Value can be either relative to the
-document library root or absolute. Default is to place the
-document at the root of the Document Library
-Examples 'http://yourdomain.com/sites/site1/Shared Documents' or
-'/sites/site1/Shared Documents'</p></li>
-<li><p><strong>uploadDonePage</strong> : <em>String. Optional. Default="/_layouts/viewlsts.aspx".</em> <br />
-The url of the page that should be loaded after the
-file has been uploaded successful. Value MUTST start with http.
-Default is 'http://yourdomain.com/sites/site1/_layouts/viewlsts.aspx'</p></li>
+The path to the folder inside of the Document Library where the document should be uploaded to. Value can be either relative to the document library root or absolute. Default is to place the document at the root of the Document Library</p>
+
+<p>Examples:</p>
+
+<pre><code>'http://yourdomain.com/sites/site1/Shared Documents'
+</code></pre>
+
+<p>or</p>
+
+<pre><code>'/sites/site1/Shared Documents'
+</code></pre></li>
+<li><p><strong>onUploadDone</strong> :  <em>Function. Optional. Default=null.</em> <br />
+Triggered when file is successfully uploaded - or when it reaches the <em>uploadDonePage</em>. This function is triggered after a file is checkedIn (if library requires it to be checked in). Function will have a scope of the element used on input and be given 1 parameter:  An object with the upload file metadata. New with v2.2</p></li>
 <li><p><strong>onPageChange</strong> :  <em>Function. Optional. Default=null.</em> <br />
-Function that is called each time the form in the
-iFrame is changed. The function 'this' keyword points to the
-element that was used when this method was called.
-The function is given one param - the event object created 
-by this plugin that includes information about the state
-of the upload. See Event Object below for more information.
-Return value of this function will control flow of plugin.
-Returning true (boolean), will allow processing to continue
-at different stages (see the event object below), while 
-returning false (boolean) will stop flow from continuing. The
-check is strict; meaning that it has to be a boolean false in
-order for flow to stop. </p>
+Function that is called each time the state of the upload changes. The function scope (this) points to the element that was used when this method was called. The function is given one param - the event object created by this plugin that includes information about the state of the upload. See Event Object below for more information. </p>
+
+<p>Return value of this function will control flow of plugin. Returning true (boolean), will allow processing to continue at different stages (see the event object below), while returning false (boolean) will stop flow from continuing. The check is strict; meaning that it has to be a boolean false in order for flow to stop. </p>
 
 <pre><code>onPageChange: function(ev){
     // this=original $(selector)
@@ -411,29 +425,31 @@ order for flow to stop. </p>
 }
 </code></pre></li>
 <li><p><strong>uploadUrlOpt</strong> :  <em>String. Optional. Default="".</em> <br />
-String of data that should be appended to the upload page url,
-following this '?".
-This string value is assumed to have already been properly 
-escaped for use in the url.<br />
-<em>NOTE</em>: The option "MultipleUpload=1" is NOT SUPPORTED.</p></li>
+String of data that should be appended to the upload page url as search parameters. This string value is assumed to have already been properly escaped for use in the url.<br />
+<em>NOTE</em>: The option <em>MultipleUpload</em> is NOT SUPPORTED.</p></li>
 <li><p><strong>overwrite</strong> :   <em>Boolean. Optional. Default=False.</em> <br />
-True or False indicating if document being uploaded should
-overwrite any existing one. Default is False (don't overwrite)</p></li>
-<li><p><strong>uploadPage</strong> :  <em>String. Optional. Default="/_layouts/Upload.aspx".</em> <br />
-The relative URL from the WebSite root to the upload page.
-Default is "/_layouts/Upload.aspx". This value is appended to
-to the website full url, which is retrieved using SPServices
-utility.</p></li>
+True or False indicating if document being uploaded should overwrite any existing one. Default is False (don't overwrite)</p></li>
 <li><p><strong>overlayClass</strong> :  <em>String. Optional. Default="".</em> <br />
-A css class to be associated with the overlay that is displayed
-over the iframe while loading of the page is going on.</p></li>
+A css class to be associated with the overlay that is displayed over the iframe while loading of the page is going on.</p></li>
 <li><p><strong>overlayBgColor</strong> : <em>String. Optional. Default="white".</em> <br />
-A color to be used for the overlay area that is displayed over
-the iframe wile loading of the page is going on. Default is
-white. Set this to null if wanting only to use a class.</p></li>
-<li><p><strong>overlayMessage</strong> : <em>String|HTMLElement|jQuery. Optional. Default="Loading...".</em> <br />
-String or object/element to be displayed inside of the overlay
-when it is displayed. </p></li>
+A color to be used for the overlay area that is displayed over the iframe wile loading of the page is going on. Default is white. Set this to null if wanting only to use a class.</p></li>
+<li><p><strong>checkInFormHeight</strong> : <em>String. Optional. Default="25em"</em> <br />
+The height of the displayed Form that is displayed when a file required CheckIn. The form is displayed after the file has been uploaded to the document library. The display of the form does not impact the layout of the page (it is displayed using position:absolute). New with v2.2</p></li>
+<li><p><strong>overlayMessage</strong> : <em>String|HTMLElement|jQuery. Optional. Default="Working on it".</em> <br />
+String or object/element to be displayed inside of the overlay when it is displayed. </p></li>
+<li><p><strong>selectFileLabel</strong> : <em>String. Optional. Default="Click here to select file..."</em> <br />
+The label to display when no file is selected. New with v2.2</p></li>
+<li><p><strong>uploadDoneMessage</strong> : <em>String. Optional. Default="Upload Successful!"</em> <br />
+Message to display when file upload is completed. New with v2.2</p></li>
+<li><p><strong>fileNameErrorMessage</strong> : <em>String. Optional. Default="The file name is invalid or the file is empty. A file name cannot contain any of the following characters: \ / : * ? \" &lt; &gt; | # { } % ~ &amp;"</em> <br />
+Error to display when file name is invalid (ex. contains unsupported characters). New with v2.2</p></li>
+<li><p><strong>noFileErrorMessage</strong> : <em>String. Optional. Default=""</em> <br />
+Error to display when no file is selected (but user clicks Upload). New with v2.2</p></li>
+<li><p><strong>uploadDonePage</strong> : <em>String. Optional. Default="/undefined".</em> <br />
+The url of the page that should be loaded after the file has been uploaded successful. Under normal use, there should be no need to change the default on this input parameter, and it may be depricated in the future.</p></li>
+<li><p><strong>uploadPage</strong> :  <em>String. Optional. Default="/_layouts/Upload.aspx".</em> <br />
+The relative URL from the WebSite root to the upload page. Default is "/_layouts/Upload.aspx". This value is appended to
+to the website full url, which is retrieved using SPServices utility. Parameter should, in normal conditions, not be changed and it may be depricated in the future.</p></li>
 </ul>
 
 <h2>Event Object</h2>
@@ -444,52 +460,31 @@ when it is displayed. </p></li>
 
 <ul>
 <li><p><strong>ev.state</strong>  : <em>Integer. 1|2|3</em> <br />
-A value from 1 through 3 that represents the state of
-the phisical file. This value, along with the 
-<em>ev.action</em> value can be used to validate user input
-and if appropriate, cancel the send request to the
-server.</p>
+A value from 1 through 3 that represents the state of the phisical file. This value, along with the <em>ev.action</em> value can be used to validate user input and if appropriate, cancel the send request to the server.</p>
 
-<ol>
-<li><p>No File uploaded. Upload form is ready for user input.
-This is set when the form is initially loaded and the 
-File html element is ready for the user to attach the file.</p></li>
-<li><p>No File uploaded. User has defined a file for upload and
-form is now ready to be submitted to the server. This state
-could be used in the <em>onPageChange</em> to (for example) prevent
-the upload of certain file types.  </p></li>
-<li><p>File has been uploaded and is now available on the server (note
-that it may not be checked in yet).  This state is set when the
-user has successfully uploaded the file to the server and no 
-errors were encountered (example invalid file characters).
-This state will remain through subsequent pages if the file
-requires check in.</p></li>
-</ol></li>
+<ol><li><p>No File uploaded. Upload form is ready for user input. This is set when the form is initially loaded and the File html element is ready for the user to attach the file.</p></li>
+<li><p>No File uploaded. User has defined a file for upload and form is now ready to be submitted to the server. This state could be used in the <em>onPageChange</em> to (for example) prevent the upload of certain file types.  See example below.</p></li>
+<li><p>File has been uploaded and is now available on the server (note that it may not be checked in yet).  This state is set when the user has successfully uploaded the file to the server and no errors were encountered (example invalid file characters). This state will remain through subsequent pages if the file requires check in.</p></li></ol></li>
 <li><p><strong>ev.action</strong> : <em>String. preLoad|postLoad</em>  <br /> 
-The event action as it pertains to this plugin. Use this value in
-conjuction with the <em>ev.state</em> to do additional validations on user
-input.</p>
+The event action as it pertains to this plugin. Use this value in conjuction with the <em>ev.state</em> to do additional validations on user input.</p>
 
-<ul>
-<li><em>preLoad</em>   - action is taking place before the page is sent to
-              the server. The user (or code) must have initiated
-              an action that requires sending data to the server.</li>
-<li><em>postLoad</em>  - action is taking place after page has completed
-              loading, but is not yet "visible" to the user.</li>
-</ul></li>
+<p><em>preLoad</em></p>
+
+<p>Action is taking place before the page is sent to the server. The user (or code) must have initiated an action that requires sending data to the server.</p>
+
+<p><em>postLoad</em></p>
+
+<p>Action is taking place after page has completed loading, but is not yet visible to the user.</p></li>
 <li><p><strong>ev.hideOverlay</strong> : <em>Boolean. Default=true.</em>  <br />
-Used when action=postLoad. Can be set by a callback function to false, 
-so that the busy overlay remains displayed and is not automatically 
-hidden.</p></li>
+Used when action=postLoad. Can be set by a callback function to false, so that the busy overlay remains displayed and is not automatically hidden.</p></li>
 <li><p><strong>ev.pageUrl</strong> : <em>String.</em> <br />
 The url of the page currently loaded in the iframe.</p></li>
 <li><p><strong>ev.page</strong> : <em>jQuery Object.</em>  <br />
-An object representing the page loaded inside the iFrame. This can be
-used to further manipulate the iframe's page content.</p></li>
+An object representing the page loaded inside the iFrame. This can be used to further manipulate the iframe's page content.</p></li>
 <li><p><strong>ev.isUploadDone</strong> : <em>Boolean.</em> <br />
-Indicates if the upload process is done. Basically, this means that 
-the processes has reached the page defined in the <em>updatePageDone</em> 
-parameter.</p></li>
+Indicates if the upload process is done. Basically, this means that the processes has reached the page defined in the <em>updatePageDone</em> parameter.</p></li>
+<li><p><strong>ev.file</strong> : <em>Object.</em> <br />
+An object that contains the metadata for the file that was successfuly uploaded. This event attribute is only populated with data once the file is uploaded to the server.</p></li>
 </ul>
 
 <h2>Return Value</h2>
@@ -501,7 +496,20 @@ set of node, thus maintaining chainability.</p>
 
 <h3>Example 1</h3>
 
-<p>The following example creates a jQuery UI dialog to display the upload interface to the user.  The dialog closes after the file is sucessfuly uploaded. It demostrates the use of the event object's <em>state</em> and <em>isUploadDone</em> attributes. </p>
+<p>Simple example. Upload a file to the Share Documents library and display an alert when complete.</p>
+
+<pre><code>$("#uploadContainer")
+    .SPControlUpload({
+        listName: 'Shared Documents',
+        onUploadDone: function(file){
+            alert("File upload Done. File url: " &amp; file.EncodedAbsUrl);
+        }
+    });
+</code></pre>
+
+<h3>Example 2</h3>
+
+<p>The following example creates a jQuery UI dialog to display the upload interface to the user. This example uses the onPageCHange event to do certain validations through out the upload process. The dialog closes after the file is sucessfuly uploaded. It demostrates the use of the event object's <em>state</em> and <em>isUploadDone</em> attributes. </p>
 
 <pre><code>$('&lt;div style="height:350px;width;100%;padding:.5em;"&gt;&lt;/div&gt;')
     .appendTo("body")
@@ -546,7 +554,7 @@ set of node, thus maintaining chainability.</p>
     });
 </code></pre>
 
-<h3>Example 2</h3>
+<h3>Example 3</h3>
 
 <p>In this example the file that the user is attempting to upload will be checked and if not a PDF file, then an error is displayed and the file is not uploaded.</p>
 
@@ -592,6 +600,7 @@ set of node, thus maintaining chainability.</p>
         }//end: onPageChange()
     });
 </code></pre>
+
 <h1>SPShowBoard Widget</h1>
 
 <p>Given a selector (an html element), this method will insert a Kan-Ban board inside of it based on one of the columns from the desired List.  The column must be of type Lookup or Choice, and it's values will be used by this widget to build the Board columns.
@@ -661,10 +670,8 @@ If defining a Function, it must generate an array of objects with the list data 
 
 <p>The function will have a scope (this keyword) of the HTML element where this widget was bound and be given two input parameter:</p>
 
-<ul>
-<li><em>{Function}</em> A function that must be called and be given the array of objects each representing the List row to be displayed. See example below.</li>
-<li><em>{Object}</em> The options defined on input to this widget.</li>
-</ul>
+<ul><li><em>{Function}</em> A function that must be called and be given the array of objects each representing the List row to be displayed. See example below.</li>
+<li><em>{Object}</em> The options defined on input to this widget.</li></ul>
 
 <p>Example: Use of a string with the Query defined:</p>
 
@@ -760,10 +767,8 @@ The HTML template that will be used to for displaying items on the board. The te
 
 <p>This option can also be defined as a Function whose job is to create the markup around the List row.  The function must return a String when creating a row's UI for the first time. When defining a Function, it will be given a scope of the HTML element that container the Board and provided with two input parameters:</p>
 
-<ul>
-<li><em>{Object}</em> The List row being created</li>
-<li><em>{jQuery | Undefined}</em> The row's current UI element if it was already created. This input parameter will be Null prior to creating the items the first time. However, if a <em>refresh</em> is done and the Row is found to to still be returned, this input parameter will point to a jQuery object holding the element UI on the Board.</li>
-</ul>
+<ul><li><em>{Object}</em> The List row being created</li>
+<li><em>{jQuery | Undefined}</em> The row's current UI element if it was already created. This input parameter will be Null prior to creating the items the first time. However, if a <em>refresh</em> is done and the Row is found to to still be returned, this input parameter will point to a jQuery object holding the element UI on the Board.</li></ul>
 
 <p>If the function returns a true value, its return value <strong>must</strong> be a String reprensing the List row with data filled out. </p>
 
@@ -780,7 +785,7 @@ The HTML template that will be used to for displaying items on the board. The te
     return '&lt;div&gt;&lt;strong&gt;' +
             rowObj.ID + '&lt;/strong&gt;: ' +
             rowObj.Title + '&lt;/div&gt;';
-}
+} 
 </code></pre></li>
 <li><p><strong>webURL</strong>     :   <em>String. Optional. Default=current site</em> <br>
 The URL of the site that hosts the List.</p></li>
@@ -836,8 +841,7 @@ Callback function to be called just prior to a List Item update. The function sh
 
 <p>The callback will have a scope of the item being updated and be given 3 parameters:</p>
 
-<ul>
-<li><p>The event object</p></li>
+<ul><li><p>The event object</p></li>
 <li><p>The item (DOM element) that triggered the event and</p></li>
 <li><p>A data object with information/methods for the current item/widget binding. The object will include two attributes that will impact the updates that will be done:</p>
 
@@ -861,40 +865,59 @@ An array of updates that will be made. The array will have, to start, the update
 <p><em>data.updatePromise</em><br/>
 A jQuery.Promise that represents the update that will be made. This can be used to bind on additional functionality. The queued functions will be given:</p>
 
-<ul>
-<li>{Object} The updated List Item object</li>
+<ul><li>{Object} The updated List Item object</li>
 <li>{Object} The pre-update List Item object</li>
-<li>{XMLDocument} The xml response returned from the update (xData).</li>
-</ul>
+<li>{XMLDocument} The xml response returned from the update (xData).</li></ul>
 
-<p><p>The context of object will be the HTML element from where the update was triggered.</p></li>
-</ul></p></li>
+<p>The context of object will be the HTML element from where the update was triggered.</p></li></ul></li>
 <li><p><strong>onBoardCreate</strong>     :   <em>Function. Optional. Default=null</em> <br>
 Function triggered after board is initially created. See spwidget:boardcreate event for parameters that will be given to function.</p></li>
 </ul>
+
 <h2>Return Value</h2>
 
-This plugin will return a jQuery object that contains the initially selected set of nodes (selector), thus maintaining chainability.
-
+<p>This plugin will return a jQuery object that contains the initially selected set of nodes (selector), thus maintaining chainability.</p>
 
 <h2>Methods</h2>
 
-The following methods are supported:
+<p>The following methods are supported:</p>
 
+<ul>
+<li><p><strong>refresh()</strong><br>
+Refreshes the data in the Board by retrieving the data from the list again. During a refresh, existing board items (the html element in DOM) is not actually deleted and recreated if it already exists, but re-used. It is important to note this specially if a custom template function was defined as an input param. </p>
 
+<p>Usage:</p>
 
-7a4ef6f8d694876dfd71021d9c8301f9
+<pre><code>$("#board").SPShowBoard("refresh");
+</code></pre></li>
+<li><p><strong>redraw()</strong><br>
+Redraws the board without pulling in data from the list. Column heights will be normalized and jQuery UI's sortable widget will be refreshed.</p>
 
+<p>Usage:</p>
+
+<pre><code>$("#board").SPShowBoard("redraw");
+</code></pre></li>
+<li><p><strong>setVisible([columnName,...])</strong><br>
+Sets the visible columns on the board. Method accepts as input an array of board column names to be displayed. A minimum of 2 must be difined and no more than 10 will be displayed. (Since 2.1)</p>
+
+<p>Example:</p>
+
+<pre><code>$("#board").SPShowBoard("setVisible", [ 'Not Started', 'Completed' ]); 
+</code></pre></li>
+</ul>
 
 <h2>Events</h2>
 
-This widget triggers several events that can be used to perform additional actions from those experienced in the board. In addition to the events below specific to this widget, events are also fired by the jQuery UI sortable interaction.
+<p>This widget triggers several events that can be used to perform additional actions from those experienced in the board. In addition to the events below specific to this widget, events are also fired by the jQuery UI sortable interaction.</p>
 
+<ul>
+<li><p><strong>spwidget:boardchange</strong><br>
+Event is triggered anytime a change happens in the board 
+The function scope (this variable) will point to the column element that received the new item and is given 3 input parameters:</p>
 
-
-9f4284e7b7ce54c7f65e13adbf4bda6b
-
-
+<ul><li><em>{jQuery}</em> A jQuery event object - the one generated by the jQuery UI sortable interaction</li>
+<li><em>{HTMLElement}</em> The item (DOM element) that triggered the event</li>
+<li><em>{Object}</em> A data object with information/methods for the current item/widget binding.  The objects updates attribute will contain an array of array's with the updates that will be made to the item.</li></ul>
 
 <p>Example:</p>
 
@@ -907,11 +930,21 @@ Event is triggered when the board is first created. It has the same scope and in
 <li><p><strong>spwidget:boarditemadd</strong><br>
 Event triggered when new items are added to the board (ex. from a refresh). Event will be given the following input params:</p>
 
+<ul><li><em>{jQuery}</em> The event object (jquery)</li>
+<li><em>{HTMLElement}</em> the item (DOM element) that triggered the event</li>
+<li><em>{Object}</em> A data object with information/methods for the current item/widget binding.  The objects's .itemsModified attribute will contain an array of Objects  that were added.</li></ul></li>
+<li><p><strong>spwidget:boarditemremove</strong><br>
+Event triggered when items are removed from the board (ex. from a refresh). Event will be given the following input params:</p>
 
+<ul><li><em>{jQuery}</em> the event object (jquery)</li>
+<li><em>{HTMLElement}</em> the board container (DOM element)</li>
+<li><em>{Object}</em> a data object with information/methods for the current item/widget binding.  The objects's .itemsModified attribute will contain an array of Objects that were removed.</li></ul></li>
+<li><p><strong>spwidget:boardColumnChange</strong><br>
+Event triggered when columns on the board are changed. Event will be given the following input params:</p>
 
-7fb48b54482a76c4beb0b6117ceabf1b
-
-
+<ul><li><em>{jQuery}</em> jQuery Event object</li>
+<li><em>{jQuery}</em> The board container</li>
+<li><em>{Array}</em> A list of board columns currently visible.</li></ul>
 
 <p>Example:</p>
 
@@ -921,11 +954,12 @@ Event triggered when new items are added to the board (ex. from a refresh). Even
 });
 </code></pre></li>
 </ul>
+
 <h2>Examples</h2>
 
 <h3>Example 1</h3>
 
-Simple usage. Simply supply the required input options of _list_ and _field_.
+<p>Simple usage. Simply supply the required input options of <em>list</em> and <em>field</em>.</p>
 
 <pre><code>$("&lt;div/&gt;").appendTo("body")
     .SPShowBoard({
@@ -1060,6 +1094,7 @@ Simple usage. Simply supply the required input options of _list_ and _field_.
 </code></pre>
 
 <p>Although this example does not do much with knockout, the possibilities are high specially for rich application, for things like caching approaches, data refresh strategies, etc.</p>
+
 <h1>SPLookupField Widget</h1>
 
 <p>SPLookupField Widget takes an input html field and converts it to a lookup field by displaying an autocomplete input area, for selecting new items from the lookup List, and displaying the already selected items on the page. This widget attempts to provide the same functionality as SharePoint's columns of type Lookup, but using more efficient methods of selecting values and presenting the user with a more modern and consistent user interface/experience across all browsers.</p>
@@ -1145,12 +1180,21 @@ The container where the UI widget should be inserted. Default is directly after 
 <li><p><strong>selectFields</strong>      :   <em>Array. Optional. Default=["Title"]</em> <br>
 Array of field names (internal names) that should be returned. ID is also used when the input value by the user is an integer.</p></li>
 <li><p><strong>filter</strong>      :   <em>String. Optional. Default=""</em> <br>
-Any additional filter criteria (in CAML format) to be added to the query when retrieving the table rows from the Lookup list. This should be only the filtering criteria with no <Query> and no <where> clause. Example:</p>
+Any additional filter criteria (in CAML format) to be added to the query when retrieving the table rows from the Lookup list. This should be only the filtering criteria with no <em>&lt;Query&gt;</em> and no <em>&lt;where&gt;</em> clause. Example:</p>
 
 <pre><code>&lt;Contains&gt;
     &lt;FieldRef Name="Title" /&gt;
     &lt;Value Type="Text"&gt;New&lt;/Value&gt;
 &lt;/Contains&gt;
+</code></pre></li>
+<li><p><strong>filterOrderBy</strong>      :   <em>String. Optional. Default=""</em> <br>
+The OrderBy (sort) CAML string used when retrieving values from the List.</p>
+
+<p>Example:</p>
+
+<pre><code>&lt;OrderBy&gt;
+    &lt;FieldRef Name="Title" Ascending="TRUE"/&gt;
+&lt;/OrderBy&gt;
 </code></pre></li>
 <li><p><strong>filterFields</strong>      :   <em>Array. Optional. Default=["Title"]</em> <br>
 Array of column names (internal names) that will be used to attempt to match the user's typed input.
@@ -1164,7 +1208,9 @@ Example: If wanting to search the Title, "Job Description" and Notes fields for 
 </code></pre></li>
 <li><p><strong>template</strong>      :   *String. Optional. Default='&lt;div&gt;{{Title}} &lt;span class="spwidgets-item-remove"&gt;[x]&lt;/span&gt;&lt;/div&gt;' <br>
 The template (most likely html) to be used for displaying the item once selected. Use the following format for item column placeholders {{fieldInternalName}}. Any column returned in the query response from the Lookup list can be used.
-When defining HTML for this value, an element containing a css class of 'spwidgets-item-remove' will be used to remove the item from the list of selected items. Example:</p>
+When defining HTML for this value, an element containing a css class of 'spwidgets-item-remove' will be used to remove the item from the list of selected items. </p>
+
+<p>Example:</p>
 
 <pre><code>options.template='&lt;div&gt;{{Title}} [&lt;span class="spwidgets-item-remove"&gt;x&lt;/span&gt;]&lt;/div&gt;'
 </code></pre></li>
@@ -1187,7 +1233,9 @@ If true, then an extra delimiter (;#) will be inserted at the beginning of the s
 
 <p>And a query to this column would be adjusted to filter on the column containing a value of <em>;#5;#</em> which would return the second record only.</p></li>
 <li><p><strong>onReady</strong>      :   <em>Function. Optional. Default=null</em> <br>
-Triggered after the LookupField has been setup. This is triggered either after completing the UI setup, or if the field already had pre-defined values, after retrieving that data and displaying it. Function will be given a scope of the original selector (the field) as well as the following input params: 1) widget container (jQuery). Example:</p>
+Triggered after the LookupField has been setup. This is triggered either after completing the UI setup, or if the field already had pre-defined values, after retrieving that data and displaying it. Function will be given a scope of the original selector (the field) as well as the following input params: 1) widget container (jQuery).</p>
+
+<p>Example:</p>
 
 <pre><code>onReady: function(widgetCntr){
     //this=original selector to where the widget was bound
@@ -1195,11 +1243,32 @@ Triggered after the LookupField has been setup. This is triggered either after c
 </code></pre></li>
 <li><p><strong>onItemAdd</strong>      :   <em>Function. Optional. Default=null</em> <br>
 Function that will be called when adding a new item reference to the list of currently picked item. This method could, if necessary remove the new item from the UI (ex. due to some custom validation rule).
-The function will be given a scope of the bound area (the input field) as well as two input parameters: 1) A jQuery object representing the new item on the UI and 2) An object with the item's information
-Example:</p>
+The function will be given a scope of the bound area (the input field) as well as two input parameters: 1) A jQuery object representing the new item on the UI and 2) An object with the item's information.</p>
+
+<p>Example:</p>
 
 <pre><code>onItemAdd: function($newItemSelection, itemObject, widgetCntr){
     //this=original selector to where the widget was bound
+}
+</code></pre></li>
+<li><p><strong>onItemRemove</strong>      :   <em>Function. Optional. Default=null</em> <br>
+Function callback that is called when items are removed. Return Boolean false will cancel the removal of the items. Function will have a scope (<em>this</em>) of the input element to which this widget was bound and will be given the following input parameters:</p>
+
+<ul><li>{jQuery} The list of elements on the UI that will be removed</li>
+<li>{Array} An array of objects with the items that will be removed. Object contains data obtained from when the rows of data were retrieved from SharePoint</li>
+<li>{jQuery} The Widget Container</li></ul>
+
+<p>Example 1: Basic definition of callback:</p>
+
+<pre><code>onItemRemove: function($items, itemObjects, $widgetCntr ){
+    //this=bound element
+}
+</code></pre>
+
+<p>Example 2: Cancel the action of removing an item from the selected list:</p>
+
+<pre><code>onItemRemove: function($items, itemObjects, $widgetCntr ){
+    return false;
 }
 </code></pre></li>
 <li><p><strong>msgNoItems</strong>      :   <em>String. Optional. Default=""</em> <br>
@@ -1211,7 +1280,9 @@ The minimum length before the autocomplete search is triggered.</p></li>
 <li><p><strong>hideInput</strong>      :   <em>Boolean. Optional. Default=true</em> <br>
 Option used only when allowMultiples is false. It will hide the input field once a value has been selected. Only way to get it displayed again is to remove existing selected item.</p></li>
 <li><p><strong>showSelector</strong>      :   <em>Boolean. Optional. Default=false</em> <br>
-If true, then an icon will be displayed to the right of the selection input field that displays a popup displaying all values currently in the lookup List. </p></li>
+If true, an icon will be displayed to the right of the autocomplete input field that, when clicked, displays a popup area allowing the user to browse through the lookup list items for selection.</p>
+
+<p>This option uses the <em>listTemplate</em> option in displaying the items in the popup.  The <em>maxResults</em> option value will be used for paging the data when it is retrieved from the list. </p></li>
 </ul>
 
 <h2>Return Value</h2>
@@ -1247,10 +1318,8 @@ Adds items to the list of selected items. Note that any existing values will con
 
 <p><em>Input:</em></p>
 
-<ul>
-<li>{String} stringOfItems<br>
-A string of items to be add in format of _ID;#TITLE.</li>
-</ul>
+<ul><li>{String} stringOfItems<br>
+A string of items to be add in format of _ID;#TITLE.</li></ul>
 
 <p>Example:</p>
 
@@ -1259,10 +1328,10 @@ A string of items to be add in format of _ID;#TITLE.</li>
     "234;#Title of item 1;#432;#Title of item 2" );
 </code></pre></li>
 </ul>
+
 <h2>Events</h2>
 
-No custom events are currently triggered by this widget. 
-
+<p>No custom events are currently triggered by this widget. </p>
 
 <h2>Examples</h2>
 
@@ -1273,6 +1342,7 @@ No custom events are currently triggered by this widget.
         list: 'Products'
     });
 </code></pre>
+
 <h1>SPFilterPanel Widget</h1>
 
 <p>Given a selector (an html element), this method will insert a UI that allows the user to enter filter criteria for a list. The widgets generates CAML filters from that data that can then be used by the hosting application to do further processing (ex. retrieve data). </p>
@@ -1371,9 +1441,7 @@ A function to be executed when the widget is done being created. Function is cal
 <li><p><strong>onReset</strong>      :   <em>Function. Optional. Default=null</em> <br />
 A function to be executed when the widget is reset, either by the user clicking the reset button or by code calling the reset method. The function will have a scope of the original element where the filter widget was inserted and be given the following as input:</p>
 
-<ul>
-<li>{Object} An object with the currently defined filters on the widget. See <em>getFilter</em> method below for an example of the object structure.</li>
-</ul>
+<ul><li>{Object} An object with the currently defined filters on the widget. See <em>getFilter</em> method below for an example of the object structure.</li></ul>
 
 <p>Return Value:</p>
 
@@ -1387,18 +1455,93 @@ A function to be executed when the widget is reset, either by the user clicking 
 </code></pre></li>
 <li><p><strong>ignoreKeywords</strong>      :   <em>RegEx. Optional. Default=/^(of|and|a|an|to|by|the|or|from)$/i</em> <br />
 A regular expression with the list of keywords to ignore. RegEx is used when parsing the values entered by the user in text fields. Default setting ignores the following: of, and, a, an, to, by, the, or, from</p></li>
+<li><p><strong>delimeter</strong>      :   <em>String. Optional. Default=;</em> <br />
+The delimeter that should be used by the user when entering multiple keywords into a text input field. Note, if changing this from the default semicolon, the <em>textFieldTooltip</em> input parameter should also be adjusted. Since v2.2</p></li>
 </ul>
+
 <h2>Return Value</h2>
 
-This plugin will return a jQuery object that contains the initially selected set of nodes (selector), thus maintaining chainability.
-
+<p>This plugin will return a jQuery object that contains the initially selected set of nodes (selector), thus maintaining chainability.</p>
 
 <h2>Methods</h2>
 
+<ul>
+<li><p><strong>getFilter()</strong><br />
+Returns a Filter object with the values entered by the user. The object will have CAML Query ready string values as well as properties that hold the individual values entered by the user.</p>
 
+<p>Usage:</p>
 
-17defdbc3ab5aba32a36d4a3ae4ea95a
+<pre><code>$("#listFilter").SPFilterPanel("getFilter");
+</code></pre>
 
+<p>The Filter object return will contain the following:</p>
+
+<pre><code>{
+    CAMLQuery: 'string with query of all columns filters wrapped in an &lt;And&gt; aggregate',
+    URLParams: 'String of items in URL param style',
+    filters: {
+        columnInternalName: {
+            matchType: 'Eq',
+            logicalType: 'Or',
+            values: [
+                'filter value 1',
+                'filter value 2',
+                etc...
+            ],
+            CAMLQuery: 'string with query wrapped in an &lt;Or&gt; aggregate',
+            URLParams: 'String in URL param style',
+            count: 0
+        },
+        etc...
+   },
+   count: 2 // number of filters created
+}
+</code></pre></li>
+<li><p><strong>setFiler(ObjectWithFilters)</strong><br />
+Clears the existing set of filters defind on the panel and sets the filter panel with the criteria defined on input to this method.  Input will be an object with similar format as the <em>filters</em> attribute of the <em>getFilter</em> method.</p>
+
+<p>Usage:</p>
+
+<pre><code>$("#listFilter")
+    .SPFilterPanel(
+        "setFilter",
+        {
+            ID: { 
+                values: [ 3, 4, 5],
+                matchType: 'Eq'
+            },
+            Title: {
+                values:     'test',
+                matchType:  'Contains'
+            }
+        }
+    );
+</code></pre>
+
+<p>Input:</p>
+
+<ul><li><p><em>{Object} ObjectWithFilters</em> An object with the list of columns internal names and the defined criteria to be set. Format of the object is:</p>
+
+<pre><code>{
+    columns_internal_name: {
+        matchType: 'String. Match type. Optional',
+        values: [
+            'value 1',
+            'value 2',
+            'value 3'
+        ]
+    },
+    ...etc...
+}
+</code></pre></li></ul></li>
+<li><p><strong>destroy()</strong><br />
+Removes the widget from the UI.</p>
+
+<p>Usage:</p>
+
+<pre><code>$("#listFilter").SPFilterPanel("destroy");
+</code></pre></li>
+</ul>
 
 <h2>Examples</h2>
 
@@ -1417,6 +1560,271 @@ This plugin will return a jQuery object that contains the initially selected set
         }
     });
 </code></pre>
+
+<h1>SPDateField Widget</h1>
+
+<p>SPDateField is a widgets wrapped around <a href="http://api.jqueryui.com/datepicker/" title="jQuery UI Datepicker">jQuery UI's Datepicker</a> that allows the user to pick one or more dates using their own locale format, while storing the SharePoint friendly format (YYY-MM-DD) in the input field to which this widget was bound to. In addition to wrapping the jQuery UI's datepicker, this widget also provide a timepicker which in turn returns both the date and time in the date format used by SharePoint (<a href="http://en.wikipedia.org/wiki/ISO_8601" title="ISO 8601">ISO 8601</a>)</p>
+
+<p>Below is a screen capture of this widget's being used in a Filter Panel: </p>
+
+<p><img src="web/spwidgets.date.jpg" alt="SPDateField Widget" title="" /></p>
+
+<p>SPDateField widget was introduced with v2.2</p>
+
+<h2>Usage</h2>
+
+<pre><code>$("input[name='DueDate']").SPDateField();
+</code></pre>
+
+<h2>Input Parameters</h2>
+
+<p>This method takes as input an object containing the supported options:</p>
+
+<pre><code>    $("#listFilter").SPDateField({
+        allowMultiples: false,
+        delimeter:      ";",
+        remainOpen:     true,
+        datepicker:     {
+            dateFormat:         'mm/dd/yy',
+            buttonImage:        '/_layouts/images/CALENDAR.GIF',
+            showOn:             "both",
+            buttonImageOnly:    true
+        },
+        dateTemplate: '{{date}} &amp;lt;span class="spwidgets-item-remove"&amp;gt;[x]&amp;lt;/span&amp;gt;',
+        showTimepicker: false,
+        timeFormat:     ' {{hour}}:{{minutes}} {{ampm}}',
+        timeUTC:        true,
+        labelHour:      'Hour',
+        labelMinutes:   'Minutes',
+        labelAMPM:      'AM|PM',
+        labelTime:      'Time',
+        labelSet:       'Set'
+    });
+</code></pre>
+
+<p>All input options are optional. The default options for this widget can be manipulated/set via the following object:</p>
+
+<pre><code>    $.SPWidgets.defaults.date = {}
+</code></pre>
+
+<h3>Options</h3>
+
+<ul>
+<li><p><strong>allowMultiples</strong>    :   <em>Boolean. Optional. Default: false</em> <br />
+Whether to allow the definition of multiple dates. When set to <em>true</em>, dates selected are stored in the input field using the <em>delimeter</em> (option below). </p></li>
+<li><p><strong>delimeter</strong>    :   <em>String. Optional. Default: ";"</em> <br />
+Used when <em>allowMultiples</em> is set to true. Defines the delimetered to be used when storing and parsing dates.</p></li>
+<li><p><strong>remainOpen</strong>    :   <em>Boolean. Optional. Default: true</em> <br />
+Used when <em>allowMultiples</em> is set to true. It will leave the Datepicker open after the user picks a date, thus allowing a quick method for selecting multiples. </p></li>
+<li><p><strong>datepicker</strong>    :   <em>Object. Optional. Default: {...}</em> <br />
+The <a href="http://api.jqueryui.com/datepicker/" title="jQuery UI Datepicker">Datepicker</a> options for the widget. Nearly all options supported by jQuery UI Datepicker widget can be defined with the exception of <em>altField</em> and <em>altFormat</em>. Also, note that when <em>allowMultiples</em> option is set to true, the <em>showAnim</em> Datepicker option will also not be overridden.</p>
+
+<p>The following Datepicker options are set by default:</p>
+
+<ol><li>dateFormat = mm/dd/yy</li>
+<li>buttonImage = /_layouts/images/CALENDAR.GIF</li>
+<li>showOn = both</li>
+<li>buttonImageOnly = true</li></ol></li>
+<li><p><strong>dateTemplate</strong>    :   <em>String. Optional. Default:...</em> <br />
+Used only when <em>allowMultiples</em> is set to true. The template to be used for displayed the dates that the user selected. Default template is:</p>
+
+<pre><code>{{date}} &lt;span class="spwidgets-item-remove"&gt;[x]&lt;/span&gt;
+</code></pre>
+
+<p>The template is rendered using SPWidgets <em>$.SPWidgets.fillTemplate</em> utility and given an object with one property, <em>date</em>, which can be used in the defined template. The date is formatted according to <em>dateFormat</em> defined with the <em>datepicker</em> options. When defining a template, an html element with a class of <em>spwidgets-item-remove</em> can be used to provide the user with the means to remove a date from the selection.</p>
+
+<p>See section titled <em>Allow Multiples Display</em> for more information on how dates are displayed on the UI, case further manipulation is desired.</p></li>
+<li><p><strong>showTimepicker</strong>    :   *Boolean. Optional. Default: false<br />
+If set to true, then a datepicker along with a timepicker will be displayed for user to select both. Note that when the timepicker is used, the time selected will be appended to the date string provided by the jQuery datepicker when displayed. </p>
+
+<p><strong>NOTE:</strong> The time picker is not as robust as the jQuery Datepicker widget. As an example, if user chooses to not use the picker and opts to type in the date and time manually, this widget will be able to parse that input.  When showTimePicker is set to <em>true</em> the used of the picker widget is assumed. </p></li>
+<li><p><strong>timeFormat</strong>    :   *String. Optional. Default: ' {{hour}}:{{minutes}} {{ampm}}'<br />
+Used when <em>showTimepicker</em> is set to <em>true</em>. The format that the date should be displayed with. The time string defined here will be displayed on the widget following the date selected. The following tokens can be used to define the display format:</p>
+
+<p><em>{{hour}}</em><br>
+The token will be replaced with the digit(s) representing the hour selected (ex. 4 for 4PM).</p>
+
+<p><em>{{hour24}}</em><br>
+The token will be replaced with the digits(s) representing the hour in 24h format (ex. 16 for 4PM).</p>
+
+<p><em>{{minutes}}</em><br>
+The token will be replaced with the digits representing the minutes (ex. 05 for 5 minutes).</p>
+
+<p><em>{{ampm}}</em><br>
+The token will be replaced with the words letters <em>AM</em> or <em>PM</em> depending on what time was selected.</p>
+
+<p>Example:</p>
+
+<pre><code>timeFormat: ' at {{minutes}} past {{hour}}{{ampm}}'
+</code></pre></li>
+<li><p><strong>timeUTC</strong>    :   *Boolean. Optional. Default: true<br />
+Used when <em>showTimepicker</em> is set to <em>true</em>. Option affects the format of the date string generated (not the visible date and time). When set to true, a UTC compliant date and time string will be generated. Setting this to false, will generate a date in user's local time.</p></li>
+<li><p><strong>labelHour</strong>    :   *String. Optional. Default: 'Hour'<br />
+Used when <em>showTimepicker</em> is set to <em>true</em>. The label to be displayed next to the Hour select dropdown. </p></li>
+<li><p><strong>labelMinutes</strong>    :   *String. Optional. Default: 'Minutes'<br />
+Used when <em>showTimepicker</em> is set to <em>true</em>. The label to be displayed next to the Minutes select dropdown.</p></li>
+<li><p><strong>labelAMPM</strong>    :   *String. Optional. Default: 'AM|PM'<br />
+Used when <em>showTimepicker</em> is set to <em>true</em>. The label to be displayed next to the AM, PM select dropdown.</p></li>
+<li><p><strong>labelTime</strong>    :   *String. Optional. Default: 'Time'<br />
+Used when <em>showTimepicker</em> is set to <em>true</em>. The label to be shown at the top of the timepicker section.</p></li>
+<li><p><strong>labelSet</strong>    :   *String. Optional. Default: 'Time'<br />
+Used when <em>showTimepicker</em> and <em>allowMultiples</em> are both set to <em>true</em>. The label of the button displayed on the widget to set a date time combination.</p></li>
+</ul>
+
+<h2>Return Value</h2>
+
+<p>This plugin will return a jQuery object that contains the initially selected set of nodes (selector), thus maintaining chainability.</p>
+
+<h2>Methods</h2>
+
+<ul>
+<li><p><strong>reset()</strong><br>
+The reset method erases any dates defined on the input.</p>
+
+<p><strong>Usage:</strong></p>
+
+<pre><code>$("input[name='DueDate']").SPDateField("reset");
+</code></pre>
+
+<p><strong>Input</strong></p>
+
+<p>None.</p>
+
+<p><strong>Return Value:</strong></p>
+
+<p>This method returns a JQuery object with the initial selections, thus maintaining jQuery's chainability.     </p></li>
+<li><p><strong>getDate()</strong><br>
+Returns an object with the dates currently set on the widget.</p>
+
+<p><strong>Usage:</strong></p>
+
+<pre><code>$("input[name='DueDate']").SPDateField("getDate");
+</code></pre>
+
+<p><strong>Input</strong></p>
+
+<p>None.</p>
+
+<p><strong>Return Value:</strong></p>
+
+<p>This method returns an object with the following structure (example below shows response when <em>allowMultiples</em> is set to <em>true</em>:</p>
+
+<pre><code>{
+    input: '2013-08-01;2013-08-02',
+    dates: [
+        '2013-08-01',
+        '2013-08-02'
+    ]
+}
+</code></pre>
+
+<p>Dates are provided in the SharePoint format: yyyy-mm-dd.</p></li>
+<li><p><strong>setDate([dates], "format")</strong><br>
+Sets one or more dates on the widget. </p>
+
+<p><strong>Usage:</strong></p>
+
+<pre><code>$("input[name='DueDate']")
+    .SPDateField(
+        "setDate",
+        [
+            "08/02/2013",
+            (new Date("2013", "7", "1"))
+        ],
+        "mm/dd/yy"
+    );
+</code></pre>
+
+<p><strong>Input</strong></p>
+
+<p><em>{Array|Date|String} dates</em><br>
+Dates can be defined either as a string (ex. <em>08/01/2013</em>) or as a JavaScript Date Object.  This input parameter can be either a single value or an array of values to be set.</p>
+
+<p>When <em>showTimepicker</em> option is <em>true</em>, if providing the dates as a string, they must be defined in the SharePoint internal format <a href="http://en.wikipedia.org/wiki/ISO_8601" title="ISO 8601">ISO 8601</a> (ex. 2013-09-05T0600Z).    </p>
+
+<p><em>{String} format</em><br>
+Used only when dates are defined as a string and <em>showTimepicker</em> option is <em>false</em>. The format of the dates defined. Used with jQuery UI Datepicker <em>parseDate</em> utiltiy. For more information on the format definition, see the <a href="http://api.jqueryui.com/datepicker/" title="jQuery UI Datepicker">jQuery UI Datepicker</a> widget documentation. </p>
+
+<p><strong>Return Value:</strong></p>
+
+<p>This method returns a JQuery object with the initial selections, thus maintaining jQuery's chainability.     </p></li>
+<li><p><strong>removeDate(dates[], "format")</strong><br>
+Removes one or more dates from the Widget. </p>
+
+<p><strong>Usage:</strong></p>
+
+<pre><code>$("input[name='DueDate']")
+    .SPDateField(
+        "removeDate",
+        [
+            "08/02/2013",
+            (new Date("2013", "7", "1"))
+        ],
+        "mm/dd/yy"
+    );
+</code></pre>
+
+<p><strong>Input</strong></p>
+
+<p><em>{Array|Date|String} dates</em><br>
+Dates can be defined either as a string (ex. <em>08/01/2013</em>) or as a JavaScript Date Object.  This input parameter can be either a single value or an array of values to be set.</p>
+
+<p>When <em>showTimepicker</em> option is <em>true</em>, if providing the dates as a string, they must be defined in the SharePoint internal format <a href="http://en.wikipedia.org/wiki/ISO_8601" title="ISO 8601">ISO 8601</a> (ex. 2013-09-05T0600Z).    </p>
+
+<p><em>{String} format</em><br>
+Used only when dates are defined as a string and <em>showTimepicker</em> option is <em>false</em>. The format of the dates defined. Used with jQuery UI Datepicker <em>parseDate</em> utiltiy. For more information on the format definition, see the <a href="http://api.jqueryui.com/datepicker/" title="jQuery UI Datepicker">jQuery UI Datepicker</a> widget documentation.</p>
+
+<p><strong>Return Value:</strong></p>
+
+<p>This method returns a JQuery object with the initial selections, thus maintaining jQuery's chainability.     </p></li>
+<li><p><strong>destroy()</strong><br>
+Removes the SPDateWidget from the bound element. Note that any dates stored on the input element will not be removed.</p>
+
+<p><strong>Usage:</strong></p>
+
+<pre><code>$("input[name='DueDate']").SPDateField("destroy")
+</code></pre>
+
+<p><strong>Input</strong></p>
+
+<p>None.</p>
+
+<p><strong>Return Value:</strong></p>
+
+<p>This method returns a JQuery object with the initial selections, thus maintaining jQuery's chainability.     </p></li>
+</ul>
+
+<h2>Events</h2>
+
+<p>This widgets does not have any custom events. The input field used to bind this widget to, however, will trigger <em>change</em> events everytime a date is added or removed from it.</p>
+
+<h2>Allow Multiples Display</h2>
+
+<p>When <em>allowMultiples</em> is set to true, the dates selected by the user will be displayed using the <em>dateTemplate</em> value. That template is wrapped in a <em>&lt;span&gt;</em> element with a css class of <em>spwidgets-item</em>. The example below shows the rendred markup of a date using the default <em>dateTemplate</em> definition:</p>
+
+<pre><code>&lt;span class="spwidgets-item" data-spwidget_dt1="2013-08-01" data-spwidget_dt2="08/01/2013"&gt;
+    08/01/2013&lt;span class="spwidgets-item-remove"&gt;[x]&lt;/span&gt; 
+&lt;span&gt; 
+</code></pre>
+
+<h2>Examples</h2>
+
+<h3>Example 1 - Allow multiple dates</h3>
+
+<pre><code>$("input[name='DueDate']").SPDateField({
+    allowMultiples: true
+});
+</code></pre>
+
+<h3>Example 2 - Define date to Euro format</h3>
+
+<pre><code>$("input[name='DueDate']").SPDateField({
+    datepicker: {
+        dateFormat: "dd/mm/yy"
+    }
+});
+</code></pre>
+
 <h1>Common Utilities</h1>
 
 <p>The following is a list of common utilities created internally for the widgets, but built generically and accessible externally.</p>
@@ -1512,7 +1920,7 @@ Function is given 1 input param - the item currently being processed (from the <
 })
 </code></pre>
 
-<h2>$.SPWidgets.makeSameHeight</h2>
+<h2>$.SPWidgets.makeSameHeight(ele, pad)</h2>
 
 <p>Given a group of elements, this plugin will set their css <em>height</em> attribute to be at least equal to the tallest item among them.
 (Since v. 2.0) </p>
@@ -1545,7 +1953,7 @@ Number of pixels to add on to the height. Value will be added to the calculated 
 <pre><code>$.SPWidgets.makeSameHeight( $("div.spwidgets-demo") );
 </code></pre>
 
-<h2>$.SPWidgets.parseLookupFieldValue </h2>
+<h2>$.SPWidgets.parseLookupFieldValue(value)</h2>
 
 <p>Parses a SharePoint lookup values as returned by webservices (id;#title;#id;#Title) into an array of objects where each object contains the lookup item data (ID and TITLE).
 (Since v. 2.0) </p>
@@ -1582,7 +1990,7 @@ The column value that is returned by SharePoint's webservices for a Lookup colum
 <pre><code>$.SPWidgets.parseLookupFieldValue("1;#Title of lookup item 1;#2;#Title of lookup item 2");
 </code></pre>
 
-<h2>$.SPWidgets.SPGetDateString</h2>
+<h2>$.SPWidgets.SPGetDateString(dateObj, formatType)</h2>
 
 <p>Returns a date string in the format expected by SharePoint Date/time fields. Useful when wanting to obtain a date/time string for use in CAML Queries.
 (Since v. 2.0) </p>
@@ -1716,6 +2124,57 @@ returns:
 
 "This is &lt;text&gt;."
 </code></pre>
+
+<h2>$.SPWidgets.getSPVersion</h2>
+
+<p>Returns the SharePoint version number (Since v2.2).</p>
+
+<h3>Input Parameters</h3>
+
+<ul>
+<li><strong>returnExternal</strong>      :   <em>Boolean. Optional. Default=false</em> <br />
+By default, this function returns the SharePoint internal version number (ex. 12 for SP2007, or 14 for SP2010). Setting this value to true will return instead the external version (ex. 2007 or 2010). Note that this method is meant to get you the version of SP's client - the UI... SharePoint server version could be different.</li>
+</ul>
+
+<h3>Return Value</h3>
+
+<ul>
+<li>String. The SharePoint version.</li>
+</ul>
+
+<h3>Example</h3>
+
+<pre><code>// Under SP 2010, the following returns 14
+$.SPWidgets.getSPVersion();
+
+// Under SP2013, the following returns 2013
+$.SPWidgets.getSPVersion(true);
+</code></pre>
+
+<h2>$.SPWidgets.parseDateString(dateString)</h2>
+
+<p>Parses the date providedon input, which is assumed to be in ISO 8601 format, and return a JavaScript Date object.</p>
+
+<h3>Input Parameters</h3>
+
+<ul>
+<li><strong>dateString</strong>      :   <em>String. Required</em> <br />
+A string with the ISO 8601 compliant date to be parsed.</li>
+</ul>
+
+<h3>Return Value</h3>
+
+<ul>
+<li><em>{Date|Null}</em> A JavaScript Date object or, if unable to parse date, a Null object. </li>
+</ul>
+
+<h3>Example</h3>
+
+<pre><code>$.SPWidgets.parseDateString('2013-09-02T12:00:00Z');
+
+$.SPWidgets.parseDateString('2013-09-02T05:35:00');
+</code></pre>
+
 
             
             
