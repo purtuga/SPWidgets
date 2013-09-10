@@ -45,7 +45,7 @@
     var Upload = {};
     
     /**
-     * Tracks if the CSS injection into the page has been done.
+     * @property {Boolean} Tracks if the CSS injection into the page has been done.
      */
     Upload.isSPUploadCssDone = false;
     
@@ -430,6 +430,54 @@
             }; //end: opt.getUploadedFileRow()
             
             
+            /**
+             * Given a URL, this method will check if it is one of the
+             * known upload pages of SharePoint. True = yes it is.
+             * False = no it is not.
+             * 
+             * @param {String} url
+             *      URL is assumed to be full url, including http.
+             * 
+             * @return {Boolean}
+             */
+            opt.isUploadPage = function(url) {
+                
+                // Uses parser apprach shown here:
+                // https://gist.github.com/jlong/2428561
+                
+                var answer  = false,
+                    parser  = document.createElement('a'),
+                    parser2 = null;
+                
+                parser.href = String(url).toLowerCase();
+                
+                // If user defined their own Upload page, then
+                // parse that URL and use it in matching.
+                // Else, just see if the input url has Upload.aspx
+                // or UploadEx.aspx.
+                if (opt.userUploadPage) {
+                    
+                    parser2         = document.createElement('a');
+                    parser2.href    = String(opt.userUploadPage).toLowerCase();
+                    
+                    if (parser.pathname === parser2.pathname) {
+                        
+                        answer = true;
+                        
+                    }
+                    
+                } else {
+                    
+                    // 2007 = Upload.aspx
+                    // 2010, 2013 = UploadEx.aspx
+                    answer = /upload(ex)?\.aspx$/.test(parser.pathname);
+                    
+                }
+                
+                return answer;
+                
+            }; //end: opt.isUploadPage()
+            
             /** ---------------------------------------------------------- **/
             /** -------------[        SETUP WIDGET      ]----------------- **/
             /** ---------------------------------------------------------- **/
@@ -451,8 +499,9 @@
             // If user did not define the Upload page on input, then set it depending
             // on SP version. Else, if the user defined the upload page, ensure it 
             // is a full url starting at http... 
-            opt.spVersion     = $.SPWidgets.getSPVersion(true);
-            opt.uploadPage    = String(opt.uploadPage);
+            opt.spVersion       = $.SPWidgets.getSPVersion(true);
+            opt.userUploadPage  = opt.uploadPage;
+            opt.uploadPage      = String(opt.uploadPage);
             
             if (!opt.uploadPage) {
                 
@@ -789,11 +838,13 @@
                 // upload page then this is either the
                 // initial load of the page or an error has occured...
                 // Hide the page and show only the upload form element.
-                if (
-                        Upload.isSameUrlPage(
-                            $.pt.getUnEscapedUrl(ev.pageUrl),
-                            $.pt.getUnEscapedUrl(opt.uploadPage))
-                ) {
+                // if (
+                        // Upload.isSameUrlPage(
+                            // $.pt.getUnEscapedUrl(ev.pageUrl),
+                            // $.pt.getUnEscapedUrl(opt.uploadPage))
+                // ) {
+                if (opt.isUploadPage(ev.pageUrl)) {
+                    
     //                console.debug("_onIFramePageChange() URL is the same as the one originally requested.");
                     
                     page.find("body").css({
