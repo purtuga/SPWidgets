@@ -622,7 +622,7 @@
                     .replace(/'/g,"&apos;")
                     .replace(/"/g,"&quot;");
             
-        }/* $.SPWidgets.escapeXML() */
+        }; /* $.SPWidgets.escapeXML() */
         
         /**
          * Un-escapes html code. Characters that are un-escaped include
@@ -651,7 +651,7 @@
                     .replace(/&apos;/g,"'")
                     .replace(/&quot;/g,'"');
                     
-        }/* $.SPWidgets.unEscapeXML() */
+        }; /* $.SPWidgets.unEscapeXML() */
         
         /**
          * Returns information about the runtime as it applies
@@ -749,14 +749,41 @@
          */
         $.SPWidgets.getSPVersion = function(returnExternal) {
             
+            // Some approaches below taken from:
+            // http://sharepoint.stackexchange.com/questions/74978/can-i-tell-what-version-of-sharepoint-is-being-used-from-javascript
+            
             var versionMap = {
                                 12: '2007',
                                 14: '2010',
                                 15: '2013'
                         },
-                version     = (typeof SP !== 'undefined')
-                            ?   parseInt(SP.ClientSchemaVersions.currentVersion) 
-                            :   12;
+                version     = 12;
+            
+            if (SP) {
+                
+                version = 14;
+                
+                if (SP.ClientSchemaVersions) {
+                    
+                    if (SP.ClientSchemaVersions.currentVersion) {
+                        
+                        version = parseInt(SP.ClientSchemaVersions.currentVersion);
+                        
+                    }
+                    
+                } else {
+                    
+                    version = parseInt(_spPageContextInfo.webUIVersion);
+                    
+                    if (version === 4) {
+                        
+                        version = 14;
+                        
+                    }
+                    
+                }
+                
+            }
             
             if (returnExternal) {
                 
