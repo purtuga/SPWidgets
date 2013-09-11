@@ -3,7 +3,7 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *  
- * @version 20130907113411
+ * @version 20130911100923
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  * 
@@ -11,8 +11,8 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date:  Paul:September 07, 2013 11:34 PM
- * Version:     20130907113411
+ * Build Date:  September 11, 2013 - 10:09 AM
+ * Version:     20130911100923
  * 
  */
 ;(function($){
@@ -53,7 +53,7 @@
         }
         
         $.SPWidgets             = {};
-        $.SPWidgets.version     = "20130907113411";
+        $.SPWidgets.version     = "20130911100923";
         $.SPWidgets.defaults    = {};
         
         /**
@@ -622,7 +622,7 @@
                     .replace(/'/g,"&apos;")
                     .replace(/"/g,"&quot;");
             
-        }/* $.SPWidgets.escapeXML() */
+        }; /* $.SPWidgets.escapeXML() */
         
         /**
          * Un-escapes html code. Characters that are un-escaped include
@@ -651,7 +651,7 @@
                     .replace(/&apos;/g,"'")
                     .replace(/&quot;/g,'"');
                     
-        }/* $.SPWidgets.unEscapeXML() */
+        }; /* $.SPWidgets.unEscapeXML() */
         
         /**
          * Returns information about the runtime as it applies
@@ -749,14 +749,41 @@
          */
         $.SPWidgets.getSPVersion = function(returnExternal) {
             
+            // Some approaches below taken from:
+            // http://sharepoint.stackexchange.com/questions/74978/can-i-tell-what-version-of-sharepoint-is-being-used-from-javascript
+            
             var versionMap = {
                                 12: '2007',
                                 14: '2010',
                                 15: '2013'
                         },
-                version     = (typeof SP !== 'undefined')
-                            ?   parseInt(SP.ClientSchemaVersions.currentVersion) 
-                            :   12;
+                version     = 12;
+            
+            if (SP) {
+                
+                version = 14;
+                
+                if (SP.ClientSchemaVersions) {
+                    
+                    if (SP.ClientSchemaVersions.currentVersion) {
+                        
+                        version = parseInt(SP.ClientSchemaVersions.currentVersion);
+                        
+                    }
+                    
+                } else {
+                    
+                    version = parseInt(_spPageContextInfo.webUIVersion);
+                    
+                    if (version === 4) {
+                        
+                        version = 14;
+                        
+                    }
+                    
+                }
+                
+            }
             
             if (returnExternal) {
                 
@@ -5550,14 +5577,14 @@
  * through the many SP pages and without having to leave the user's current page.
  *      
  *  
- * @version 2.2NUMBER_
+ * @version 20130911100824NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * 
  * @requires jQuery.js {@link http://jquery.com}
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date September 07, 2013 - 03:52 PM
+ * Build Date September 11, 2013 - 10:08 AM
  * 
  */
 ;(function($){
@@ -5588,7 +5615,7 @@
     var Upload = {};
     
     /**
-     * Tracks if the CSS injection into the page has been done.
+     * @property {Boolean} Tracks if the CSS injection into the page has been done.
      */
     Upload.isSPUploadCssDone = false;
     
@@ -5973,6 +6000,54 @@
             }; //end: opt.getUploadedFileRow()
             
             
+            /**
+             * Given a URL, this method will check if it is one of the
+             * known upload pages of SharePoint. True = yes it is.
+             * False = no it is not.
+             * 
+             * @param {String} url
+             *      URL is assumed to be full url, including http.
+             * 
+             * @return {Boolean}
+             */
+            opt.isUploadPage = function(url) {
+                
+                // Uses parser apprach shown here:
+                // https://gist.github.com/jlong/2428561
+                
+                var answer  = false,
+                    parser  = document.createElement('a'),
+                    parser2 = null;
+                
+                parser.href = String(url).toLowerCase();
+                
+                // If user defined their own Upload page, then
+                // parse that URL and use it in matching.
+                // Else, just see if the input url has Upload.aspx
+                // or UploadEx.aspx.
+                if (opt.userUploadPage) {
+                    
+                    parser2         = document.createElement('a');
+                    parser2.href    = String(opt.userUploadPage).toLowerCase();
+                    
+                    if (parser.pathname === parser2.pathname) {
+                        
+                        answer = true;
+                        
+                    }
+                    
+                } else {
+                    
+                    // 2007 = Upload.aspx
+                    // 2010, 2013 = UploadEx.aspx
+                    answer = /upload(ex)?\.aspx$/.test(parser.pathname);
+                    
+                }
+                
+                return answer;
+                
+            }; //end: opt.isUploadPage()
+            
             /** ---------------------------------------------------------- **/
             /** -------------[        SETUP WIDGET      ]----------------- **/
             /** ---------------------------------------------------------- **/
@@ -5994,8 +6069,9 @@
             // If user did not define the Upload page on input, then set it depending
             // on SP version. Else, if the user defined the upload page, ensure it 
             // is a full url starting at http... 
-            opt.spVersion     = $.SPWidgets.getSPVersion(true);
-            opt.uploadPage    = String(opt.uploadPage);
+            opt.spVersion       = $.SPWidgets.getSPVersion(true);
+            opt.userUploadPage  = opt.uploadPage;
+            opt.uploadPage      = String(opt.uploadPage);
             
             if (!opt.uploadPage) {
                 
@@ -6332,11 +6408,8 @@
                 // upload page then this is either the
                 // initial load of the page or an error has occured...
                 // Hide the page and show only the upload form element.
-                if (
-                        Upload.isSameUrlPage(
-                            $.pt.getUnEscapedUrl(ev.pageUrl),
-                            $.pt.getUnEscapedUrl(opt.uploadPage))
-                ) {
+                if (opt.isUploadPage(ev.pageUrl)) {
+                    
     //                console.debug("_onIFramePageChange() URL is the same as the one originally requested.");
                     
                     page.find("body").css({
