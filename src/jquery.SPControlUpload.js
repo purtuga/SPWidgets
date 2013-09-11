@@ -838,11 +838,6 @@
                 // upload page then this is either the
                 // initial load of the page or an error has occured...
                 // Hide the page and show only the upload form element.
-                // if (
-                        // Upload.isSameUrlPage(
-                            // $.pt.getUnEscapedUrl(ev.pageUrl),
-                            // $.pt.getUnEscapedUrl(opt.uploadPage))
-                // ) {
                 if (opt.isUploadPage(ev.pageUrl)) {
                     
     //                console.debug("_onIFramePageChange() URL is the same as the one originally requested.");
