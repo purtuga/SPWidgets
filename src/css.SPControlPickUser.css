@@ -16,6 +16,9 @@
 .pt-pickSPUser div.pt-pickSPUser-input input.ui-autocomplete {
     width: 99%;
 }
+.pt-pickSPUser div.pt-pickSPUser-input ul.ui-autocomplete {
+    z-index: 1;
+}
 
 .pt-pickSPUser .pt-pickSPUser-person-cntr {
     margin: .2em 0em;

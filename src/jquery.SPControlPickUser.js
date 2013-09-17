@@ -346,8 +346,9 @@
             o.elePickInput.find("input[name='pickSPUserInputField']")
                 .attr("placeholder", o.inputPlaceholder)
                 .autocomplete({
-                    minLength: 3,
-                    source: function(request, response){
+                    minLength:  3,
+                    appendTo:   o.elePickInput,
+                    source:     function(request, response){
                         // If search term is in cache, return it now
                         if (request.term in cache) {
                             response(cache[request.term]);
