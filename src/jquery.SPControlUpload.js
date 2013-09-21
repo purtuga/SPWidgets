@@ -557,6 +557,11 @@
                 
             }
             
+            // _iframeLoadId is used to determine if the onIframeChange() function
+            // should be run or not... It ensure that when a page is redirected, that
+            // only the last function to be spawn (via setTimeout) is run.
+            opt._iframeLoadId = 1;
+            
             // Create additional non-overridable options
             opt._uploadUrlParams    = "?List=" + 
                                       $.pt.getEscapedUrl(opt.listName) + "&RootFolder=" +
@@ -578,13 +583,17 @@
              * 
              * @param {Integer} ev.state
              *          A value from 1 through 3 that represents the state of
-             *          the file upload form.
+             *          the file upload form. The flow is:
+             * 
+             *              [1]                 [2]                 [3]
+             *          [ready for input] -> [pre-upload] -> [file uploaded]
+             * 
              *          1 = is set when the form is initially loaded and the 
              *          File html element is ready for the user to attach the file.
              *          File has not yet been uploaded.
              *          2 = is set when the form is ready to be submitted to the server
              *          along with the file set by the user. File has not yet been
-             *          uploaded.
+             *          uploaded. 
              *          3 = is set when the user has successfully uploaded the file to
              *          the server and no errors were encountered.
              *          File has been uploaded and now sits on the server.
@@ -592,7 +601,7 @@
              * @param {String} ev.action
              *          The event action as it pertains to this plugin. 
              *          preLoad        =    action is taking place before the page is sent
-             *          to the server.
+             *          to the server. State of '2' are handled by Upload.onUpdate
              *          postLoad    =    action is taking place after page has completed
              *          loading, but is not yet "visible" to the user.
              * 
@@ -769,8 +778,6 @@
         opt.showHideFullForm(true);
         
         // Hide the upload button, and Submit the form after showing the busy animation
-        // e.find(".buttonPane").css("display", "none")
-        
         opt.showHideBusy().then(function(){
             
             page.find("input[type='button'][id$='btnOK']").click();
@@ -811,9 +818,27 @@
      */
     Upload.onIframeChange = function(ele){
         
-        var e = $(ele).closest(".SPControlUploadUI");
+        var e   = $(ele).closest(".SPControlUploadUI"),
+            opt = e.data("SPControlUploadOptions"),
+            id  = 0;
         
-    //    console.debug("Upload.onIframeChange(): In...");
+        // If the upload event state is 2, then {Upload.onUpload} has already
+        // taken care of the form and user call back... There is nothing to do
+        // here and form is arleady being submitted... Set the ev. to
+        // postLoad and Exit. 
+        if (opt.ev.action === "preLoad") {
+            
+    // console.log("Upload.onIframeChange(): exit. ev.action is 'preLoad' - handled by onUpload()...");
+            
+            opt.ev.action = "postLoad";
+            return;
+            
+        } 
+        
+        opt._iframeLoadId++;
+        id = opt._iframeLoadId;
+        
+    // console.log("Upload.onIframeChange(" + id + " - " + opt.ev.state + ":" + opt.ev.action + "): In = " + e.find("iframe").contents()[0].location.href);
         
         // Because just about every browser differs on how the load() event
         // is triggered, we do all our work in a function that is triggered
@@ -822,8 +847,19 @@
         setTimeout(
             function(){
                 
-                var page    = e.find("iframe").contents(),
-                    opt     = e.data("SPControlUploadOptions"),
+                // if this invocation is not the last iframe refresh ID,
+                // then exit... there is another fucntion queued up...
+                if (id !== opt._iframeLoadId) {
+                    
+    // console.log("Upload.onIframeChange(): not latest invokation! Existing.");
+                    
+                    return;
+                    
+                } 
+                
+    // console.log("Upload.onIframeChange(): Executing iframe ID: " + id);
+                
+                var page    = $(e.find("iframe").contents()),
                     ev      = opt.ev,
                     form    = page.find("form").eq(0);
                 
@@ -840,7 +876,7 @@
                 // Hide the page and show only the upload form element.
                 if (opt.isUploadPage(ev.pageUrl)) {
                     
-    //                console.debug("_onIFramePageChange() URL is the same as the one originally requested.");
+    // console.log("_onIFramePageChange() URL is the same as the one originally requested.");
                     
                     page.find("body").css({
                         overflow: "hidden"
@@ -863,7 +899,7 @@
                         ||  new RegExp(/error/i).test($.trim(page.find("title").text()))
                         ||  new RegExp(/error\.aspx/i).test($.trim(page.find("form").attr("action")))
                     ) {
-    //                    console.debug("_onIFramePageChange() page displaying an error... Storing it and reloading upload form.");
+    // console.log("_onIFramePageChange() page displaying an error... Storing it and reloading upload form.");
                         
                         opt._lastError = page.find("[id$='LabelMessage']").text();
                         
@@ -886,7 +922,7 @@
                         // If this is the new SP2010 "Processing..." page, then
                         // the just exit... there is nothing for us to do yet...
                         if (page.find("#GearPage") && !page.find("input[type='file']").length) {
-    //                        console.debug("_onIFramePageChange() SP2010 processing page... Exiting and waiting for next page...");
+    // console.log("_onIFramePageChange() SP2010 processing page... Exiting and waiting for next page...");
                             return;
                         }
                         
@@ -1206,13 +1242,16 @@
     
     
     /**
-     * Uses sharepoint default function for escaping urls.
+     * Uses sharepoint default function from {/_layouts/1033/core.js}
+     * for escaping urls.
+     * 
      * @function
      */
     $.pt.getEscapedUrl = escapeProperly;
     
     /**
-     * Uses sharepoint default function to un-escape urls.
+     * Uses sharepoint default function from {/_layouts/1033/core.js}
+     * to un-escape urls.
      * @function
      */
     $.pt.getUnEscapedUrl = unescapeProperly;
