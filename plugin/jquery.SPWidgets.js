@@ -3,7 +3,7 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *  
- * @version 20130911100923
+ * @version 20130921024035
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  * 
@@ -11,8 +11,8 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date:  September 11, 2013 - 10:09 AM
- * Version:     20130911100923
+ * Build Date:  Paul:September 21, 2013 02:40 PM
+ * Version:     20130921024035
  * 
  */
 ;(function($){
@@ -53,7 +53,7 @@
         }
         
         $.SPWidgets             = {};
-        $.SPWidgets.version     = "20130911100923";
+        $.SPWidgets.version     = "20130921024035";
         $.SPWidgets.defaults    = {};
         
         /**
@@ -807,7 +807,7 @@
  *  -   jQuery-UI Draggable
  * 
  * 
- * BUILD: September 07, 2013 - 03:52 PM
+ * BUILD: Paul:September 21, 2013 10:10 AM
  */
 
 ;(function($){
@@ -3177,7 +3177,7 @@
  * THe user, however, is presented with the existing items
  * and has the ability to Remove them and add new ones.
  * 
- * BUILD: September 07, 2013 - 03:52 PM
+ * BUILD: Paul:September 21, 2013 10:10 AM
  * 
  */
 
@@ -4741,7 +4741,7 @@
  * on jQuery UI's Autocomplete and SPServices library.
  *      
  *  
- * @version 2.2NUMBER_
+ * @version 20130921101049NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
@@ -4749,7 +4749,7 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date September 07, 2013 - 03:52 PM
+ * Build Date Paul:September 21, 2013 10:10 AM
  * 
  */
 (function(){
@@ -5082,8 +5082,9 @@
             o.elePickInput.find("input[name='pickSPUserInputField']")
                 .attr("placeholder", o.inputPlaceholder)
                 .autocomplete({
-                    minLength: 3,
-                    source: function(request, response){
+                    minLength:  3,
+                    appendTo:   o.elePickInput,
+                    source:     function(request, response){
                         // If search term is in cache, return it now
                         if (request.term in cache) {
                             response(cache[request.term]);
@@ -5450,6 +5451,9 @@
 + ".pt-pickSPUser div.pt-pickSPUser-input input.ui-autocomplete {\n"
 + "    width: 99%;\n"
 + "}\n"
++ ".pt-pickSPUser div.pt-pickSPUser-input ul.ui-autocomplete {\n"
++ "    z-index: 1;\n"
++ "}\n"
 + "\n"
 + ".pt-pickSPUser .pt-pickSPUser-person-cntr {\n"
 + "    margin: .2em 0em;\n"
@@ -5577,14 +5581,14 @@
  * through the many SP pages and without having to leave the user's current page.
  *      
  *  
- * @version 20130911100824NUMBER_
+ * @version 20130921024035NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * 
  * @requires jQuery.js {@link http://jquery.com}
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date September 11, 2013 - 10:08 AM
+ * Build Date Paul:September 21, 2013 02:40 PM
  * 
  */
 ;(function($){
@@ -6127,6 +6131,11 @@
                 
             }
             
+            // _iframeLoadId is used to determine if the onIframeChange() function
+            // should be run or not... It ensure that when a page is redirected, that
+            // only the last function to be spawn (via setTimeout) is run.
+            opt._iframeLoadId = 1;
+            
             // Create additional non-overridable options
             opt._uploadUrlParams    = "?List=" + 
                                       $.pt.getEscapedUrl(opt.listName) + "&RootFolder=" +
@@ -6148,13 +6157,17 @@
              * 
              * @param {Integer} ev.state
              *          A value from 1 through 3 that represents the state of
-             *          the file upload form.
+             *          the file upload form. The flow is:
+             * 
+             *              [1]                 [2]                 [3]
+             *          [ready for input] -> [pre-upload] -> [file uploaded]
+             * 
              *          1 = is set when the form is initially loaded and the 
              *          File html element is ready for the user to attach the file.
              *          File has not yet been uploaded.
              *          2 = is set when the form is ready to be submitted to the server
              *          along with the file set by the user. File has not yet been
-             *          uploaded.
+             *          uploaded. 
              *          3 = is set when the user has successfully uploaded the file to
              *          the server and no errors were encountered.
              *          File has been uploaded and now sits on the server.
@@ -6162,7 +6175,7 @@
              * @param {String} ev.action
              *          The event action as it pertains to this plugin. 
              *          preLoad        =    action is taking place before the page is sent
-             *          to the server.
+             *          to the server. State of '2' are handled by Upload.onUpdate
              *          postLoad    =    action is taking place after page has completed
              *          loading, but is not yet "visible" to the user.
              * 
@@ -6339,8 +6352,6 @@
         opt.showHideFullForm(true);
         
         // Hide the upload button, and Submit the form after showing the busy animation
-        // e.find(".buttonPane").css("display", "none")
-        
         opt.showHideBusy().then(function(){
             
             page.find("input[type='button'][id$='btnOK']").click();
@@ -6381,9 +6392,27 @@
      */
     Upload.onIframeChange = function(ele){
         
-        var e = $(ele).closest(".SPControlUploadUI");
+        var e   = $(ele).closest(".SPControlUploadUI"),
+            opt = e.data("SPControlUploadOptions"),
+            id  = 0;
         
-    //    console.debug("Upload.onIframeChange(): In...");
+        // If the upload event state is 2, then {Upload.onUpload} has already
+        // taken care of the form and user call back... There is nothing to do
+        // here and form is arleady being submitted... Set the ev. to
+        // postLoad and Exit. 
+        if (opt.ev.action === "preLoad") {
+            
+    // console.log("Upload.onIframeChange(): exit. ev.action is 'preLoad' - handled by onUpload()...");
+            
+            opt.ev.action = "postLoad";
+            return;
+            
+        } 
+        
+        opt._iframeLoadId++;
+        id = opt._iframeLoadId;
+        
+    // console.log("Upload.onIframeChange(" + id + " - " + opt.ev.state + ":" + opt.ev.action + "): In = " + e.find("iframe").contents()[0].location.href);
         
         // Because just about every browser differs on how the load() event
         // is triggered, we do all our work in a function that is triggered
@@ -6392,8 +6421,19 @@
         setTimeout(
             function(){
                 
-                var page    = e.find("iframe").contents(),
-                    opt     = e.data("SPControlUploadOptions"),
+                // if this invocation is not the last iframe refresh ID,
+                // then exit... there is another fucntion queued up...
+                if (id !== opt._iframeLoadId) {
+                    
+    // console.log("Upload.onIframeChange(): not latest invokation! Existing.");
+                    
+                    return;
+                    
+                } 
+                
+    // console.log("Upload.onIframeChange(): Executing iframe ID: " + id);
+                
+                var page    = $(e.find("iframe").contents()),
                     ev      = opt.ev,
                     form    = page.find("form").eq(0);
                 
@@ -6410,7 +6450,7 @@
                 // Hide the page and show only the upload form element.
                 if (opt.isUploadPage(ev.pageUrl)) {
                     
-    //                console.debug("_onIFramePageChange() URL is the same as the one originally requested.");
+    // console.log("_onIFramePageChange() URL is the same as the one originally requested.");
                     
                     page.find("body").css({
                         overflow: "hidden"
@@ -6433,7 +6473,7 @@
                         ||  new RegExp(/error/i).test($.trim(page.find("title").text()))
                         ||  new RegExp(/error\.aspx/i).test($.trim(page.find("form").attr("action")))
                     ) {
-    //                    console.debug("_onIFramePageChange() page displaying an error... Storing it and reloading upload form.");
+    // console.log("_onIFramePageChange() page displaying an error... Storing it and reloading upload form.");
                         
                         opt._lastError = page.find("[id$='LabelMessage']").text();
                         
@@ -6456,7 +6496,7 @@
                         // If this is the new SP2010 "Processing..." page, then
                         // the just exit... there is nothing for us to do yet...
                         if (page.find("#GearPage") && !page.find("input[type='file']").length) {
-    //                        console.debug("_onIFramePageChange() SP2010 processing page... Exiting and waiting for next page...");
+    // console.log("_onIFramePageChange() SP2010 processing page... Exiting and waiting for next page...");
                             return;
                         }
                         
@@ -6776,13 +6816,16 @@
     
     
     /**
-     * Uses sharepoint default function for escaping urls.
+     * Uses sharepoint default function from {/_layouts/1033/core.js}
+     * for escaping urls.
+     * 
      * @function
      */
     $.pt.getEscapedUrl = escapeProperly;
     
     /**
-     * Uses sharepoint default function to un-escape urls.
+     * Uses sharepoint default function from {/_layouts/1033/core.js}
+     * to un-escape urls.
      * @function
      */
     $.pt.getUnEscapedUrl = unescapeProperly;
@@ -6980,7 +7023,7 @@
  * jquery.SPDateField.js
  * The SPDateField widget. Introduced with v2.2, August 2013
  * 
- * BUILD: Paul:September 07, 2013 11:34 PM
+ * BUILD: Paul:September 21, 2013 10:10 AM
  * 
  */
 ;(function($){
@@ -8329,7 +8372,7 @@
 /**
  * @fileOverview - List filter panel widget
  * 
- * BUILD: September 07, 2013 - 03:52 PM
+ * BUILD: Paul:September 21, 2013 10:10 AM
  * 
  */
 (function($){
