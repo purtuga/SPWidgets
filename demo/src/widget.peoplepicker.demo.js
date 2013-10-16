@@ -40,6 +40,7 @@
     
     // Attach widget to input.
     $("input[name='spuserdemo']").pickSPUser({
+        type: 'All',
         onPickUser: function(u){
             
             logOutput("onPickUser CALLED!(Person: " + u.displayName + ")");

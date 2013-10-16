@@ -57,6 +57,11 @@
      * @param {String} [options.webURL=$().SPServices.SPGetCurrentSite()]
      *                  The URL of the site
      * 
+     * @param {String} [options.type='User']
+     *                  The type of search to conduct. Default is User. Others
+     *                  include: None, DistributionList, SecurityGroup, 
+     *                  SharePointGroup, All
+     * 
      * @param {Interger} [options.maxSearchResults=50]
      *                      The max number of results to be returned from the
      *                      server.
@@ -157,7 +162,9 @@
      
         // Initiate each selection as a pickSPUser element
         this.each(function(){
+            
             var ele = $(this);
+            
             if (!ele.is("input") || ele.hasClass("hasPickSPUser")){
                 // if the first argument is a string, and this is an input
                 // fild, then process methods
@@ -168,7 +175,7 @@
                 } else {
                     return this;
                 }
-            };
+            }
             
             // Options for this element
             var o   = $.extend({},
@@ -176,6 +183,7 @@
                         allowMultiples:     true,
                         maxSearchResults:   50,
                         webURL:             $().SPServices.SPGetCurrentSite(),
+                        type:               'User',
                         onPickUser:         null,
                         onCreate:           null,
                         onRemoveUser:       null,
@@ -290,6 +298,7 @@
                         operation:      "SearchPrincipals",
                         searchText:     searchString,
                         maxResults:     o.maxSearchResults,
+                        principalType:  o.type,
                         async:          true,
                         webURL:         o.webURL,
                         completefunc:   function(xData, status){
@@ -299,17 +308,32 @@
                             
                             resp.find("PrincipalInfo").each(function(){
                                 
-                                var thisEle = $(this);
+                                var thisEle     = $(this),
+                                    thisUser    = {
+                                        displayName:    thisEle.find("DisplayName").text(),
+                                        accountId:      thisEle.find("UserInfoID").text(),
+                                        accountName:    thisEle.find("AccountName").text(),
+                                        accountType:    thisEle.find("PrincipalType").text(),
+                                        // needed attributes for autocomplete
+                                        value:          thisEle.find("DisplayName").text(),
+                                        label:          ''
+                                    };
                                 
-                                rows.push({
-                                    displayName:    thisEle.find("DisplayName").text(),
-                                    accountId:      thisEle.find("UserInfoID").text(),
-                                    accountName:    thisEle.find("AccountName").text(),
-                                    accountType:    thisEle.find("PrincipalType").text(),
-                                    // needed attributes for autocomplete
-                                    value:          thisEle.find("DisplayName").text(),
-                                    label:          thisEle.find("DisplayName").text()
-                                });
+                                // TODO: in the future, need to find a way to show type icon on the suggestions
+                                // if (thisUser.accountType === "User") {
+//                                     
+                                    // thisUser.label = "<img src='/_layouts/images/CheckNames.gif' /> ";
+//                                     
+                                // } else {
+//                                     
+                                    // thisUser.label = "<img src='/_layouts/images/ALLUSR.GIF' /> ";
+//                                     
+                                // }
+                                
+                                thisUser.label += thisUser.displayName;
+                                
+                                
+                                rows.push(thisUser);
                                 
                             });
                             
@@ -467,8 +491,7 @@
      * 
      */
     $.pt.pickSPUser.getUserHtmlElement = function(opt, id, name){
-        // TODO: clean up
-        // var ele = $(opt.htmlTemplateSelector + " .pt-pickSPUser-person").clone(1);
+        
         var ele = $($.pt.pickSPUser.htmlTemplate)
                     .find(".pt-pickSPUser-person").clone(1);
         ele.attr("data-pickSPUserID", id);
@@ -594,7 +617,7 @@
     /**
      * Handles method actions given to $().pickSPUser()
      * 
-     * @param {String} type
+     * @param {String} type1
      * @param {String} action
      * @param {Object} options
      * 
@@ -603,11 +626,11 @@
      */
     $.pt.pickSPUser.handleAction = function(type, action, options) {
         
-        var type    = String(type).toLowerCase();
-            action  = String(action).toLowerCase(),
-            o       = $(this)
+        type    = String(type).toLowerCase();
+        action  = String(action).toLowerCase();
+        var o   = $(this)
                         .data("pickSPUserContainer")
-                        .data("pickSPUserContainerOpt")
+                        .data("pickSPUserContainerOpt"),
             ret     = this;
         
         if (type === "method") {
