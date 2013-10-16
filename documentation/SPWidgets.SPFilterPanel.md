@@ -11,6 +11,9 @@ For columns that will be displayed to the user with a text input field (ex. Text
 -   People Columns<br/>
     Displayed using the pickSPUser widget. Multiple values can be selected.
 
+-   Date and Time Columns<br/>
+    Displayed using the SPDateField widget. Multiple values can be selected.
+
 -   Choice Columns<br/>
     Each choice value is displayed in a scrollable area as checkboxes, thus allowing the user to pick multiples. 
 
@@ -75,7 +78,10 @@ The default options for this widget can be manipulated/set via the following obj
     The text that appear below Text fields, which instructs the user that a semicolon can be used to delimiter multiple keywords.
 
 -   **showFilterButton**    :   *Boolean. Optional. Default=true* <br />
-    True or false whether a button should be displayed at the bottom of the widget. Default is true. See _filterButtonLabel_ and _onFilterClick_ options for more on the use of this button.
+    True or false whether the buttons panel should be displayed at the bottom of the widget. Default is true. See _filterButtonLabel_ and _onFilterClick_ options for more on the use of this button.
+
+-   **showFilterButtonTop**    :   *Boolean. Optional. Default=true* <br />
+    True or false whether the buttons panel should be displayed at the top of the widget. Default is true. See _filterButtonLabel_ and _onFilterClick_ options for more on the use of this button.
 
 -   **definedClass**    :   *Boolean. Optional. Default=spwidget-column-dirty* <br />
     The CSS class name for columns that have received filtering criteria from the user. The default class (*spwidget-column-dirty*) highlights the column label in red.
