@@ -158,7 +158,7 @@
          */
         $.SPWidgets.fillTemplate = function(tmplt, data) {
             
-            var opt = {},i,j,x,y,item;
+            var opt = {},i,j,x,y,item, tokenVal;
             
             // If user used an object to define input param, then parse that now
             if (typeof tmplt === "object" && arguments.length === 1) {
@@ -190,9 +190,15 @@
                     for(i=0,j=opt.tokens.length; i<j; i++){
                         
                         opt.tokens[i]   = opt.tokens[i].replace(/[\{\{\}\}]/g, "");
-                        item            = item.replace(
-                                            "{{" + opt.tokens[i] + "}}",
-                                            data[x][ opt.tokens[i] ] );
+                        tokenVal        = data[x][ opt.tokens[i] ] || '';
+                        
+                        if ($.isFunction(tokenVal)) {
+                            
+                            tokenVal = tokenVal();
+                            
+                        }
+                        
+                        item = item.replace("{{" + opt.tokens[i] + "}}", tokenVal);
                                         
                     }
                     
