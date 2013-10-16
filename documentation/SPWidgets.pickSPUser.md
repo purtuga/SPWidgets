@@ -24,6 +24,13 @@ This method takes as input an object containing the following options
 -   **maxSearchResults**    :   *Integer. Optional. Default=50.* <br />
     The max number of results to be returned from the server.
 
+-   **type**     :   *String. Optional. Default='User'* <br />
+    The type of search that should be done.  This input parameter is used as the underlying webservice PrincipalType value. Possible values include _User_, _DistributionList_, _SecurityGroup_, _SharePointGroup_, _All_, _None_. Default value is _User_.
+    
+    *Example*: Initiate a people picker that selects only Groups
+    
+        $("input[name='team']").pickSPUser({ type: 'SharePointGroup' });
+
 -   **webURL**     :   *String. Optional. Default=current site* <br />
     The WebURL for the list. (Since v2.1) 
 
