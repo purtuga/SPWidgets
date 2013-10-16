@@ -262,12 +262,7 @@
                                 thisColUI = colUI,
                                 inputUI   = '',
                                 values    = null,
-                                model     = {
-                                    type:               null,
-                                    otherFilterTypes:   '',
-                                    sp_type:            $thisCol.attr("Type"),
-                                    sp_format:          $thisCol.attr("Format")
-                                };
+                                model     = null;
                             
                             if (!$thisCol.length) {
                                 
@@ -282,6 +277,14 @@
                                 
                             }
                             
+                            // Now that we are sure we have a COl. definition,
+                            // populate the model for this column
+                            model = {
+                                type:               null,
+                                otherFilterTypes:   '',
+                                sp_type:            $thisCol.attr("Type"),
+                                sp_format:          $thisCol.attr("Format")
+                            };
                             
                             // Set some default model values
                             model.Name = $thisCol.attr("Name");
@@ -456,9 +459,22 @@
                         Inst.$ele.find("div.spwidget-type-people input")
                             .each(function(){
                                 
-                                var $field = $(this);
+                                var $field      = $(this),
+                                    colDef      = $list.find(
+                                                    "Field[Name='" + 
+                                                    $field.attr("name") + "']"),
+                                    peopleType  = 'User';
                                 
-                                $field.pickSPUser({ allowMultiple: true });
+                                if (colDef.attr("UserSelectionMode") !== "PeopleOnly") {
+                                    
+                                    peopleType = 'All';
+                                    
+                                }
+                                
+                                $field.pickSPUser({
+                                    allowMultiple:  true,
+                                    type:           peopleType
+                                });
                                     
                                 $field.parent().find(".spwidget-tooltip").remove();
                                 
