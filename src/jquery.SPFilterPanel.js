@@ -1153,8 +1153,9 @@
                 
                 // Create the URLParams for this column
                 thisColUrlParam[ colName ] = {
-                    matchType:  thisColFilter.matchType,
-                    values:     thisColFilter.values
+                    matchType:      thisColFilter.matchType,
+                    logicalType:    thisColFilter.logicalType,
+                    values:         thisColFilter.values
                 };
                 
                 thisColFilter.URLParams = $.param(thisColUrlParam, false);
