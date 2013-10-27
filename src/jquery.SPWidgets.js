@@ -464,7 +464,14 @@
             }
             
             // let's see if Date.parse() can do it?
-            dtObj = Date.parse(dateString);
+            // We append 'T00:00' to the date string case it is
+            // only in format YYYY-MM-DD 
+            dtObj = Date.parse(
+                        (       dateString.length === 10
+                            ?   dateString + "T00:00"
+                            :   dateString
+                        )
+                    );
             
             if (dtObj) {
                 
