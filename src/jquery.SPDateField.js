@@ -531,10 +531,12 @@
 
                     // Get the internal representation of the date (ISO 8601)
                     // so that we can remove it from the list of selected
-                    // dates. The dt1Regex is used to search and replace the
+                    // dates. The internal representation can be just the date
+                    // or the date + time. 
+                    // The dt1Regex is used to search and replace the
                     // date in the input to where this widget was bound, which
                     // could include multiple dates.
-                    if (Inst.opt.allowMultiples) {
+                    if (Inst.opt.showTimepicker) {
                         
                         dt1 = $.SPWidgets.SPGetDateString(dtObj, Inst.opt._timeFmt);
                         
