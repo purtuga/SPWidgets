@@ -3,7 +3,7 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *  
- * @version 20131019121359
+ * @version 20131027104632
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  * 
@@ -11,8 +11,8 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date:  October 19, 2013 - 12:13 PM
- * Version:     20131019121359
+ * Build Date:  Paul:October 27, 2013 10:46 AM
+ * Version:     20131027104632
  * 
  */
 ;(function($){
@@ -53,7 +53,7 @@
         }
         
         $.SPWidgets             = {};
-        $.SPWidgets.version     = "20131019121359";
+        $.SPWidgets.version     = "20131027104632";
         $.SPWidgets.defaults    = {};
         
         /**
@@ -464,7 +464,14 @@
             }
             
             // let's see if Date.parse() can do it?
-            dtObj = Date.parse(dateString);
+            // We append 'T00:00' to the date string case it is
+            // only in format YYYY-MM-DD 
+            dtObj = Date.parse(
+                        (       dateString.length === 10
+                            ?   dateString + "T00:00"
+                            :   dateString
+                        )
+                    );
             
             if (dtObj) {
                 
@@ -7052,7 +7059,7 @@
  * jquery.SPDateField.js
  * The SPDateField widget. Introduced with v2.2, August 2013
  * 
- * BUILD: Paul:September 21, 2013 10:10 AM
+ * BUILD: Paul:October 27, 2013 10:36 AM
  * 
  */
 ;(function($){
@@ -7581,10 +7588,12 @@
 
                     // Get the internal representation of the date (ISO 8601)
                     // so that we can remove it from the list of selected
-                    // dates. The dt1Regex is used to search and replace the
+                    // dates. The internal representation can be just the date
+                    // or the date + time. 
+                    // The dt1Regex is used to search and replace the
                     // date in the input to where this widget was bound, which
                     // could include multiple dates.
-                    if (Inst.opt.allowMultiples) {
+                    if (Inst.opt.showTimepicker) {
                         
                         dt1 = $.SPWidgets.SPGetDateString(dtObj, Inst.opt._timeFmt);
                         
