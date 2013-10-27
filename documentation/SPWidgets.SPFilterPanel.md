@@ -173,7 +173,7 @@ Methods
         }
 
 
--   **setFiler(ObjectWithFilters)**<br />
+-   **setFilter(ObjectWithFilters)**<br />
     Clears the existing set of filters defind on the panel and sets the filter panel with the criteria defined on input to this method.  Input will be an object with similar format as the _filters_ attribute of the _getFilter_ method.
     
     Usage:
