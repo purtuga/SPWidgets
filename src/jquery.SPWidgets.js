@@ -772,7 +772,7 @@
                         },
                 version     = 12;
             
-            if (SP) {
+            if (typeof SP !== "undefined") {
                 
                 version = 14;
                 
