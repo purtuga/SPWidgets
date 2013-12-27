@@ -89,5 +89,29 @@
             output.log("Example 7: input change: " + $(this).val());
         });
     
+    $demoCntr.find("div.spwidget-spdatefield-demo8")
+        .SPDateField({
+            onSelect: function(){
+                
+                output.log(
+                    "Example 8: date change: " +
+                    $(this).SPDateField("getDate").input
+                );
+                
+            }
+        });
+    
+    $demoCntr.find("div.spwidget-spdatefield-demo9")
+        .SPDateField({
+            showTimepicker: true,
+            onSelect: function() {
+                
+                output.log(
+                    "Example 9: date change: " +
+                    $(this).SPDateField("getDate").input
+                );
+                
+            }
+        });
     
 })(SPWIDGET_DEMO.JQUERY || jQuery);

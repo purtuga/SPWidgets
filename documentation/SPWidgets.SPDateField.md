@@ -1,7 +1,7 @@
 SPDateField Widget
 ====================
 
-SPDateField is a widgets wrapped around [jQuery UI's Datepicker][jqueryuidatepicker] that allows the user to pick one or more dates using their own locale format, while storing the SharePoint friendly format (YYY-MM-DD) in the input field to which this widget was bound to. In addition to wrapping the jQuery UI's datepicker, this widget also provide a timepicker which in turn returns both the date and time in the date format used by SharePoint ([ISO 8601][iso8601])
+SPDateField is a widgets wrapped around [jQuery UI's Datepicker][jqueryuidatepicker] that allows the user to pick one or more dates using their own locale format, while storing the SharePoint friendly format (YYY-MM-DD) in the input field to which this widget was bound to. In addition to wrapping the jQuery UI's datepicker, this widget also provide a timepicker which in turn returns both the date and time in the date format used by SharePoint ([ISO 8601][iso8601]). Similar to jQuery UI's Datepicker, this widget can also be used on non-input element, which will cause it to be displayed inline within the HTML selector used.
 
 Below is a screen capture of this widget's being used in a Filter Panel: 
 
@@ -12,7 +12,9 @@ SPDateField widget was introduced with v2.2
 Usage
 -----
 
-    $("input[name='DueDate']").SPDateField();
+    $("input[name='DueDate']").SPDateField(); // on input field
+    
+    $("#spdatepicker").SPDateField(); // on a DIV element
 
    
 
@@ -39,7 +41,8 @@ This method takes as input an object containing the supported options:
             labelMinutes:   'Minutes',
             labelAMPM:      'AM|PM',
             labelTime:      'Time',
-            labelSet:       'Set'
+            labelSet:       'Set',
+            onSelect:       null
         });
 
 All input options are optional. The default options for this widget can be manipulated/set via the following object:
@@ -119,6 +122,18 @@ All input options are optional. The default options for this widget can be manip
 -   **labelSet**    :   *String. Optional. Default: 'Time'*<br />
     Used when _showTimepicker_ and _allowMultiples_ are both set to _true_. The label of the button displayed on the widget to set a date time combination.
 
+-   **onSelect**    :   *Function. Optional. Default: null*<br />
+    A callback function that is called everytime a date or date/time is selected. The function will have a scope (_this_) of the element to which this widget was bound. This callback has no input parameters.
+    
+    Example:
+    
+        $("input[name='DueDate']").SPDateField({
+            onSelect: function(){
+                // this = input[name='DueDate']
+                alert( "Selected date: " + $(this).SPDateField("getDate").input );
+            }
+        });
+
 
 Return Value
 ------------
@@ -172,7 +187,7 @@ Methods
     Dates are provided in the SharePoint format: yyyy-mm-dd.
 
 
--   **setDate([dates], "format")**<br>
+-   **setDate(dates[], "format")**<br>
     Sets one or more dates on the widget. 
     
     **Usage:**
@@ -192,7 +207,7 @@ Methods
     _{Array|Date|String} dates_<br>
     Dates can be defined either as a string (ex. _08/01/2013_) or as a JavaScript Date Object.  This input parameter can be either a single value or an array of values to be set.
         
-    When _showTimepicker_ option is _true_, if providing the dates as a string, they must be defined in the SharePoint internal format [ISO 8601][iso8601] (ex. 2013-09-05T0600Z).    
+    When _showTimepicker_ option is _true_, if providing the dates as a string, they must be defined in the SharePoint internal format [ISO 8601][iso8601] (ex. 2013-09-05T06:00:00Z).    
     
     _{String} format_<br>
     Used only when dates are defined as a string and _showTimepicker_ option is _false_. The format of the dates defined. Used with jQuery UI Datepicker _parseDate_ utiltiy. For more information on the format definition, see the [jQuery UI Datepicker][jqueryuidatepicker] widget documentation. 
@@ -222,7 +237,7 @@ Methods
     _{Array|Date|String} dates_<br>
     Dates can be defined either as a string (ex. _08/01/2013_) or as a JavaScript Date Object.  This input parameter can be either a single value or an array of values to be set.
         
-    When _showTimepicker_ option is _true_, if providing the dates as a string, they must be defined in the SharePoint internal format [ISO 8601][iso8601] (ex. 2013-09-05T0600Z).    
+    When _showTimepicker_ option is _true_, if providing the dates as a string, they must be defined in the SharePoint internal format [ISO 8601][iso8601] (ex. 2013-09-05T06:00:00Z).    
     
     _{String} format_<br>
     Used only when dates are defined as a string and _showTimepicker_ option is _false_. The format of the dates defined. Used with jQuery UI Datepicker _parseDate_ utiltiy. For more information on the format definition, see the [jQuery UI Datepicker][jqueryuidatepicker] widget documentation.

@@ -46,7 +46,8 @@
         labelMinutes:   'Minutes',
         labelAMPM:      'AM|PM',
         labelTime:      'Time',
-        labelSet:       'Set'
+        labelSet:       'Set',
+        onSelect:       null
     };
     
     
@@ -74,6 +75,7 @@
      * @param {String} [options.labelAMPM='AM|PM']
      * @param {String} [options.labelTime='Time']
      * @param {String} [options.labelSet='Set']
+     * @param {Function} [options.onSelect=null]
      * 
      * return {jQuery} this
      * 
@@ -207,23 +209,34 @@
             var Inst = {
                 
                 /** @property {jQuery} The input element used by the user */
-                $ele: $(this).addClass("hasSPDateField")
+                $ele: $(this).addClass("hasSPDateField"),
+                
+                /** @property {Boolean} Is this an inline binding? */
+                isInline: false,
+                
+                /** @property {jQuery} the inline container that was given by the user */
+                inlineCntr: null
                 
             };
             
+            // If not an input text field, then check if it is a non-input element,
+            // which will cause this widget to be inserted inline always visible
+            // widget.
             if (!Inst.$ele.is("input[type='text']")) {
                 
-                return;
+                if (!Inst.$ele.is(":input")) {
+                    
+                    Inst.isInline   = true;
+                    Inst.inlineCntr = $(this);
+                    Inst.$ele       = $('<input name="spdatefieldinline" value="" type="text" style="display:none" />')
+                    
+                } else {
+                    
+                    return;
+                    
+                }
                 
             }
-            
-            /**
-             * @property {String} The original value in the input
-             * @member Inst
-             * @memberOf Inst
-             */
-            Inst.eleOrigVal = Inst.$ele.val();
-            Inst.$ele.val("");
                 
             /**
              * @property {Object} The input options after defaults
@@ -239,9 +252,32 @@
              */
             Inst.$ui = $(SPDate.htmlTemplate)
                         .filter("div.spwidget-date-cntr")
-                        .clone()
-                            .insertAfter(Inst.$ele)
-                            .css("display", "none");
+                        .clone();
+            
+            if (Inst.isInline) {
+                
+                Inst.$ui
+                    .appendTo(Inst.inlineCntr)
+                    .addClass("spwidget-inline")
+                    .css("display", "none");
+                
+                Inst.$ele.appendTo(Inst.$ui);
+                
+            } else {
+                
+                Inst.$ui    
+                    .insertAfter(Inst.$ele)
+                    .css("display", "none");
+                
+            }
+            
+            /**
+             * @property {String} The original value in the input
+             * @member Inst
+             * @memberOf Inst
+             */
+            Inst.eleOrigVal = Inst.$ele.val();
+            Inst.$ele.val("");
             
             /**
              * @property {jQuery} the Datepicker input field.
@@ -251,6 +287,9 @@
             Inst.$input = Inst.$ui
                             .find("input[name='SPDateFieldInput']")
                             .val(Inst.$ele.val());
+            
+            /** @property {jQuery} the jQuery datepicker input container */
+            Inst.$inputCntr = Inst.$input.closest(".spwidget-date-input-cntr");
             
             /**
              * @property {jQuery} The container used to display date when allowMuliples is true.
@@ -465,7 +504,22 @@
                 
                 if (opt.triggerEvent) {
                     
-                    Inst.$ele.change();
+                    if (!Inst.isInline) {
+                        
+                        Inst.$ele.change();
+                        
+                    }
+                    
+                    if ($.isFunction(Inst.opt.onSelect)) {
+                        
+                        Inst.opt.onSelect.call(
+                            (   Inst.isInline
+                                ?   Inst.inlineCntr
+                                :   Inst.$ele
+                            )
+                        );
+                        
+                    }
                     
                 }
                 
@@ -594,6 +648,14 @@
                     
                 }
                 
+                if (Inst.isInline) {
+                    
+                    Inst.inlineCntr
+                        .removeClass("hasSPDateField")
+                        .removeData("SPDateFieldInstance");
+                    
+                }
+                
                 Inst.$ui.remove();
                 
             }; //end: Inst.destroy()
@@ -616,7 +678,7 @@
                     wdg.$selectorCntr   = $(SPDate.htmlTemplate)
                                             .filter("div.spwidget-datetime-selector")
                                             .clone()
-                                                .appendTo(Inst.$input.parent())
+                                                .appendTo(Inst.$inputCntr)
                                                 .css("display", "none");
                     wdg.$datePicker     = wdg.$selectorCntr.find("div.spwidget-date-selector");
                     wdg.$timePicker     = wdg.$selectorCntr.find("div.spwidget-time-selector");
@@ -765,6 +827,12 @@
                             setDatepicker:  true
                         });
                         
+                        // If allowMultiples or isInline is true, then the
+                        // "set" button is visible. Need to make sure we call
+                        // any user defined callback to jQuery-UI's 'select'
+                        // option
+                        wdg.execUsersCallback(Inst.$input.val());
+                        
                         return;
                         
                     }; //end: wdg.updateDateTime()
@@ -859,6 +927,29 @@
                         
                     }; //end: wdg.showPicker()
                     
+                    /**
+                     * Executes the user's callback to jQuery-UI's datepicker
+                     * 'onSelect' option, if one was defined.
+                     * 
+                     * @param {String} dateText
+                     * @param {Object} dtPickerObj
+                     * 
+                     */
+                    wdg.execUsersCallback = function(dateText, dtPickerObj) {
+                        
+                        // Call the user defined onSelect if one was defined.
+                        if ($.isFunction(Inst.opt.datepicker._onSelect)) {
+                            
+                            Inst.opt.datepicker._onSelect.call(
+                                wdg.$datePicker,
+                                dateText,
+                                dtPickerObj
+                            );
+                            
+                        }
+                        
+                    }; //end: wdg.execUsersCallback()
+                    
                     /* ------------------------------------------------------ */
                     /* ------------------------------------------------------ */
                     
@@ -869,13 +960,13 @@
                         
                     // If user set the icon option in the Datepicker, then need
                     // to build it manually
-                    if (Inst.opt.datepicker.buttonImage) {
+                    if (Inst.opt.datepicker.buttonImage && !Inst.isInline) {
                         
                         $('<img class="ui-datepicker-trigger" src="' + 
                                 Inst.opt.datepicker.buttonImage + 
                                 '" alt="..." title="...">'
                             )
-                            .appendTo(Inst.$input.parent())
+                            .appendTo(Inst.$inputCntr)
                             .on("click" + SPDate.evNamespace, function(){
                                 
                                 wdg.showPicker();
@@ -884,8 +975,8 @@
                         
                     }
                     
-                    // If allowMultiples is true, then make set button visible
-                    if (Inst.opt.allowMultiples) {
+                    // If allowMultiples or isInline is true, then make set button visible
+                    if (Inst.opt.allowMultiples || Inst.isInline) {
                         
                         wdg.$selectorCntr.addClass("spwidget-date-multiples-cntr");
                         wdg.$setButton.find("div.spwidget-btn")
@@ -935,7 +1026,7 @@
                         
                         // If allowMultiples is true, then exit if 
                         // this click is not the SET button 
-                        if (Inst.opt.allowMultiples) {
+                        if (Inst.opt.allowMultiples || Inst.isInline) {
                             
                             return this;
                             
@@ -949,15 +1040,9 @@
                         
                         wdg.updateDateTime(newDate);
                         
-                        // Call the user defined onSelect if one was defined.
-                        if ($.isFunction(Inst.opt.datepicker._onSelect)) {
-                            
-                            Inst.opt.datepicker._onSelect.call(this, dateText, dtPicker );
-                            
-                        }
-                        
                     };
                     
+                    // Create datepicker widget using jquery ui
                     wdg.$datePicker.datepicker(Inst.opt.datepicker);
                     
                     // Setup listeners on the time selectors so that we can trigger
@@ -967,9 +1052,13 @@
                             "select",
                             function(ev){
                                 
+                                // Cancel event bubbling
+                                ev.stopPropagation();
+                                ev.preventDefault();
+                                
                                 // If allowMultiples is true, then exit if 
                                 // this click is not the SET button 
-                                if (Inst.opt.allowMultiples) {
+                                if (Inst.opt.allowMultiples || Inst.isInline) {
                                     
                                     return this;
                                     
@@ -981,16 +1070,31 @@
                                 
                             });
                     
-                    // now that we have the datepicker setup, add listeners to the
-                    // input field so that the date and time picker is shown.
-                    Inst.$input
-                        .on("focus" + SPDate.evNamespace, function(){
-                            
-                            wdg.showPicker();
-                            
-                        });
+                    // If 'inline' mode is on, then make widget visible and
+                    // hide the input field
+                    if (Inst.isInline){
+                        
+                        Inst.$input.css("display", "none");
+                        wdg.$selectorCntr
+                            .addClass("spwidget-inline")
+                            .css("display", "");
+                        
+                    }
                     
-                
+                    // now that we have the datepicker setup, if we're
+                    // NOT 'inline' mode, then add listeners to then 
+                    // input field so that the date and time picker is shown.
+                    if (!Inst.isInline) {
+                        
+                        Inst.$input
+                            .on("focus" + SPDate.evNamespace, function(){
+                                
+                                wdg.showPicker();
+                                
+                            });
+                        
+                    }
+                    
                 /////////////////////////////////////////////////////
                 // ELSE: showTimePicker is false. Just show regular
                 // jQuery UI date widget. 
@@ -1035,7 +1139,7 @@
                             
                         }
                         
-                        if (Inst.opt.allowMultiples && Inst.opt.remainOpen) {
+                        if (Inst.opt.allowMultiples && Inst.opt.remainOpen && !Inst.isInline) {
                             
                             setTimeout(function(){
                                 Inst.$input.datepicker("show");
@@ -1045,7 +1149,19 @@
                         
                     }; 
                     
-                    Inst.$input.datepicker(Inst.opt.datepicker);
+                    // If inline is true, the initiate the datepicker on the
+                    // DIV container and hide the input... Else, just initiate
+                    // the Datepicker on the input field.
+                    if (Inst.isInline) {
+                        
+                        Inst.$inputCntr.datepicker(Inst.opt.datepicker);
+                        Inst.$input.css("display", "none");
+                        
+                    } else {
+                        
+                        Inst.$input.datepicker(Inst.opt.datepicker);
+                        
+                    }
                     
                 }
                 
@@ -1103,6 +1219,12 @@
                 .css("display", "none")
                 .data("SPDateFieldInstance", Inst);
             
+            if (Inst.isInline) {
+                
+                Inst.inlineCntr.data("SPDateFieldInstance", Inst);
+                
+            }
+            
             Inst.$timepicker = Inst.createDatePicker();
             
             // If input field already has some date, then prepopulate the widget
@@ -1142,7 +1264,7 @@
     SPDate.onPageClick = function(ev) {
         
         var $ele            = $(ev.target),
-            $allSelectors   = $("div.spwidget-datetime-selector:visible"),
+            $allSelectors   = $("div.spwidget-datetime-selector:visible:not('.spwidget-inline')"),
             $clickArea      = null;
         
         // JQuery UI Datepicker FWD/BAKC button are recreate everytime a

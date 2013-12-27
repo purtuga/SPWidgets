@@ -25,7 +25,7 @@
 .spwidget-date-cntr div.spwidget-datetime-selector {
     padding: .5em;
     position: absolute;
-    width: 26em;
+    width: 28em;
     z-index: 1;
 }
 .spwidget-date-cntr div.spwidget-datetime-selector div.ui-datepicker-inline {
@@ -82,6 +82,13 @@
     width: 5em;
     font-size: .9em;
 }
+
+/* inline mode */
+.spwidget-date-cntr .spwidget-inline div.spwidget-datetime-selector {
+    position: relative;
+    width: 26em;
+}
+
 .spwidget-btn-set {
     display: none;
     position: absolute;

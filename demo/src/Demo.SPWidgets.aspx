@@ -86,6 +86,10 @@ SPWidgets - Widgets for building custom UIs
                 <div class="spwidget-demo-upload-cntr">
                     <h3></h3>
                     <div class="spwidget-demo-upload-widget"></div>
+                    <div>
+                        <span>Last File Uploaded: </span>
+                        <span class="spwidget-demo-upload-last-file"></span>
+                    </div>
                     <div class="spwidget-demo-library-files">
                         <table width="100%" cellpadding="4" cellspacing="0">
                             <thead>
@@ -384,7 +388,7 @@ SPWidgets - Widgets for building custom UIs
                         </p>
                         <hr>
                         <p>
-                            <h3>Exmaple 2: Allow Multiples</h3>
+                            <h3>Example 2: Allow Multiples</h3>
                             <p>Allow multiple dates.</p>
                             <div>
                                 <input class="spwidget-demo-input" type="text" name="example2" value="" />
@@ -392,7 +396,7 @@ SPWidgets - Widgets for building custom UIs
                         </p>
                         <hr>
                         <p>
-                            <h3>Exmaple 3: Change Date Format</h3>
+                            <h3>Example 3: Change Date Format</h3>
                             <p>Override date input format to Euro - mm/dd/yyyy</p>
                             <div>
                                 <input class="spwidget-demo-input" type="text" name="example3" value="" />
@@ -401,7 +405,7 @@ SPWidgets - Widgets for building custom UIs
                         
                         <hr>
                         <p>
-                            <h3>Exmaple 4: Pre-Defined Inputs</h3>
+                            <h3>Example 4: Pre-Defined Inputs</h3>
                             <p>
                                 In this example, the input field used to bind SPDateField widget
                                 was already storing 2 dates: August 1, 2013 and August 2, 2013.
@@ -413,7 +417,7 @@ SPWidgets - Widgets for building custom UIs
                         
                         <hr>
                         <p>
-                            <h3>Exmaple 5: Date and Time Picker</h3>
+                            <h3>Example 5: Date and Time Picker</h3>
                             <p>
                                 In this example, the widget is set to also show a time picker
                                 along with the date picker. Time is displayed along with date
@@ -429,7 +433,7 @@ SPWidgets - Widgets for building custom UIs
                         
                         <hr>
                         <p>
-                            <h3>Exmaple 6: Date and Time Picker - Allow Multiples</h3>
+                            <h3>Example 6: Date and Time Picker - Allow Multiples</h3>
                             <p>
                                 Similar to Example 5, where a date and Time picker is displayed, but
                                 allows user to define multiples.
@@ -441,7 +445,7 @@ SPWidgets - Widgets for building custom UIs
                         
                         <hr>
                         <p>
-                            <h3>Exmaple 7: Date adn Time Picker - Pre-Defined Inputs</h3>
+                            <h3>Example 7: Date and Time Picker - Pre-Defined Inputs</h3>
                             <p>
                                 In this example, the input field used to bind SPDateField widget
                                 was already storing 2 dates: August 1, 2013 1:05 AM and 
@@ -452,6 +456,28 @@ SPWidgets - Widgets for building custom UIs
                                 <input class="spwidget-demo-input" type="text" name="example7" 
                                     value="2013-08-01T01:05:00;2013-08-02T16:30:00" />
                             </div>
+                        </p>
+                        
+                        <hr>
+                        <p>
+                            <h3>Example 8: Date Picker Displayed inline on a non-input element</h3>
+                            <p>
+                                Example showing the Date picker being used on a non-input element.
+                                The dates selected by the user would have to be handled by the callback
+                                to the JQuery UI Datepicker widget.
+                            </p>
+                            <div class="spwidget-spdatefield-demo8"></div>
+                        </p>
+                        
+                        <hr>
+                        <p>
+                            <h3>Example 9: Date and Time Picker Displayed inline on a non-input element</h3>
+                            <p>
+                                Example showing the Date and Time picker being used on a non-input element.
+                                The dates selected by the user would have to be handled by the callback
+                                to the JQuery UI Datepicker widget.
+                            </p>
+                            <div class="spwidget-spdatefield-demo9"></div>
                         </p>
                         
                         <p style="height: 15em;"></p>
