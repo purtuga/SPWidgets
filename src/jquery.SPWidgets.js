@@ -572,17 +572,25 @@
          * 
          * @param {HTMLElement|Selector|jQuery} ele - Set of elements
          * @param {Interger} [pad=0]                - Number of pixels to add on to the height
+         * @param {String} [cssProp=height]         - The css property to be set. Default is height
          * 
          * @return {Object} ele (input param) is returned
          * 
          */
-        $.SPWidgets.makeSameHeight = function(ele, pad) {
+        $.SPWidgets.makeSameHeight = function(ele, pad, cssProp) {
                 
             var h = 0,
                 e = $(ele);
+                
+            if (!cssProp) {
+                
+                cssProp = "height";
+                
+            }
+                
             e.each(function(){
                 
-                var thisEle = $(this).css("height", "");
+                var thisEle = $(this).css(cssProp, "");
                 
                 if (h < thisEle.outerHeight(true)) {
                     
@@ -600,7 +608,7 @@
                     
                 }
                 
-                e.height(h);
+                e.css(cssProp, h);
                 
             }
             

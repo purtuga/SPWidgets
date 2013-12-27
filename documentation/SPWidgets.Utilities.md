@@ -119,6 +119,10 @@ Given a group of elements, this plugin will set their css *height* attribute to 
 -   **pad** :   *Integer. Optional. Default=0* <br />
     Number of pixels to add on to the height. Value will be added to the calculated height of the tallest element. 
 
+-   **cssProp** :   *String. Optional. Default=0* <br />
+    The CSS property to set. Default is height. (example: if wanting to instead use the min-height css property, set this input value to "min-height") 
+
+
 ### Return Value
 
 The *ele* input parameters is returned to the caller. 
@@ -320,14 +324,14 @@ Returns the SharePoint version number (Since v2.2).
  
 ### Return Value
 
--   String. The SharePoint version.
+-   String or Integer. The SharePoint version. When the internal number is returned (ex. 12, 14, 15) the type will be an integer.  When the external name is returned (ex. 2007, 2010, 2013) the type is a string.
 
 ### Example
     
-    // Under SP 2010, the following returns 14
+    // Under SP 2010, the following returns 14 (Integer)
     $.SPWidgets.getSPVersion();
     
-    // Under SP2013, the following returns 2013
+    // Under SP2013, the following returns "2013" (String)
     $.SPWidgets.getSPVersion(true);
     
 
