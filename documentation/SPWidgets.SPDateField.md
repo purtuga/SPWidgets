@@ -76,12 +76,12 @@ All input options are optional. The default options for this widget can be manip
     
     See section titled _Allow Multiples Display_ for more information on how dates are displayed on the UI, case further manipulation is desired.
 
--   **showTimepicker**    :   *Boolean. Optional. Default: false<br />
+-   **showTimepicker**    :   *Boolean. Optional. Default: false*<br />
     If set to true, then a datepicker along with a timepicker will be displayed for user to select both. Note that when the timepicker is used, the time selected will be appended to the date string provided by the jQuery datepicker when displayed. 
     
     **NOTE:** The time picker is not as robust as the jQuery Datepicker widget. As an example, if user chooses to not use the picker and opts to type in the date and time manually, this widget will be able to parse that input.  When showTimePicker is set to _true_ the used of the picker widget is assumed. 
 
--   **timeFormat**    :   *String. Optional. Default: ' {{hour}}:{{minutes}} {{ampm}}'<br />
+-   **timeFormat**    :   *String. Optional. Default: ' {{hour}}:{{minutes}} {{ampm}}'*<br />
     Used when _showTimepicker_ is set to _true_. The format that the date should be displayed with. The time string defined here will be displayed on the widget following the date selected. The following tokens can be used to define the display format:
     
     _{{hour}}_<br>
@@ -101,22 +101,22 @@ All input options are optional. The default options for this widget can be manip
     
         timeFormat: ' at {{minutes}} past {{hour}}{{ampm}}'
 
--   **timeUTC**    :   *Boolean. Optional. Default: true<br />
+-   **timeUTC**    :   *Boolean. Optional. Default: true*<br />
     Used when _showTimepicker_ is set to _true_. Option affects the format of the date string generated (not the visible date and time). When set to true, a UTC compliant date and time string will be generated. Setting this to false, will generate a date in user's local time.
     
--   **labelHour**    :   *String. Optional. Default: 'Hour'<br />
+-   **labelHour**    :   *String. Optional. Default: 'Hour'*<br />
     Used when _showTimepicker_ is set to _true_. The label to be displayed next to the Hour select dropdown. 
 
--   **labelMinutes**    :   *String. Optional. Default: 'Minutes'<br />
+-   **labelMinutes**    :   *String. Optional. Default: 'Minutes'*<br />
     Used when _showTimepicker_ is set to _true_. The label to be displayed next to the Minutes select dropdown.
 
--   **labelAMPM**    :   *String. Optional. Default: 'AM|PM'<br />
+-   **labelAMPM**    :   *String. Optional. Default: 'AM|PM'*<br />
     Used when _showTimepicker_ is set to _true_. The label to be displayed next to the AM, PM select dropdown.
 
--   **labelTime**    :   *String. Optional. Default: 'Time'<br />
+-   **labelTime**    :   *String. Optional. Default: 'Time'*<br />
     Used when _showTimepicker_ is set to _true_. The label to be shown at the top of the timepicker section.
 
--   **labelSet**    :   *String. Optional. Default: 'Time'<br />
+-   **labelSet**    :   *String. Optional. Default: 'Time'*<br />
     Used when _showTimepicker_ and _allowMultiples_ are both set to _true_. The label of the button displayed on the widget to set a date time combination.
 
 
