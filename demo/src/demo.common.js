@@ -9,6 +9,11 @@
     
     var Main    = SPWIDGET_DEMO;
     
+    Main.debug = (  String(window.location.search).indexOf("debug=1") > -1 
+                    ?   true
+                    :   false
+                );
+    
     /**
      * Given a container element, this method will insert a
      * list of List and/or Libraries in the current site
