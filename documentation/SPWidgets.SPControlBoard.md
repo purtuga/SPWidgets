@@ -326,10 +326,18 @@ The following methods are supported:
 -   **setVisible([columnName,...])**<br>
     Sets the visible columns on the board. Method accepts as input an array of board column names to be displayed. A minimum of 2 must be difined and no more than 10 will be displayed. (Since 2.1)
     
-    Example:
+    Input:
     
+    -   {Array|String} : this method accepts an array of board column names that should be made visible. Using an empty array will set all column to be visible.  Using a static string value of 'All' will also make all columns visible.
+    
+    Example:
+        
+        // Set only 2 columns to be visible
         $("#board").SPShowBoard("setVisible", [ 'Not Started', 'Completed' ]); 
-
+        
+        // Set all column to be visible
+        $("#board").SPShowBoard("setVisible", []); 
+        
 
 Events
 ------

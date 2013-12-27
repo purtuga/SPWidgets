@@ -23,9 +23,6 @@ div.spwidget-board div.spwidget-board-state {
     overflow: auto;
 }
 
-div.spwidget-board div.spwidget-board-headers-cntr {
-    border: none;
-}
 div.spwidget-board div.spwidget-board-headers-cntr div.spwidget-board-state {
     text-align: center;
     font-weight: bold;

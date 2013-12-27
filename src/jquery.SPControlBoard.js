@@ -365,7 +365,7 @@
                 method  = options.toLowerCase();
                 board   = ele.data("SPShowBoardOptions");
                 
-                //*** REFRESH ***\\
+                //*** REFRESH ***
                 if (method === "refresh") {
                     
                     board._getListItems().then(function(){
@@ -374,17 +374,19 @@
                         
                     });
                     
-                //*** REDRAW ***\\
+                //*** REDRAW ***
                 } else if (method === "redraw") {
                     
                     board.setBoardColumnHeight();
                     
-                //*** SETVISIBLE ***\\
+                //*** SETVISIBLE ***
                 } else if (method === "setvisible") {
                     
                     if (board.showColPicker) {
                         
-                        board.setUserDefinedVisibleCol( args[1] );
+                        board.setUserDefinedVisibleCol(
+                            args[1]
+                       );
                         
                     }
                     
@@ -1572,9 +1574,26 @@
                                 var count       = 0,
                                     selector    = "";
                                 
-                                if (!$.isArray(colList)) {
+                                // If input is not an array, then exit, unless
+                                // it is the keyword 'all'. 
+                                if (!$.isArray(colList) || !colList.length) {
                                     
-                                    return;
+                                    if (    !$.isArray(colList)
+                                        &&  String(colList).toLowerCase() !== "all"
+                                    ) {
+                                        
+                                        return;
+                                        
+                                    }
+                                    
+                                    // set all columns visible
+                                    colList = [];
+                                    
+                                    $.each(opt.states, function(i,colDef){
+                                        
+                                        colList.push(colDef.title);
+                                        
+                                    });
                                     
                                 }
                                 
@@ -1596,11 +1615,11 @@
                                             if (count > 1) {
                                                 
                                                 selector += ",";
+                                                
                                             }
                                             
                                             selector += "a[data-board_col_name='" + 
-                                                        state.name + 
-                                                        "']";
+                                                        state.name + "']";
                                         
                                             return false;
                                             
@@ -1699,7 +1718,7 @@
                             .button({
                                 text: false,
                                 icons: {
-                                    primary: "ui-icon-check"
+                                    primary: "ui-icon-radio-off"
                                 }
                             })
                             .on("click", function(ev){
@@ -1826,7 +1845,9 @@
                             
                             $.SPWidgets.makeSameHeight(
                                 opt.statesCntr.find("div.spwidget-board-state:visible"),
-                                20 );
+                                20,
+                                'min-height'
+                            );
                             
                         }
                         
@@ -1834,7 +1855,9 @@
                             
                             $.SPWidgets.makeSameHeight(
                                 opt.headersCntr.find("div.spwidget-board-state:visible"),
-                                0 );
+                                0,
+                                'min-height'
+                            );
                             
                         }
                         
