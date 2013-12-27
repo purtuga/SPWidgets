@@ -294,6 +294,7 @@
                                 
                                 // CHOICE: Show checkboxes allowing user to select multiple
                                 case "Choice":
+                                case "MultiChoice":
                                     
                                     $thisCol.find("CHOICES CHOICE").each(function(i,v){
                                         
@@ -343,19 +344,7 @@
                                         }
                                         
                                     }
-                                    
-                                case "DateTime":
-                                    
-                                    if (model.type === null) {
-                                        
-                                        model.type = 'date';
-                                        
-                                        model.otherFilterTypes = 
-                                            '<option value="Gt">After</option>' + 
-                                            '<option value="Lt">Before</option>'; 
-                                            
-                                    }
-                                    
+                                   
                                 case "User":
                                 case "UserMulti":
                                     
@@ -378,17 +367,26 @@
                                             
                                     }
                                 
-                                 // Date and Time: Inser additional filter types
+                                // Date and Time: Inser additional filter types
+                                // We control which type of widget is displayed
+                                // by ensuring that the sp_format is set correctly
+                                // here.
                                 case "DateTime":
                                     
                                     if (model.type === null) {
                                         
-                                        model.type = 'text';
+                                        model.type = 'date';
                                         
                                         model.otherFilterTypes = 
                                             '<option value="Gt">After</option>' + 
                                             '<option value="Lt">Before</option>';
-                                            
+                                       
+                                       model.sp_format = (
+                                                $thisCol.attr("Format") !== "DateOnly"
+                                            ?   "DateTime"
+                                            :   "DateOnly"
+                                       );
+                                       
                                     }
                                 
                                 // DEFAULT: Show as a text field
@@ -739,7 +737,7 @@
             // no value is defined for it. For Checkboxes (choice)
             // we need to first grab the checkboxes and then see
             // if they are checked.
-            if (colType === "choice") {
+            if (colType === "choice" || colType === "multichoice") {
                 
                 $colInput.filter(":checkbox").each(function(){
                     
@@ -985,6 +983,7 @@
                     
                     // -------------------- CHOICE COLUMNS
                     case "choice":
+                    case "multichoice":
                         
                         $input.each(function(){
                             
@@ -1267,6 +1266,7 @@
                         break;
                     
                     case "choice":
+                    case "multichoice":
                         
                         $.each(thisFilter.values, function(i, colVal){
                             
@@ -1296,7 +1296,6 @@
                         
                         // If dateTime value, then let SPDateField parse values
                         if ($colUI.data("spwidget_sp_format") === "DateTime") {
-                            
                             
                             $input.SPDateField('setDate', thisFilter.values);
                             
