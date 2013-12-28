@@ -365,9 +365,10 @@
              *          The date or array of dates to set on the picker.
              * 
              * @param {Boolean} [setDateOpt.setDatepicker=true]
-             *          Then true, the datepicker jQuery UI widget input will
+             *          When true, the datepicker jQuery UI widget input will
              *          be set to the value that was provided via this method.
-             *          Used only when allowMultiples is false
+             *          Used only when allowMultiples is false or isInline is
+             *          true.
              * 
              * @param {String} [setDateOpt.format=Inst.opt.datepicker.dateFormat]
              *          The format of the dates provided on input. This param
@@ -394,7 +395,8 @@
                                 setDateOpt
                             ),
                     eleVal  = Inst.$ele.val(),
-                    dtShow  = '';
+                    dtShow  = '',
+                    dtShowObj;
                 
                 if (!opt.date) {
                     
@@ -446,10 +448,11 @@
                         }
                         
                     }
-
-                    dt1 = $.datepicker.formatDate('yy-mm-dd', dtObj);
-                    dt2 = $.datepicker
-                            .formatDate(Inst.opt.datepicker.dateFormat, dtObj);
+                    
+                    dtShowObj   = dtObj;
+                    dt1         = $.datepicker.formatDate('yy-mm-dd', dtObj);
+                    dt2         = $.datepicker
+                                    .formatDate(Inst.opt.datepicker.dateFormat, dtObj);
                     
                     if (Inst.opt.showTimepicker) {
                         
@@ -485,7 +488,7 @@
                         
                     }
                     
-                });
+                }); //end: each
                 
                 // If allow multiple is true, then set teh multiple dates
                 // on the display area. Then set the input value and trigger
@@ -494,9 +497,20 @@
                     
                     Inst.$dtCntr.append(dtShow);
                     
+                // else, should we set the date picker widget
                 } else if (opt.setDatepicker) {
                     
                     Inst.$input.val(dtShow);
+                    
+                    if (Inst.isInline && !Inst.opt.showTimepicker){
+                        
+                        Inst.$inputCntr.datepicker("setDate", dtShowObj);
+                        
+                    } else if (Inst.isInline) {
+                        
+                        Inst.$timepicker.updateDateTimeWidgets(dtShowObj);
+                        
+                    }
                     
                 }
                 
@@ -797,7 +811,7 @@
                      * 
                      * @return {undefined}
                      */
-                    wdg.updateDateTime = function(dtObj){
+                    wdg.setDateTime = function(dtObj){
                         
                         var time    = wdg.getTime();
                         
@@ -835,7 +849,58 @@
                         
                         return;
                         
-                    }; //end: wdg.updateDateTime()
+                    }; //end: wdg.setDateTime()
+                    
+                    /**
+                     * Updates the DateTime picker widgets (jquery datepicker
+                     * and the hour and minutes selects) with the specified
+                     * input date and time. This update of the widgets does
+                     * not trigger an update to the date+time that is stored
+                     * in the SPDateField() widget nor does it trigger events.
+                     * 
+                     * @param {Date} [newDate=Date()]
+                     * 
+                     * @return {undefined}
+                     */
+                    wdg.updateDateTimeWidgets = function(newDate){
+                        
+                        var dtObj = newDate,
+                            tmpVal;
+                        
+                        if (!(dtObj instanceof Date)) {
+                            
+                            dtObj = new Date();
+                            
+                        }
+                        
+                        tmpVal = dtObj.getHours();
+                                        
+                        if (tmpVal === 0) {
+                            
+                            tmpVal = "12";
+                            
+                        } else if (tmpVal > 12) {
+                            
+                            tmpVal = (tmpVal - 12);
+                            
+                        }
+                        
+                        wdg.$hourSelect.val(tmpVal);
+                        wdg.$minSelect.val("00");
+                        
+                        if (dtObj.getHours() > 11) {
+                            
+                            wdg.$ampmSelect.val("PM");
+                            
+                        } else {
+                            
+                            wdg.$ampmSelect.val("AM");
+                            
+                        }
+                        
+                        wdg.$datePicker.datepicker("setDate", dtObj);
+                        
+                    }; //end: wdg.updateDateTimeWidgets()
                     
                     /**
                      * Makes the Time picker visible on the page.
@@ -887,32 +952,43 @@
                                             
                                         }
                                         
-                                        tmpVal = currentDate.getHours();
+                                        // FIXME: Replace code below with call to new method.
+                                        wdg.updateDateTimeWidgets(currentDate);
                                         
-                                        if (tmpVal === 0) {
-                                            
-                                            tmpVal = "12";
-                                            
-                                        } else if (tmpVal > 12) {
-                                            
-                                            tmpVal = (tmpVal - 12);
-                                            
-                                        }
                                         
-                                        wdg.$hourSelect.val(tmpVal);
-                                        wdg.$minSelect.val("00");
                                         
-                                        if (currentDate.getHours() > 11) {
-                                            
-                                            wdg.$ampmSelect.val("PM");
-                                            
-                                        } else {
-                                            
-                                            wdg.$ampmSelect.val("AM");
-                                            
-                                        }
                                         
-                                        wdg.$datePicker.datepicker("setDate", currentDate);
+                                        // tmpVal = currentDate.getHours();
+//                                         
+                                        // if (tmpVal === 0) {
+//                                             
+                                            // tmpVal = "12";
+//                                             
+                                        // } else if (tmpVal > 12) {
+//                                             
+                                            // tmpVal = (tmpVal - 12);
+//                                             
+                                        // }
+//                                         
+                                        // wdg.$hourSelect.val(tmpVal);
+                                        // wdg.$minSelect.val("00");
+//                                         
+                                        // if (currentDate.getHours() > 11) {
+//                                             
+                                            // wdg.$ampmSelect.val("PM");
+//                                             
+                                        // } else {
+//                                             
+                                            // wdg.$ampmSelect.val("AM");
+//                                             
+                                        // }
+//                                         
+                                        // wdg.$datePicker.datepicker("setDate", currentDate);
+                                        
+                                        
+                                        
+                                        
+                                        
                                         
                                     }//end: if(): pre-set the picker values
                                     
@@ -983,7 +1059,7 @@
                             .button({label: Inst.opt.labelSet})
                             .on("click" + SPDate.evNamespace, function(ev){
                                 
-                                wdg.updateDateTime();
+                                wdg.setDateTime();
                                 
                                 return this;
                                 
@@ -1020,7 +1096,7 @@
                     Inst.opt.datepicker.numberOfMonths = 1;
                     
                     // Setup the Datepicker onSelect event, which will build a Date
-                    // object of the date the user selected and call updateDateTime()
+                    // object of the date the user selected and call setDateTime()
                     // to set teh widget. 
                     Inst.opt.datepicker.onSelect = function(dateText, dtPicker){
                         
@@ -1038,7 +1114,7 @@
                                             dtPicker.currentDay
                                         );
                         
-                        wdg.updateDateTime(newDate);
+                        wdg.setDateTime(newDate);
                         
                     };
                     
@@ -1064,7 +1140,7 @@
                                     
                                 }
                                 
-                                wdg.updateDateTime();
+                                wdg.setDateTime();
                                 
                                 return this;
                                 
@@ -1096,7 +1172,7 @@
                     }
                     
                 /////////////////////////////////////////////////////
-                // ELSE: showTimePicker is false. Just show regular
+                // ELSE: showTimepicker is false. Just show regular
                 // jQuery UI date widget. 
                 } else {
                     
@@ -1225,6 +1301,8 @@
                 
             }
             
+            // $timepicker holds only the setup (wdg) for the date+time picker
+            // for the Datepicker only, use Inst.$input
             Inst.$timepicker = Inst.createDatePicker();
             
             // If input field already has some date, then prepopulate the widget
