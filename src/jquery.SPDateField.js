@@ -873,6 +873,7 @@
                             
                         }
                         
+                        // Set hours
                         tmpVal = dtObj.getHours();
                                         
                         if (tmpVal === 0) {
@@ -886,8 +887,25 @@
                         }
                         
                         wdg.$hourSelect.val(tmpVal);
-                        wdg.$minSelect.val("00");
                         
+                        // Set Minutes
+                        tmpVal = dtObj.getMinutes();
+                        
+                        while (tmpVal % 5) {
+                            
+                            --tmpVal;
+                            
+                        }
+                        
+                        if (tmpVal < 10) {
+                            
+                            tmpVal = "0" + tmpVal;
+                            
+                        }
+                        
+                        wdg.$minSelect.val(tmpVal);
+                        
+                        // set PM/AM
                         if (dtObj.getHours() > 11) {
                             
                             wdg.$ampmSelect.val("PM");
@@ -954,42 +972,7 @@
                                         
                                         // FIXME: Replace code below with call to new method.
                                         wdg.updateDateTimeWidgets(currentDate);
-                                        
-                                        
-                                        
-                                        
-                                        // tmpVal = currentDate.getHours();
-//                                         
-                                        // if (tmpVal === 0) {
-//                                             
-                                            // tmpVal = "12";
-//                                             
-                                        // } else if (tmpVal > 12) {
-//                                             
-                                            // tmpVal = (tmpVal - 12);
-//                                             
-                                        // }
-//                                         
-                                        // wdg.$hourSelect.val(tmpVal);
-                                        // wdg.$minSelect.val("00");
-//                                         
-                                        // if (currentDate.getHours() > 11) {
-//                                             
-                                            // wdg.$ampmSelect.val("PM");
-//                                             
-                                        // } else {
-//                                             
-                                            // wdg.$ampmSelect.val("AM");
-//                                             
-                                        // }
-//                                         
-                                        // wdg.$datePicker.datepicker("setDate", currentDate);
-                                        
-                                        
-                                        
-                                        
-                                        
-                                        
+                                                                                
                                     }//end: if(): pre-set the picker values
                                     
                                 })
