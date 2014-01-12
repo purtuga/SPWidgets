@@ -35,7 +35,7 @@ The following is an example that loads the required libraries from CDN's, the SP
     <script type="text/javascript" src='yoursite/path/to/jquery.SPWidgets.js'></script>
     <script type="text/javascript">
         $(document).ready(function(){
-            $("<div> <input name="users" value="" /> </div>")
+            $('<div> <input name="users" value="" /> </div>')
                 .appendTo("body")
                 .find("input")
                     .pickSPUser()
