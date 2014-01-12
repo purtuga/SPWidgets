@@ -4,8 +4,10 @@
  */
 (function(){
     
-    var $cntr   = $("#SPControlPickUserDemo"),
-        $output = $cntr.find("#SPControlPickUserEventOut");
+    var $cntr                   = $("#SPControlPickUserDemo"),
+        $output                 = $cntr.find("#SPControlPickUserEventOut"),
+        prePopuplatedInputDone  = false,
+        knownUserString         = '';
     
     /**
      * Logs output to the people picker output area
@@ -13,6 +15,25 @@
     function logOutput(data) {
         
         $output.append($("<div/>").html(data));
+        
+    }
+    
+    function initPrePopulatedInputDemo(){
+        
+        $("#spuserdemo2cntr")
+            .find("input")
+                .val(knownUserString)
+                .pickSPUser({
+                    type: 'All',
+                    onPickUser: function(u){
+                        
+                        logOutput("onPickUser Person added: " + u.displayName + ")");
+                    }
+                })
+                .end()
+            .show()
+            .find(".spwidgets-demo-know-user")
+                .html(knownUserString);
         
     }
     
@@ -54,6 +75,19 @@
                     '<div>Account ID: ' + u.accountId + '</div>' +
                     '<div>Account Type: ' + u.accountType + '</div>'
                 );
+            
+            // If Demo 2 is not yet initiated, do it now. 
+            if (!prePopuplatedInputDone) {
+                
+                prePopuplatedInputDone  = true;
+                knownUserString         = $(this).val();
+                
+                initPrePopulatedInputDemo();
+                
+                logOutput("NOTE: SECOND DEMO WAS INITIATED!");
+                
+            }
+            
         },
         onCreate: function($input) {
             

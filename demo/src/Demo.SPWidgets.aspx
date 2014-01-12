@@ -112,15 +112,17 @@ SPWidgets - Widgets for building custom UIs
             <h2>People Picker</h2>
             <div style="min-height: 300px;">
                 <div style="padding: 1em;margin: 3em auto;" class="ui-state-highlight">
-                    Start typing the user\'s name (last or first) and a list of
+                    Start typing the user name (last or first) and a list of
                     suggested selections will be displayed. Because it is using jQuery
                     UI, mouse or keyboard shortcuts can be used to select a user. The
                     input field that was used to bind this plugin will be populated with
-                    the selected user\'s information in the formta expected for update to
+                    the selected user information in the formta expected for update to
                     the sharepoing list (ID;#userName)
                 </div>
                 
                 <div>
+                    <h3>Demo 1: Basic People Picker</h3>
+                    <p>A basic setup on an input element.<br/>(Note: Once a person is selected here, Demo number two will be initiated and made visible below.</p>
                     <div>
                         <label>User Name</label>
                         <input type="text" name="spuserdemo" value="" />
@@ -133,7 +135,18 @@ SPWidgets - Widgets for building custom UIs
                             
                         </div>
                     </div>
+                    
+                </div>
+                <hr/>
+                <div id="spuserdemo2cntr" style="display:none;">
+                    <h3>Demo 2: Pre-populated People Picker</h3>
+                    <div>Input element in this example was pre-populated with <span class="spwidgets-demo-know-user"></span> and then initiated with the widget. Result should be a people picker that has 1 user already selected.</div>
+                    <div>
+                        <label>Person</label>
+                        <input type="text" name="spuserdemo2" value="" />
+                        <div id="sp_control_pick_user_detail2" style="margin-top: 1em;padding:1em;"></div>
                         
+                    </div>
                 </div>
                 
             </div>
