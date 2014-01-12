@@ -248,6 +248,10 @@
                                 
                                 $.each(rows, function(i,v){
                                     
+                                    // TODO: Should we instead try to match on the ID?
+                                    // SP is not consistent how the name is displayed on people pickers.
+                                    // trying to get the Person record.
+                                    
                                     var thisName = String(v.displayName).toLowerCase();
                                     
                                     if (thisName === personName) {
@@ -355,14 +359,6 @@
                 
             }
             
-            // If the current input field has a value defined, then parse it
-            // and display the currently defined values
-            if (ele.val()) {
-                
-                o.addPeopleToList(ele.val(), noEvents);
-                
-            }
-            
             // Variable that store all search results
             var cache = {};
             
@@ -459,6 +455,14 @@
             // in the input field to this element
             cntr.data("pickSPUserContainerOpt", o);
             ele.data("pickSPUserContainer", cntr);
+            
+            // If the current input field has a value defined, then parse it
+            // and display the currently defined values
+            if (ele.val()) {
+                
+                o.addPeopleToList(ele.val(), true);
+                
+            }
             
             // call onCreate if defined
             if ($.isFunction(o.onCreate)) {
