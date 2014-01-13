@@ -861,9 +861,6 @@
             }
             
         });
-
-        // Focus the on the first input
-        Inst.$ui.find(":input.spwidget-input:first").focus();
         
         return Inst;
         
