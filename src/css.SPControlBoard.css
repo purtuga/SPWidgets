@@ -30,6 +30,10 @@ div.spwidget-board div.spwidget-board-headers-cntr div.spwidget-board-state {
     overflow: hidden;
     word-wrap: break-word;
 }
+div.spwidget-board div.spwidget-board-headers-cntr div.spwidget-board-state .spwidget-stat-item-stat {
+    padding: 0em .2em;
+    display: inline-block;
+}
 div.spwidget-board div.spwidget-board-states div.spwidget-board-state {
     margin-bottom: 1em;
     min-height: 10em;
