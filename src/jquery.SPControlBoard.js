@@ -131,9 +131,6 @@
      *                  If true, the column picker option will be displayed
      *                  on the page. Allows user to pick which column are
      *                  visible/hidden.
-     *                  Note: This option is automatically turned to True
-     *                  if the number of columns available is greater than
-     *                  10. 
      * 
      * @param {Array} [options.colPickerVisible=[]]
      *                  The list of board columns that should be visible. Used
@@ -382,13 +379,7 @@
                 //*** SETVISIBLE ***
                 } else if (method === "setvisible") {
                     
-                    if (board.showColPicker) {
-                        
-                        board.setUserDefinedVisibleCol(
-                            args[1]
-                       );
-                        
-                    }
+                    board.setUserDefinedVisibleCol( args[1] );
                     
                 }//end: if(): methods
                 
@@ -1926,11 +1917,6 @@
                 if (opt.states.length <= opt.maxColumnVisible) {
                     
                     opt.showNumberOfColumns = opt.states.length;
-                    
-                // ELSE, must be higher than 10... Force columnsPicker. 
-                } else {
-                    
-                    opt.showColPicker = true;
                     
                 }
                 

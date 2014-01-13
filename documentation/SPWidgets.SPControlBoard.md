@@ -194,7 +194,6 @@ The default options for this widget can be manipulated/set via the following obj
 
 -   **showColPicker**     :   *Boolean. Optional. Default=false* <br>
     If true, the column picker option will be displayed on the page. Allows user to pick which column are visible/hidden. (Since v2.1)
-    _Note: This option is automatically turned to True if the number of columns available is greater than 10._
     
     
 -   **colPickerVisible**     :   *Array. Optional. Default=[]* <br>
