@@ -1,5 +1,5 @@
 <%-- SPWIDGETS DEMO PAGE --%>
-<%-- BUILD 20131027104632 --%>
+<%-- BUILD 20140112083148 --%>
 <%@ Page language="C#" MasterPageFile="~masterurl/default.master"    Inherits="Microsoft.SharePoint.WebPartPages.WebPartPage,Microsoft.SharePoint,Version=12.0.0.0,Culture=neutral,PublicKeyToken=71e9bce111e9429c" %> 
 <%@ Register Tagprefix="SharePoint" Namespace="Microsoft.SharePoint.WebControls" Assembly="Microsoft.SharePoint, Version=12.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %>
 <%@ Register Tagprefix="Utilities" Namespace="Microsoft.SharePoint.Utilities" Assembly="Microsoft.SharePoint, Version=12.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %>
@@ -44,8 +44,8 @@ SPWidgets - Widgets for building custom UIs
 /** 
  * SPWidgets Demo
  * 
- * Build Date:  Paul:October 27, 2013 10:46 AM
- * Version:     20131027104632 
+ * Build Date:  Paul:January 12, 2014 08:31 PM
+ * Version:     20140112083148 
  * 
  */
 </script>
@@ -86,6 +86,10 @@ SPWidgets - Widgets for building custom UIs
                 <div class="spwidget-demo-upload-cntr">
                     <h3></h3>
                     <div class="spwidget-demo-upload-widget"></div>
+                    <div>
+                        <span>Last File Uploaded: </span>
+                        <span class="spwidget-demo-upload-last-file"></span>
+                    </div>
                     <div class="spwidget-demo-library-files">
                         <table width="100%" cellpadding="4" cellspacing="0">
                             <thead>
@@ -108,15 +112,17 @@ SPWidgets - Widgets for building custom UIs
             <h2>People Picker</h2>
             <div style="min-height: 300px;">
                 <div style="padding: 1em;margin: 3em auto;" class="ui-state-highlight">
-                    Start typing the user\'s name (last or first) and a list of
+                    Start typing the user name (last or first) and a list of
                     suggested selections will be displayed. Because it is using jQuery
                     UI, mouse or keyboard shortcuts can be used to select a user. The
                     input field that was used to bind this plugin will be populated with
-                    the selected user\'s information in the formta expected for update to
+                    the selected user information in the formta expected for update to
                     the sharepoing list (ID;#userName)
                 </div>
                 
                 <div>
+                    <h3>Demo 1: Basic People Picker</h3>
+                    <p>A basic setup on an input element.<br/>(Note: Once a person is selected here, Demo number two will be initiated and made visible below.</p>
                     <div>
                         <label>User Name</label>
                         <input type="text" name="spuserdemo" value="" />
@@ -129,7 +135,18 @@ SPWidgets - Widgets for building custom UIs
                             
                         </div>
                     </div>
+                    
+                </div>
+                <hr/>
+                <div id="spuserdemo2cntr" style="display:none;">
+                    <h3>Demo 2: Pre-populated People Picker</h3>
+                    <div>Input element in this example was pre-populated with <span class="spwidgets-demo-know-user"></span> and then initiated with the widget. Result should be a people picker that has 1 user already selected.</div>
+                    <div>
+                        <label>Person</label>
+                        <input type="text" name="spuserdemo2" value="" />
+                        <div id="sp_control_pick_user_detail2" style="margin-top: 1em;padding:1em;"></div>
                         
+                    </div>
                 </div>
                 
             </div>
@@ -384,7 +401,7 @@ SPWidgets - Widgets for building custom UIs
                         </p>
                         <hr>
                         <p>
-                            <h3>Exmaple 2: Allow Multiples</h3>
+                            <h3>Example 2: Allow Multiples</h3>
                             <p>Allow multiple dates.</p>
                             <div>
                                 <input class="spwidget-demo-input" type="text" name="example2" value="" />
@@ -392,7 +409,7 @@ SPWidgets - Widgets for building custom UIs
                         </p>
                         <hr>
                         <p>
-                            <h3>Exmaple 3: Change Date Format</h3>
+                            <h3>Example 3: Change Date Format</h3>
                             <p>Override date input format to Euro - mm/dd/yyyy</p>
                             <div>
                                 <input class="spwidget-demo-input" type="text" name="example3" value="" />
@@ -401,7 +418,7 @@ SPWidgets - Widgets for building custom UIs
                         
                         <hr>
                         <p>
-                            <h3>Exmaple 4: Pre-Defined Inputs</h3>
+                            <h3>Example 4: Pre-Defined Inputs</h3>
                             <p>
                                 In this example, the input field used to bind SPDateField widget
                                 was already storing 2 dates: August 1, 2013 and August 2, 2013.
@@ -413,7 +430,7 @@ SPWidgets - Widgets for building custom UIs
                         
                         <hr>
                         <p>
-                            <h3>Exmaple 5: Date and Time Picker</h3>
+                            <h3>Example 5: Date and Time Picker</h3>
                             <p>
                                 In this example, the widget is set to also show a time picker
                                 along with the date picker. Time is displayed along with date
@@ -429,7 +446,7 @@ SPWidgets - Widgets for building custom UIs
                         
                         <hr>
                         <p>
-                            <h3>Exmaple 6: Date and Time Picker - Allow Multiples</h3>
+                            <h3>Example 6: Date and Time Picker - Allow Multiples</h3>
                             <p>
                                 Similar to Example 5, where a date and Time picker is displayed, but
                                 allows user to define multiples.
@@ -441,7 +458,7 @@ SPWidgets - Widgets for building custom UIs
                         
                         <hr>
                         <p>
-                            <h3>Exmaple 7: Date adn Time Picker - Pre-Defined Inputs</h3>
+                            <h3>Example 7: Date and Time Picker - Pre-Defined Inputs</h3>
                             <p>
                                 In this example, the input field used to bind SPDateField widget
                                 was already storing 2 dates: August 1, 2013 1:05 AM and 
@@ -452,6 +469,28 @@ SPWidgets - Widgets for building custom UIs
                                 <input class="spwidget-demo-input" type="text" name="example7" 
                                     value="2013-08-01T01:05:00;2013-08-02T16:30:00" />
                             </div>
+                        </p>
+                        
+                        <hr>
+                        <p>
+                            <h3>Example 8: Date Picker Displayed inline on a non-input element</h3>
+                            <p>
+                                Example showing the Date picker being used on a non-input element.
+                                The dates selected by the user would have to be handled by the callback
+                                to the JQuery UI Datepicker widget.
+                            </p>
+                            <div class="spwidget-spdatefield-demo8"></div>
+                        </p>
+                        
+                        <hr>
+                        <p>
+                            <h3>Example 9: Date and Time Picker Displayed inline on a non-input element</h3>
+                            <p>
+                                Example showing the Date and Time picker being used on a non-input element.
+                                The dates selected by the user would have to be handled by the callback
+                                to the JQuery UI Datepicker widget.
+                            </p>
+                            <div class="spwidget-spdatefield-demo9"></div>
                         </p>
                         
                         <p style="height: 15em;"></p>
@@ -512,7 +551,7 @@ SPWidgets - Widgets for building custom UIs
         
     </div>
     <div>
-        <span>Build: </span><span>20131027104632</span>
+        <span>Build: </span><span>20140112083148</span>
     </div>
     <div>
         <div id="themeSwitchWidget"></div>
@@ -545,12 +584,17 @@ setTimeout(function(){
  * @fileOverview demo.common.js
  * Common file for all demos. Initiates the UI on the page.
  * 
- * @version 20131027104632
+ * @version 20140112083148
  * 
  */
 (function($){
     
     var Main    = SPWIDGET_DEMO;
+    
+    Main.debug = (  String(window.location.search).indexOf("debug=1") > -1 
+                    ?   true
+                    :   false
+                );
     
     /**
      * Given a container element, this method will insert a
@@ -1619,6 +1663,30 @@ setTimeout(function(){
             output.log("Example 7: input change: " + $(this).val());
         });
     
+    $demoCntr.find("div.spwidget-spdatefield-demo8")
+        .SPDateField({
+            onSelect: function(){
+                
+                output.log(
+                    "Example 8: date change: " +
+                    $(this).SPDateField("getDate").input
+                );
+                
+            }
+        });
+    
+    $demoCntr.find("div.spwidget-spdatefield-demo9")
+        .SPDateField({
+            showTimepicker: true,
+            onSelect: function() {
+                
+                output.log(
+                    "Example 9: date change: " +
+                    $(this).SPDateField("getDate").input
+                );
+                
+            }
+        });
     
 })(SPWIDGET_DEMO.JQUERY || jQuery);
 /**
@@ -1894,8 +1962,10 @@ setTimeout(function(){
  */
 (function(){
     
-    var $cntr   = $("#SPControlPickUserDemo"),
-        $output = $cntr.find("#SPControlPickUserEventOut");
+    var $cntr                   = $("#SPControlPickUserDemo"),
+        $output                 = $cntr.find("#SPControlPickUserEventOut"),
+        prePopuplatedInputDone  = false,
+        knownUserString         = '';
     
     /**
      * Logs output to the people picker output area
@@ -1903,6 +1973,25 @@ setTimeout(function(){
     function logOutput(data) {
         
         $output.append($("<div/>").html(data));
+        
+    }
+    
+    function initPrePopulatedInputDemo(){
+        
+        $("#spuserdemo2cntr")
+            .find("input")
+                .val(knownUserString)
+                .pickSPUser({
+                    type: 'All',
+                    onPickUser: function(u){
+                        
+                        logOutput("onPickUser Person added: " + u.displayName + ")");
+                    }
+                })
+                .end()
+            .show()
+            .find(".spwidgets-demo-know-user")
+                .html(knownUserString);
         
     }
     
@@ -1944,6 +2033,19 @@ setTimeout(function(){
                     '<div>Account ID: ' + u.accountId + '</div>' +
                     '<div>Account Type: ' + u.accountType + '</div>'
                 );
+            
+            // If Demo 2 is not yet initiated, do it now. 
+            if (!prePopuplatedInputDone) {
+                
+                prePopuplatedInputDone  = true;
+                knownUserString         = $(this).val();
+                
+                initPrePopulatedInputDemo();
+                
+                logOutput("NOTE: SECOND DEMO WAS INITIATED!");
+                
+            }
+            
         },
         onCreate: function($input) {
             
@@ -1973,7 +2075,8 @@ setTimeout(function(){
         $ui         = Main.$ui.find("#SPControlUploadDemo"),
         $demoCntr   = $ui.find("div.spwidget-demo-upload-cntr"),
         $widgetCntr = $demoCntr.find("div.spwidget-demo-upload-widget"),
-        $libFiles   = $demoCntr.find("div.spwidget-demo-library-files > table tbody");
+        $libFiles   = $demoCntr.find("div.spwidget-demo-library-files > table tbody"),
+        $lastFile   = $demoCntr.find(".spwidget-demo-upload-last-file");
     
     
     /**
@@ -2080,17 +2183,41 @@ setTimeout(function(){
             
             $demoCntr.show();
             
+            $widgetCntr
+                .empty()
+                .append("<h3>Upload with Overwrite = False</h3>");
+            
             $("<div/>")
-                .appendTo($widgetCntr.empty())
+                .appendTo($widgetCntr)
                 .SPControlUpload({
                     listName:       libraryName,
+                    debug:          Main.debug,
                     onUploadDone:   function(file){
                         
                         refreshFileList(libraryName);
                         
+                        $lastFile.html(decodeURIComponent(file.EncodedAbsUrl));
+                        
                     }
                 });
             
+            $widgetCntr
+                .append("<h3>Upload with Overwrite = True</h3>");
+                
+            $("<div/>")
+                .appendTo($widgetCntr)
+                .SPControlUpload({
+                    listName:       libraryName,
+                    debug:          Main.debug,
+                    overwrite:      true,
+                    onUploadDone:   function(file){
+                        
+                        refreshFileList(libraryName);
+                        
+                        $lastFile.html(decodeURIComponent(file.EncodedAbsUrl));
+                        
+                    }
+                });
             
         }//end: onListSelect()
     });
@@ -2136,24 +2263,4076 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
 
 /*
  * SPServices - Work with SharePoint's Web Services using jQuery
- * Version 0.7.2 -> Note to Marc: Also change var VERSION below.
- * @requires jQuery v1.4.2 or greater - jQuery 1.7+ recommended
+ * Version 2013.02a.1 (includes fix for current site url)
+ * @requires jQuery v1.8 or greater - jQuery 1.10.x recommended
  *
- * Copyright (c) 2009-2012 Sympraxis Consulting LLC
+ * Copyright (c) 2009-2013 Sympraxis Consulting LLC
  * Examples and docs at:
  * http://spservices.codeplex.com
  * Licensed under the MIT license:
  * http://www.opensource.org/licenses/mit-license.php
  */
-/**
+/*
  * @description Work with SharePoint's Web Services using jQuery
  * @type jQuery
  * @name SPServices
  * @category Plugins/SPServices
  * @author Sympraxis Consulting LLC/marc.anderson@sympraxisconsulting.com
  */
-(function(V){var B="0.7.2";var k="/";var ae="Column not found on page";var G="http://schemas.microsoft.com/sharepoint";var r="Alerts";var q="Authentication";var x="Copy";var af="Forms";var s="Lists";var aa="Meetings";var e="People";var b="Permissions";var A="PublishedLinksService";var N="Search";var L="SharePointDiagnostics";var E="SiteData";var m="Sites";var ah="SocialDataService";var ad="SpellCheck";var ap="TaxonomyClientService";var ab="usergroup";var Y="UserProfileService";var au="Versions";var o="Views";var T="WebPartPages";var w="Webs";var d="Workflow";var f="";var y="";var ao=0;var ag="";var Z=[];Z.GetAlerts=[r,false];Z.DeleteAlerts=[r,true];Z.Mode=[q,false];Z.Login=[q,false];Z.CopyIntoItems=[x,true];Z.CopyIntoItemsLocal=[x,true];Z.GetItem=[x,false];Z.GetForm=[af,false];Z.GetFormCollection=[af,false];Z.AddAttachment=[s,true];Z.AddDiscussionBoardItem=[s,true];Z.AddList=[s,true];Z.AddListFromFeature=[s,true];Z.ApplyContentTypeToList=[s,true];Z.CheckInFile=[s,true];Z.CheckOutFile=[s,true];Z.CreateContentType=[s,true];Z.DeleteAttachment=[s,true];Z.DeleteContentType=[s,true];Z.DeleteContentTypeXmlDocument=[s,true];Z.DeleteList=[s,true];Z.GetAttachmentCollection=[s,false];Z.GetList=[s,false];Z.GetListAndView=[s,false];Z.GetListCollection=[s,false];Z.GetListContentType=[s,false];Z.GetListContentTypes=[s,false];Z.GetListItemChanges=[s,false];Z.GetListItemChangesSinceToken=[s,false];Z.GetListItems=[s,false];Z.GetVersionCollection=[s,false];Z.UndoCheckOut=[s,true];Z.UpdateContentType=[s,true];Z.UpdateContentTypesXmlDocument=[s,true];Z.UpdateContentTypeXmlDocument=[s,true];Z.UpdateList=[s,true];Z.UpdateListItems=[s,true];Z.AddMeeting=[aa,true];Z.CreateWorkspace=[aa,true];Z.RemoveMeeting=[aa,true];Z.SetWorkSpaceTitle=[aa,true];Z.ResolvePrincipals=[e,false];Z.SearchPrincipals=[e,false];Z.AddPermission=[b,true];Z.AddPermissionCollection=[b,true];Z.GetPermissionCollection=[b,true];Z.RemovePermission=[b,true];Z.RemovePermissionCollection=[b,true];Z.UpdatePermission=[b,true];Z.GetLinks=[A,true];Z.GetPortalSearchInfo=[N,false];Z.GetQuerySuggestions=[N,false];Z.GetSearchMetadata=[N,false];Z.Query=[N,false];Z.QueryEx=[N,false];Z.Registration=[N,false];Z.Status=[N,false];Z.SendClientScriptErrorReport=[L,true];Z.GetAttachments=[E,false];Z.EnumerateFolder=[E,false];Z.SiteDataGetList=[E,false];Z.SiteDataGetListCollection=[E,false];Z.SiteDataGetSite=[E,false];Z.SiteDataGetSiteUrl=[E,false];Z.SiteDataGetWeb=[E,false];Z.CreateWeb=[m,true];Z.DeleteWeb=[m,false];Z.GetSite=[m,false];Z.GetSiteTemplates=[m,false];Z.AddComment=[ah,true];Z.AddTag=[ah,true];Z.AddTagByKeyword=[ah,true];Z.CountCommentsOfUser=[ah,false];Z.CountCommentsOfUserOnUrl=[ah,false];Z.CountCommentsOnUrl=[ah,false];Z.CountRatingsOnUrl=[ah,false];Z.CountTagsOfUser=[ah,false];Z.DeleteComment=[ah,true];Z.DeleteRating=[ah,true];Z.DeleteTag=[ah,true];Z.DeleteTagByKeyword=[ah,true];Z.DeleteTags=[ah,true];Z.GetAllTagTerms=[ah,false];Z.GetAllTagTermsForUrlFolder=[ah,false];Z.GetAllTagUrls=[ah,false];Z.GetAllTagUrlsByKeyword=[ah,false];Z.GetCommentsOfUser=[ah,false];Z.GetCommentsOfUserOnUrl=[ah,false];Z.GetCommentsOnUrl=[ah,false];Z.GetRatingAverageOnUrl=[ah,false];Z.GetRatingOfUserOnUrl=[ah,false];Z.GetRatingOnUrl=[ah,false];Z.GetRatingsOfUser=[ah,false];Z.GetRatingsOnUrl=[ah,false];Z.GetSocialDataForFullReplication=[ah,false];Z.GetTags=[ah,true];Z.GetTagsOfUser=[ah,true];Z.GetTagTerms=[ah,true];Z.GetTagTermsOfUser=[ah,true];Z.GetTagTermsOnUrl=[ah,true];Z.GetTagUrlsOfUser=[ah,true];Z.GetTagUrlsOfUserByKeyword=[ah,true];Z.GetTagUrls=[ah,true];Z.GetTagUrlsByKeyword=[ah,true];Z.SetRating=[ah,true];Z.UpdateComment=[ah,true];Z.SpellCheck=[ad,false];Z.AddTerms=[ap,true];Z.GetChildTermsInTerm=[ap,false];Z.GetChildTermsInTermSet=[ap,false];Z.GetKeywordTermsByGuids=[ap,false];Z.GetTermsByLabel=[ap,false];Z.GetTermSets=[ap,false];Z.AddGroup=[ab,true];Z.AddGroupToRole=[ab,true];Z.AddRole=[ab,true];Z.AddRoleDef=[ab,true];Z.AddUserCollectionToGroup=[ab,true];Z.AddUserCollectionToRole=[ab,true];Z.AddUserToGroup=[ab,true];Z.AddUserToRole=[ab,true];Z.GetAllUserCollectionFromWeb=[ab,false];Z.GetGroupCollection=[ab,false];Z.GetGroupCollectionFromRole=[ab,false];Z.GetGroupCollectionFromSite=[ab,false];Z.GetGroupCollectionFromUser=[ab,false];Z.GetGroupCollectionFromWeb=[ab,false];Z.GetGroupInfo=[ab,false];Z.GetRoleCollection=[ab,false];Z.GetRoleCollectionFromGroup=[ab,false];Z.GetRoleCollectionFromUser=[ab,false];Z.GetRoleCollectionFromWeb=[ab,false];Z.GetRoleInfo=[ab,false];Z.GetRolesAndPermissionsForCurrentUser=[ab,false];Z.GetRolesAndPermissionsForSite=[ab,false];Z.GetUserCollection=[ab,false];Z.GetUserCollectionFromGroup=[ab,false];Z.GetUserCollectionFromRole=[ab,false];Z.GetUserCollectionFromSite=[ab,false];Z.GetUserCollectionFromWeb=[ab,false];Z.GetUserInfo=[ab,false];Z.GetUserLoginFromEmail=[ab,false];Z.RemoveGroup=[ab,true];Z.RemoveGroupFromRole=[ab,true];Z.RemoveRole=[ab,true];Z.RemoveUserCollectionFromGroup=[ab,true];Z.RemoveUserCollectionFromRole=[ab,true];Z.RemoveUserCollectionFromSite=[ab,true];Z.RemoveUserFromGroup=[ab,true];Z.RemoveUserFromRole=[ab,true];Z.RemoveUserFromSite=[ab,true];Z.RemoveUserFromWeb=[ab,true];Z.UpdateGroupInfo=[ab,true];Z.UpdateRoleDefInfo=[ab,true];Z.UpdateRoleInfo=[ab,true];Z.UpdateUserInfo=[ab,true];Z.AddColleague=[Y,true];Z.AddLink=[Y,true];Z.AddMembership=[Y,true];Z.AddPinnedLink=[Y,true];Z.CreateMemberGroup=[Y,true];Z.CreateUserProfileByAccountName=[Y,true];Z.GetCommonColleagues=[Y,false];Z.GetCommonManager=[Y,false];Z.GetCommonMemberships=[Y,false];Z.GetInCommon=[Y,false];Z.GetPropertyChoiceList=[Y,false];Z.GetUserColleagues=[Y,false];Z.GetUserLinks=[Y,false];Z.GetUserMemberships=[Y,false];Z.GetUserPinnedLinks=[Y,false];Z.GetUserProfileByGuid=[Y,false];Z.GetUserProfileByIndex=[Y,false];Z.GetUserProfileByName=[Y,false];Z.GetUserProfileCount=[Y,false];Z.GetUserProfileSchema=[Y,false];Z.ModifyUserPropertyByAccountName=[Y,true];Z.RemoveAllColleagues=[Y,true];Z.RemoveAllLinks=[Y,true];Z.RemoveAllMemberships=[Y,true];Z.RemoveAllPinnedLinks=[Y,true];Z.RemoveColleague=[Y,true];Z.RemoveLink=[Y,true];Z.RemoveMembership=[Y,true];Z.RemovePinnedLink=[Y,true];Z.UpdateColleaguePrivacy=[Y,true];Z.UpdateLink=[Y,true];Z.UpdateMembershipPrivacy=[Y,true];Z.UpdatePinnedLink=[Y,true];Z.DeleteAllVersions=[au,true];Z.DeleteVersion=[au,true];Z.GetVersions=[au,false];Z.RestoreVersion=[au,true];Z.AddView=[o,true];Z.DeleteView=[o,true];Z.GetView=[o,false];Z.GetViewHtml=[o,false];Z.GetViewCollection=[o,false];Z.UpdateView=[o,true];Z.UpdateViewHtml=[o,true];Z.AddWebPart=[T,true];Z.AddWebPartToZone=[T,true];Z.GetWebPart2=[T,false];Z.GetWebPartPage=[T,false];Z.GetWebPartProperties=[T,false];Z.GetWebPartProperties2=[T,false];Z.CreateContentType=[w,true];Z.GetColumns=[w,false];Z.GetContentType=[w,false];Z.GetContentTypes=[w,false];Z.GetCustomizedPageStatus=[w,false];Z.GetListTemplates=[w,false];Z.GetObjectIdFromUrl=[w,false];Z.GetWeb=[w,false];Z.GetWebCollection=[w,false];Z.GetAllSubWebCollection=[w,false];Z.UpdateColumns=[w,true];Z.UpdateContentType=[w,true];Z.WebUrlFromPageUrl=[w,false];Z.AlterToDo=[d,true];Z.GetTemplatesForItem=[d,false];Z.GetToDosForItem=[d,false];Z.GetWorkflowDataForItem=[d,false];Z.GetWorkflowTaskData=[d,false];Z.StartWorkflow=[d,true];var S={};S.header="<soap:Envelope xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'><soap:Body>";S.footer="</soap:Body></soap:Envelope>";S.payload="";var ac;V.fn.SPServices=function(t){var av=V.extend({},V.fn.SPServices.defaults,t);S.opheader="<"+av.operation+" ";switch(Z[av.operation][0]){case r:S.opheader+="xmlns='"+G+"/soap/2002/1/alerts/' >";ac=G+"/soap/2002/1/alerts/";break;case aa:S.opheader+="xmlns='"+G+"/soap/meetings/' >";ac=G+"/soap/meetings/";break;case b:S.opheader+="xmlns='"+G+"/soap/directory/' >";ac=G+"/soap/directory/";break;case A:S.opheader+="xmlns='http://microsoft.com/webservices/SharePointPortalServer/PublishedLinksService/' >";ac="http://microsoft.com/webservices/SharePointPortalServer/PublishedLinksService/";break;case N:S.opheader+="xmlns='urn:Microsoft.Search' >";ac="urn:Microsoft.Search/";break;case L:S.opheader+="xmlns='"+G+"/diagnostics/' >";ac="http://schemas.microsoft.com/sharepoint/diagnostics/";break;case ah:S.opheader+="xmlns='http://microsoft.com/webservices/SharePointPortalServer/SocialDataService' >";ac="http://microsoft.com/webservices/SharePointPortalServer/SocialDataService/";break;case ad:S.opheader+="xmlns='http://schemas.microsoft.com/sharepoint/publishing/spelling/'";ac="http://schemas.microsoft.com/sharepoint/publishing/spelling/SpellCheck";break;case ap:S.opheader+="xmlns='"+G+"/taxonomy/soap/' >";ac=G+"/taxonomy/soap/";break;case ab:S.opheader+="xmlns='"+G+"/soap/directory/' >";ac=G+"/soap/directory/";break;case Y:S.opheader+="xmlns='http://microsoft.com/webservices/SharePointPortalServer/UserProfileService' >";ac="http://microsoft.com/webservices/SharePointPortalServer/UserProfileService/";break;case T:S.opheader+="xmlns='http://microsoft.com/sharepoint/webpartpages' >";ac="http://microsoft.com/sharepoint/webpartpages/";break;case d:S.opheader+="xmlns='"+G+"/soap/workflow/' >";ac=G+"/soap/workflow/";break;default:S.opheader+="xmlns='"+G+"/soap/'>";ac=G+"/soap/";break}ac+=av.operation;S.opfooter="</"+av.operation+">";var ax="_vti_bin/"+Z[av.operation][0]+".asmx";if(av.webURL.charAt(av.webURL.length-1)===k){ax=av.webURL+ax}else{if(av.webURL.length>0){ax=av.webURL+k+ax}else{ax=V().SPServices.SPGetCurrentSite()+k+ax}}S.payload="";switch(av.operation){case"GetAlerts":break;case"DeleteAlerts":S.payload+="<IDs>";for(ao=0;ao<av.IDs.length;ao++){S.payload+=K("string",av.IDs[ao])}S.payload+="</IDs>";break;case"Mode":break;case"Login":j(av,["username","password"]);break;case"CopyIntoItems":j(av,["SourceUrl"]);S.payload+="<DestinationUrls>";for(ao=0;ao<av.DestinationUrls.length;ao++){S.payload+=K("string",av.DestinationUrls[ao])}S.payload+="</DestinationUrls>";j(av,["Fields","Stream","Results"]);break;case"CopyIntoItemsLocal":j(av,["SourceUrl"]);S.payload+="<DestinationUrls>";for(ao=0;ao<av.DestinationUrls.length;ao++){S.payload+=K("string",av.DestinationUrls[ao])}S.payload+="</DestinationUrls>";break;case"GetItem":j(av,["Url","Fields","Stream"]);break;case"GetForm":j(av,["listName","formUrl"]);break;case"GetFormCollection":j(av,["listName"]);break;case"AddAttachment":j(av,["listName","listItemID","fileName","attachment"]);break;case"AddDiscussionBoardItem":j(av,["listName","message"]);break;case"AddList":j(av,["listName","description","templateID"]);break;case"AddListFromFeature":j(av,["listName","description","featureID","templateID"]);break;case"ApplyContentTypeToList":j(av,["webUrl","contentTypeId","listName"]);break;case"CheckInFile":j(av,["pageUrl","comment","CheckinType"]);break;case"CheckOutFile":j(av,["pageUrl","checkoutToLocal","lastmodified"]);break;case"CreateContentType":j(av,["listName","displayName","parentType","fields","contentTypeProperties","addToView"]);break;case"DeleteAttachment":j(av,["listName","listItemID","url"]);break;case"DeleteContentType":j(av,["listName","contentTypeId"]);break;case"DeleteContentTypeXmlDocument":j(av,["listName","contentTypeId","documentUri"]);break;case"DeleteList":j(av,["listName"]);break;case"GetAttachmentCollection":j(av,["listName",["listItemID","ID"]]);break;case"GetList":j(av,["listName"]);break;case"GetListAndView":j(av,["listName","viewName"]);break;case"GetListCollection":break;case"GetListContentType":j(av,["listName","contentTypeId"]);break;case"GetListContentTypes":j(av,["listName"]);break;case"GetListItems":j(av,["listName","viewName",["query","CAMLQuery"],["viewFields","CAMLViewFields"],["rowLimit","CAMLRowLimit"],["queryOptions","CAMLQueryOptions"]]);break;case"GetListItemChanges":j(av,["listName","viewFields","since","contains"]);break;case"GetListItemChangesSinceToken":j(av,["listName","viewName","query","viewFields","rowLimit","queryOptions","changeToken","contains"]);break;case"GetVersionCollection":j(av,["strlistID","strlistItemID","strFieldName"]);break;case"UndoCheckOut":j(av,["pageUrl"]);break;case"UpdateContentType":j(av,["listName","contentTypeId","contentTypeProperties","newFields","updateFields","deleteFields","addToView"]);break;case"UpdateContentTypesXmlDocument":j(av,["listName","newDocument"]);break;case"UpdateContentTypeXmlDocument":j(av,["listName","contentTypeId","newDocument"]);break;case"UpdateList":j(av,["listName","listProperties","newFields","updateFields","deleteFields","listVersion"]);break;case"UpdateListItems":j(av,["listName"]);if(av.updates!==undefined&&av.updates.length>0){j(av,["updates"])}else{S.payload+="<updates><Batch OnError='Continue'><Method ID='1' Cmd='"+av.batchCmd+"'>";for(ao=0;ao<av.valuepairs.length;ao++){S.payload+="<Field Name='"+av.valuepairs[ao][0]+"'>"+D(av.valuepairs[ao][1])+"</Field>"}if(av.batchCmd!=="New"){S.payload+="<Field Name='ID'>"+av.ID+"</Field>"}S.payload+="</Method></Batch></updates>"}break;case"AddMeeting":j(av,["organizerEmail","uid","sequence","utcDateStamp","title","location","utcDateStart","utcDateEnd","nonGregorian"]);break;case"CreateWorkspace":j(av,["title","templateName","lcid","timeZoneInformation"]);break;case"RemoveMeeting":j(av,["recurrenceId","uid","sequence","utcDateStamp","cancelMeeting"]);break;case"SetWorkspaceTitle":j(av,["title"]);break;case"ResolvePrincipals":j(av,["principalKeys","principalType","addToUserInfoList"]);break;case"SearchPrincipals":j(av,["searchText","maxResults","principalType"]);break;case"AddPermission":j(av,["objectName","objectType","permissionIdentifier","permissionType","permissionMask"]);break;case"AddPermissionCollection":j(av,["objectName","objectType","permissionsInfoXml"]);break;case"GetPermissionCollection":j(av,["objectName","objectType"]);break;case"RemovePermission":j(av,["objectName","objectType","permissionIdentifier","permissionType"]);break;case"RemovePermissionCollection":j(av,["objectName","objectType","memberIdsXml"]);break;case"UpdatePermission":j(av,["objectName","objectType","permissionIdentifier","permissionType","permissionMask"]);break;case"GetLinks":break;case"GetPortalSearchInfo":S.opheader="<"+av.operation+" xmlns='http://microsoft.com/webservices/OfficeServer/QueryService'>";ac="http://microsoft.com/webservices/OfficeServer/QueryService/"+av.operation;break;case"GetQuerySuggestions":S.opheader="<"+av.operation+" xmlns='http://microsoft.com/webservices/OfficeServer/QueryService'>";ac="http://microsoft.com/webservices/OfficeServer/QueryService/"+av.operation;S.payload+=K("queryXml",a(av.queryXml));break;case"GetSearchMetadata":S.opheader="<"+av.operation+" xmlns='http://microsoft.com/webservices/OfficeServer/QueryService'>";ac="http://microsoft.com/webservices/OfficeServer/QueryService/"+av.operation;break;case"Query":S.payload+=K("queryXml",a(av.queryXml));break;case"QueryEx":S.opheader="<"+av.operation+" xmlns='http://microsoft.com/webservices/OfficeServer/QueryService'>";ac="http://microsoft.com/webservices/OfficeServer/QueryService/"+av.operation;S.payload+=K("queryXml",a(av.queryXml));break;case"Registration":S.payload+=K("registrationXml",a(av.registrationXml));break;case"Status":break;case"SendClientScriptErrorReport":j(av,["message","file","line","client","stack","team","originalFile"]);break;case"EnumerateFolder":j(av,["strFolderUrl"]);break;case"GetAttachments":j(av,["strListName","strItemId"]);break;case"SiteDataGetList":j(av,["strListName"]);S=aj(S,av.operation);break;case"SiteDataGetListCollection":S=aj(S,av.operation);break;case"SiteDataGetSite":S=aj(S,av.operation);break;case"SiteDataGetSiteUrl":j(av,["Url"]);S=aj(S,av.operation);break;case"SiteDataGetWeb":S=aj(S,av.operation);break;case"CreateWeb":j(av,["urlType","titleType","descriptionType","templateNameType","languageType","languageSpecifiedType","localeType","localeSpecifiedType","collationLocaleType","collationLocaleSpecifiedType","uniquePermissionsType","uniquePermissionsSpecifiedType","anonymousType","anonymousSpecifiedType","presenceType","presenceSpecifiedType"]);break;case"DeleteWeb":j(av,["url"]);break;case"GetSite":j(av,["SiteUrl"]);break;case"GetSiteTemplates":j(av,["LCID","TemplateList"]);break;case"AddComment":j(av,["url","comment","isHighPriority","title"]);break;case"AddTag":j(av,["url","termID","title","isPrivate"]);break;case"AddTagByKeyword":j(av,["url","keyword","title","isPrivate"]);break;case"CountCommentsOfUser":j(av,["userAccountName"]);break;case"CountCommentsOfUserOnUrl":j(av,["userAccountName","url"]);break;case"CountCommentsOnUrl":j(av,["url"]);break;case"CountRatingsOnUrl":j(av,["url"]);break;case"CountTagsOfUser":j(av,["userAccountName"]);break;case"DeleteComment":j(av,["url","lastModifiedTime"]);break;case"DeleteRating":j(av,["url"]);break;case"DeleteTag":j(av,["url","termID"]);break;case"DeleteTagByKeyword":j(av,["url","keyword"]);break;case"DeleteTags":j(av,["url"]);break;case"GetAllTagTerms":j(av,["maximumItemsToReturn"]);break;case"GetAllTagTermsForUrlFolder":j(av,["urlFolder","maximumItemsToReturn"]);break;case"GetAllTagUrls":j(av,["termID"]);break;case"GetAllTagUrlsByKeyword":j(av,["keyword"]);break;case"GetCommentsOfUser":j(av,["userAccountName","maximumItemsToReturn","startIndex"]);break;case"GetCommentsOfUserOnUrl":j(av,["userAccountName","url"]);break;case"GetCommentsOnUrl":j(av,["url","maximumItemsToReturn","startIndex"]);if(av.excludeItemsTime!==undefined&&av.excludeItemsTime.length>0){S.payload+=K("excludeItemsTime",av.excludeItemsTime)}break;case"GetRatingAverageOnUrl":j(av,["url"]);break;case"GetRatingOfUserOnUrl":j(av,["userAccountName","url"]);break;case"GetRatingOnUrl":j(av,["url"]);break;case"GetRatingsOfUser":j(av,["userAccountName"]);break;case"GetRatingsOnUrl":j(av,["url"]);break;case"GetSocialDataForFullReplication":j(av,["userAccountName"]);break;case"GetTags":j(av,["url"]);break;case"GetTagsOfUser":j(av,["userAccountName","maximumItemsToReturn","startIndex"]);break;case"GetTagTerms":j(av,["maximumItemsToReturn"]);break;case"GetTagTermsOfUser":j(av,["userAccountName","maximumItemsToReturn"]);break;case"GetTagTermsOnUrl":j(av,["url","maximumItemsToReturn"]);break;case"GetTagUrls":j(av,["termID"]);break;case"GetTagUrlsByKeyword":j(av,["keyword"]);break;case"GetTagUrlsOfUser":j(av,["termID","userAccountName"]);break;case"GetTagUrlsOfUserByKeyword":j(av,["keyword","userAccountName"]);break;case"SetRating":j(av,["url","rating","title","analysisDataEntry"]);break;case"UpdateComment":j(av,["url","lastModifiedTime","comment","isHighPriority"]);break;case"SpellCheck":j(av,["chunksToSpell","declaredLanguage","useLad"]);break;case"AddTerms":j(av,["sharedServiceId","termSetId","lcid","newTerms"]);break;case"GetChildTermsInTerm":j(av,["sspId","lcid","termId","termSetId"]);break;case"GetChildTermsInTermSet":j(av,["sspId","lcid","termSetId"]);break;case"GetKeywordTermsByGuids":j(av,["termIds","lcid"]);break;case"GetTermsByLabel":j(av,["label","lcid","matchOption","resultCollectionSize","termIds","addIfNotFound"]);break;case"GetTermSets":j(av,["sharedServiceId","termSetId","lcid","clientTimeStamps","clientVersions"]);break;case"AddGroup":j(av,["groupName","ownerIdentifier","ownerType","defaultUserLoginName","description"]);break;case"AddGroupToRole":j(av,["groupName","roleName"]);break;case"AddRole":j(av,["roleName","description","permissionMask"]);break;case"AddRoleDef":j(av,["roleName","description","permissionMask"]);break;case"AddUserCollectionToGroup":j(av,["groupName","usersInfoXml"]);break;case"AddUserCollectionToRole":j(av,["roleName","usersInfoXml"]);break;case"AddUserToGroup":j(av,["groupName","userName","userLoginName","userEmail","userNotes"]);break;case"AddUserToRole":j(av,["roleName","userName","userLoginName","userEmail","userNotes"]);break;case"GetAllUserCollectionFromWeb":break;case"GetGroupCollection":j(av,["groupNamesXml"]);break;case"GetGroupCollectionFromRole":j(av,["roleName"]);break;case"GetGroupCollectionFromSite":break;case"GetGroupCollectionFromUser":j(av,["userLoginName"]);break;case"GetGroupCollectionFromWeb":break;case"GetGroupInfo":j(av,["groupName"]);break;case"GetRoleCollection":j(av,["roleNamesXml"]);break;case"GetRoleCollectionFromGroup":j(av,["groupName"]);break;case"GetRoleCollectionFromUser":j(av,["userLoginName"]);break;case"GetRoleCollectionFromWeb":break;case"GetRoleInfo":j(av,["roleName"]);break;case"GetRolesAndPermissionsForCurrentUser":break;case"GetRolesAndPermissionsForSite":break;case"GetUserCollection":j(av,["userLoginNamesXml"]);break;case"GetUserCollectionFromGroup":j(av,["groupName"]);break;case"GetUserCollectionFromRole":j(av,["roleName"]);break;case"GetUserCollectionFromSite":break;case"GetUserCollectionFromWeb":break;case"GetUserInfo":j(av,["userLoginName"]);break;case"GetUserLoginFromEmail":j(av,["emailXml"]);break;case"RemoveGroup":j(av,["groupName"]);break;case"RemoveGroupFromRole":j(av,["roleName","groupName"]);break;case"RemoveRole":j(av,["roleName"]);break;case"RemoveUserCollectionFromGroup":j(av,["groupName","userLoginNamesXml"]);break;case"RemoveUserCollectionFromRole":j(av,["roleName","userLoginNamesXml"]);break;case"RemoveUserCollectionFromSite":j(av,["userLoginNamesXml"]);break;case"RemoveUserFromGroup":j(av,["groupName","userLoginName"]);break;case"RemoveUserFromRole":j(av,["roleName","userLoginName"]);break;case"RemoveUserFromSite":j(av,["userLoginName"]);break;case"RemoveUserFromWeb":j(av,["userLoginName"]);break;case"UpdateGroupInfo":j(av,["oldGroupName","groupName","ownerIdentifier","ownerType","description"]);break;case"UpdateRoleDefInfo":j(av,["oldRoleName","roleName","description","permissionMask"]);break;case"UpdateRoleInfo":j(av,["oldRoleName","roleName","description","permissionMask"]);break;case"UpdateUserInfo":j(av,["userLoginName","userName","userEmail","userNotes"]);break;case"AddColleague":j(av,["accountName","colleagueAccountName","group","privacy","isInWorkGroup"]);break;case"AddLink":j(av,["accountName","name","url","group","privacy"]);break;case"AddMembership":j(av,["accountName","membershipInfo","group","privacy"]);break;case"AddPinnedLink":j(av,["accountName","name","url"]);break;case"CreateMemberGroup":j(av,["membershipInfo"]);break;case"CreateUserProfileByAccountName":j(av,["accountName"]);break;case"GetCommonColleagues":j(av,["accountName"]);break;case"GetCommonManager":j(av,["accountName"]);break;case"GetCommonMemberships":j(av,["accountName"]);break;case"GetInCommon":j(av,["accountName"]);break;case"GetPropertyChoiceList":j(av,["propertyName"]);break;case"GetUserColleagues":j(av,["accountName"]);break;case"GetUserLinks":j(av,["accountName"]);break;case"GetUserMemberships":j(av,["accountName"]);break;case"GetUserPinnedLinks":j(av,["accountName"]);break;case"GetUserProfileByGuid":j(av,["guid"]);break;case"GetUserProfileByIndex":j(av,["index"]);break;case"GetUserProfileByName":if(av.accountName!==undefined&&av.accountName.length>0){j(av,[["AccountName","accountName"]])}else{j(av,["AccountName"])}break;case"GetUserProfileCount":break;case"GetUserProfileSchema":break;case"ModifyUserPropertyByAccountName":j(av,["accountName","newData"]);break;case"RemoveAllColleagues":j(av,["accountName"]);break;case"RemoveAllLinks":j(av,["accountName"]);break;case"RemoveAllMemberships":j(av,["accountName"]);break;case"RemoveAllPinnedLinks":j(av,["accountName"]);break;case"RemoveColleague":j(av,["accountName","colleagueAccountName"]);break;case"RemoveLink":j(av,["accountName","id"]);break;case"RemoveMembership":j(av,["accountName","sourceInternal","sourceReference"]);break;case"RemovePinnedLink":j(av,["accountName","id"]);break;case"UpdateColleaguePrivacy":j(av,["accountName","colleagueAccountName","newPrivacy"]);break;case"UpdateLink":j(av,["accountName","data"]);break;case"UpdateMembershipPrivacy":j(av,["accountName","sourceInternal","sourceReference","newPrivacy"]);break;case"UpdatePinnedLink ":j(av,["accountName","data"]);break;case"DeleteAllVersions":j(av,["fileName"]);break;case"DeleteVersion":j(av,["fileName","fileVersion"]);break;case"GetVersions":j(av,["fileName"]);break;case"RestoreVersion":j(av,["fileName","fileVersion"]);break;case"AddView":j(av,["listName","viewName","viewFields","query","rowLimit","rowLimit","type","makeViewDefault"]);break;case"DeleteView":j(av,["listName","viewName"]);break;case"GetView":j(av,["listName","viewName"]);break;case"GetViewCollection":j(av,["listName"]);break;case"GetViewHtml":j(av,["listName","viewName"]);break;case"UpdateView":j(av,["listName","viewName","viewProperties","query","viewFields","aggregations","formats","rowLimit"]);break;case"UpdateViewHtml":j(av,["listName","viewName","viewProperties","toolbar","viewHeader","viewBody","viewFooter","viewEmpty","rowLimitExceeded","query","viewFields","aggregations","formats","rowLimit"]);break;case"AddWebPart":j(av,["pageUrl","webPartXml","storage"]);break;case"AddWebPartToZone":j(av,["pageUrl","webPartXml","storage","zoneId","zoneIndex"]);break;case"GetWebPart2":j(av,["pageUrl","storageKey","storage","behavior"]);break;case"GetWebPartPage":j(av,["documentName","behavior"]);break;case"GetWebPartProperties":j(av,["pageUrl","storage"]);break;case"GetWebPartProperties2":j(av,["pageUrl","storage","behavior"]);break;case"Webs.CreateContentType":j(av,["displayName","parentType","newFields","contentTypeProperties"]);break;case"GetColumns":j(av,["webUrl"]);break;case"GetContentType":j(av,["contentTypeId"]);break;case"GetContentTypes":break;case"GetCustomizedPageStatus":j(av,["fileUrl"]);break;case"GetListTemplates":break;case"GetObjectIdFromUrl":j(av,["objectUrl"]);break;case"GetWeb":j(av,[["webUrl","webURL"]]);break;case"GetWebCollection":break;case"GetAllSubWebCollection":break;case"UpdateColumns":j(av,["newFields","updateFields","deleteFields"]);break;case"Webs.UpdateContentType":j(av,["contentTypeId","contentTypeProperties","newFields","updateFields","deleteFields"]);break;case"WebUrlFromPageUrl":j(av,[["pageUrl","pageURL"]]);break;case"AlterToDo":j(av,["item","todoId","todoListId","taskData"]);break;case"GetTemplatesForItem":j(av,["item"]);break;case"GetToDosForItem":j(av,["item"]);break;case"GetWorkflowDataForItem":j(av,["item"]);break;case"GetWorkflowTaskData":j(av,["item","listId","taskId"]);break;case"StartWorkflow":j(av,["item","templateId","workflowParameters"]);break;default:break}var ay=S.header+S.opheader+S.payload+S.opfooter+S.footer;var aw;var i=null;if(av.cacheXML){aw=V("body").data(ay)}if(aw===undefined){V.ajax({url:ax,async:av.async,beforeSend:function(az){if(Z[av.operation][1]){az.setRequestHeader("SOAPAction",ac)}},type:"POST",data:ay,dataType:"xml",contentType:"text/xml;charset='utf-8'",complete:function(aA,az){if(av.cacheXML){V("body").data(ay,aA)}aw=aA;i=az;av.completefunc(aw,i)}})}else{av.completefunc(aw,i)}};V.fn.SPServices.defaults={cacheXML:false,operation:"",webURL:"",makeViewDefault:false,CAMLViewName:"",CAMLQuery:"",CAMLViewFields:"",CAMLRowLimit:0,CAMLQueryOptions:"<QueryOptions></QueryOptions>",batchCmd:"Update",valuepairs:[],DestinationUrls:[],behavior:"Version3",storage:"Shared",objectType:"List",cancelMeeting:true,nonGregorian:false,fClaim:false,recurrenceId:0,sequence:0,maximumItemsToReturn:0,startIndex:0,isHighPriority:false,isPrivate:false,rating:1,maxResults:10,principalType:"User",async:true,completefunc:null};V.fn.SPServices.SPGetCurrentSite=function(){if(f.length>0){return f}var i=S.header+"<WebUrlFromPageUrl xmlns='"+G+"/soap/' ><pageUrl>"+((location.href.indexOf("?")>0)?location.href.substr(0,location.href.indexOf("?")):location.href)+"</pageUrl></WebUrlFromPageUrl>"+S.footer;V.ajax({async:false,url:"/_vti_bin/Webs.asmx",type:"POST",data:i,dataType:"xml",contentType:'text/xml;charset="utf-8"',complete:function(av,t){f=V(av.responseXML).find("WebUrlFromPageUrlResult").text()}});return f};V.fn.SPServices.SPCascadeDropdowns=function(av){var ay=V.extend({},{relationshipWebURL:"",relationshipList:"",relationshipListParentColumn:"",relationshipListChildColumn:"",relationshipListSortColumn:"",parentColumn:"",childColumn:"",listName:V().SPServices.SPListNameFromUrl(),CAMLQuery:"",promptText:"",noneText:"(None)",simpleChild:false,selectSingleOption:false,matchOnId:false,completefunc:null,debug:false},av);var ax=false;var aA="SPServices.SPCascadeDropdowns";var aw=new ai(ay.parentColumn);if(aw.Obj.html()===null&&ay.debug){R(aA,"parentColumn: "+ay.parentColumn,ae);return}var i=new ai(ay.childColumn);if(i.Obj.html()===null&&ay.debug){R(aA,"childColumn: "+ay.childColumn,ae);return}if(ay.simpleChild===true&&i.Type==="C"){V().SPServices.SPComplexToSimpleDropdown({columnName:ay.childColumn});i=new ai(ay.childColumn)}V().SPServices({operation:"GetList",async:false,cacheXML:true,listName:ay.listName,completefunc:function(aC,aB){V(aC.responseXML).find("Fields").each(function(){V(this).find("Field[DisplayName='"+ay.childColumn+"']").each(function(){childColumnRequired=(V(this).attr("Required")==="TRUE")?true:false;childColumnStatic=V(this).attr("StaticName");return false})})}});var az={opt:ay,childSelect:i,childColumnStatic:childColumnStatic,childColumnRequired:childColumnRequired};var t=aw.Obj.data("SPCascadeDropdownsChildColumns");if(t===undefined){aw.Obj.data("SPCascadeDropdownsChildColumns",[az])}else{t.push(az);aw.Obj.data("SPCascadeDropdownsChildColumns",t);ax=true}if(!ax){switch(aw.Type){case"S":aw.Obj.bind("change",function(){am(ay.parentColumn,aw)});break;case"C":V("input[id='"+aw.Obj.attr("optHid")+"']").bind("propertychange",function(){am(ay.parentColumn,aw)});break;case"M":aw.Obj.bind("dblclick",function(){am(ay.parentColumn,aw)});parentSelections=aw.Obj.closest("span").find("select[id$='SelectResult']");parentSelections.bind("dblclick",function(){am(ay.parentColumn,aw)});aw.Obj.closest("span").find("button").each(function(){V(this).bind("click",function(){am(ay.parentColumn,aw)})});break;default:break}}am(ay.parentColumn,aw)};function am(aD,ax){var aE="";var aw;var az=null;var i;var aA;var aC;var ay;var aB;var av;var t=ax.Obj.data("SPCascadeDropdownsChildColumns");V(t).each(function(){var aJ=this.opt;var aH=this.childSelect;var aM=this.childColumnStatic;var aI=this.childColumnRequired;aw=W(ax,aJ.matchOnId);var aG=aw.join(";#");if(ax.Obj.data("SPCascadeDropdown_Selected_"+aM)===aG){return}ax.Obj.data("SPCascadeDropdown_Selected_"+aM,aG);az=W(aH,true);if(aH.Type==="M"){aA=aH.Obj.closest("span").find("input[name$='MultiLookupPicker$data']");i=window[aH.Obj.closest("tr").find("button[id$='AddButton']").attr("id").replace(/AddButton/,"MultiLookupPicker_m")];currentSelection=aH.Obj.closest("span").find("select[ID$='SelectResult']")}var aL=(aJ.relationshipListSortColumn.length>0)?aJ.relationshipListSortColumn:aJ.relationshipListChildColumn;var aF="<Query><OrderBy><FieldRef Name='"+aL+"'/></OrderBy><Where><And>";if(aJ.CAMLQuery.length>0){aF+="<And>"}if(aw.length===0){aF+="<Eq><FieldRef Name='"+aJ.relationshipListParentColumn+"'/><Value Type='Text'></Value></Eq>"}else{if(aw.length===1){aF+="<Eq><FieldRef Name='"+aJ.relationshipListParentColumn+(aJ.matchOnId?"' LookupId='True'/><Value Type='Integer'>":"'/><Value Type='Text'>")+D(aw[0])+"</Value></Eq>"}else{var aK=(aw.length>2)?true:false;for(ao=0;ao<(aw.length-1);ao++){aF+="<Or>"}for(ao=0;ao<aw.length;ao++){aF+="<Eq><FieldRef Name='"+aJ.relationshipListParentColumn+(aJ.matchOnId?"' LookupId='True'/><Value Type='Integer'>":"'/><Value Type='Text'>")+D(aw[ao])+"</Value></Eq>";if(ao>0&&(ao<(aw.length-1))&&aK){aF+="</Or>"}}aF+="</Or>"}}if(aJ.CAMLQuery.length>0){aF+=aJ.CAMLQuery+"</And>"}aF+="<IsNotNull><FieldRef Name='"+aJ.relationshipListChildColumn+"' /></IsNotNull>";aF+="</And></Where></Query>";V().SPServices({operation:"GetListItems",async:false,webURL:aJ.relationshipWebURL,listName:aJ.relationshipList,CAMLQuery:aF,CAMLViewFields:"<ViewFields><FieldRef Name='"+aJ.relationshipListParentColumn+"' /><FieldRef Name='"+aJ.relationshipListChildColumn+"' /></ViewFields>",CAMLRowLimit:0,CAMLQueryOptions:"<QueryOptions><IncludeMandatoryColumns>FALSE</IncludeMandatoryColumns></QueryOptions>",completefunc:function(aO,aN){V(aO.responseXML).find("errorstring").each(function(){var aQ="SPServices.SPCascadeDropdowns";var aP=V(this).text();if(aJ.debug&&aP==="One or more field types are not installed properly. Go to the list settings page to delete these fields."){R(aQ,"relationshipListParentColumn: "+aJ.relationshipListParentColumn+" or relationshipListChildColumn: "+aJ.relationshipListChildColumn,"Not found in relationshipList "+aJ.relationshipList)}else{if(aJ.debug&&aP==="Guid should contain 32 digits with 4 dashes (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)."){R(aQ,"relationshipList: "+aJ.relationshipList,"List not found")}}return});switch(aH.Type){case"S":V(aH.Obj).find("option").remove();if(!aI&&(aJ.promptText.length>0)){aH.Obj.append("<option value='0'>"+aJ.promptText.replace(/\{0\}/g,aJ.childColumn)+"</option>")}else{if(!aI){aH.Obj.append("<option value='0'>"+aJ.noneText+"</option>")}}break;case"C":aE=aI?"":aJ.noneText+"|0";aH.Obj.attr("value","");break;case"M":V(aH.Obj).find("option").remove();aC="";break;default:break}ay=parseFloat(V(aO.responseXML).SPFilterNode("rs:data").attr("ItemCount"));V(aO.responseXML).SPFilterNode("z:row").each(function(){var aR,aQ;var aP=V(this).attr("ows_"+aJ.relationshipListChildColumn);if(aP!==undefined&&aP.indexOf(";#")>0){var aT=aP.split(";#");aR=aT[0];aQ=aT[1]}else{aR=V(this).attr("ows_ID");aQ=aP}if(isNaN(aR)){aR=V(this).attr("ows_ID")}aB=aR;av=aQ;switch(aH.Type){case"S":var aS=(V(this).attr("ows_ID")===az[0])?" selected='selected'":"";aH.Obj.append("<option"+aS+" value='"+aR+"'>"+aQ+"</option>");break;case"C":if(aR===az[0]){aH.Obj.attr("value",aQ)}aE=aE+((aE.length>0)?"|":"")+aQ+"|"+aR;break;case"M":aH.Obj.append("<option value='"+aR+"'>"+aQ+"</option>");aC+=aR+"|t"+aQ+"|t |t |t";break;default:break}});switch(aH.Type){case"S":aH.Obj.trigger("change");if(ay===1&&aJ.selectSingleOption===true){V(aH.Obj).find("option[value!='0']:first").attr("selected","selected")}break;case"C":aH.Obj.attr("choices",aE);if(ay===1&&aJ.selectSingleOption===true){V(aH.Obj).attr("value",av);V("input[id='"+aH.Obj.attr("optHid")+"']").val(aB)}if(aH.Obj.val()===""){V("input[id='"+aH.Obj.attr("optHid")+"']").val("")}break;case"M":i.data="";aA.attr("value",aC);V(currentSelection).find("option").each(function(){var aQ=V(this);var aP=V(this).html();V(this).attr("selected","selected");V(aH.Obj).find("option").filter(function(){return V(this).text()==aP.replace(/&amp;/,"&")}).each(function(){if(V(this).html()===aP){aQ.removeAttr("selected")}})});GipRemoveSelectedItems(i);V(aH.Obj).find("option").each(function(){var aP=V(this);V(currentSelection).find("option").each(function(){if(V(this).html()===aP.html()){aP.remove()}})});GipAddSelectedItems(i);i.data=GipGetGroupData(aC);aH.Obj.trigger("dblclick");break;default:break}}});if(aJ.completefunc!==null){aJ.completefunc()}})}V.fn.SPServices.SPComplexToSimpleDropdown=function(aC){var i=V.extend({},{columnName:"",completefunc:null,debug:false},aC);var av=new ai(i.columnName);if(av.Obj.html()===null&&i.debug){R("SPServices.SPComplexToSimpleDropdown","columnName: "+i.columnName,ae);return}if(av.Type!=="C"){return}var aA=V(av.Obj).attr("choices").split("|");var aw=V(av.Obj).attr("optHid");var aB=V("input[id='"+aw+"']");var t=V("input[id='"+aw+"']").val();var ax=n("SPComplexToSimpleDropdown",i.columnName);var az="<select id='"+ax+"' title='"+i.columnName+"'>";for(ao=0;ao<aA.length;ao=ao+2){var ay=(aA[ao+1]===t)?" selected='selected' ":" ";az+="<option"+ay+"value='"+aA[ao+1]+"'>"+aA[ao]+"</option>"}az+="</select>";V(av.Obj).closest("td").prepend(az);V(av.Obj).closest("span").find("img").remove();V(av.Obj).closest("span").find("input").hide();V("#"+ax).change(function(){var aD=V(this).val();aB.val(aD);V(av.Obj).val(V(this).find("option[value='"+(aD!=="0"?aD:"")+"']").html())});V("#"+ax).trigger("change");if(i.completefunc!==null){i.completefunc()}};V.fn.SPServices.SPDisplayRelatedInfo=function(t){var aw=V.extend({},{columnName:"",relatedWebURL:"",relatedList:"",relatedListColumn:"",relatedColumns:[],displayFormat:"table",headerCSSClass:"ms-vh2",rowCSSClass:"ms-vb",CAMLQuery:"",numChars:0,matchType:"Eq",matchOnId:false,completefunc:null,debug:false},t);var i;var av=[];var az;var ay="SPServices.SPDisplayRelatedInfo";var ax=new ai(aw.columnName);if(ax.Obj.html()===null&&aw.debug){R(ay,"columnName: "+aw.columnName,ae);return}i=n("SPDisplayRelatedInfo",aw.columnName);V().SPServices({operation:"GetList",async:false,cacheXML:true,webURL:aw.relatedWebURL,listName:aw.relatedList,completefunc:function(aB,aA){V(aB.responseXML).find("faultcode").each(function(){if(aw.debug){R(ay,"relatedList: "+aw.relatedList,"List not found");return}});az=V(aB.responseXML).find("List");for(ao=0;ao<aw.relatedColumns.length;ao++){av[ao]=V(aB.responseXML).find("Fields > Field[Name='"+aw.relatedColumns[ao]+"']")}}});switch(ax.Type){case"S":ax.Obj.bind("change",function(){P(aw,i,az,av)});break;case"C":V("input[id='"+ax.Obj.attr("optHid")+"']").bind("propertychange",function(){P(aw,i,az,av)});break;case"M":if(aw.debug){R(ay,"columnName: "+aw.columnName,"Multi-select columns not supported by this function")}break;default:break}P(aw,i,az,av)};function P(t,ay,aA,av){var aB=null;var ax="SPServices.SPDisplayRelatedInfo";var aw=new ai(t.columnName);aB=W(aw,t.matchOnId);if(aw.Type==="C"&&t.numChars>0&&aB[0].length<t.numChars){return}if(aw.Obj.attr("showRelatedSelected")===aB[0]){return}aw.Obj.attr("showRelatedSelected",aB[0]);V("#"+ay).remove();aw.Obj.parent().append("<div id="+ay+"></div>");var i="<Query><Where>";if(t.CAMLQuery.length>0){i+="<And>"}i+="<Eq><FieldRef Name='"+t.relatedListColumn+(t.matchOnId?"' LookupId='True'/><Value Type='Integer'>":"'/><Value Type='Text'>")+D(aB[0])+"</Value></Eq>";if(t.CAMLQuery.length>0){i+=t.CAMLQuery+"</And>"}i+="</Where></Query>";var az=" ";for(ao=0;ao<t.relatedColumns.length;ao++){az+="<FieldRef Name='"+t.relatedColumns[ao]+"' />"}V().SPServices({operation:"GetListItems",async:false,webURL:t.relatedWebURL,listName:t.relatedList,CAMLQuery:i,CAMLViewFields:"<ViewFields>"+az+"</ViewFields>",CAMLRowLimit:0,completefunc:function(aE,aD){V(aE.responseXML).find("errorstring").each(function(){var aF=V(this).text();if(t.debug&&aF==="One or more field types are not installed properly. Go to the list settings page to delete these fields."){R(ax,"relatedListColumn: "+t.relatedListColumn,"Column not found in relatedList "+t.relatedList)}else{if(t.debug&&aF==="Guid should contain 32 digits with 4 dashes (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)."){R(ax,"relatedList: "+t.relatedList,"List not found")}}return});var aC;switch(t.displayFormat){case"table":aC="<table>";aC+="<tr>";for(ao=0;ao<t.relatedColumns.length;ao++){if(typeof av[ao]==="undefined"&&t.debug){R(ax,"columnName: "+t.relatedColumns[ao],"Column not found in relatedList");return}aC+="<th class='"+t.headerCSSClass+"'>"+av[ao].attr("DisplayName")+"</th>"}aC+="</tr>";V(aE.responseXML).SPFilterNode("z:row").each(function(){aC+="<tr>";for(ao=0;ao<t.relatedColumns.length;ao++){aC+="<td class='"+t.rowCSSClass+"'>"+F(aA,av[ao],V(this).attr("ows_"+t.relatedColumns[ao]),t)+"</td>"}aC+="</tr>"});aC+="</table>";break;case"list":aC="<table>";V(aE.responseXML).SPFilterNode("z:row").each(function(){for(ao=0;ao<t.relatedColumns.length;ao++){if(typeof av[ao]==="undefined"&&t.debug){R(ax,"columnName: "+t.relatedColumns[ao],"Column not found in relatedList");return}aC+="<tr>";aC+="<th class='"+t.headerCSSClass+"'>"+av[ao].attr("DisplayName")+"</th>";aC+="<td class='"+t.rowCSSClass+"'>"+F(aA,av[ao],V(this).attr("ows_"+t.relatedColumns[ao]),t)+"</td>";aC+="</tr>"}});aC+="</table>";break;default:break}V("#"+ay).html(aC)}});if(t.completefunc!==null){t.completefunc()}}V.fn.SPServices.SPFilterDropdown=function(aE){var av=V.extend({},{relationshipWebURL:"",relationshipList:"",relationshipListColumn:"",relationshipListSortColumn:"",columnName:"",listName:V().SPServices.SPListNameFromUrl(),promptText:"",noneText:"(None)",CAMLQuery:"",CAMLQueryOptions:"<QueryOptions><IncludeMandatoryColumns>FALSE</IncludeMandatoryColumns><ViewAttributes Scope='RecursiveAll'/></QueryOptions>",completefunc:null,debug:false},aE);var aD="";var aC=null;var t;var ax;var aB;var aA;var az="SPServices.SPFilterDropdown";var ay=new ai(av.columnName);if(ay.Obj.html()===null&&av.debug){R(az,"columnName: "+av.columnName,ae);return}aC=W(ay,true);var aw=(av.relationshipListSortColumn.length>0)?av.relationshipListSortColumn:av.relationshipListColumn;var i="<Query><OrderBy><FieldRef Name='"+aw+"'/></OrderBy><Where>";if(av.CAMLQuery.length>0){i+=av.CAMLQuery}i+="</Where></Query>";V().SPServices({operation:"GetList",async:false,cacheXML:true,listName:av.listName,completefunc:function(aG,aF){V(aG.responseXML).find("Fields").each(function(){V(this).find("Field[DisplayName='"+av.columnName+"']").each(function(){aA=(V(this).attr("Required")==="TRUE")?true:false;return false})})}});V().SPServices({operation:"GetListItems",async:false,webURL:av.relationshipWebURL,listName:av.relationshipList,CAMLQuery:i,CAMLViewFields:"<ViewFields><FieldRef Name='"+av.relationshipListColumn+"' /></ViewFields>",CAMLRowLimit:0,CAMLQueryOptions:av.CAMLQueryOptions,completefunc:function(aG,aF){V(aG.responseXML).find("errorstring").each(function(){var aH=V(this).text();if(av.debug&&aH==="One or more field types are not installed properly. Go to the list settings page to delete these fields."){R(az,"relationshipListColumn: "+av.relationshipListColumn,"Not found in relationshipList "+av.relationshipList)}else{if(av.debug&&aH==="Guid should contain 32 digits with 4 dashes (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)."){R(az,"relationshipList: "+av.relationshipList,"List not found")}}return});switch(ay.Type){case"S":V(ay.Obj).find("option").remove();if(!aA&&(av.promptText.length>0)){ay.Obj.append("<option value='0'>"+av.promptText.replace(/\{0\}/g,av.columnName)+"</option>")}else{if(!aA){ay.Obj.append("<option value='0'>"+av.noneText+"</option>")}}break;case"C":aD=aA?"":av.noneText+"|0";ay.Obj.attr("value","");break;case"M":V(ay.Obj).find("option").remove();aB="";break;default:break}V(aG.responseXML).SPFilterNode("z:row").each(function(){var aJ,aI;var aH=V(this).attr("ows_"+av.relationshipListColumn);if(aH!==undefined&&aH.indexOf(";#")>0){var aL=aH.split(";#");aJ=aL[0];aI=aL[1]}else{aJ=V(this).attr("ows_ID");aI=aH}if(isNaN(aJ)){aJ=V(this).attr("ows_ID")}switch(ay.Type){case"S":var aK=(V(this).attr("ows_ID")===aC[0])?" selected='selected'":"";ay.Obj.append("<option"+aK+" value='"+aJ+"'>"+aI+"</option>");break;case"C":if(aJ===aC[0]){ay.Obj.attr("value",aI)}aD=aD+((aD.length>0)?"|":"")+aI+"|"+aJ;break;case"M":ay.Obj.append("<option value='"+aJ+"'>"+aI+"</option>");aB+=aJ+"|t"+aI+"|t |t |t";break;default:break}});switch(ay.Type){case"S":ay.Obj.trigger("change");break;case"C":ay.Obj.attr("choices",aD);ay.Obj.trigger("propertychange");break;case"M":ax=ay.Obj.closest("span").find("input[name$='MultiLookupPicker$data']");t=window[ay.Obj.closest("tr").find("button[id$='AddButton']").attr("id").replace(/AddButton/,"MultiLookupPicker_m")];currentSelection=ay.Obj.closest("span").find("select[ID$='SelectResult']");t.data="";ax.attr("value",aB);V(currentSelection).find("option").each(function(){var aH=V(this);V(this).attr("selected","selected");V(ay.Obj).find("option").each(function(){if(V(this).html()===aH.html()){aH.removeAttr("selected")}})});GipRemoveSelectedItems(t);V(ay.Obj).find("option").each(function(){var aH=V(this);V(currentSelection).find("option").each(function(){if(V(this).html()===aH.html()){aH.remove()}})});GipAddSelectedItems(t);t.data=GipGetGroupData(aB);ay.Obj.trigger("dblclick");break;default:break}}});if(av.completefunc!==null){av.completefunc()}};V.fn.SPServices.SPDebugXMLHttpResult=function(av){var ax=V.extend({},{node:null,indent:0},av);var aw;var az=3;var ay=4;var t="";t+="<table class='ms-vb' style='margin-left:"+ax.indent*3+"px;' width='100%'>";if(ax.node.nodeName==="DisplayPattern"){t+="<tr><td width='100px' style='font-weight:bold;'>"+ax.node.nodeName+"</td><td><textarea readonly='readonly' rows='5' cols='50'>"+ax.node.xml+"</textarea></td></tr>"}else{if(!ax.node.hasChildNodes()){t+="<tr><td width='100px' style='font-weight:bold;'>"+ax.node.nodeName+"</td><td>"+((ax.node.nodeValue!==null)?C(ax.node.nodeValue):"&nbsp;")+"</td></tr>";if(ax.node.attributes){t+="<tr><td colspan='99'>"+ak(ax.node,ax)+"</td></tr>"}}else{if(ax.node.hasChildNodes()&&ax.node.firstChild.nodeType===ay){t+="<tr><td width='100px' style='font-weight:bold;'>"+ax.node.nodeName+"</td><td><textarea readonly='readonly' rows='5' cols='50'>"+ax.node.parentNode.text+"</textarea></td></tr>"}else{if(ax.node.hasChildNodes()&&ax.node.firstChild.nodeType===az){t+="<tr><td width='100px' style='font-weight:bold;'>"+ax.node.nodeName+"</td><td>"+C(ax.node.firstChild.nodeValue)+"</td></tr>"}else{t+="<tr><td width='100px' style='font-weight:bold;' colspan='99'>"+ax.node.nodeName+"</td></tr>";if(ax.node.attributes){t+="<tr><td colspan='99'>"+ak(ax.node,ax)+"</td></tr>"}t+="<tr><td>";for(aw=0;aw<ax.node.childNodes.length;aw++){t+=V().SPServices.SPDebugXMLHttpResult({node:ax.node.childNodes.item(aw),indent:ax.indent+1})}t+="</td></tr>"}}}}t+="</table>";return t};V.fn.SPServices.SPGetCurrentUser=function(aw){var ay=V.extend({},{fieldName:"Name",fieldNames:{},debug:false},aw);if(ay.fieldName==="ID"&&_spUserId!=undefined){return _spUserId}var t="";var ax={};var az=ay.fieldNames.length>0?ay.fieldNames.length:1;var av;V.ajax({async:false,url:V().SPServices.SPGetCurrentSite()+"/_layouts/userdisp.aspx?Force=True&"+new Date().getTime(),complete:function(aB,aA){av=aB}});for(ao=0;ao<az;ao++){if(ay.fieldNames[ao]==="ID"){t=_spUserId}else{var i;if(az>1){i=RegExp('FieldInternalName="'+ay.fieldNames[ao]+'"',"gi")}else{i=RegExp('FieldInternalName="'+ay.fieldName+'"',"gi")}V(av.responseText).find("table.ms-formtable td[id^='SPField']").each(function(){if(i.test(V(this).html())){switch(V(this).attr("id")){case"SPFieldText":t=V(this).text();break;case"SPFieldNote":t=V(this).find("div").html();break;case"SPFieldURL":t=V(this).find("img").attr("src");break;default:t=V(this).text();break}return false}})}if(ay.fieldNames[ao]!=="ID"){t=(t!==undefined)?t.replace(/(^[\s\xA0]+|[\s\xA0]+$)/g,""):null}if(az>1){ax[ay.fieldNames[ao]]=t}}return(az>1)?ax:t};V.fn.SPServices.SPLookupAddNew=function(aw){var ax=V.extend({},{lookupColumn:"",promptText:"Add new {0}",newWindow:false,ContentTypeID:"",completefunc:null,debug:false},aw);var aA="SPServices.SPLookupAddNew";var av=new ai(ax.lookupColumn);if(av.Obj.html()===null&&ax.debug){R(aA,"lookupColumn: "+ax.lookupColumn,ae);return}var az="";var t="";var ay="";V().SPServices({operation:"GetList",async:false,cacheXML:true,listName:V().SPServices.SPListNameFromUrl(),completefunc:function(aC,aB){V(aC.responseXML).find("Field[DisplayName='"+ax.lookupColumn+"']").each(function(){ay=V(this).attr("StaticName");V().SPServices({operation:"GetList",async:false,cacheXML:true,listName:V(this).attr("List"),completefunc:function(aE,aD){V(aE.responseXML).find("List").each(function(){t=V(this).attr("WebFullUrl");t=t!==k?t+k:t})}});az=v(V(this).attr("List"),"NewForm");return false})}});if(t.length===0&&ax.debug){R(aA,"lookupColumn: "+ax.lookupColumn,"This column does not appear to be a lookup column");return}if(az.length>0){var i=t+az;i+=ax.newWindow?((ax.ContentTypeID.length>0)?"?ContentTypeID="+ax.ContentTypeID:"")+"' target='_blank'":"?"+((ax.ContentTypeID.length>0)?"ContentTypeID="+ax.ContentTypeID+"&":"")+"Source="+ar(location.href)+"'";newLink="<div id='SPLookupAddNew_"+ay+"'><a href='"+i+">"+ax.promptText.replace(/\{0\}/g,ax.lookupColumn)+"</a></div>";V(av.Obj).parents("td.ms-formbody").append(newLink)}else{if(ax.debug){R(aA,"lookupColumn: "+ax.lookupColumn,"NewForm cannot be found");return}}if(ax.completefunc!==null){ax.completefunc()}};V.fn.SPServices.SPGetLastItemId=function(t){var aw=V.extend({},{webURL:"",listName:"",userAccount:"",CAMLQuery:""},t);var av;var ax=0;V().SPServices({operation:"GetUserInfo",webURL:aw.webURL,async:false,userLoginName:(aw.userAccount!=="")?aw.userAccount:V().SPServices.SPGetCurrentUser(),completefunc:function(az,ay){V(az.responseXML).find("User").each(function(){av=V(this).attr("ID")})}});var i="<Query><Where>";if(aw.CAMLQuery.length>0){i+="<And>"}i+="<Eq><FieldRef Name='Author' LookupId='TRUE'/><Value Type='Integer'>"+av+"</Value></Eq>";if(aw.CAMLQuery.length>0){i+=aw.CAMLQuery+"</And>"}i+="</Where><OrderBy><FieldRef Name='Created_x0020_Date' Ascending='FALSE'/></OrderBy></Query>";V().SPServices({operation:"GetListItems",async:false,webURL:aw.webURL,listName:aw.listName,CAMLQuery:i,CAMLViewFields:"<ViewFields><FieldRef Name='ID'/></ViewFields>",CAMLRowLimit:1,CAMLQueryOptions:"<QueryOptions><ViewAttributes Scope='Recursive' /></QueryOptions>",completefunc:function(az,ay){V(az.responseXML).SPFilterNode("z:row").each(function(){ax=V(this).attr("ows_ID")})}});return ax};V.fn.SPServices.SPRequireUnique=function(aB){var i=V.extend({},{columnStaticName:"Title",duplicateAction:0,ignoreCase:false,initMsg:"This value must be unique.",initMsgCSSClass:"ms-vb",errMsg:"This value is not unique.",errMsgCSSClass:"ms-formvalidation",showDupes:false,completefunc:null},aB);var av=V().SPServices.SPGetQueryString();var az=av.ID;var ay=V().SPServices.SPListNameFromUrl();var t="<span id='SPRequireUnique"+i.columnStaticName+"' class='{0}'>{1}</span><br/>";var ax=t.replace(/\{0\}/g,i.initMsgCSSClass).replace(/\{1\}/g,i.initMsg);var aw=V().SPServices.SPGetDisplayFromStatic({listName:ay,columnStaticName:i.columnStaticName});var aA=V("input[Title='"+aw+"']");V(aA).parent().append(ax);V(aA).blur(function(){var aE=[];var aF=V(this).attr("value");if(aF.length===0){return false}V().SPServices({operation:"GetListItems",async:false,listName:ay,CAMLQuery:"<Query><Where><IsNotNull><FieldRef Name='"+i.columnStaticName+"'/></IsNotNull></Where></Query>",CAMLViewFields:"<ViewFields><FieldRef Name='ID' /><FieldRef Name='"+i.columnStaticName+"' /></ViewFields>",CAMLRowLimit:0,completefunc:function(aI,aG){var aH=i.ignoreCase?aF.toUpperCase():aF;V(aI.responseXML).SPFilterNode("z:row").each(function(){var aJ=i.ignoreCase?V(this).attr("ows_"+i.columnStaticName).toUpperCase():V(this).attr("ows_"+i.columnStaticName);if((aH===aJ)&&(V(this).attr("ows_ID")!==az)){aE.push([V(this).attr("ows_ID"),V(this).attr("ows_"+i.columnStaticName)])}})}});var aD=i.initMsg;V("span#SPRequireUnique"+i.columnStaticName).html(aD).attr("class",i.initMsgCSSClass);V("input[value='OK']:disabled, input[value='Save']:disabled").removeAttr("disabled");if(aE.length>0){aD=i.errMsg;V("span#SPRequireUnique"+i.columnStaticName).html(aD).attr("class",i.errMsgCSSClass);if(i.duplicateAction===1){V("input[Title='"+i.columnDisplayName+"']").focus();V("input[value='OK'], input[value='Save']").attr("disabled","disabled")}if(i.showDupes){var aC=" "+aE.length+" duplicate item"+(aE.length>1?"s":"")+": ";for(ao=0;ao<aE.length;ao++){aC+="<a href='DispForm.aspx?ID="+aE[ao][0]+"&Source="+location.href+"'>"+aE[ao][1]+"</a> "}V("span#SPRequireUnique"+i.columnStaticName).append(aC)}}});if(i.completefunc!==null){i.completefunc()}};V.fn.SPServices.SPGetDisplayFromStatic=function(t){var av=V.extend({},{webURL:"",listName:"",columnStaticName:"",columnStaticNames:{}},t);var i="";var aw={};var ax=av.columnStaticNames.length>0?av.columnStaticNames.length:1;V().SPServices({operation:"GetList",async:false,cacheXML:true,webURL:av.webURL,listName:av.listName,completefunc:function(az,ay){if(ax>1){for(ao=0;ao<ax;ao++){aw[av.columnStaticNames[ao]]=V(az.responseXML).find("Field[StaticName='"+av.columnStaticNames[ao]+"']").attr("DisplayName")}}else{i=V(az.responseXML).find("Field[StaticName='"+av.columnStaticName+"']").attr("DisplayName")}}});return(ax>1)?aw:i};V.fn.SPServices.SPGetStaticFromDisplay=function(i){var av=V.extend({},{webURL:"",listName:"",columnDisplayName:"",columnDisplayNames:{}},i);var t="";var aw={};var ax=av.columnDisplayNames.length>0?av.columnDisplayNames.length:1;V().SPServices({operation:"GetList",async:false,cacheXML:true,webURL:av.webURL,listName:av.listName,completefunc:function(az,ay){if(ax>1){for(ao=0;ao<ax;ao++){aw[av.columnDisplayNames[ao]]=V(az.responseXML).find("Field[DisplayName='"+av.columnDisplayNames[ao]+"']").attr("StaticName")}}else{t=V(az.responseXML).find("Field[DisplayName='"+av.columnDisplayName+"']").attr("StaticName")}}});return(ax>1)?aw:t};V.fn.SPServices.SPRedirectWithID=function(aB){var i=V.extend({},{redirectUrl:"",qsParamName:"ID"},aB);var az=V().SPServices.SPListNameFromUrl();var t=V().SPServices.SPGetQueryString();var aw=t.ID;var ax=t.List;var aA=t.RootFolder;var ay=t.ContentTypeId;if(typeof t.ID==="undefined"){aw=V().SPServices.SPGetLastItemId({listName:az});V("form[name='aspnetForm']").each(function(){var aD=(location.href.indexOf("?")>0)?location.href.substring(0,location.href.indexOf("?")):location.href;var aE=(typeof t.Source==="string")?"Source="+t.Source.replace(/\//g,"%2f").replace(/:/g,"%3a"):"";var aC=[];if(typeof ax!=="undefined"){aC.push("List="+ax)}if(typeof aA!=="undefined"){aC.push("RootFolder="+aA)}if(typeof ay!=="undefined"){aC.push("ContentTypeId="+ay)}var aF=aD+((aC.length>0)?("?"+aC.join("&")+"&"):"?")+"Source="+aD+"?ID="+aw+((aE.length>0)?("%26RealSource="+t.Source):"")+((typeof t.RedirectURL==="string")?("%26RedirectURL="+t.RedirectURL):"");V(this).attr("action",aF)})}else{while(t.ID===aw){aw=V().SPServices.SPGetLastItemId({listName:az})}var av=(typeof t.RedirectURL==="string")?t.RedirectURL:i.redirectUrl;location.href=av+"?"+i.qsParamName+"="+aw+((typeof t.RealSource==="string")?("&Source="+t.RealSource):"")}};V.fn.SPServices.SPSetMultiSelectSizes=function(aD){var i=V.extend({},{multiSelectColumn:"",minWidth:0,maxWidth:0,debug:false},aD);var az="SPServices.SPSetMultiSelectSizes";var ax=new ai(i.multiSelectColumn);if(ax.Obj.html()===null&&i.debug){R(az,"multiSelectColumn: "+i.multiSelectColumn,ae);return}if(ax.Type!=="M"&&i.debug){R(az,"multiSelectColumn: "+i.multiSelectColumn,"Column is not multi-select.");return}var ay=ax.Obj;var aB=ay.closest("span").find("select[ID$='SelectResult']");var aA=n("SPSetMultiSelectSizes",i.multiSelectColumn);ay.clone().appendTo(ay.closest("span")).css({width:"auto",height:0,visibility:"hidden"}).attr({id:aA,length:0});var aw=V("#"+aA);ay.find("option").each(function(){aw.append("<option value='"+V(this).html()+"'>"+V(this).html()+"</option>")});aB.find("option").each(function(){aw.append("<option value='"+V(this).html()+"'>"+V(this).html()+"</option>")});var t=V("#"+aA).width()+5;var aC=t;if(i.minWidth>0||i.maxWidth>0){if(t<i.minWidth){t=i.minWidth}if(aC<i.minWidth){aC=i.minWidth}if(aC>i.maxWidth){aC=i.maxWidth}}var av=t;ay.css("width",av+"px").parent().css("width",aC+"px");aB.css("width",av+"px").parent().css("width",aC+"px");V("#"+aA).remove()};V.fn.SPServices.SPScriptAudit=function(av){var aw=V.extend({},{webURL:"",listName:"",outputId:"",auditForms:true,auditViews:true,auditPages:true,auditPagesListName:"Pages",showHiddenLists:false,showNoScript:false,showSrc:true},av);var t=[["New","NewForm.aspx",false],["Display","DispForm.aspx",false],["Edit","EditForm.aspx",false]];var ax;V("#"+aw.outputId).append("<table id='SPScriptAudit' width='100%' style='border-collapse: collapse;' border=0 cellSpacing=0 cellPadding=1><tr><th></th><th>List</th><th>Page Class</th><th>Page Type</th><th>Page</th>"+(aw.showSrc?"<th>Script References</th>":"")+"</tr></table>");V("#SPScriptAudit th").attr("class","ms-vh2-nofilter");if(aw.auditForms||aw.auditViews){V().SPServices({operation:"GetListCollection",webURL:aw.webURL,async:false,completefunc:function(aA,az){V(aA.responseXML).find("List").each(function(){ax=V(this);if((aw.listName.length===0)||(ax.attr("Title")===aw.listName)){if((aw.showHiddenLists&&ax.attr("Hidden")==="False")||!aw.showHiddenLists){if(aw.auditForms){V().SPServices({operation:"GetListContentTypes",webURL:aw.webURL,listName:ax.attr("ID"),async:false,completefunc:function(aC,aB){V(aC.responseXML).find("ContentType").each(function(){if(V(this).attr("ID").substring(0,6)!=="0x0120"){var aE=V(this).find("FormUrls");for(ao=0;ao<t.length;ao++){V(aE).find(t[ao][0]).each(function(){p(aw,ax,"Form",this.nodeName,((aw.webURL.length>0)?aw.webURL:V().SPServices.SPGetCurrentSite())+k+V(this).text());t[ao][2]=true});if(!t[ao][2]){var aD=ax.attr("DefaultViewUrl");p(aw,ax,"Form",t[ao][0],aD.substring(0,aD.lastIndexOf(k)+1)+t[ao][1])}}for(ao=0;ao<t.length;ao++){t[ao][2]=false}}})}})}if(aw.auditViews){V().SPServices({operation:"GetViewCollection",webURL:aw.webURL,listName:ax.attr("ID"),async:false,completefunc:function(aC,aB){V(aC.responseXML).find("View").each(function(){p(aw,ax,"View",V(this).attr("DisplayName"),V(this).attr("Url"))})}})}}}})}})}var i=0;var ay=[];if(typeof aw.auditPagesListName==="string"){i=1;ay.push(aw.auditPagesListName)}else{i=aw.auditPagesListName.length;ay=aw.auditPagesListName}if(aw.auditPages){for(ao=0;ao<i;ao++){V().SPServices({operation:"GetList",async:false,cacheXML:true,webURL:aw.webURL,listName:ay[ao],completefunc:function(aA,az){V(aA.responseXML).find("List").each(function(){ax=V(this)})}});V().SPServices({operation:"GetListItems",async:false,webURL:aw.webURL,listName:ay[ao],CAMLQuery:"<Query><Where><Neq><FieldRef Name='ContentType'/><Value Type='Text'>Folder</Value></Neq></Where></Query>",CAMLViewFields:"<ViewFields><FieldRef Name='Title'/><FieldRef Name='FileRef'/></ViewFields>",CAMLRowLimit:0,completefunc:function(aA,az){V(aA.responseXML).SPFilterNode("z:row").each(function(){var aC=V(this).attr("ows_FileRef").split(";#")[1];var aB=(typeof V(this).attr("ows_Title")!=="undefined")?V(this).attr("ows_Title"):"";if(aC.indexOf(".aspx")>0){p(aw,ax,"Page",aB,k+aC)}})}})}}V("#SPScriptAudit tr[class='ms-alternating']:even").removeAttr("class")};function p(t,av,aC,ay,aw){var az=0;var aB=0;var ax={};ax.type=[];ax.src=[];ax.script=[];var aA=RegExp("<script[\\s\\S]*?/script>","gi");V.ajax({type:"GET",url:aw,dataType:"text",async:false,success:function(aH){while(scriptMatch=aA.exec(aH)){var aD=Q(scriptMatch,"language");var aI=Q(scriptMatch,"type");var aF=Q(scriptMatch,"src");if(aF!==null&&aF.length>0&&!U(aF)){ax.type.push((aD!==null&&aD.length>0)?aD:aI);ax.src.push(aF);aB++}}if((!t.showNoScript&&(ax.type.length>0))||t.showNoScript){var aG=aw.substring(0,aw.lastIndexOf(k)+1);var aE="<tr class=ms-alternating><td class=ms-vb-icon><a href='"+av.attr("DefaultViewUrl")+"'><IMG border=0 src='"+av.attr("ImageUrl")+"'width=16 height=16></A></TD><td class=ms-vb2><a href='"+av.attr("DefaultViewUrl")+"'>"+av.attr("Title")+((av.attr("Hidden")==="True")?"(Hidden)":"")+"</td><td class=ms-vb2>"+aC+"</td><td class=ms-vb2>"+ay+"</td><td class=ms-vb2><a href='"+aw+"'>"+J(aw)+"</td>";if(t.showSrc){var i;aE+="<td valign='top'><table width='100%' style='border-collapse: collapse;' border=0 cellSpacing=0 cellPadding=1>";for(az=0;az<ax.type.length;az++){i=(ax.src[az].substr(0,1)!==k)?aG+ax.src[az]:ax.src[az];aE+="<tr><td class=ms-vb2 width='30%'>"+ax.type[az]+"</td>";aE+="<td class=ms-vb2 width='70%'><a href='"+i+"'>"+J(ax.src[az])+"</td></tr>"}aE+="</table></td>"}V("#SPScriptAudit").append(aE)}}})}function Q(av,t){var i=RegExp(t+"=(\"([^\"]*)\")|('([^']*)')","gi");if(matches=i.exec(av)){return matches[2]}return null}function U(aw){var av;var t=["WebResource.axd","_layouts"];for(av=0;av<t.length;av++){if(aw.indexOf(t[av])>-1){return true}}return false}V.fn.SPServices.SPArrangeChoices=function(aC){var t=V.extend({},{listName:"",columnName:"",perRow:99,randomize:false},aC);var ay=false;var az=[];var aw;V().SPServices({operation:"GetList",async:false,cacheXML:true,listName:(t.listName.length>0)?t.listName:V().SPServices.SPListNameFromUrl(),completefunc:function(aE,aD){V(aE.responseXML).find("Fields").each(function(){V(this).find("Field[DisplayName='"+t.columnName+"']").each(function(){ay=(V(this).attr("FillInChoice")==="TRUE")?true:false;return false})})}});var av=al(t.columnName);var ax=V(av).find("tr").length;var aA=0;var i;var aB;V(av).find("tr").each(function(){aA++;if(ay&&aA===(ax-1)){i=V(this).find("td").html()}else{if(ay&&aA===ax){aB=V(this).find("td").html()}else{az.push(V(this).html())}}});aw="<TR>";if(t.randomize){az.sort(an)}for(ao=0;ao<az.length;ao++){aw+=az[ao];if((ao+1)%t.perRow===0){aw+="</TR><TR>"}}aw+="</TR>";if(ay){aw+="<TR><TD colspan='99'>"+i+aB+"</TD></TR>"}V(av).find("tr").remove();V(av).find("table").append(aw)};V.fn.SPServices.SPAutocomplete=function(av){var aw=V.extend({},{WebURL:"",sourceList:"",sourceColumn:"",columnName:"",CAMLQuery:"",CAMLQueryOptions:"<QueryOptions></QueryOptions>",CAMLRowLimit:0,filterType:"BeginsWith",numChars:0,ignoreCase:false,highlightClass:"",uniqueVals:false,maxHeight:99999,slideDownSpeed:"fast",processingIndicator:"_layouts/images/REFRESH.GIF",debug:false},av);var ay;var t=V("input[Title='"+aw.columnName+"']");V("input[Title='"+aw.columnName+"']").css("position","");var az=t.attr("ID");var ax=t.css("color");var aA=t.css("width");if(t.html()===null&&aw.debug){R("SPServices.SPAutocomplete","columnName: "+aw.columnName,"Column is not an input control or is not found on page");return}t.closest("span").find("br").remove();t.wrap("<div>");var i=n("SPAutocomplete",aw.columnName);t.after("<div><ul id='"+i+"' style='width:"+aA+";display:none;padding:2px;border:1px solid #2A1FAA;background-color:#FFF;position:absolute;z-index:40;margin:0'></div>");V("#"+i).css("width",aA);V(t).keyup(function(){var aJ=V(this).val();V("#"+i).hide();if(aJ.length<aw.numChars){return false}t.css({"background-image":"url("+aw.processingIndicator+")","background-position":"right","background-repeat":"no-repeat"});var aI=[];var aB="<Query><OrderBy><FieldRef Name='"+aw.sourceColumn+"'/></OrderBy><Where>";if(aw.CAMLQuery.length>0){aB+="<And>"}aB+="<"+aw.filterType+"><FieldRef Name='"+aw.sourceColumn+"'/><Value Type='Text'>"+aJ+"</Value></"+aw.filterType+">";if(aw.CAMLQuery.length>0){aB+=aw.CAMLQuery+"</And>"}aB+="</Where></Query>";V().SPServices({operation:"GetListItems",async:false,webURL:aw.WebURL,listName:aw.sourceList,CAMLQuery:aB,CAMLQueryOptions:aw.CAMLQueryOptions,CAMLViewFields:"<ViewFields><FieldRef Name='"+aw.sourceColumn+"' /></ViewFields>",CAMLRowLimit:aw.CAMLRowLimit,completefunc:function(aN,aL){var aM=aw.ignoreCase?aJ.toUpperCase():aJ;V(aN.responseXML).SPFilterNode("z:row").each(function(){var aP=V(this).attr("ows_"+aw.sourceColumn);var aQ=aw.ignoreCase?V(this).attr("ows_"+aw.sourceColumn).toUpperCase():V(this).attr("ows_"+aw.sourceColumn);if(aw.filterType==="Contains"){var aO=aQ.indexOf(aM);if((aO>=0)&&(!aw.uniqueVals||(V.inArray(aP,aI)===-1))){aI.push(V(this).attr("ows_"+aw.sourceColumn))}}else{if(aM===aQ.substr(0,aM.length)&&(!aw.uniqueVals||(V.inArray(aP,aI)===-1))){aI.push(V(this).attr("ows_"+aw.sourceColumn))}}})}});var aE="";for(ao=0;ao<aI.length;ao++){if(aw.highlightClass.length>0){var aD=RegExp(aJ,aw.ignoreCase?"gi":"g");var aG=aI[ao].match(aD);var aF=0;for(ay=0;ay<aG.length;ay++){var aH=aI[ao].indexOf(aG[ay],aF);var aC=aH+aG[ay].length;var aK="<span class='"+aw.highlightClass+"'>"+aG[ay]+"</span>";aI[ao]=aI[ao].substr(0,aH)+aK+aI[ao].substr(aC);aF=aH+aK.length}}aE+="<li style='display: block;position: relative;cursor: pointer;'>"+aI[ao]+"</li>"}V("#"+i).html(aE);V("#"+i+" li").click(function(){V("#"+i).fadeOut(aw.slideUpSpeed);V("#"+az).val(V(this).text())}).mouseover(function(){var aL={cursor:"hand",color:"#ffffff",background:"#3399ff"};V(this).css(aL)}).mouseout(function(){var aL={cursor:"inherit",color:ax,background:"transparent"};V(this).css(aL)});if(aI.length>0){V("#"+i).slideDown(aw.slideDownSpeed)}t.css("background-image","")})};V.fn.SPServices.SPGetQueryString=function(){var ax;var ay={};var t=location.search.substring(1,location.search.length);var av=t.split("&");var aw=/^([^=]+)=(.*)/i;for(ax=0;ax<av.length;ax++){matches=aw.exec(av[ax]);if(aw.test(location.href)){if(matches!==null&&matches.length>2){ay[matches[1]]=unescape(matches[2]).replace(/\+/g," ")}}}return ay};V.fn.SPServices.SPListNameFromUrl=function(i){var t=V.extend({},{listName:""},i);if(t.listName.length>0){y=t.listName;return y}else{if(y.length>0){return y}}var aw=location.href;var av=aw.substring(0,aw.indexOf(".aspx"));var ax=decodeURIComponent(av.substring(0,av.lastIndexOf(k)+1)).toUpperCase();V().SPServices({operation:"GetListCollection",async:false,completefunc:function(az,ay){V(az.responseXML).find("List").each(function(){var aA=V(this).attr("DefaultViewUrl");var aB=aA.substring(0,aA.lastIndexOf(k)+1).toUpperCase();if(ax.indexOf(aB)>0){y=V(this).attr("ID");return false}})}});return y};V.fn.SPServices.SPUpdateMultipleListItems=function(aw){var ay=V.extend({},{webURL:"",listName:"",CAMLQuery:"",batchCmd:"Update",valuepairs:[],completefunc:null,debug:false},aw);var ax;var aA=[];var az=[];V().SPServices({operation:"GetListItems",async:false,webURL:ay.webURL,listName:ay.listName,CAMLQuery:ay.CAMLQuery,CAMLQueryOptions:"<QueryOptions><ViewAttributes Scope='Recursive' /></QueryOptions>",completefunc:function(aB,i){V(aB.responseXML).SPFilterNode("z:row").each(function(){aA.push(V(this).attr("ows_ID"));var aC=V(this).attr("ows_FileRef");aC="/"+aC.substring(aC.indexOf(";#")+2);az.push(aC)})}});var t;var av="<Batch OnError='Continue'>";for(ax=0;ax<aA.length;ax++){av+="<Method ID='"+ax+"' Cmd='"+ay.batchCmd+"'>";for(t=0;t<ay.valuepairs.length;t++){av+="<Field Name='"+ay.valuepairs[t][0]+"'>"+D(ay.valuepairs[t][1])+"</Field>"}av+="<Field Name='ID'>"+aA[ax]+"</Field>";if(az[ax].length>0){av+="<Field Name='FileRef'>"+az[ax]+"</Field>"}av+="</Method>"}av+="</Batch>";V().SPServices({operation:"UpdateListItems",async:false,webURL:ay.webURL,listName:ay.listName,updates:av,completefunc:function(aB,i){if(ay.completefunc!==null){ay.completefunc(aB,i)}}})};V.fn.SPFilterNode=function(i){return this.find("*").filter(function(){return this.nodeName===i})};V.fn.SPXmlToJson=function(t){var aw=V.extend({},{mapping:{},includeAllAttrs:false,removeOws:true},t);var i;var av=[];this.each(function(){var aB={};var aA;var aD=this.attributes;V.each(aw.mapping,function(){aB[this.mappedName]=""});for(attrNum=0;attrNum<aD.length;attrNum++){var aC=aD[attrNum].name;var az=aw.mapping[aC];var ax=az!==undefined?az.mappedName:aw.removeOws?aC.split("ows_")[1]:aC;var ay=az!==undefined?az.objectType:undefined;if(aw.includeAllAttrs||az!==undefined){aB[ax]=O(aD[attrNum].value,ay)}}av.push(aB)});return av};function O(t,i){switch(i){case"DateTime":case"datetime":colValue=l(t);break;case"User":colValue=X(t);break;case"UserMulti":colValue=M(t);break;case"Lookup":colValue=c(t);break;case"LookupMulti":colValue=I(t);break;case"Boolean":colValue=z(t);break;case"Integer":colValue=h(t);break;case"Counter":colValue=h(t);break;case"MultiChoice":colValue=at(t);break;case"Currency":case"float":colValue=H(t);break;case"Calc":colValue=aq(t);break;default:colValue=u(t);break}return colValue}function u(i){return i}function h(i){return parseInt(i,10)}function H(i){return parseFloat(i)}function z(t){var i=t==="0"?false:true;return i}function l(i){return new Date(i.replace(/-/g,"/"))}function X(av){if(av.length===0){return null}else{var i=av.split(";#");var t=i[1].split(",#");if(t.length==1){return{userId:i[0],userName:i[1]}}else{return{userId:i[0],userName:t[0].replace(/(,,)/g,","),loginName:t[1].replace(/(,,)/g,","),email:t[2].replace(/(,,)/g,","),sipAddress:t[3].replace(/(,,)/g,","),title:t[4].replace(/(,,)/g,",")}}}}function M(av){if(av.length===0){return null}else{var aw=[];var t=av.split(";#");for(ao=0;ao<t.length;ao=ao+2){var i=X(t[ao]+";#"+t[ao+1]);aw.push(i)}return aw}}function c(i){if(i.length===0){return null}else{var t=i.split(";#");return{lookupId:t[0],lookupValue:t[1]}}}function I(t){if(t.length===0){return null}else{var aw=[];var i=t.split(";#");for(ao=0;ao<i.length;ao=ao+2){var av=c(i[ao]+";#"+i[ao+1]);aw.push(av)}return aw}}function at(av){if(av.length===0){return null}else{var i=[];var t=av.split(";#");for(ao=0;ao<t.length;ao++){if(t[ao].length!==0){i.push(t[ao])}}return i}}function aq(t){if(t.length===0){return null}else{var i=t.split(";#");return O(i[1],i[0])}}V.fn.SPFindPeoplePicker=function(av){var aw=V.extend({},{peoplePickerDisplayName:"",valueToSet:"",checkNames:true},av);var az=V("nobr").filter(function(){return V(this).contents().eq(0).text()===aw.peoplePickerDisplayName}).closest("tr");var t=az.find("div[name='upLevelDiv']");var i=az.find("img[Title='Check Names']:first");if(aw.valueToSet.length>0){t.html(aw.valueToSet)}if(aw.checkNames){i.click()}var ay=V.trim(t.text());var ax=[];t.children("span").each(function(){var aB=V(this).find("div[data]").attr("data");var aA={};if(aB!=undefined){var aC=V.parseXML(aB);$xml=V(aC);$xml.find("DictionaryEntry").each(function(){var aD=V(this).find("Key").text();var aE=V(this).find("Value").text();aA[aD]=aE});ax.push(aA)}else{V().SPServices({operation:"GetUserInfo",async:false,cacheXML:true,userLoginName:V(this).attr("title"),completefunc:function(aE,aD){V(aE.responseXML).find("User").each(function(){V.each(this.attributes,function(aG,aI){var aF=aI.name;var aH=aI.value;aA[aF]=aH});ax.push(aA)})}})}});return{row:az,contents:t,currentValue:ay,checkNames:i,dictionaryEntries:ax}};V.fn.SPServices.Version=function(){return B};function F(aF,aB,aG,aw){if(typeof aG==="undefined"){return""}var aC;var aD="";var aA;var ay;var aE=[];var ax=aw.relatedWebURL.length>0?aw.relatedWebURL:V().SPServices.SPGetCurrentSite();switch(aB.attr("Type")){case"Text":aD=aG;break;case"URL":switch(aB.attr("Format")){case"Hyperlink":aD="<a href='"+aG.substring(0,aG.search(","))+"'>"+aG.substring(aG.search(",")+1)+"</a>";break;case"Image":aD="<img alt='"+aG.substring(aG.search(",")+1)+"' src='"+aG.substring(0,aG.search(","))+"'/>";break;default:aD=aG;break}break;case"User":case"UserMulti":var t=aG.split(";#");for(aC=0;aC<t.length;aC=aC+2){aE.push("<a href='/_layouts/userdisp.aspx?ID="+t[aC]+"&Source="+ar(location.href)+"'>"+t[aC+1]+"</a>")}aD=aE.join(", ");break;case"Calculated":var az=aG.split(";#");aD=az[1];break;case"Number":ay=aB.attr("Decimals");aD=ay===undefined?parseFloat(aG).toString():parseFloat(aG).toFixed(ay).toString();break;case"Currency":ay=aB.attr("Decimals");aD=ay===undefined?parseFloat(aG).toFixed(2).toString():parseFloat(aG).toFixed(ay).toString();break;case"Lookup":switch(aB.attr("Name")){case"FileRef":aA=aF.attr("BaseType")==="1"?aF.attr("RootFolder")+k+"Forms/DispForm.aspx":aF.attr("RootFolder")+k+"DispForm.aspx";aD="<a href='"+aA+"?ID="+aG.substring(0,aG.search(";#"))+"&RootFolder=*&Source="+ar(location.href)+"'>"+aG.substring(aG.search(";#")+2)+"</a>";break;case"FileDirRef":aA=k+aG.substring(aG.search(";#")+2);aD="<a href='"+aA+"'>"+aG.substring(aG.search(";#")+2)+"</a>";break;default:aA=v(aB.attr("List"),"DisplayForm");aD="<a href='"+aw.relatedWebURL+k+aA+"?ID="+aG.substring(0,aG.search(";#"))+"&RootFolder=*&Source="+ar(location.href)+"'>"+aG.substring(aG.search(";#")+2)+"</a>";break}break;case"LookupMulti":aA=v(aB.attr("List"),"DisplayForm");aD="";if(aG.length>0){var av=aG.split(";#");for(aC=0;aC<av.length/2;aC++){aE.push("<a href='"+ax+k+aA+"?ID="+av[aC*2]+"&RootFolder=*&Source="+ar(location.href)+"'>"+av[(aC*2)+1]+"</a>")}}aD=aE.join(", ");break;case"File":J=aG.substring(aG.search(";#")+2);aD="<a href='"+aF.attr("RootFolder")+k+J+"'>"+J+"</a>";break;case"Counter":aD=aG;break;case"DateTime":aD=aG;break;default:aD=aG;break}return aD}function ak(ax,aw){var av;var t="<table class='ms-vb' width='100%'>";for(av=0;av<ax.attributes.length;av++){t+="<tr><td width='10px' style='font-weight:bold;'>"+av+"</td><td width='100px'>"+ax.attributes.item(av).nodeName+"</td><td>"+C(ax.attributes.item(av).nodeValue)+"</td></tr>"}t+="</table>";return t}function ai(i){if((this.Obj=V("select[Title='"+i+"']")).length===1){this.Type="S"}else{if((this.Obj=V("input[Title='"+i+"']")).length===1){this.Type="C"}else{if((this.Obj=V("select[ID$='SelectCandidate'][Title^='"+i+" ']")).length===1){this.Type="M"}else{if((this.Obj=V("select[ID$='SelectCandidate'][Title$=': "+i+"']")).length===1){this.Type="M"}else{if((this.Obj=V("select[ID$='SelectCandidate'][Title$='\""+i+"\".']")).length===1){this.Type="M"}else{if((this.Obj=V("select[ID$='SelectCandidate'][Title$=' "+i+"']")).length===1){this.Type="M"}else{this.Type=null}}}}}}}function W(aw,t){var i=[];switch(aw.Type){case"S":if(t){i.push(aw.Obj.find("option:selected").val()||[])}else{i.push(aw.Obj.find("option:selected").text()||[])}break;case"C":if(t){i.push(V("input[id='"+aw.Obj.attr("optHid")+"']").val()||[])}else{i.push(aw.Obj.attr("value")||[])}break;case"M":var av=aw.Obj.closest("span").find("select[ID$='SelectResult']");V(av).find("option").each(function(){i.push(V(this).html())});break;default:break}return i}function R(t,aw,av){var i="<b>Error in function</b><br/>"+t+"<br/><b>Parameter</b><br/>"+aw+"<br/><b>Message</b><br/>"+av+"<br/><br/><span onmouseover='this.style.cursor=\"hand\";' onmouseout='this.style.cursor=\"inherit\";' style='width=100%;text-align:right;'>Click to continue</span></div>";g(i)}function g(ay){var av="position:absolute;width:300px;height:150px;padding:10px;background-color:#000000;color:#ffffff;z-index:30;font-family:'Arial';font-size:12px;display:none;";V("#aspnetForm").parent().append("<div id='SPServices_msgBox' style="+av+">"+ay);var i=V("#SPServices_msgBox").height();var ax=V("#SPServices_msgBox").width();var aw=(V(window).width()/2)-(ax/2)+"px";var t=(V(window).height()/2)-(i/2)-100+"px";V("#SPServices_msgBox").css({border:"5px #C02000 solid",left:aw,top:t}).show().fadeTo("slow",0.75).click(function(){V(this).fadeOut("3000",function(){V(this).remove()})})}function n(i,t){return i+"_"+V().SPServices.SPGetStaticFromDisplay({listName:V().SPServices.SPListNameFromUrl(),columnDisplayName:t})}function v(i,aw){var av,t;V().SPServices({operation:"GetFormCollection",async:false,listName:i,completefunc:function(ay,ax){t=V(ay.responseXML).find("Form[Type='"+aw+"']").attr("Url")}});return t}function j(aw,t){var av;for(av=0;av<t.length;av++){if(typeof t[av]==="string"){S.payload+=K(t[av],aw[t[av]])}else{if(t[av].length===2){S.payload+=K(t[av][0],aw[t[av][1]])}else{R(aw.operation,"paramArray["+av+"]: "+t[av],"Invalid paramArray element passed to addToPayload()")}}}}function al(i){var av;var t=RegExp('FieldName="'+i.replace(/[-[\]{}()*+?.,\\^$|#\s]/g,"\\$&")+'"',"gi");V("td.ms-formbody, td.ms-formbodysurvey").each(function(){if(t.test(V(this).html())){av=V(this);return false}});return av}function aj(i,av){var t=av.substring(8);i.opheader=i.opheader.replace(av,t);i.opfooter=i.opfooter.replace(av,t);return i}function K(av,t){var i=t!==undefined?t:"";return"<"+av+">"+i+"</"+av+">"}function an(){return(Math.round(Math.random())-0.5)}function C(i){return((i.indexOf("http")===0)||(i.indexOf(k)===0))?"<a href='"+i+"'>"+i+"</a>":i}function J(i){return i.substring(i.lastIndexOf(k)+1,i.length)}function a(i){return i.replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}function D(i){if(typeof i==="string"){return i.replace(/&(?![a-zA-Z]{1,8};)/g,"&amp;")}else{return i}}function ar(i){return i.replace(/&/g,"%26")}})(jQuery);
+/* jshint undef: true */
+/* global L_Menu_BaseUrl, _spUserId, _spPageContextInfo, GipAddSelectedItems, GipRemoveSelectedItems, GipGetGroupData */
 
+(function ($) {
+
+    "use strict";
+  
+    // Version info
+    var VERSION                 = "2012.02a";           // TODO: Update version
+
+    // String constants
+    //   General
+    var SLASH                   = "/";
+    var TXTColumnNotFound       = "Column not found on page";
+    var SCHEMASharePoint        = "http://schemas.microsoft.com/sharepoint";
+    var multiLookupPrefix       = "MultiLookupPicker";
+    var multiLookupPrefix2013   = "MultiLookup";
+
+    // Caching
+    var promisesCache = {};
+
+    //   Web Service names
+    var ALERTS                  = "Alerts";
+    var AUTHENTICATION          = "Authentication";
+    var COPY                    = "Copy";
+    var FORMS                   = "Forms";
+    var LISTS                   = "Lists";
+    var MEETINGS                = "Meetings";
+    var PEOPLE                  = "People";
+    var PERMISSIONS             = "Permissions";
+    var PUBLISHEDLINKSSERVICE   = "PublishedLinksService";
+    var SEARCH                  = "Search";
+    var SHAREPOINTDIAGNOSTICS   = "SharePointDiagnostics";
+    var SITEDATA                = "SiteData";
+    var SITES                   = "Sites";
+    var SOCIALDATASERVICE       = "SocialDataService";
+    var SPELLCHECK              = "SpellCheck";
+    var TAXONOMYSERVICE         = "TaxonomyClientService";
+    var USERGROUP               = "usergroup";
+    var USERPROFILESERVICE      = "UserProfileService";
+    var VERSIONS                = "Versions";
+    var VIEWS                   = "Views";
+    var WEBPARTPAGES            = "WebPartPages";
+    var WEBS                    = "Webs";
+    var WORKFLOW                = "Workflow";
+
+    // Global variables
+    var currentContext = new SPServicesContext();       // Variable to hold the current context as we figure it out
+    var i = 0;                                          // Generic loop counter
+    var encodeOptionList = ["listName", "description"]; // Used to encode options which may contain special characters
+
+
+    // Array to store Web Service information
+    //  WSops.OpName = [WebService, needs_SOAPAction];
+    //      OpName              The name of the Web Service operation -> These names are unique
+    //      WebService          The name of the WebService this operation belongs to
+    //      needs_SOAPAction    Boolean indicating whether the operatio needs to have the SOAPAction passed in the setRequestHeaderfunction.
+    //                          true if the operation does a write, else false
+
+    var WSops = [];
+
+    WSops.GetAlerts                                 = [ALERTS, false];
+    WSops.DeleteAlerts                              = [ALERTS, true];
+
+    WSops.Mode                                      = [AUTHENTICATION, false];
+    WSops.Login                                     = [AUTHENTICATION, false];
+
+    WSops.CopyIntoItems                             = [COPY, true];
+    WSops.CopyIntoItemsLocal                        = [COPY, true];
+    WSops.GetItem                                   = [COPY, false];
+
+    WSops.GetForm                                   = [FORMS, false];
+    WSops.GetFormCollection                         = [FORMS, false];
+
+    WSops.AddAttachment                             = [LISTS, true];
+    WSops.AddDiscussionBoardItem                    = [LISTS, true];
+    WSops.AddList                                   = [LISTS, true];
+    WSops.AddListFromFeature                        = [LISTS, true];
+    WSops.ApplyContentTypeToList                    = [LISTS, true];
+    WSops.CheckInFile                               = [LISTS, true];
+    WSops.CheckOutFile                              = [LISTS, true];
+    WSops.CreateContentType                         = [LISTS, true];
+    WSops.DeleteAttachment                          = [LISTS, true];
+    WSops.DeleteContentType                         = [LISTS, true];
+    WSops.DeleteContentTypeXmlDocument              = [LISTS, true];
+    WSops.DeleteList                                = [LISTS, true];
+    WSops.GetAttachmentCollection                   = [LISTS, false];
+    WSops.GetList                                   = [LISTS, false];
+    WSops.GetListAndView                            = [LISTS, false];
+    WSops.GetListCollection                         = [LISTS, false];
+    WSops.GetListContentType                        = [LISTS, false];
+    WSops.GetListContentTypes                       = [LISTS, false];
+    WSops.GetListItemChanges                        = [LISTS, false];
+    WSops.GetListItemChangesSinceToken              = [LISTS, false];
+    WSops.GetListItems                              = [LISTS, false];
+    WSops.GetVersionCollection                      = [LISTS, false];
+    WSops.UndoCheckOut                              = [LISTS, true];
+    WSops.UpdateContentType                         = [LISTS, true];
+    WSops.UpdateContentTypesXmlDocument             = [LISTS, true];
+    WSops.UpdateContentTypeXmlDocument              = [LISTS, true];
+    WSops.UpdateList                                = [LISTS, true];
+    WSops.UpdateListItems                           = [LISTS, true];
+
+    WSops.AddMeeting                                = [MEETINGS, true];
+    WSops.CreateWorkspace                           = [MEETINGS, true];
+    WSops.RemoveMeeting                             = [MEETINGS, true];
+    WSops.SetWorkSpaceTitle                         = [MEETINGS, true];
+
+    WSops.ResolvePrincipals                         = [PEOPLE, false];
+    WSops.SearchPrincipals                          = [PEOPLE, false];
+
+    WSops.AddPermission                             = [PERMISSIONS, true];
+    WSops.AddPermissionCollection                   = [PERMISSIONS, true];
+    WSops.GetPermissionCollection                   = [PERMISSIONS, true];
+    WSops.RemovePermission                          = [PERMISSIONS, true];
+    WSops.RemovePermissionCollection                = [PERMISSIONS, true];
+    WSops.UpdatePermission                          = [PERMISSIONS, true];
+
+    WSops.GetLinks                                  = [PUBLISHEDLINKSSERVICE, true];
+
+    WSops.GetPortalSearchInfo                       = [SEARCH, false];
+    WSops.GetQuerySuggestions                       = [SEARCH, false];
+    WSops.GetSearchMetadata                         = [SEARCH, false];
+    WSops.Query                                     = [SEARCH, false];
+    WSops.QueryEx                                   = [SEARCH, false];
+    WSops.Registration                              = [SEARCH, false];
+    WSops.Status                                    = [SEARCH, false];
+
+    WSops.SendClientScriptErrorReport               = [SHAREPOINTDIAGNOSTICS,true];
+
+    WSops.GetAttachments                            = [SITEDATA, false];
+    WSops.EnumerateFolder                           = [SITEDATA, false];
+    WSops.SiteDataGetList                           = [SITEDATA, false];
+    WSops.SiteDataGetListCollection                 = [SITEDATA, false];
+    WSops.SiteDataGetSite                           = [SITEDATA, false];
+    WSops.SiteDataGetSiteUrl                        = [SITEDATA, false];
+    WSops.SiteDataGetWeb                            = [SITEDATA, false];
+
+    WSops.CreateWeb                                 = [SITES, true];
+    WSops.DeleteWeb                                 = [SITES, false];
+    WSops.GetSite                                   = [SITES, false];
+    WSops.GetSiteTemplates                          = [SITES, false];
+
+    WSops.AddComment                                = [SOCIALDATASERVICE, true];
+    WSops.AddTag                                    = [SOCIALDATASERVICE, true];
+    WSops.AddTagByKeyword                           = [SOCIALDATASERVICE, true];
+    WSops.CountCommentsOfUser                       = [SOCIALDATASERVICE, false];
+    WSops.CountCommentsOfUserOnUrl                  = [SOCIALDATASERVICE, false];
+    WSops.CountCommentsOnUrl                        = [SOCIALDATASERVICE, false];
+    WSops.CountRatingsOnUrl                         = [SOCIALDATASERVICE, false];
+    WSops.CountTagsOfUser                           = [SOCIALDATASERVICE, false];
+    WSops.DeleteComment                             = [SOCIALDATASERVICE, true];
+    WSops.DeleteRating                              = [SOCIALDATASERVICE, true];
+    WSops.DeleteTag                                 = [SOCIALDATASERVICE, true];
+    WSops.DeleteTagByKeyword                        = [SOCIALDATASERVICE, true];
+    WSops.DeleteTags                                = [SOCIALDATASERVICE, true];
+    WSops.GetAllTagTerms                            = [SOCIALDATASERVICE, false];
+    WSops.GetAllTagTermsForUrlFolder                = [SOCIALDATASERVICE, false];
+    WSops.GetAllTagUrls                             = [SOCIALDATASERVICE, false];
+    WSops.GetAllTagUrlsByKeyword                    = [SOCIALDATASERVICE, false];
+    WSops.GetCommentsOfUser                         = [SOCIALDATASERVICE, false];
+    WSops.GetCommentsOfUserOnUrl                    = [SOCIALDATASERVICE, false];
+    WSops.GetCommentsOnUrl                          = [SOCIALDATASERVICE, false];
+    WSops.GetRatingAverageOnUrl                     = [SOCIALDATASERVICE, false];
+    WSops.GetRatingOfUserOnUrl                      = [SOCIALDATASERVICE, false];
+    WSops.GetRatingOnUrl                            = [SOCIALDATASERVICE, false];
+    WSops.GetRatingsOfUser                          = [SOCIALDATASERVICE, false];
+    WSops.GetRatingsOnUrl                           = [SOCIALDATASERVICE, false];
+    WSops.GetSocialDataForFullReplication           = [SOCIALDATASERVICE, false];
+    WSops.GetTags                                   = [SOCIALDATASERVICE, true];
+    WSops.GetTagsOfUser                             = [SOCIALDATASERVICE, true];
+    WSops.GetTagTerms                               = [SOCIALDATASERVICE, true];
+    WSops.GetTagTermsOfUser                         = [SOCIALDATASERVICE, true];
+    WSops.GetTagTermsOnUrl                          = [SOCIALDATASERVICE, true];
+    WSops.GetTagUrlsOfUser                          = [SOCIALDATASERVICE, true];
+    WSops.GetTagUrlsOfUserByKeyword                 = [SOCIALDATASERVICE, true];
+    WSops.GetTagUrls                                = [SOCIALDATASERVICE, true];
+    WSops.GetTagUrlsByKeyword                       = [SOCIALDATASERVICE, true];
+    WSops.SetRating                                 = [SOCIALDATASERVICE, true];
+    WSops.UpdateComment                             = [SOCIALDATASERVICE, true];
+
+    WSops.SpellCheck                                = [SPELLCHECK, false];
+
+    // Taxonomy Service Calls
+    // Updated 2011.01.27 by Thomas McMillan
+    WSops.AddTerms                                  = [TAXONOMYSERVICE, true];
+    WSops.GetChildTermsInTerm                       = [TAXONOMYSERVICE, false];
+    WSops.GetChildTermsInTermSet                    = [TAXONOMYSERVICE, false];
+    WSops.GetKeywordTermsByGuids                    = [TAXONOMYSERVICE, false];
+    WSops.GetTermsByLabel                           = [TAXONOMYSERVICE, false];
+    WSops.GetTermSets                               = [TAXONOMYSERVICE, false];
+
+    WSops.AddGroup                                  = [USERGROUP, true];
+    WSops.AddGroupToRole                            = [USERGROUP, true];
+    WSops.AddRole                                   = [USERGROUP, true];
+    WSops.AddRoleDef                                = [USERGROUP, true];
+    WSops.AddUserCollectionToGroup                  = [USERGROUP, true];
+    WSops.AddUserCollectionToRole                   = [USERGROUP, true];
+    WSops.AddUserToGroup                            = [USERGROUP, true];
+    WSops.AddUserToRole                             = [USERGROUP, true];
+    WSops.GetAllUserCollectionFromWeb               = [USERGROUP, false];
+    WSops.GetGroupCollection                        = [USERGROUP, false];
+    WSops.GetGroupCollectionFromRole                = [USERGROUP, false];
+    WSops.GetGroupCollectionFromSite                = [USERGROUP, false];
+    WSops.GetGroupCollectionFromUser                = [USERGROUP, false];
+    WSops.GetGroupCollectionFromWeb                 = [USERGROUP, false];
+    WSops.GetGroupInfo                              = [USERGROUP, false];
+    WSops.GetRoleCollection                         = [USERGROUP, false];
+    WSops.GetRoleCollectionFromGroup                = [USERGROUP, false];
+    WSops.GetRoleCollectionFromUser                 = [USERGROUP, false];
+    WSops.GetRoleCollectionFromWeb                  = [USERGROUP, false];
+    WSops.GetRoleInfo                               = [USERGROUP, false];
+    WSops.GetRolesAndPermissionsForCurrentUser      = [USERGROUP, false];
+    WSops.GetRolesAndPermissionsForSite             = [USERGROUP, false];
+    WSops.GetUserCollection                         = [USERGROUP, false];
+    WSops.GetUserCollectionFromGroup                = [USERGROUP, false];
+    WSops.GetUserCollectionFromRole                 = [USERGROUP, false];
+    WSops.GetUserCollectionFromSite                 = [USERGROUP, false];
+    WSops.GetUserCollectionFromWeb                  = [USERGROUP, false];
+    WSops.GetUserInfo                               = [USERGROUP, false];
+    WSops.GetUserLoginFromEmail                     = [USERGROUP, false];
+    WSops.RemoveGroup                               = [USERGROUP, true];
+    WSops.RemoveGroupFromRole                       = [USERGROUP, true];
+    WSops.RemoveRole                                = [USERGROUP, true];
+    WSops.RemoveUserCollectionFromGroup             = [USERGROUP, true];
+    WSops.RemoveUserCollectionFromRole              = [USERGROUP, true];
+    WSops.RemoveUserCollectionFromSite              = [USERGROUP, true];
+    WSops.RemoveUserFromGroup                       = [USERGROUP, true];
+    WSops.RemoveUserFromRole                        = [USERGROUP, true];
+    WSops.RemoveUserFromSite                        = [USERGROUP, true];
+    WSops.RemoveUserFromWeb                         = [USERGROUP, true];
+    WSops.UpdateGroupInfo                           = [USERGROUP, true];
+    WSops.UpdateRoleDefInfo                         = [USERGROUP, true];
+    WSops.UpdateRoleInfo                            = [USERGROUP, true];
+    WSops.UpdateUserInfo                            = [USERGROUP, true];
+
+    WSops.AddColleague                              = [USERPROFILESERVICE, true]; 
+    WSops.AddLink                                   = [USERPROFILESERVICE, true];
+    WSops.AddMembership                             = [USERPROFILESERVICE, true]; 
+    WSops.AddPinnedLink                             = [USERPROFILESERVICE, true];
+    WSops.CreateMemberGroup                         = [USERPROFILESERVICE, true]; 
+    WSops.CreateUserProfileByAccountName            = [USERPROFILESERVICE, true];
+    WSops.GetCommonColleagues                       = [USERPROFILESERVICE, false];
+    WSops.GetCommonManager                          = [USERPROFILESERVICE, false];
+    WSops.GetCommonMemberships                      = [USERPROFILESERVICE, false];
+    WSops.GetInCommon                               = [USERPROFILESERVICE, false];
+    WSops.GetPropertyChoiceList                     = [USERPROFILESERVICE, false];
+    WSops.GetUserColleagues                         = [USERPROFILESERVICE, false];
+    WSops.GetUserLinks                              = [USERPROFILESERVICE, false];
+    WSops.GetUserMemberships                        = [USERPROFILESERVICE, false];
+    WSops.GetUserPinnedLinks                        = [USERPROFILESERVICE, false];
+    WSops.GetUserProfileByGuid                      = [USERPROFILESERVICE, false];
+    WSops.GetUserProfileByIndex                     = [USERPROFILESERVICE, false];
+    WSops.GetUserProfileByName                      = [USERPROFILESERVICE, false];
+    WSops.GetUserProfileCount                       = [USERPROFILESERVICE, false];
+    WSops.GetUserProfileSchema                      = [USERPROFILESERVICE, false];
+    WSops.ModifyUserPropertyByAccountName           = [USERPROFILESERVICE, true];
+    WSops.RemoveAllColleagues                       = [USERPROFILESERVICE, true];
+    WSops.RemoveAllLinks                            = [USERPROFILESERVICE, true];
+    WSops.RemoveAllMemberships                      = [USERPROFILESERVICE, true];
+    WSops.RemoveAllPinnedLinks                      = [USERPROFILESERVICE, true];
+    WSops.RemoveColleague                           = [USERPROFILESERVICE, true];
+    WSops.RemoveLink                                = [USERPROFILESERVICE, true];
+    WSops.RemoveMembership                          = [USERPROFILESERVICE, true];
+    WSops.RemovePinnedLink                          = [USERPROFILESERVICE, true]; 
+    WSops.UpdateColleaguePrivacy                    = [USERPROFILESERVICE, true];
+    WSops.UpdateLink                                = [USERPROFILESERVICE, true];
+    WSops.UpdateMembershipPrivacy                   = [USERPROFILESERVICE, true];
+    WSops.UpdatePinnedLink                          = [USERPROFILESERVICE, true];
+
+    WSops.DeleteAllVersions                         = [VERSIONS, true];
+    WSops.DeleteVersion                             = [VERSIONS, true];
+    WSops.GetVersions                               = [VERSIONS, false];
+    WSops.RestoreVersion                            = [VERSIONS, true];
+
+    WSops.AddView                                   = [VIEWS, true];
+    WSops.DeleteView                                = [VIEWS, true];
+    WSops.GetView                                   = [VIEWS, false];
+    WSops.GetViewHtml                               = [VIEWS, false];
+    WSops.GetViewCollection                         = [VIEWS, false];
+    WSops.UpdateView                                = [VIEWS, true];
+    WSops.UpdateViewHtml                            = [VIEWS, true];
+
+    WSops.AddWebPart                                = [WEBPARTPAGES, true];
+    WSops.AddWebPartToZone                          = [WEBPARTPAGES, true];
+    WSops.GetWebPart2                               = [WEBPARTPAGES, false];
+    WSops.GetWebPartPage                            = [WEBPARTPAGES, false];
+    WSops.GetWebPartProperties                      = [WEBPARTPAGES, false];
+    WSops.GetWebPartProperties2                     = [WEBPARTPAGES, false];
+
+    WSops.CreateContentType                         = [WEBS, true];
+    WSops.GetColumns                                = [WEBS, false];
+    WSops.GetContentType                            = [WEBS, false];
+    WSops.GetContentTypes                           = [WEBS, false];
+    WSops.GetCustomizedPageStatus                   = [WEBS, false];
+    WSops.GetListTemplates                          = [WEBS, false];
+    WSops.GetObjectIdFromUrl                        = [WEBS, false]; // 2010
+    WSops.GetWeb                                    = [WEBS, false];
+    WSops.GetWebCollection                          = [WEBS, false];
+    WSops.GetAllSubWebCollection                    = [WEBS, false];
+    WSops.UpdateColumns                             = [WEBS, true];
+    WSops.UpdateContentType                         = [WEBS, true];
+    WSops.WebUrlFromPageUrl                         = [WEBS, false];
+
+    WSops.AlterToDo                                 = [WORKFLOW, true];
+    WSops.GetTemplatesForItem                       = [WORKFLOW, false];
+    WSops.GetToDosForItem                           = [WORKFLOW, false];
+    WSops.GetWorkflowDataForItem                    = [WORKFLOW, false];
+    WSops.GetWorkflowTaskData                       = [WORKFLOW, false];
+    WSops.StartWorkflow                             = [WORKFLOW, true];
+
+    // Set up SOAP envelope
+    var SOAPEnvelope = {};
+    SOAPEnvelope.header = "<soap:Envelope xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'><soap:Body>";
+    SOAPEnvelope.footer = "</soap:Body></soap:Envelope>";
+    SOAPEnvelope.payload = "";
+    var SOAPAction;
+
+
+    // Main function, which calls SharePoint's Web Services directly.
+    $.fn.SPServices = function(options) {
+
+        // If there are no options passed in, use the defaults.  Extend replaces each default with the passed option.
+        var opt = $.extend({}, $.fn.SPServices.defaults, options);
+        
+        // Encode options which may contain special character, esp. ampersand
+        for(var i=0; i < encodeOptionList.length; i++) {
+            if(typeof opt[encodeOptionList[i]] === "string") {
+                opt[encodeOptionList[i]] = encodeXml(opt[encodeOptionList[i]]);
+            }
+        }
+
+        // Put together operation header and SOAPAction for the SOAP call based on which Web Service we're calling
+        SOAPEnvelope.opheader = "<" + opt.operation + " ";
+        switch(WSops[opt.operation][0]) {
+            case ALERTS:
+                SOAPEnvelope.opheader += "xmlns='" + SCHEMASharePoint + "/soap/2002/1/alerts/' >";
+                SOAPAction = SCHEMASharePoint + "/soap/2002/1/alerts/";
+                break;
+            case MEETINGS:
+                SOAPEnvelope.opheader += "xmlns='" + SCHEMASharePoint + "/soap/meetings/' >";
+                SOAPAction = SCHEMASharePoint + "/soap/meetings/";
+                break;
+            case PERMISSIONS:
+                SOAPEnvelope.opheader += "xmlns='" + SCHEMASharePoint + "/soap/directory/' >";
+                SOAPAction = SCHEMASharePoint + "/soap/directory/";
+                break;
+            case PUBLISHEDLINKSSERVICE:
+                SOAPEnvelope.opheader += "xmlns='http://microsoft.com/webservices/SharePointPortalServer/PublishedLinksService/' >";
+                SOAPAction = "http://microsoft.com/webservices/SharePointPortalServer/PublishedLinksService/";
+                break;
+            case SEARCH:
+                SOAPEnvelope.opheader += "xmlns='urn:Microsoft.Search' >";
+                SOAPAction = "urn:Microsoft.Search/";
+                break;
+            case SHAREPOINTDIAGNOSTICS:
+                SOAPEnvelope.opheader += "xmlns='" + SCHEMASharePoint + "/diagnostics/' >";
+                SOAPAction = "http://schemas.microsoft.com/sharepoint/diagnostics/";
+                break;
+            case SOCIALDATASERVICE:
+                SOAPEnvelope.opheader += "xmlns='http://microsoft.com/webservices/SharePointPortalServer/SocialDataService' >";
+                SOAPAction = "http://microsoft.com/webservices/SharePointPortalServer/SocialDataService/";
+                break;
+            case SPELLCHECK:
+                SOAPEnvelope.opheader += "xmlns='http://schemas.microsoft.com/sharepoint/publishing/spelling/' >";
+                SOAPAction = "http://schemas.microsoft.com/sharepoint/publishing/spelling/SpellCheck";
+                break;
+            case TAXONOMYSERVICE:
+                SOAPEnvelope.opheader += "xmlns='" + SCHEMASharePoint + "/taxonomy/soap/' >";
+                SOAPAction = SCHEMASharePoint + "/taxonomy/soap/";
+                break;
+            case USERGROUP:
+                SOAPEnvelope.opheader += "xmlns='" + SCHEMASharePoint + "/soap/directory/' >";
+                SOAPAction = SCHEMASharePoint + "/soap/directory/";
+                break;
+            case USERPROFILESERVICE:
+                SOAPEnvelope.opheader += "xmlns='http://microsoft.com/webservices/SharePointPortalServer/UserProfileService' >";
+                SOAPAction = "http://microsoft.com/webservices/SharePointPortalServer/UserProfileService/";
+                break;
+            case WEBPARTPAGES:
+                SOAPEnvelope.opheader += "xmlns='http://microsoft.com/sharepoint/webpartpages' >";
+                SOAPAction = "http://microsoft.com/sharepoint/webpartpages/";
+                break;
+            case WORKFLOW:
+                SOAPEnvelope.opheader += "xmlns='" + SCHEMASharePoint + "/soap/workflow/' >";
+                SOAPAction = SCHEMASharePoint + "/soap/workflow/";
+                break;
+            default:
+                SOAPEnvelope.opheader += "xmlns='" + SCHEMASharePoint + "/soap/'>";
+                SOAPAction = SCHEMASharePoint + "/soap/";
+                break;
+        }
+        
+        // Add the operation to the SOAPAction and opfooter
+        SOAPAction += opt.operation;
+        SOAPEnvelope.opfooter = "</" + opt.operation + ">";
+
+        // Build the URL for the Ajax call based on which operation we're calling
+        // If the webURL has been provided, then use it, else use the current site
+        var ajaxURL = "_vti_bin/" + WSops[opt.operation][0] + ".asmx";
+        var thisSite = $().SPServices.SPGetCurrentSite();
+        if(opt.webURL.charAt(opt.webURL.length - 1) === SLASH) {
+            ajaxURL = opt.webURL + ajaxURL;
+        } else if(opt.webURL.length > 0) {
+            ajaxURL = opt.webURL + SLASH + ajaxURL;
+        } else {
+            ajaxURL = thisSite + ((thisSite.charAt(thisSite.length - 1) === SLASH) ? ajaxURL : (SLASH + ajaxURL));
+        }
+
+        SOAPEnvelope.payload = "";
+        // Each operation requires a different set of values.  This switch statement sets them up in the SOAPEnvelope.payload.
+        switch(opt.operation) {
+            // ALERT OPERATIONS
+            case "GetAlerts":
+                break;
+            case "DeleteAlerts":
+                SOAPEnvelope.payload += "<IDs>";
+                for (i=0; i < opt.IDs.length; i++) {
+                    SOAPEnvelope.payload += wrapNode("string", opt.IDs[i]);
+                }
+                SOAPEnvelope.payload += "</IDs>";
+                break;
+
+            // AUTHENTICATION OPERATIONS
+            case "Mode":
+                break;
+            case "Login":
+                addToPayload(opt, ["username", "password"]);
+                break;
+
+            // COPY OPERATIONS
+            case "CopyIntoItems":
+                addToPayload(opt, ["SourceUrl"]);
+                SOAPEnvelope.payload += "<DestinationUrls>";
+                for (i=0; i < opt.DestinationUrls.length; i++) {
+                    SOAPEnvelope.payload += wrapNode("string", opt.DestinationUrls[i]);
+                }
+                SOAPEnvelope.payload += "</DestinationUrls>";
+                addToPayload(opt, ["Fields", "Stream", "Results"]);
+                break;
+            case "CopyIntoItemsLocal":
+                addToPayload(opt, ["SourceUrl"]);
+                SOAPEnvelope.payload += "<DestinationUrls>";
+                for (i=0; i < opt.DestinationUrls.length; i++) {
+                    SOAPEnvelope.payload += wrapNode("string", opt.DestinationUrls[i]);
+                }
+                SOAPEnvelope.payload += "</DestinationUrls>";
+                break;
+            case "GetItem":
+                addToPayload(opt, ["Url", "Fields", "Stream"]);
+                break;
+
+            // FORM OPERATIONS
+            case "GetForm":
+                addToPayload(opt, ["listName", "formUrl"]);
+                break;
+            case "GetFormCollection":
+                addToPayload(opt, ["listName"]);
+                break;
+
+            // LIST OPERATIONS
+            case "AddAttachment":
+                addToPayload(opt, ["listName", "listItemID", "fileName", "attachment"]);
+                break;
+            case "AddDiscussionBoardItem":
+                addToPayload(opt, ["listName", "message"]);
+                break;
+            case "AddList":
+                addToPayload(opt, ["listName", "description", "templateID"]);
+                break;
+            case "AddListFromFeature":
+                addToPayload(opt, ["listName", "description", "featureID", "templateID"]);
+                break;
+            case "ApplyContentTypeToList":
+                addToPayload(opt, ["webUrl", "contentTypeId", "listName"]);
+                break;
+            case "CheckInFile":
+                addToPayload(opt, ["pageUrl", "comment", "CheckinType"]);
+                break;
+            case "CheckOutFile":
+                addToPayload(opt, ["pageUrl", "checkoutToLocal", "lastmodified"]);
+                break;
+            case "CreateContentType":
+                addToPayload(opt, ["listName", "displayName", "parentType", "fields", "contentTypeProperties", "addToView"]);
+                break;
+            case "DeleteAttachment":
+                addToPayload(opt, ["listName", "listItemID", "url"]);
+                break;
+            case "DeleteContentType":
+                addToPayload(opt, ["listName", "contentTypeId"]);
+                break;
+            case "DeleteContentTypeXmlDocument":
+                addToPayload(opt, ["listName", "contentTypeId", "documentUri"]);
+                break;
+            case "DeleteList":
+                addToPayload(opt, ["listName"]);
+                break;
+            case "GetAttachmentCollection":
+                addToPayload(opt, ["listName", ["listItemID", "ID"]]);
+                break;
+            case "GetList":
+                addToPayload(opt, ["listName"]);
+                break;
+            case "GetListAndView":
+                addToPayload(opt, ["listName", "viewName"]);
+                break;
+            case "GetListCollection":
+                break;
+            case "GetListContentType":
+                addToPayload(opt, ["listName", "contentTypeId"]);
+                break;
+            case "GetListContentTypes":
+                addToPayload(opt, ["listName"]);
+                break;
+            case "GetListItems":
+                addToPayload(opt, ["listName", "viewName", ["query", "CAMLQuery"], ["viewFields", "CAMLViewFields"], ["rowLimit", "CAMLRowLimit"], ["queryOptions", "CAMLQueryOptions"]]);
+                break;
+            case "GetListItemChanges":
+                addToPayload(opt, ["listName", "viewFields", "since", "contains"]);
+                break;
+            case "GetListItemChangesSinceToken":
+                addToPayload(opt, ["listName", "viewName", ["query", "CAMLQuery"], ["viewFields", "CAMLViewFields"], ["rowLimit", "CAMLRowLimit"], ["queryOptions", "CAMLQueryOptions"], {name: "changeToken", sendNull: false}, {name: "contains", sendNull: false}]);
+                break;
+            case "GetVersionCollection":
+                addToPayload(opt, ["strlistID", "strlistItemID", "strFieldName"]);
+                break;
+            case "UndoCheckOut":
+                addToPayload(opt, ["pageUrl"]);
+                break;
+            case "UpdateContentType":
+                addToPayload(opt, ["listName", "contentTypeId", "contentTypeProperties", "newFields", "updateFields", "deleteFields", "addToView"]);
+                break;
+            case "UpdateContentTypesXmlDocument":
+                addToPayload(opt, ["listName", "newDocument"]);
+                break;
+            case "UpdateContentTypeXmlDocument":
+                addToPayload(opt, ["listName", "contentTypeId", "newDocument"]);
+                break;
+            case "UpdateList":
+                addToPayload(opt, ["listName", "listProperties", "newFields", "updateFields", "deleteFields", "listVersion"]);
+                break;
+            case "UpdateListItems":
+                addToPayload(opt, ["listName"]);
+                if(typeof opt.updates !== "undefined" && opt.updates.length > 0) {
+                    addToPayload(opt, ["updates"]);
+                } else {
+                    SOAPEnvelope.payload += "<updates><Batch OnError='Continue'><Method ID='1' Cmd='" + opt.batchCmd + "'>";
+                    for (i=0; i < opt.valuepairs.length; i++) { 
+                        SOAPEnvelope.payload += "<Field Name='" + opt.valuepairs[i][0] + "'>" + escapeColumnValue(opt.valuepairs[i][1]) + "</Field>";
+                    }
+                    if(opt.batchCmd !== "New") {
+                        SOAPEnvelope.payload += "<Field Name='ID'>" + opt.ID + "</Field>";
+                    }
+                    SOAPEnvelope.payload += "</Method></Batch></updates>";
+                }
+                break;
+
+            // MEETINGS OPERATIONS
+            case "AddMeeting":
+                addToPayload(opt, ["organizerEmail", "uid", "sequence", "utcDateStamp", "title", "location", "utcDateStart", "utcDateEnd", "nonGregorian"]);
+                break;
+            case "CreateWorkspace":
+                addToPayload(opt, ["title", "templateName", "lcid", "timeZoneInformation"]);
+                break;
+            case "RemoveMeeting":
+                addToPayload(opt, ["recurrenceId", "uid", "sequence", "utcDateStamp", "cancelMeeting"]);
+                break;
+            case "SetWorkspaceTitle":
+                addToPayload(opt, ["title"]);
+                break;
+
+            // PEOPLE OPERATIONS
+            case "ResolvePrincipals":
+                addToPayload(opt, ["principalKeys", "principalType", "addToUserInfoList"]);
+                break;
+            case "SearchPrincipals":
+                addToPayload(opt, ["searchText", "maxResults", "principalType"]);
+                break;
+
+            // PERMISSION OPERATIONS
+            case "AddPermission":
+                addToPayload(opt, ["objectName", "objectType", "permissionIdentifier", "permissionType", "permissionMask"]);
+                break;
+            case "AddPermissionCollection":
+                addToPayload(opt, ["objectName", "objectType", "permissionsInfoXml"]);
+                break;
+            case "GetPermissionCollection":
+                addToPayload(opt, ["objectName", "objectType"]);
+                break;
+            case "RemovePermission":
+                addToPayload(opt, ["objectName", "objectType", "permissionIdentifier", "permissionType"]);
+                break;
+            case "RemovePermissionCollection":
+                addToPayload(opt, ["objectName", "objectType", "memberIdsXml"]);
+                break;
+            case "UpdatePermission":
+                addToPayload(opt, ["objectName", "objectType", "permissionIdentifier", "permissionType", "permissionMask"]);
+                break;
+
+            // PUBLISHEDLINKSSERVICE OPERATIONS
+            case "GetLinks":
+                break;
+
+            // SEARCH OPERATIONS
+            case "GetPortalSearchInfo":
+                SOAPEnvelope.opheader = "<" + opt.operation + " xmlns='http://microsoft.com/webservices/OfficeServer/QueryService'>";
+                SOAPAction = "http://microsoft.com/webservices/OfficeServer/QueryService/" + opt.operation;
+                break;
+            case "GetQuerySuggestions":
+                SOAPEnvelope.opheader = "<" + opt.operation + " xmlns='http://microsoft.com/webservices/OfficeServer/QueryService'>";
+                SOAPAction = "http://microsoft.com/webservices/OfficeServer/QueryService/" + opt.operation;
+                SOAPEnvelope.payload += wrapNode("queryXml", encodeXml(opt.queryXml));
+                break;
+            case "GetSearchMetadata":
+                SOAPEnvelope.opheader = "<" + opt.operation + " xmlns='http://microsoft.com/webservices/OfficeServer/QueryService'>";
+                SOAPAction = "http://microsoft.com/webservices/OfficeServer/QueryService/" + opt.operation;
+                break;
+            case "Query":
+                SOAPEnvelope.payload += wrapNode("queryXml", encodeXml(opt.queryXml));
+                break;
+            case "QueryEx":
+                SOAPEnvelope.opheader = "<" + opt.operation + " xmlns='http://microsoft.com/webservices/OfficeServer/QueryService'>";
+                SOAPAction = "http://microsoft.com/webservices/OfficeServer/QueryService/" + opt.operation;
+                SOAPEnvelope.payload += wrapNode("queryXml", encodeXml(opt.queryXml));
+                break;
+            case "Registration":
+                SOAPEnvelope.payload += wrapNode("registrationXml", encodeXml(opt.registrationXml));
+                break;
+            case "Status":
+                break;
+
+            // SHAREPOINTDIAGNOSTICS OPERATIONS
+            case "SendClientScriptErrorReport":
+                addToPayload(opt, ["message", "file", "line", "client", "stack", "team", "originalFile"]);
+                break;
+
+            // SITEDATA OPERATIONS
+            case "EnumerateFolder":
+                addToPayload(opt, ["strFolderUrl"]);
+                break;
+            case "GetAttachments":
+                addToPayload(opt, ["strListName", "strItemId"]);
+                break;
+            case "SiteDataGetList":
+                addToPayload(opt, ["strListName"]);
+                // Because this operation has a name which duplicates the Lists WS, need to handle
+                SOAPEnvelope = siteDataFixSOAPEnvelope(SOAPEnvelope, opt.operation);
+                break;
+            case "SiteDataGetListCollection":
+                // Because this operation has a name which duplicates the Lists WS, need to handle
+                SOAPEnvelope = siteDataFixSOAPEnvelope(SOAPEnvelope, opt.operation);
+                break;
+            case "SiteDataGetSite":
+                // Because this operation has a name which duplicates the Lists WS, need to handle
+                SOAPEnvelope = siteDataFixSOAPEnvelope(SOAPEnvelope, opt.operation);
+                break;
+            case "SiteDataGetSiteUrl":
+                addToPayload(opt, ["Url"]);
+                // Because this operation has a name which duplicates the Lists WS, need to handle
+                SOAPEnvelope = siteDataFixSOAPEnvelope(SOAPEnvelope, opt.operation);
+                break;
+            case "SiteDataGetWeb":
+                // Because this operation has a name which duplicates the Lists WS, need to handle
+                SOAPEnvelope = siteDataFixSOAPEnvelope(SOAPEnvelope, opt.operation);
+                break;
+
+            // SITES OPERATIONS
+            case "CreateWeb":
+                addToPayload(opt, ["url", "title", "description", "templateName", "language", "languageSpecified",
+                    "locale", "localeSpecified", "collationLocale", "collationLocaleSpecified", "uniquePermissions",
+                    "uniquePermissionsSpecified", "anonymous", "anonymousSpecified", "presence", "presenceSpecified"]);
+                break;
+            case "DeleteWeb":
+                addToPayload(opt, ["url"]);
+                break;
+            case "GetSite":
+                addToPayload(opt, ["SiteUrl"]);
+                break;
+            case "GetSiteTemplates":
+                addToPayload(opt, ["LCID", "TemplateList"]);
+                break;
+
+            // SOCIALDATASERVICE OPERATIONS
+            case "AddComment":
+                addToPayload(opt, ["url", "comment", "isHighPriority", "title"]);
+                break;
+            case "AddTag":
+                addToPayload(opt, ["url", "termID", "title", "isPrivate"]);
+                break;
+            case "AddTagByKeyword":
+                addToPayload(opt, ["url", "keyword", "title", "isPrivate"]);
+                break;
+            case "CountCommentsOfUser":
+                addToPayload(opt, ["userAccountName"]);
+                break;
+            case "CountCommentsOfUserOnUrl":
+                addToPayload(opt, ["userAccountName", "url"]);
+                break;
+            case "CountCommentsOnUrl":
+                addToPayload(opt, ["url"]);
+                break;
+            case "CountRatingsOnUrl":
+                addToPayload(opt, ["url"]);
+                break;
+            case "CountTagsOfUser":
+                addToPayload(opt, ["userAccountName"]);
+                break;
+            case "DeleteComment":
+                addToPayload(opt, ["url", "lastModifiedTime"]);
+                break;
+            case "DeleteRating":
+                addToPayload(opt, ["url"]);
+                break;
+            case "DeleteTag":
+                addToPayload(opt, ["url", "termID"]);
+                break;
+            case "DeleteTagByKeyword":
+                addToPayload(opt, ["url", "keyword"]);
+                break;
+            case "DeleteTags":
+                addToPayload(opt, ["url"]);
+                break;
+            case "GetAllTagTerms":
+                addToPayload(opt, ["maximumItemsToReturn"]);
+                break;
+            case "GetAllTagTermsForUrlFolder":
+                addToPayload(opt, ["urlFolder", "maximumItemsToReturn"]);
+                break;
+            case "GetAllTagUrls":
+                addToPayload(opt, ["termID"]);
+                break;
+            case "GetAllTagUrlsByKeyword":
+                addToPayload(opt, ["keyword"]);
+                break;
+            case "GetCommentsOfUser":
+                addToPayload(opt, ["userAccountName", "maximumItemsToReturn", "startIndex"]);
+                break;
+            case "GetCommentsOfUserOnUrl":
+                addToPayload(opt, ["userAccountName", "url"]);
+                break;
+            case "GetCommentsOnUrl":
+                addToPayload(opt, ["url", "maximumItemsToReturn", "startIndex"]);
+                if(typeof opt.excludeItemsTime !== "undefined" && opt.excludeItemsTime.length > 0) {
+                    SOAPEnvelope.payload += wrapNode("excludeItemsTime", opt.excludeItemsTime);
+                }
+                break;
+            case "GetRatingAverageOnUrl":
+                addToPayload(opt, ["url"]);
+                break;
+            case "GetRatingOfUserOnUrl":
+                addToPayload(opt, ["userAccountName", "url"]);
+                break;
+            case "GetRatingOnUrl":
+                addToPayload(opt, ["url"]);
+                break;
+            case "GetRatingsOfUser":
+                addToPayload(opt, ["userAccountName"]);
+                break;
+            case "GetRatingsOnUrl":
+                addToPayload(opt, ["url"]);
+                break;
+            case "GetSocialDataForFullReplication":
+                addToPayload(opt, ["userAccountName"]);
+                break;
+            case "GetTags":
+                addToPayload(opt, ["url"]);
+                break;
+            case "GetTagsOfUser":
+                addToPayload(opt, ["userAccountName", "maximumItemsToReturn", "startIndex"]);
+                break;
+            case "GetTagTerms":
+                addToPayload(opt, ["maximumItemsToReturn"]);
+                break;
+            case "GetTagTermsOfUser":
+                addToPayload(opt, ["userAccountName", "maximumItemsToReturn"]);
+                break;
+            case "GetTagTermsOnUrl":
+                addToPayload(opt, ["url", "maximumItemsToReturn"]);
+                break;
+            case "GetTagUrls":
+                addToPayload(opt, ["termID"]);
+                break;
+            case "GetTagUrlsByKeyword":
+                addToPayload(opt, ["keyword"]);
+                break;
+            case "GetTagUrlsOfUser":
+                addToPayload(opt, ["termID", "userAccountName"]);
+                break;
+            case "GetTagUrlsOfUserByKeyword":
+                addToPayload(opt, ["keyword", "userAccountName"]);
+                break;
+            case "SetRating":
+                addToPayload(opt, ["url", "rating", "title", "analysisDataEntry"]);
+                break;
+            case "UpdateComment":
+                addToPayload(opt, ["url", "lastModifiedTime", "comment", "isHighPriority"]);
+                break;
+
+            // SPELLCHECK OPERATIONS 
+            case "SpellCheck":
+                addToPayload(opt, ["chunksToSpell", "declaredLanguage", "useLad"]);
+                break;
+
+           // TAXONOMY OPERATIONS 
+            case "AddTerms":
+                addToPayload(opt, ["sharedServiceId", "termSetId", "lcid", "newTerms"]);
+                break;
+            case "GetChildTermsInTerm":
+                addToPayload(opt, ["sspId", "lcid", "termId", "termSetId"]);
+                break;
+            case "GetChildTermsInTermSet":
+                addToPayload(opt, ["sspId", "lcid", "termSetId"]);
+                break;
+            case "GetKeywordTermsByGuids":
+                addToPayload(opt, ["termIds", "lcid"]);
+                break;
+            case "GetTermsByLabel":
+                addToPayload(opt, ["label", "lcid", "matchOption", "resultCollectionSize", "termIds", "addIfNotFound"]);
+                break;
+            case "GetTermSets":
+                addToPayload(opt, ["sharedServiceId", "termSetId", "lcid", "clientTimeStamps", "clientVersions"]);
+                break;
+
+            // USERS AND GROUPS OPERATIONS
+            case "AddGroup":
+                addToPayload(opt, ["groupName", "ownerIdentifier", "ownerType", "defaultUserLoginName", "description"]);
+                break;
+            case "AddGroupToRole":
+                addToPayload(opt, ["groupName", "roleName"]);
+                break;
+            case "AddRole":
+                addToPayload(opt, ["roleName", "description", "permissionMask"]);
+                break;
+            case "AddRoleDef":
+                addToPayload(opt, ["roleName", "description", "permissionMask"]);
+                break;
+            case "AddUserCollectionToGroup":
+                addToPayload(opt, ["groupName", "usersInfoXml"]);
+                break;
+            case "AddUserCollectionToRole":
+                addToPayload(opt, ["roleName", "usersInfoXml"]);
+                break;
+            case "AddUserToGroup":
+                addToPayload(opt, ["groupName", "userName", "userLoginName", "userEmail", "userNotes"]);
+                break;
+            case "AddUserToRole":
+                addToPayload(opt, ["roleName", "userName", "userLoginName", "userEmail", "userNotes"]);
+                break;
+            case "GetAllUserCollectionFromWeb":
+                break;
+            case "GetGroupCollection":
+                addToPayload(opt, ["groupNamesXml"]);
+                break;
+            case "GetGroupCollectionFromRole":
+                addToPayload(opt, ["roleName"]);
+                break;
+            case "GetGroupCollectionFromSite":
+                break;
+            case "GetGroupCollectionFromUser":
+                addToPayload(opt, ["userLoginName"]);
+                break;
+            case "GetGroupCollectionFromWeb":
+                break;
+            case "GetGroupInfo":
+                addToPayload(opt, ["groupName"]);
+                break;
+            case "GetRoleCollection":
+                addToPayload(opt, ["roleNamesXml"]);
+                break;
+            case "GetRoleCollectionFromGroup":
+                addToPayload(opt, ["groupName"]);
+                break;
+            case "GetRoleCollectionFromUser":
+                addToPayload(opt, ["userLoginName"]);
+                break;
+            case "GetRoleCollectionFromWeb":
+                break;
+            case "GetRoleInfo":
+                addToPayload(opt, ["roleName"]);
+                break;
+            case "GetRolesAndPermissionsForCurrentUser":
+                break;
+            case "GetRolesAndPermissionsForSite":
+                break;
+            case "GetUserCollection":
+                addToPayload(opt, ["userLoginNamesXml"]);
+                break;
+            case "GetUserCollectionFromGroup":
+                addToPayload(opt, ["groupName"]);
+                break;
+            case "GetUserCollectionFromRole":
+                addToPayload(opt, ["roleName"]);
+                break;
+            case "GetUserCollectionFromSite":
+                break;
+            case "GetUserCollectionFromWeb":
+                break;
+            case "GetUserInfo":
+                addToPayload(opt, ["userLoginName"]);
+                break;
+            case "GetUserLoginFromEmail":
+                addToPayload(opt, ["emailXml"]);
+                break;
+            case "RemoveGroup":
+                addToPayload(opt, ["groupName"]);
+                break;
+            case "RemoveGroupFromRole":
+                addToPayload(opt, ["roleName", "groupName"]);
+                break;
+            case "RemoveRole":
+                addToPayload(opt, ["roleName"]);
+                break;
+            case "RemoveUserCollectionFromGroup":
+                addToPayload(opt, ["groupName", "userLoginNamesXml"]);
+                break;
+            case "RemoveUserCollectionFromRole":
+                addToPayload(opt, ["roleName", "userLoginNamesXml"]);
+                break;
+            case "RemoveUserCollectionFromSite":
+                addToPayload(opt, ["userLoginNamesXml"]);
+                break;
+            case "RemoveUserFromGroup":
+                addToPayload(opt, ["groupName", "userLoginName"]);
+                break;
+            case "RemoveUserFromRole":
+                addToPayload(opt, ["roleName", "userLoginName"]);
+                break;
+            case "RemoveUserFromSite":
+                addToPayload(opt, ["userLoginName"]);
+                break;
+            case "RemoveUserFromWeb":
+                addToPayload(opt, ["userLoginName"]);
+                break;
+            case "UpdateGroupInfo":
+                addToPayload(opt, ["oldGroupName", "groupName", "ownerIdentifier", "ownerType", "description"]);
+                break;
+            case "UpdateRoleDefInfo":
+                addToPayload(opt, ["oldRoleName", "roleName", "description", "permissionMask"]);
+                break;
+            case "UpdateRoleInfo":
+                addToPayload(opt, ["oldRoleName", "roleName", "description", "permissionMask"]);
+                break;
+            case "UpdateUserInfo":
+                addToPayload(opt, ["userLoginName", "userName", "userEmail", "userNotes"]);
+                break;
+
+            // USERPROFILESERVICE OPERATIONS
+            case "AddColleague":
+                addToPayload(opt, ["accountName", "colleagueAccountName", "group", "privacy", "isInWorkGroup"]);
+                break;                                                                          
+            case "AddLink":
+                addToPayload(opt, ["accountName", "name", "url", "group", "privacy"]);
+                break;                                                                                      
+            case "AddMembership":
+                addToPayload(opt, ["accountName", "membershipInfo", "group", "privacy"]);
+                break;                                                          
+            case "AddPinnedLink":
+                addToPayload(opt, ["accountName", "name", "url"]);
+                break;
+            case "CreateMemberGroup":
+                addToPayload(opt, ["membershipInfo"]);
+                break;
+            case "CreateUserProfileByAccountName":
+                addToPayload(opt, ["accountName"]);
+                break;
+            case "GetCommonColleagues":
+                addToPayload(opt, ["accountName"]);
+                break;
+            case "GetCommonManager":
+                addToPayload(opt, ["accountName"]);
+                break;
+            case "GetCommonMemberships":
+                addToPayload(opt, ["accountName"]);
+                break;
+            case "GetInCommon":
+                addToPayload(opt, ["accountName"]);
+                break;
+            case "GetPropertyChoiceList":
+                addToPayload(opt, ["propertyName"]);
+                break;
+            case "GetUserColleagues":
+                addToPayload(opt, ["accountName"]);
+                break;
+            case "GetUserLinks":
+                addToPayload(opt, ["accountName"]);
+                break;
+            case "GetUserMemberships":
+                addToPayload(opt, ["accountName"]);
+                break;
+            case "GetUserPinnedLinks":
+                addToPayload(opt, ["accountName"]);
+                break;
+            case "GetUserProfileByGuid":
+                addToPayload(opt, ["guid"]);
+                break;
+            case "GetUserProfileByIndex":
+                addToPayload(opt, ["index"]);
+                break;
+            case "GetUserProfileByName":
+                // Note that this operation is inconsistent with the others, using AccountName rather than accountName
+                if(typeof opt.accountName !== "undefined" && opt.accountName.length > 0) {
+                    addToPayload(opt, [["AccountName", "accountName"]]);
+                } else {
+                    addToPayload(opt, ["AccountName"]);
+                }
+                break;
+            case "GetUserProfileCount":
+                break;
+            case "GetUserProfileSchema":
+                break;
+            case "ModifyUserPropertyByAccountName":
+                addToPayload(opt, ["accountName", "newData"]);
+                break;
+            case "RemoveAllColleagues":
+                addToPayload(opt, ["accountName"]);
+                break;
+            case "RemoveAllLinks":
+                addToPayload(opt, ["accountName"]);
+                break;
+            case "RemoveAllMemberships":
+                addToPayload(opt, ["accountName"]);
+                break;
+            case "RemoveAllPinnedLinks":
+                addToPayload(opt, ["accountName"]);
+                break;  
+            case "RemoveColleague":
+                addToPayload(opt, ["accountName", "colleagueAccountName"]);
+                break;  
+            case "RemoveLink":
+                addToPayload(opt, ["accountName", "id"]);
+                break;
+            case "RemoveMembership":
+                addToPayload(opt, ["accountName", "sourceInternal", "sourceReference"]);
+                break;
+            case "RemovePinnedLink":
+                addToPayload(opt, ["accountName", "id"]);
+                break;                                                                                          
+            case "UpdateColleaguePrivacy":
+                addToPayload(opt, ["accountName", "colleagueAccountName", "newPrivacy"]);
+                break;
+            case "UpdateLink":
+                addToPayload(opt, ["accountName", "data"]);
+                break;          
+            case "UpdateMembershipPrivacy":  
+                addToPayload(opt, ["accountName", "sourceInternal", "sourceReference", "newPrivacy"]);
+                break;
+            case "UpdatePinnedLink ":
+                addToPayload(opt, ["accountName", "data"]);
+                break;
+
+            // VERSIONS OPERATIONS
+            case "DeleteAllVersions":
+                addToPayload(opt, ["fileName"]);
+                break;
+            case "DeleteVersion":
+                addToPayload(opt, ["fileName", "fileVersion"]);
+                break;
+            case "GetVersions":
+                addToPayload(opt, ["fileName"]);
+                break;
+            case "RestoreVersion":
+                addToPayload(opt, ["fileName", "fileVersion"]);
+                break;
+
+            // VIEW OPERATIONS
+            case "AddView":
+                addToPayload(opt, ["listName", "viewName", "viewFields", "query", "rowLimit", "rowLimit", "type", "makeViewDefault"]);
+                break;
+            case "DeleteView":
+                addToPayload(opt, ["listName", "viewName"]);
+                break;
+            case "GetView":
+                addToPayload(opt, ["listName", "viewName"]);
+                break;
+            case "GetViewCollection":
+                addToPayload(opt, ["listName"]);
+                break;
+            case "GetViewHtml":
+                addToPayload(opt, ["listName", "viewName"]);
+                break;
+            case "UpdateView":
+                addToPayload(opt, ["listName", "viewName", "viewProperties", "query", "viewFields", "aggregations", "formats", "rowLimit"]);
+                break;
+            case "UpdateViewHtml":
+                addToPayload(opt, ["listName", "viewName", "viewProperties", "toolbar", "viewHeader", "viewBody", "viewFooter", "viewEmpty", "rowLimitExceeded",
+                    "query", "viewFields", "aggregations", "formats", "rowLimit"]);
+                break;
+
+            // WEBPARTPAGES OPERATIONS
+            case "AddWebPart":
+                addToPayload(opt, ["pageUrl", "webPartXml", "storage"]);
+                break;
+            case "AddWebPartToZone":
+                addToPayload(opt, ["pageUrl", "webPartXml", "storage", "zoneId", "zoneIndex"]);
+                break;
+            case "GetWebPart2":
+                addToPayload(opt, ["pageUrl", "storageKey", "storage", "behavior"]);
+                break;
+            case "GetWebPartPage":
+                addToPayload(opt, ["documentName", "behavior"]);
+                break;
+            case "GetWebPartProperties":
+                addToPayload(opt, ["pageUrl", "storage"]);
+                break;
+            case "GetWebPartProperties2":
+                addToPayload(opt, ["pageUrl", "storage", "behavior"]);
+                break;
+
+            // WEBS OPERATIONS
+            case "Webs.CreateContentType":
+                addToPayload(opt, ["displayName", "parentType", "newFields", "contentTypeProperties"]);
+                break;
+            case "GetColumns":
+                addToPayload(opt, ["webUrl"]);
+                break;
+            case "GetContentType":
+                addToPayload(opt, ["contentTypeId"]);
+                break;
+            case "GetContentTypes":
+                break;
+            case "GetCustomizedPageStatus":
+                addToPayload(opt, ["fileUrl"]);
+                break;
+            case "GetListTemplates":
+                break;
+            case "GetObjectIdFromUrl":
+                addToPayload(opt, ["objectUrl"]);
+                break;
+            case "GetWeb":
+                addToPayload(opt, [["webUrl", "webURL"]]);
+                break;
+            case "GetWebCollection":
+                break;
+            case "GetAllSubWebCollection":
+                break;
+            case "UpdateColumns":
+                addToPayload(opt, ["newFields", "updateFields", "deleteFields"]);
+                break;              
+            case "Webs.UpdateContentType":
+                addToPayload(opt, ["contentTypeId", "contentTypeProperties", "newFields", "updateFields", "deleteFields"]);
+                break;              
+            case "WebUrlFromPageUrl":
+                addToPayload(opt, [["pageUrl", "pageURL"]]);
+                break;
+
+            // WORKFLOW OPERATIONS
+            case "AlterToDo":
+                addToPayload(opt, ["item", "todoId", "todoListId", "taskData"]);
+                break;
+            case "GetTemplatesForItem":
+                addToPayload(opt, ["item"]);
+                break;
+            case "GetToDosForItem":
+                addToPayload(opt, ["item"]);
+                break;
+            case "GetWorkflowDataForItem":
+                addToPayload(opt, ["item"]);
+                break;
+            case "GetWorkflowTaskData":
+                addToPayload(opt, ["item", "listId", "taskId"]);
+                break;
+            case "StartWorkflow":
+                addToPayload(opt, ["item", "templateId", "workflowParameters"]);
+                break;
+
+            default:
+                break;
+        }
+
+        // Glue together the pieces of the SOAP message
+        var msg = SOAPEnvelope.header + SOAPEnvelope.opheader + SOAPEnvelope.payload + SOAPEnvelope.opfooter + SOAPEnvelope.footer;
+
+        // Check to see if we've already cached the results
+        var cachedPromise;
+        if(opt.cacheXML) {
+            cachedPromise = promisesCache[msg];
+        }
+
+        if(typeof cachedPromise === "undefined") {
+        
+            // Finally, make the Ajax call
+            promisesCache[msg] = $.ajax({
+                // The relative URL for the AJAX call
+                url: ajaxURL,
+                // By default, the AJAX calls are asynchronous.  You can specify false to require a synchronous call.
+                async: opt.async,
+                // Before sending the msg, need to send the request header
+                beforeSend: function (xhr) {
+                    // If we need to pass the SOAPAction, do so
+                    if(WSops[opt.operation][1]) {
+                        xhr.setRequestHeader("SOAPAction", SOAPAction);
+                    }
+                },
+                // Always a POST
+                type: "POST",
+                // Here is the SOAP request we've built above
+                data: msg,
+                // We're getting XML; tell jQuery so that it doesn't need to do a best guess
+                dataType: "xml",
+                // and this is its content type
+                contentType: "text/xml;charset='utf-8'",
+                complete: function(xData, Status) {
+                    // When the call is complete, call the completefunc if there is one
+                    if($.isFunction(opt.completefunc)) {
+                        opt.completefunc(xData, Status);
+
+                    }
+                }
+            });
+            
+/*          spservicesPromise.then(
+                function() {
+                    // Cache the promise if requested
+                    if(opt.cacheXML) {
+                        promisesCache[msg] = spservicesPromise;
+                    }
+                },
+                function() {
+                                                                        // TODO: Allow for fail function
+                }
+            );
+*/
+            // Return the promise
+//          return spservicesPromise;
+            return promisesCache[msg];
+
+        } else {
+            // Call the completefunc if there is one
+            if($.isFunction(opt.completefunc)) {
+                opt.completefunc(cachedPromise, null);
+            }
+            // Return the cached promise
+            return cachedPromise;
+        }
+
+    }; // End $.fn.SPServices
+
+    // Defaults added as a function in our library means that the caller can override the defaults
+    // for their session by calling this function.  Each operation requires a different set of options;
+    // we allow for all in a standardized way.
+    $.fn.SPServices.defaults = {
+
+        cacheXML: false,            // If true, we'll cache the XML results with jQuery's .data() function
+        operation: "",              // The Web Service operation
+        webURL: "",                 // URL of the target Web
+        makeViewDefault: false,     // true to make the view the default view for the list
+
+        // For operations requiring CAML, these options will override any abstractions
+        CAMLViewName: "",           // View name in CAML format.
+        CAMLQuery: "",              // Query in CAML format
+        CAMLViewFields: "",         // View fields in CAML format
+        CAMLRowLimit: 0,            // Row limit as a string representation of an integer
+        CAMLQueryOptions: "<QueryOptions></QueryOptions>",      // Query options in CAML format
+
+        // Abstractions for CAML syntax
+        batchCmd: "Update",         // Method Cmd for UpdateListItems
+        valuepairs: [],             // Fieldname / Fieldvalue pairs for UpdateListItems
+
+        // As of v0.7.1, removed all options which were assigned an empty string ("")
+        DestinationUrls: [],        // Array of destination URLs for copy operations
+        behavior: "Version3",       // An SPWebServiceBehavior indicating whether the client supports Windows SharePoint Services 2.0 or Windows SharePoint Services 3.0: {Version2 | Version3 }
+        storage: "Shared",          // A Storage value indicating how the Web Part is stored: {None | Personal | Shared}
+        objectType: "List",         // objectType for operations which require it
+        cancelMeeting: true,        // true to delete a meeting;false to remove its association with a Meeting Workspace site
+        nonGregorian: false,        // true if the calendar is set to a format other than Gregorian;otherwise, false.
+        fClaim: false,              // Specifies if the action is a claim or a release. Specifies true for a claim and false for a release.
+        recurrenceId: 0,            // The recurrence ID for the meeting that needs its association removed. This parameter can be set to 0 for single-instance meetings.
+        sequence: 0,                // An integer that is used to determine the ordering of updates in case they arrive out of sequence. Updates with a lower-than-current sequence are discarded. If the sequence is equal to the current sequence, the latest update are applied.
+        maximumItemsToReturn: 0,    // SocialDataService maximumItemsToReturn
+        startIndex: 0,              // SocialDataService startIndex
+        isHighPriority: false,      // SocialDataService isHighPriority
+        isPrivate: false,           // SocialDataService isPrivate
+        rating: 1,                  // SocialDataService rating
+        maxResults: 10,             // Unless otherwise specified, the maximum number of principals that can be returned from a provider is 10.
+        principalType: "User",      // Specifies user scope and other information: [None | User | DistributionList | SecurityGroup | SharePointGroup | All]
+
+        async: true,                // Allow the user to force async
+        completefunc: null          // Function to call on completion
+
+    }; // End $.fn.SPServices.defaults
+
+    // Function to determine the current Web's URL.  We need this for successful Ajax calls.
+    // The function is also available as a public function.
+    $.fn.SPServices.SPGetCurrentSite = function() {
+
+        // We've already determined the current site...
+        if(currentContext.thisSite.length > 0) {
+            return currentContext.thisSite;
+        }
+
+        // If we still don't know the current site, we call WebUrlFromPageUrlResult.
+        var msg = SOAPEnvelope.header +
+                "<WebUrlFromPageUrl xmlns='" + SCHEMASharePoint + "/soap/' ><pageUrl>" +
+                ((location.href.indexOf("?") > 0) ? location.href.substr(0, location.href.indexOf("?")) : location.href) +
+                "</pageUrl></WebUrlFromPageUrl>" +
+                SOAPEnvelope.footer;
+        $.ajax({
+            async: false, // Need this to be synchronous so we're assured of a valid value
+            url: "/_vti_bin/Webs.asmx",
+            type: "POST",
+            data: msg,
+            dataType: "xml",
+            contentType: "text/xml;charset=\"utf-8\"",
+            complete: function (xData, Status) {
+                currentContext.thisSite = $(xData.responseXML).find("WebUrlFromPageUrlResult").text();
+            }
+        });
+
+        return currentContext.thisSite; // Return the URL
+
+    }; // End $.fn.SPServices.SPGetCurrentSite
+
+    // Function to set up cascading dropdowns on a SharePoint form
+    // (Newform.aspx, EditForm.aspx, or any other customized form.)
+    $.fn.SPServices.SPCascadeDropdowns = function(options) {
+
+        var opt = $.extend({}, {
+            relationshipWebURL: "",             // [Optional] The name of the Web (site) which contains the relationships list
+            relationshipList: "",               // The name of the list which contains the parent/child relationships
+            relationshipListParentColumn: "",   // The internal name of the parent column in the relationship list
+            relationshipListChildColumn: "",    // The internal name of the child column in the relationship list
+            relationshipListSortColumn: "",     // [Optional] If specified, sort the options in the dropdown by this column,
+                                                // otherwise the options are sorted by relationshipListChildColumn
+            parentColumn: "",                   // The display name of the parent column in the form
+            childColumn: "",                    // The display name of the child column in the form
+            listName: $().SPServices.SPListNameFromUrl(),       // The list the form is working with. This is useful if the form is not in the list context.
+            CAMLQuery: "",                      // [Optional] For power users, this CAML fragment will be Anded with the default query on the relationshipList
+            CAMLQueryOptions: "<QueryOptions><IncludeMandatoryColumns>FALSE</IncludeMandatoryColumns></QueryOptions>", // [Optional] For power users, ability to specify Query Options
+            promptText: "",                     // [DEPRECATED] Text to use as prompt. If included, {0} will be replaced with the value of childColumn. IOrignal value "Choose {0}..."
+            noneText: "(None)",                 // [Optional] Text to use for the (None) selection. Provided for non-English language support.
+            simpleChild: false,                 // [Optional] If set to true and childColumn is a complex dropdown, convert it to a simple dropdown
+            selectSingleOption: false,          // [Optional] If set to true and there is only a single child option, select it
+            matchOnId: false,                   // By default, we match on the lookup's text value. If matchOnId is true, we'll match on the lookup id instead.
+            completefunc: null,                 // Function to call on completion of rendering the change.
+            debug: false                        // If true, show error messages;if false, run silent
+        }, options);
+
+
+        var thisParentSetUp = false;
+        var thisFunction = "SPServices.SPCascadeDropdowns";
+
+        // Find the parent column's select (dropdown)
+        var parentSelect = new DropdownCtl(opt.parentColumn);
+        if(parentSelect.Obj.html() === null && opt.debug) {errBox(thisFunction, "parentColumn: " + opt.parentColumn , TXTColumnNotFound);return;}
+
+        // Find the child column's select (dropdown)
+        var childSelect = new DropdownCtl(opt.childColumn);
+        if(childSelect.Obj.html() === null && opt.debug) {errBox(thisFunction, "childColumn: " + opt.childColumn, TXTColumnNotFound);return;}
+
+        // If requested and the childColumn is a complex dropdown, convert to a simple dropdown
+        if(opt.simpleChild === true && childSelect.Type === "C") {
+            $().SPServices.SPComplexToSimpleDropdown({
+                columnName: opt.childColumn
+            });
+            // Set the childSelect to reference the new simple dropdown
+            childSelect = new DropdownCtl(opt.childColumn);
+        }
+      
+        var childColumnRequired, childColumnStatic;
+
+        // Get information about the childColumn from the current list
+        $().SPServices({
+            operation: "GetList",
+            async: false,
+            cacheXML: true,
+            listName: opt.listName,
+            completefunc: function(xData) {
+                $(xData.responseXML).find("Fields").each(function() {
+                    $(this).find("Field[DisplayName='" + opt.childColumn + "']").each(function() {
+                        // Determine whether childColumn is Required
+                        childColumnRequired = ($(this).attr("Required") === "TRUE") ? true : false;
+                        childColumnStatic = $(this).attr("StaticName");
+                        // Stop looking; we're done
+                        return false;
+                    });
+                });
+            }
+        });
+
+        // Save data about each child column on the parent
+        var childColumn = {opt: opt, childSelect: childSelect, childColumnStatic: childColumnStatic, childColumnRequired: childColumnRequired};
+        var childColumns = parentSelect.Obj.data("SPCascadeDropdownsChildColumns");
+
+        // If this is the first child for this parent, then create the data object to hold the settings
+        if(typeof childColumns === "undefined") {
+            parentSelect.Obj.data("SPCascadeDropdownsChildColumns", [childColumn]);
+        // If we already have a data object for this parent, then add the setting for this child to it
+        } else {
+            childColumns.push(childColumn);
+            parentSelect.Obj.data("SPCascadeDropdownsChildColumns", childColumns);
+            thisParentSetUp = true;
+        }
+
+        // We only need to bind to the event(s) if we haven't already done so
+        if(!thisParentSetUp) {
+            switch(parentSelect.Type) {
+                // Plain old select
+                case "S":
+                    parentSelect.Obj.bind("change", function() {
+                        cascadeDropdown(opt.parentColumn, parentSelect);
+                    });
+                    break;
+                // Input / Select hybrid
+                case "C":
+                    // Bind to any change on the hidden input element
+                    $("input[id='"+ parentSelect.Obj.attr("optHid") + "']").bind("propertychange", function() {
+                        cascadeDropdown(opt.parentColumn, parentSelect);
+                    });
+                    break;
+                // Multi-select hybrid
+                case "M":
+                    // Handle the dblclick on the candidate select
+                    $(parentSelect.master.candidateControl).bind("dblclick", function() {
+                        cascadeDropdown(opt.parentColumn, parentSelect);
+                    });
+                    // Handle the dblclick on the selected values
+                    $(parentSelect.master.resultControl).bind("dblclick", function() {
+                        cascadeDropdown(opt.parentColumn, parentSelect);
+                    });
+                    // Handle button clicks
+                    $(parentSelect.master.addControl).bind("click", function() {
+                        cascadeDropdown(opt.parentColumn, parentSelect);
+                    });
+                    $(parentSelect.master.removeControl).bind("click", function() {
+                        cascadeDropdown(opt.parentColumn, parentSelect);
+                    });
+                    break;
+                default:
+                    break;
+            }
+        }
+        // Fire the change to set the initially allowable values
+        cascadeDropdown(opt.parentColumn, parentSelect);
+
+    }; // End $.fn.SPServices.SPCascadeDropdowns
+
+    function cascadeDropdown(parentColumn, parentSelect) {
+        var choices = "";
+        var parentSelectSelected;
+        var childSelectSelected = null;
+        var newMultiLookupPickerdata;
+        var numChildOptions;
+        var firstChildOptionId;
+        var firstChildOptionValue;
+
+        // Filter each child column
+        var childColumns = parentSelect.Obj.data("SPCascadeDropdownsChildColumns");
+        $(childColumns).each(function() {
+
+            // Break out the data objects for this child column
+            var opt = this.opt;
+            var childSelect = this.childSelect;
+            var childColumnStatic = this.childColumnStatic;
+            var childColumnRequired = this.childColumnRequired;
+
+            // Get the parent column selection(s)
+            parentSelectSelected = getDropdownSelected(parentSelect, opt.matchOnId);
+
+            // If the selection hasn't changed, then there's nothing to do right now.  This is useful to reduce
+            // the number of Web Service calls when the parentSelect.Type = "C" or "M", as there are multiple propertychanges
+            // which don't require any action.  The attribute will be unique per child column in case there are
+            // multiple children for a given parent.
+            var allParentSelections = parentSelectSelected.join(";#");
+            if(parentSelect.Obj.data("SPCascadeDropdown_Selected_" + childColumnStatic) === allParentSelections) {
+                return;
+            }
+            parentSelect.Obj.data("SPCascadeDropdown_Selected_" + childColumnStatic, allParentSelections);
+
+            // Get the current child column selection(s)
+            childSelectSelected = getDropdownSelected(childSelect, true);
+
+            // When the parent column's selected option changes, get the matching items from the relationship list
+            // Get the list items which match the current selection
+            var sortColumn = (opt.relationshipListSortColumn.length > 0) ? opt.relationshipListSortColumn : opt.relationshipListChildColumn;
+            var camlQuery = "<Query><OrderBy><FieldRef Name='" + sortColumn + "'/></OrderBy><Where><And>";
+            if(opt.CAMLQuery.length > 0) {
+                camlQuery += "<And>";
+            }
+
+            // Build up the criteria for inclusion
+            if(parentSelectSelected.length === 0) {
+                // Handle the case where no values are selected in multi-selects
+                camlQuery += "<Eq><FieldRef Name='" + opt.relationshipListParentColumn + "'/><Value Type='Text'></Value></Eq>";
+            } else if(parentSelectSelected.length === 1) {
+                // Only one value is selected
+                camlQuery += "<Eq><FieldRef Name='" + opt.relationshipListParentColumn +
+                    (opt.matchOnId ? "' LookupId='True'/><Value Type='Integer'>" : "'/><Value Type='Text'>") +
+                    escapeColumnValue(parentSelectSelected[0]) + "</Value></Eq>";
+            } else {
+                var compound = (parentSelectSelected.length > 2) ? true : false;
+                for(i=0; i < (parentSelectSelected.length - 1); i++) {
+                    camlQuery += "<Or>";
+                }
+                for(i=0; i < parentSelectSelected.length; i++) {
+                    camlQuery += "<Eq><FieldRef Name='" + opt.relationshipListParentColumn +
+                        (opt.matchOnId ? "' LookupId='True'/><Value Type='Integer'>" : "'/><Value Type='Text'>") +
+                        escapeColumnValue(parentSelectSelected[i]) + "</Value></Eq>";
+                    if(i>0 && (i < (parentSelectSelected.length - 1)) && compound) {
+                        camlQuery += "</Or>";
+                    }
+                }
+                camlQuery += "</Or>";
+            }
+
+            if(opt.CAMLQuery.length > 0) {
+                camlQuery += opt.CAMLQuery + "</And>";
+            }
+
+            // Make sure we don't get any items which don't have the child value
+            camlQuery += "<IsNotNull><FieldRef Name='" + opt.relationshipListChildColumn + "' /></IsNotNull>";
+
+            camlQuery += "</And></Where></Query>";
+        
+            $().SPServices({
+                operation: "GetListItems",
+                // Force sync so that we have the right values for the child column onchange trigger
+                async: false,
+                webURL: opt.relationshipWebURL,
+                listName: opt.relationshipList,
+                // Filter based on the currently selected parent column's value
+                CAMLQuery: camlQuery,
+                // Only get the parent and child columns
+                CAMLViewFields: "<ViewFields><FieldRef Name='" + opt.relationshipListParentColumn + "' /><FieldRef Name='" + opt.relationshipListChildColumn + "' /></ViewFields>",
+                // Override the default view rowlimit and get all appropriate rows
+                CAMLRowLimit: 0,
+                // Even though setting IncludeMandatoryColumns to FALSE doesn't work as the docs describe, it fixes a bug in GetListItems with mandatory multi-selects
+                CAMLQueryOptions: opt.CAMLQueryOptions,
+                completefunc: function(xData) {
+
+                    // Handle errors
+                    $(xData.responseXML).find("errorstring").each(function() {
+                        var thisFunction = "SPServices.SPCascadeDropdowns";
+                        var errorText = $(this).text();
+                        if(opt.debug && errorText === "One or more field types are not installed properly. Go to the list settings page to delete these fields.") {
+                            errBox(thisFunction,
+                                "relationshipListParentColumn: " + opt.relationshipListParentColumn + " or " +
+                                "relationshipListChildColumn: " + opt.relationshipListChildColumn,
+                                "Not found in relationshipList " + opt.relationshipList);
+                        } else if (opt.debug && errorText === "Guid should contain 32 digits with 4 dashes (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).") {
+                            errBox(thisFunction,
+                                "relationshipList: " + opt.relationshipList,
+                                "List not found");
+                        }
+                        return;
+                    });
+
+                    // Add an explanatory prompt
+                    switch(childSelect.Type) {
+                        case "S":
+                            // Remove all of the existing options
+                            $(childSelect.Obj).find("option").remove();
+                            // If the column is required or the promptText option is empty, don't add the prompt text
+                            if(!childColumnRequired && (opt.promptText.length > 0)) {
+                                childSelect.Obj.append("<option value='0'>" + opt.promptText.replace(/\{0\}/g, opt.childColumn) + "</option>");
+                            } else if(!childColumnRequired){
+                                childSelect.Obj.append("<option value='0'>" + opt.noneText + "</option>");
+                            }
+                            break;
+                        case "C":
+                            // If the column is required, don't add the "(None)" option
+                            choices = childColumnRequired ? "" : opt.noneText + "|0";
+                            childSelect.Obj.attr("value", "");
+                            break;
+                        case "M":
+                            // Remove all of the existing options
+                            $(childSelect.master.candidateControl).find("option").remove();
+                            newMultiLookupPickerdata = "";
+                            break;
+                        default:
+                            break;
+                    }
+                    // Get the count of items returned and save it so that we can select if it's a single option 
+                    // The item count is stored thus: <rs:data ItemCount="1">
+                    numChildOptions = parseFloat($(xData.responseXML).SPFilterNode("rs:data").attr("ItemCount"));
+
+                    // Add an option for each child item
+                    $(xData.responseXML).SPFilterNode("z:row").each(function() {
+
+                        var thisOption = {};
+
+                        // If relationshipListChildColumn is a Lookup column, then the ID should be for the Lookup value,
+                        // else the ID of the relationshipList item
+                        var thisValue = $(this).attr("ows_" + opt.relationshipListChildColumn);
+                        
+                        if(typeof thisValue !== "undefined" && thisValue.indexOf(";#") > 0) {
+                            thisOption = new SplitIndex(thisValue);
+                        } else {
+                            thisOption.id = $(this).attr("ows_ID");
+                            thisOption.value = thisValue;                       
+                        }
+
+                        // If the relationshipListChildColumn is a calculated column, then the value isn't preceded by the ID,
+                        // but by the datatype.  In this case, thisOption.id should be the ID of the relationshipList item.
+                        // e.g., float;#12345.67
+                        if(isNaN(thisOption.id)) {
+                            thisOption.id = $(this).attr("ows_ID");
+                        }
+                    
+                        // Save the id and value for the first child option in case we need to select it (selectSingleOption option is true)
+                        firstChildOptionId = thisOption.id;
+                        firstChildOptionValue = thisOption.value;
+                    
+                        switch(childSelect.Type) {
+                            case "S":
+                                var selected = ($(this).attr("ows_ID") === childSelectSelected[0]) ? " selected='selected'" : "";
+                                childSelect.Obj.append("<option" + selected + " value='" + thisOption.id + "'>" + thisOption.value + "</option>");
+                                break;
+                            case "C":
+                                if(thisOption.id === childSelectSelected[0]) {
+                                    childSelect.Obj.attr("value", thisOption.value);
+                                }
+                                choices = choices + ((choices.length > 0) ? "|" : "") + thisOption.value + "|" + thisOption.id;
+                                break;
+                            case "M":
+                                $(childSelect.master.candidateControl).append("<option value='" + thisOption.id + "'>" + thisOption.value + "</option>");
+                                newMultiLookupPickerdata += thisOption.id + "|t" + thisOption.value + "|t |t |t";
+                                break;
+                            default:
+                                break;
+                        }
+                    });
+
+                    switch(childSelect.Type) {
+                        case "S":
+                            childSelect.Obj.trigger("change");
+                            // If there is only one option and the selectSingleOption option is true, then select it
+                            if(numChildOptions === 1 && opt.selectSingleOption === true) {
+                                $(childSelect.Obj).find("option[value!='0']:first").attr("selected", "selected");
+                            }
+                            break;
+                        case "C":
+                            // Set the allowable choices
+                            childSelect.Obj.attr("choices", choices);
+                            // If there is only one option and the selectSingleOption option is true, then select it
+                            if(numChildOptions === 1 && opt.selectSingleOption === true) {
+                                // Set the input element value
+                                $(childSelect.Obj).attr("value", firstChildOptionValue);
+                                // Set the value of the optHid input element
+                                $("input[id='" + childSelect.Obj.attr("optHid") + "']").val(firstChildOptionId);
+                            }
+                            // If there's no selection, then remove the value in the associated hidden input element (optHid)
+                            if(childSelect.Obj.val() === "") {
+                                $("input[id='" + childSelect.Obj.attr("optHid") + "']").val("");
+                            }
+                            break;
+                        case "M":
+                            // Clear the master
+                            childSelect.master.data = "";
+                            childSelect.MultiLookupPickerdata.attr("value", newMultiLookupPickerdata);
+
+                            // Clear any prior selections that are no longer valid or aren't selected
+                            $(childSelect.master.resultControl).find("option").each(function() {
+                                var thisSelected = $(this);
+                                thisSelected.prop("selected", true);
+                                $(childSelect.master.candidateControl).find("option[value='" + thisSelected.val() + "']").each(function() {
+                                    thisSelected.prop("selected", false);
+                                });
+                            });
+                            GipRemoveSelectedItems(childSelect.master);
+
+                            // Hide any options in the candidate list which are already selected
+                            $(childSelect.master.candidateControl).find("option").each(function() {
+                                var thisSelected = $(this);
+                                $(childSelect.master.resultControl).find("option[value='" + thisSelected.val() + "']").each(function() {
+                                    thisSelected.remove();
+                                });
+                            });
+                            GipAddSelectedItems(childSelect.master);
+
+                            // Set master.data to the newly allowable values
+                            childSelect.master.data = GipGetGroupData(newMultiLookupPickerdata);
+
+                            // Trigger a dblclick so that the child will be cascaded if it is a multiselect.
+                            $(childSelect.master.candidateControl).trigger("dblclick");
+
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            });
+            // If present, call completefunc when all else is done
+            if(opt.completefunc !== null) {
+                opt.completefunc();
+            }
+        }); // $(childColumns).each(function()
+
+    } // End cascadeDropdown
+
+
+    // function to convert complex dropdowns to simple dropdowns
+    $.fn.SPServices.SPComplexToSimpleDropdown = function(options) {
+
+        var opt = $.extend({}, {
+            columnName: "",                     // The display name of the column in the form
+            completefunc: null,                 // Function to call on completion of rendering the change.
+            debug: false                        // If true, show error messages;if false, run silent
+        }, options);
+
+        // Find the column's select (dropdown)
+        var columnSelect = new DropdownCtl(opt.columnName);
+        if(columnSelect.Obj.html() === null && opt.debug) {errBox("SPServices.SPComplexToSimpleDropdown", "columnName: " + opt.columnName, TXTColumnNotFound); return;  }
+
+        // If we don't have a complex dropdown, then there is nothing to do
+        if(columnSelect.Type !== "C") { return; }
+        
+        // The available options are stored in the choices attribute of the complex dropdowns's input element...
+        var choices = $(columnSelect.Obj).attr("choices").split("|");
+        // The optHid attribute contains the id of a hidden input element which stores the selected value for the commit
+        var columnOptHid = $(columnSelect.Obj).attr("optHid");
+        var columnOptHidInput = $("input[id='" + columnOptHid + "']");
+        // We need to know which option is selected already, if any
+        var complexSelectSelectedId = $("input[id='" + columnOptHid + "']").val();
+
+        // Build up the simple dropdown, giving it an easy to select id
+        var simpleSelectId = genContainerId("SPComplexToSimpleDropdown", opt.columnName);
+
+        var simpleSelect = "<select id='" + simpleSelectId + "' title='" + opt.columnName + "'>";       
+        for(i=0; i < choices.length; i=i+2) {
+            var simpleSelectSelected = (choices[i+1] === complexSelectSelectedId) ? " selected='selected' " : " ";
+            simpleSelect += "<option" + simpleSelectSelected + "value='" + choices[i+1] + "'>" + choices[i] + "</option>";
+        }
+        simpleSelect += "</select>";
+        
+        // Append the new simple select to the form
+        $(columnSelect.Obj).closest("td").prepend(simpleSelect);
+
+        // Remove the complex dropdown functionality since we don't need it anymore...
+        $(columnSelect.Obj).closest("span").find("img").remove();
+        // ...and hide the input element
+        $(columnSelect.Obj).closest("span").find("input").hide();
+
+        // When the simple select changes...
+        $("#" + simpleSelectId).change(function() {
+            var thisVal = $(this).val();
+            // ...set the optHid input element's value to the valus of the selected option...
+            columnOptHidInput.val(thisVal);
+            // ...and save the selected value as the hidden input's value only if the value is not equal to "0" (None)
+            $(columnSelect.Obj).val($(this).find("option[value='" + (thisVal !== "0" ? thisVal : "") + "']").html());
+        });
+        // Trigger a change to ensure that the selected value registers in the complex dropdown
+        $("#" + simpleSelectId).trigger("change");
+
+        // If present, call completefunc when all else is done
+        if(opt.completefunc !== null) {
+            opt.completefunc();
+        }
+
+    }; // End $.fn.SPServices.SPConvertToSimpleDropdown
+
+
+    // Function to display related information when an option is selected on a form.
+    $.fn.SPServices.SPDisplayRelatedInfo = function(options) {
+
+        var opt = $.extend({}, {
+            columnName: "",                     // The display name of the column in the form
+            relatedWebURL: "",                  // [Optional] The name of the Web (site) which contains the related list
+            relatedList: "",                    // The name of the list which contains the additional information
+            relatedListColumn: "",              // The internal name of the related column in the related list
+            relatedColumns: [],                 // An array of related columns to display
+            displayFormat: "table",             // The format to use in displaying the related information.  Possible values are: [table, list]
+            headerCSSClass: "ms-vh2",           // CSS class for the table headers
+            rowCSSClass: "ms-vb",               // CSS class for the table rows
+            CAMLQuery: "",                      // [Optional] For power users, this CAML fragment will be <And>ed with the default query on the relatedList
+            numChars: 0,                        // If used on an input column (not a dropdown), no matching will occur until at least this number of characters has been entered
+            matchType: "Eq",                    // If used on an input column (not a dropdown), type of match. Can be any valid CAML comparison operator, most often "Eq" or "BeginsWith"
+            matchOnId: false,                   // By default, we match on the lookup's text value. If matchOnId is true, we'll match on the lookup id instead.
+            completefunc: null,                 // Function to call on completion of rendering the change.
+            debug: false                        // If true, show error messages;if false, run silent
+        }, options);
+
+        var divId;
+        var relatedColumnsXML = [];
+        var relatedListXML;
+        var thisFunction = "SPServices.SPDisplayRelatedInfo";
+
+        // Find the column's select (dropdown)
+        var columnSelect = new DropdownCtl(opt.columnName);
+        if(columnSelect.Obj.html() === null && opt.debug) {errBox(thisFunction, "columnName: " + opt.columnName, TXTColumnNotFound); return; }
+
+        // Generate a unique id for the container
+        divId = genContainerId("SPDisplayRelatedInfo", opt.columnName);
+
+        // Get information about the related list and its columns
+        $().SPServices({
+            operation: "GetList",
+            async: false,
+            cacheXML: true,
+            webURL: opt.relatedWebURL,
+            listName: opt.relatedList,
+            completefunc: function(xData) {
+                // If debug is on, notify about an error
+                $(xData.responseXML).find("faultcode").each(function() {
+                    if(opt.debug) {errBox(thisFunction, "relatedList: " + opt.relatedList, "List not found"); return; }
+                });
+                // Get info about the related list
+                relatedListXML = $(xData.responseXML).find("List");
+                // Save the information about each column requested
+                for(i=0; i < opt.relatedColumns.length; i++) {
+                    relatedColumnsXML[opt.relatedColumns[i]] = $(xData.responseXML).find("Fields > Field[Name='" + opt.relatedColumns[i] + "']");
+                }
+            }
+        });
+
+        switch(columnSelect.Type) {
+            // Plain old select
+            case "S":
+                columnSelect.Obj.bind("change", function() {
+                    showRelated(opt, divId, relatedListXML, relatedColumnsXML);
+                });
+                break;
+            // Input / Select hybrid
+            case "C":
+                // Bind to any change on the hidden input element
+                $("input[id='" + columnSelect.Obj.attr("optHid") + "']").bind("propertychange", function() {
+                    showRelated(opt, divId, relatedListXML, relatedColumnsXML);
+                });
+                break;
+            // Multi-select hybrid
+            case "M":
+                if(opt.debug) {errBox(thisFunction, "columnName: " + opt.columnName, "Multi-select columns not supported by this function"); }
+                break;
+            default:
+                break;
+        }
+        // Fire the change to set the initially allowable values
+        showRelated(opt, divId, relatedListXML, relatedColumnsXML);
+
+    }; // End $.fn.SPServices.SPDisplayRelatedInfo
+
+    function showRelated(opt, divId, relatedListXML, relatedColumnsXML) {
+
+        var columnSelectSelected = null;
+        var thisFunction = "SPServices.SPDisplayRelatedInfo";
+
+        // Find the column's select (dropdown)
+        var columnSelect = new DropdownCtl(opt.columnName);
+
+        // Get the current column selection(s)
+        columnSelectSelected = getDropdownSelected(columnSelect, opt.matchOnId);
+        if(columnSelect.Type === "C" && opt.numChars > 0 && columnSelectSelected[0].length < opt.numChars) {
+            return;
+        }
+
+        // If the selection hasn't changed, then there's nothing to do right now.  This is useful to reduce
+        // the number of Web Service calls when the parentSelect.Type = "C", as there are multiple propertychanges
+        // which don't require any action.
+        if(columnSelect.Obj.attr("showRelatedSelected") === columnSelectSelected[0]) {
+            return;
+        }
+        columnSelect.Obj.attr("showRelatedSelected", columnSelectSelected[0]);
+
+        // Remove the old container...
+        $("#" + divId).remove();
+        // ...and append a new, empty one
+        columnSelect.Obj.parent().append("<div id=" + divId + "></div>");
+
+        // Get the list items which match the current selection
+        var camlQuery = "<Query><Where>";
+        if(opt.CAMLQuery.length > 0) {
+            camlQuery += "<And>";
+        }
+
+        // Need to handle Lookup columns differently than static columns
+        var relatedListColumnType = relatedColumnsXML[opt.relatedListColumn].attr("Type");
+        if(relatedListColumnType === "Lookup") {
+            camlQuery += "<Eq><FieldRef Name='" + opt.relatedListColumn +
+                (opt.matchOnId ? "' LookupId='True'/><Value Type='Integer'>" : "'/><Value Type='Text'>") +
+                escapeColumnValue(columnSelectSelected[0]) + "</Value></Eq>";
+        } else {
+            camlQuery += "<Eq><FieldRef Name='" +
+                (opt.matchOnId ? "ID' /><Value Type='Counter'>" : opt.relatedListColumn + "'/><Value Type='Text'>") +
+                escapeColumnValue(columnSelectSelected[0]) + "</Value></Eq>";
+        }
+
+        if(opt.CAMLQuery.length > 0) {
+            camlQuery += opt.CAMLQuery + "</And>";
+        }
+        camlQuery += "</Where></Query>";
+
+        var viewFields = " ";
+        for (i=0; i < opt.relatedColumns.length; i++) {
+            viewFields += "<FieldRef Name='" + opt.relatedColumns[i] + "' />";
+        }
+
+        $().SPServices({
+            operation: "GetListItems",
+            async: false,
+            webURL: opt.relatedWebURL,
+            listName: opt.relatedList,
+            // Filter based on the column's currently selected value
+            CAMLQuery: camlQuery,
+            CAMLViewFields: "<ViewFields>" + viewFields +  "</ViewFields>",
+            // Override the default view rowlimit and get all appropriate rows
+            CAMLRowLimit: 0,
+            completefunc: function(xData) {
+
+                // Handle errors
+                $(xData.responseXML).find("errorstring").each(function() {
+                    var errorText = $(this).text();
+                    if(opt.debug && errorText === "One or more field types are not installed properly. Go to the list settings page to delete these fields.") {
+                        errBox(thisFunction,
+                            "relatedListColumn: " + opt.relatedListColumn,
+                            "Column not found in relatedList " + opt.relatedList);
+                    } else if (opt.debug && errorText === "Guid should contain 32 digits with 4 dashes (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).") {
+                        errBox(thisFunction,
+                            "relatedList: " + opt.relatedList,
+                            "List not found");
+                    }
+                    return;
+                });
+
+                var outString;
+                // Output each row
+                switch(opt.displayFormat) {
+                    // Only implementing the table format in the first iteration (v0.2.9)
+                    case "table":
+                        outString = "<table>";
+                        outString += "<tr>";
+                        for (i=0; i < opt.relatedColumns.length; i++) {
+                            if(typeof relatedColumnsXML[opt.relatedColumns[i]] === "undefined" && opt.debug) {errBox(thisFunction, "columnName: " + opt.relatedColumns[i], "Column not found in relatedList"); return; }
+                            outString += "<th class='" + opt.headerCSSClass + "'>" + relatedColumnsXML[opt.relatedColumns[i]].attr("DisplayName") + "</th>";
+                        }
+                        outString += "</tr>";
+                        // Add an option for each child item
+                        $(xData.responseXML).SPFilterNode("z:row").each(function() {
+                            outString += "<tr>";
+                            for (i=0; i < opt.relatedColumns.length; i++) {
+                                outString += "<td class='" + opt.rowCSSClass + "'>" + showColumn(relatedListXML, relatedColumnsXML[opt.relatedColumns[i]], $(this).attr("ows_" + opt.relatedColumns[i]), opt) + "</td>";
+                            }
+                            outString += "</tr>";
+                        });
+                        outString += "</table>";
+                        break;
+                    // list format implemented in v0.5.0. Still table-based, but vertical orientation.
+                    case "list":
+                        outString = "<table>";
+                        $(xData.responseXML).SPFilterNode("z:row").each(function() {
+                            for (i=0; i < opt.relatedColumns.length; i++) {
+                                if(typeof relatedColumnsXML[opt.relatedColumns[i]] === "undefined" && opt.debug) {errBox(thisFunction, "columnName: " + opt.relatedColumns[i], "Column not found in relatedList"); return; }
+                                outString += "<tr>";
+                                outString += "<th class='" + opt.headerCSSClass + "'>" + relatedColumnsXML[opt.relatedColumns[i]].attr("DisplayName") + "</th>";
+                                outString += "<td class='" + opt.rowCSSClass + "'>" + showColumn(relatedListXML, relatedColumnsXML[opt.relatedColumns[i]], $(this).attr("ows_" + opt.relatedColumns[i]), opt) + "</td>";
+                                outString += "</tr>";
+                            }
+                        });
+                        outString += "</table>";
+                        break;
+                    default:
+                        break;
+                }
+                // Write out the results
+                $("#" + divId).html(outString);
+            }
+        });
+        // If present, call completefunc when all else is done
+        if(opt.completefunc !== null) {
+            opt.completefunc();
+        }
+    } // End showRelated
+
+    // Function to filter a lookup based dropdown 
+    $.fn.SPServices.SPFilterDropdown = function(options) {
+        var opt = $.extend({}, {
+            relationshipWebURL: "",                 // [Optional] The name of the Web (site) which contains the relationshipList
+            relationshipList: "",                   // The name of the list which contains the lookup values
+            relationshipListColumn: "",             // The internal name of the column in the relationship list
+            relationshipListSortColumn: "",         // [Optional] If specified, sort the options in the dropdown by this column,
+                                                    // otherwise the options are sorted by relationshipListColumn
+            relationshipListSortAscending: true,    // [Optional] By default, the sort is ascending. If false, descending
+            columnName: "",                         // The display name of the column in the form
+            listName: $().SPServices.SPListNameFromUrl(),       // The list the form is working with. This is useful if the form is not in the list context.
+            promptText: "",                         // [DEPRECATED] Text to use as prompt. If included, {0} will be replaced with the value of columnName. IOrignal value "Choose {0}..."
+            noneText: "(None)",                     // [Optional] Text to use for the (None) selection. Provided for non-English language support.
+            CAMLQuery: "",                          // This CAML fragment will be applied to the relationshipList
+            CAMLQueryOptions: "<QueryOptions><IncludeMandatoryColumns>FALSE</IncludeMandatoryColumns><ViewAttributes Scope='RecursiveAll'/></QueryOptions>", // Need this to mirror SharePoint's behavior, but it can be overridden
+            completefunc: null,                     // Function to call on completion of rendering the change.
+            debug: false                            // If true, show error messages; if false, run silent
+        }, options);
+    
+        var choices = "";
+        var columnSelectSelected = null;
+        var newMultiLookupPickerdata;
+        var columnColumnRequired;
+        var thisFunction = "SPServices.SPFilterDropdown";
+    
+        // Find the column's select (dropdown)
+        var columnSelect = new DropdownCtl(opt.columnName);
+        if(columnSelect.Obj.html() === null && opt.debug) {errBox(thisFunction, "columnName: " + opt.columnName, TXTColumnNotFound); return;}
+    
+        // Get the current column selection(s)
+        columnSelectSelected = getDropdownSelected(columnSelect, true);
+
+        // Get the relationshipList items which match the current selection
+        var sortColumn = (opt.relationshipListSortColumn.length > 0) ? opt.relationshipListSortColumn : opt.relationshipListColumn;
+        var sortOrder = (opt.relationshipListSortAscending === true) ? "" : "Ascending='FALSE'";
+        var camlQuery = "<Query><OrderBy><FieldRef Name='" + sortColumn + "' " + sortOrder + "/></OrderBy><Where>";
+        if(opt.CAMLQuery.length > 0) {
+            camlQuery += opt.CAMLQuery;
+        }
+        camlQuery += "</Where></Query>";
+    
+        // Get information about columnName from the current list
+        $().SPServices({
+            operation: "GetList",
+            async: false,
+            cacheXML: true,
+            listName: opt.listName,
+            completefunc: function(xData) {
+                $(xData.responseXML).find("Fields").each(function() {
+                    $(this).find("Field[DisplayName='" + opt.columnName + "']").each(function() {
+                        // Determine whether columnName is Required
+                        columnColumnRequired = ($(this).attr("Required") === "TRUE") ? true : false;
+                        // Stop looking; we're done
+                        return false;
+                    });
+                });
+            }
+        });
+        
+        $().SPServices({
+            operation: "GetListItems",
+            // Force sync so that we have the right values for the column onchange trigger
+            async: false,
+            webURL: opt.relationshipWebURL,
+            listName: opt.relationshipList,
+            // Filter based on the specified CAML
+            CAMLQuery: camlQuery,
+            // Only get the columnName's data (plus columns we can't prevent)
+            CAMLViewFields: "<ViewFields><FieldRef Name='" + opt.relationshipListColumn + "' /></ViewFields>",
+            // Override the default view rowlimit and get all appropriate rows
+            CAMLRowLimit: 0,
+            // Even though setting IncludeMandatoryColumns to FALSE doesn't work as the docs describe, it fixes a bug in GetListItems with mandatory multi-selects
+            CAMLQueryOptions: opt.CAMLQueryOptions,
+            completefunc: function(xData) {
+
+                // Handle errors
+                $(xData.responseXML).find("errorstring").each(function() {
+                    var errorText = $(this).text();
+                    if(opt.debug && errorText === "One or more field types are not installed properly. Go to the list settings page to delete these fields.") {
+                        errBox(thisFunction,
+                            "relationshipListColumn: " + opt.relationshipListColumn,
+                            "Not found in relationshipList " + opt.relationshipList);
+                    } else if (opt.debug && errorText === "Guid should contain 32 digits with 4 dashes (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).") {
+                        errBox(thisFunction,
+                            "relationshipList: " + opt.relationshipList,
+                            "List not found");
+                    }
+                    return;
+                });
+
+                // Add an explanatory prompt
+                switch(columnSelect.Type) {
+                    case "S":
+                        // Remove all of the existing options
+                        $(columnSelect.Obj).find("option").remove();
+                        // If the column is required or the promptText option is empty, don't add the prompt text
+                        if(!columnColumnRequired && (opt.promptText.length > 0)) {
+                            columnSelect.Obj.append("<option value='0'>" + opt.promptText.replace(/\{0\}/g, opt.columnName) + "</option>");
+                        } else if(!columnColumnRequired){
+                            columnSelect.Obj.append("<option value='0'>" + opt.noneText + "</option>");
+                        }
+                        break;
+                    case "C":
+                        // If the column is required, don't add the "(None)" option
+                        choices = columnColumnRequired ? "" : opt.noneText + "|0";
+                        columnSelect.Obj.attr("value", "");
+                        break;
+                    case "M":
+                        // Remove all of the existing options
+                        $(columnSelect.master.candidateControl).find("option").remove();
+                        newMultiLookupPickerdata = "";
+                        break;
+                    default:
+                        break;
+                }
+
+                // Add an option for each item
+                $(xData.responseXML).SPFilterNode("z:row").each(function() {
+                    
+                    var thisOption = {};
+
+                    // If relationshipListColumn is a Lookup column, then the ID should be for the Lookup value,
+                    // else the ID of the relationshipList item
+                    var thisValue = $(this).attr("ows_" + opt.relationshipListColumn);
+                    
+                    if(typeof thisValue !== "undefined" && thisValue.indexOf(";#") > 0) {
+                        thisOption = new SplitIndex(thisValue);
+                    } else {
+                        thisOption.id = $(this).attr("ows_ID");
+                        thisOption.value = thisValue;                       
+                    }
+
+                    // If the relationshipListColumn is a calculated column, then the value isn't preceded by the ID,
+                    // but by the datatype.  In this case, thisOption.id should be the ID of the relationshipList item.
+                    // e.g., float;#12345.67
+                    if(isNaN(thisOption.id)) {
+                        thisOption.id = $(this).attr("ows_ID");
+                    }
+                    
+                    switch(columnSelect.Type) {
+                        case "S":
+                            var selected = ($(this).attr("ows_ID") === columnSelectSelected[0]) ? " selected='selected'" : "";
+                            columnSelect.Obj.append("<option" + selected + " value='" + thisOption.id + "'>" + thisOption.value + "</option>");
+                            break;
+                        case "C":
+                            if(thisOption.id === columnSelectSelected[0]) {
+                                columnSelect.Obj.attr("value", thisOption.value);
+                            }
+                            choices = choices + ((choices.length > 0) ? "|" : "") + thisOption.value + "|" + thisOption.id;
+                            break;
+                        case "M":
+                            $(columnSelect.master.candidateControl).append("<option value='" + thisOption.id + "'>" + thisOption.value + "</option>");
+                            newMultiLookupPickerdata += thisOption.id + "|t" + thisOption.value + "|t |t |t";
+                            break;
+                        default:
+                            break;
+                    }
+                });
+    
+                switch(columnSelect.Type) {
+                    case "S":
+                        columnSelect.Obj.trigger("change");
+                        break;
+                    case "C":
+                        columnSelect.Obj.attr("choices", choices);
+                        columnSelect.Obj.trigger("propertychange");
+                        break;
+                    case "M":
+                        // Clear the master
+                        columnSelect.master.data = "";
+
+                        columnSelect.MultiLookupPickerdata.attr("value", newMultiLookupPickerdata);
+                        // Clear any prior selections that are no longer valid
+                        $(columnSelect.master.resultControl).find("option").each(function() {
+                            var thisSelected = $(this);
+                            $(this).attr("selected", "selected");
+                            $(columnSelect.master.candidateControl).find("option").each(function() {
+                                if($(this).html() === thisSelected.html()) {
+                                    thisSelected.removeAttr("selected");
+                                }
+                            });
+                        });
+                        GipRemoveSelectedItems(columnSelect.master);
+                        // Hide any options in the candidate list which are already selected
+                        $(columnSelect.master.candidateControl).find("option").each(function() {
+                            var thisSelected = $(this);
+                            $(columnSelect.master.resultControl).find("option").each(function() {
+                                if($(this).html() === thisSelected.html()) {
+                                    thisSelected.remove();
+                                }
+                            });
+                        });
+                        GipAddSelectedItems(columnSelect.master);
+                        // Set master.data to the newly allowable values
+                        columnSelect.master.data = GipGetGroupData(newMultiLookupPickerdata);
+
+                        // Trigger a dblclick so that the child will be cascaded if it is a multiselect.
+                        $(columnSelect.master.candidateControl).trigger("dblclick");
+
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+        // If present, call completefunc when all else is done
+        if(opt.completefunc !== null) {
+            opt.completefunc();
+        }
+    }; // End $.fn.SPServices.SPFilterDropdown
+
+
+    // Utility function to show the results of a Web Service call formatted well in the browser.
+    $.fn.SPServices.SPDebugXMLHttpResult = function(options) {
+
+        var opt = $.extend({}, {
+            node: null,                         // An XMLHttpResult object from an ajax call
+            indent: 0                           // Number of indents
+        }, options);
+
+        var i;
+        var NODE_TEXT = 3;
+        var NODE_CDATA_SECTION = 4;
+
+        var outString = "";
+        // For each new subnode, begin rendering a new TABLE
+        outString += "<table class='ms-vb' style='margin-left:" + opt.indent * 3 + "px;' width='100%'>";
+        // DisplayPatterns are a bit unique, so let's handle them differently
+        if(opt.node.nodeName === "DisplayPattern") {
+            outString += "<tr><td width='100px' style='font-weight:bold;'>" + opt.node.nodeName +
+                "</td><td><textarea readonly='readonly' rows='5' cols='50'>" + opt.node.xml + "</textarea></td></tr>";
+        // A node which has no children
+        } else if (!opt.node.hasChildNodes()) {
+            outString += "<tr><td width='100px' style='font-weight:bold;'>" + opt.node.nodeName +
+                "</td><td>" + ((opt.node.nodeValue !== null) ? checkLink(opt.node.nodeValue) : "&nbsp;") + "</td></tr>";
+            if (opt.node.attributes) {
+                outString += "<tr><td colspan='99'>" + showAttrs(opt.node) + "</td></tr>";
+            }
+        // A CDATA_SECTION node
+        } else if (opt.node.hasChildNodes() && opt.node.firstChild.nodeType === NODE_CDATA_SECTION) {
+            outString += "<tr><td width='100px' style='font-weight:bold;'>" + opt.node.nodeName +
+                "</td><td><textarea readonly='readonly' rows='5' cols='50'>" + opt.node.parentNode.text + "</textarea></td></tr>";
+        // A TEXT node
+        } else if (opt.node.hasChildNodes() && opt.node.firstChild.nodeType === NODE_TEXT) {
+            outString += "<tr><td width='100px' style='font-weight:bold;'>" + opt.node.nodeName +
+                "</td><td>" + checkLink(opt.node.firstChild.nodeValue) + "</td></tr>";
+        // Handle child nodes
+        } else {
+            outString += "<tr><td width='100px' style='font-weight:bold;' colspan='99'>" + opt.node.nodeName + "</td></tr>";
+            if (opt.node.attributes) {
+                outString += "<tr><td colspan='99'>" + showAttrs(opt.node) + "</td></tr>";
+            }
+            // Since the node has child nodes, recurse
+            outString += "<tr><td>";
+            for (i = 0;i < opt.node.childNodes.length; i++) {
+                outString += $().SPServices.SPDebugXMLHttpResult({
+                    node: opt.node.childNodes.item(i),
+                    indent: opt.indent + 1
+                });
+            }
+            outString += "</td></tr>";
+        }
+        outString += "</table>";
+        // Return the HTML which we have built up
+        return outString;
+    }; // End $.fn.SPServices.SPDebugXMLHttpResult
+
+    // Function which returns the account name for the current user in DOMAIN\username format
+    $.fn.SPServices.SPGetCurrentUser = function(options) {
+
+        var opt = $.extend({}, {
+            webURL: "",             // URL of the target Site Collection.  If not specified, the current Web is used.
+            fieldName: "Name",      // Specifies which field to return from the userdisp.aspx page
+            fieldNames: {},         // Specifies which fields to return from the userdisp.aspx page - added in v0.7.2 to allow multiple columns
+            debug: false            // If true, show error messages; if false, run silent
+        }, options);
+
+        // The current user's ID is reliably available in an existing JavaScript variable
+        if(opt.fieldName === "ID" && typeof currentContext.thisUserId !== "undefined") {
+            return currentContext.thisUserId;
+        }
+
+        var thisField = "";
+        var theseFields = {};
+        var fieldCount = opt.fieldNames.length > 0 ? opt.fieldNames.length : 1;
+        var thisUserDisp;
+        var thisWeb = opt.webURL.length > 0 ? opt.webURL : $().SPServices.SPGetCurrentSite();
+
+        // Get the UserDisp.aspx page using AJAX
+        $.ajax({
+            // Need this to be synchronous so we're assured of a valid value
+            async: false,
+            // Force parameter forces redirection to a page that displays the information as stored in the UserInfo table rather than My Site.
+            // Adding the extra Query String parameter with the current date/time forces the server to view this as a new request.
+            url: thisWeb + "/_layouts/userdisp.aspx?Force=True&" + new Date().getTime(),
+            complete: function (xData, Status) {
+                thisUserDisp = xData;
+            }
+        });
+
+        for(i=0; i < fieldCount; i++) {
+
+            // The current user's ID is reliably available in an existing JavaScript variable
+            if(opt.fieldNames[i] === "ID") {
+                thisField = currentContext.thisUserId;
+            } else {
+                var thisTextValue;
+                if(fieldCount > 1) {
+                    thisTextValue = RegExp("FieldInternalName=\"" + opt.fieldNames[i] + "\"", "gi");
+                } else {
+                    thisTextValue = RegExp("FieldInternalName=\"" + opt.fieldName + "\"", "gi");
+                }
+                $(thisUserDisp.responseText).find("table.ms-formtable td[id^='SPField']").each(function() {
+                    if(thisTextValue.test($(this).html())) {
+                        // Each fieldtype contains a different data type, as indicated by the id
+                        switch($(this).attr("id")) {
+                            case "SPFieldText":
+                                thisField = $(this).text();
+                                break;
+                            case "SPFieldNote":
+                                thisField = $(this).find("div").html();
+                                break;
+                            case "SPFieldURL":
+                                thisField = $(this).find("img").attr("src");
+                                break;
+                            // Just in case
+                            default:
+                                thisField = $(this).text();
+                                break;                      
+                        }
+                        // Stop looking; we're done
+                        return false;
+                    }
+                });
+            }
+            if(opt.fieldNames[i] !== "ID") {
+                thisField = (typeof thisField !== "undefined") ? thisField.replace(/(^[\s\xA0]+|[\s\xA0]+$)/g, '') : null;
+            }
+            if(fieldCount > 1) {
+                theseFields[opt.fieldNames[i]] = thisField;
+            }
+        }
+
+        return (fieldCount > 1) ? theseFields : thisField;
+
+    }; // End $.fn.SPServices.SPGetCurrentUser
+
+
+    // Function which provides a link on a Lookup column for the user to follow
+    // which allows them to add a new value to the Lookup list.
+    // Based on http://blog.mastykarz.nl/extending-lookup-fields-add-new-item-option/
+    // by Waldek Mastykarz
+    $.fn.SPServices.SPLookupAddNew = function(options) {
+
+        var opt = $.extend({}, {
+            lookupColumn: "",               // The display name of the Lookup column
+            promptText: "Add new {0}",      // Text to use as prompt + column name
+            newWindow: false,               // If true, the link will open in a new window *without* passing the Source.
+            ContentTypeID: "",              // [Optional] Pass the ContentTypeID if you'd like to specify it
+            completefunc: null,             // Function to call on completion of rendering the change.
+            debug: false                    // If true, show error messages;if false, run silent
+        }, options);
+
+        var thisFunction = "SPServices.SPLookupAddNew";
+
+        // Find the lookup column's select (dropdown)
+        var lookupSelect = new DropdownCtl(opt.lookupColumn);
+        if(lookupSelect.Obj.html() === null && opt.debug) { errBox(thisFunction, "lookupColumn: " + opt.lookupColumn, TXTColumnNotFound);return;}
+
+        var newUrl = "";
+        var lookupListUrl = "";
+        var lookupColumnStaticName = "";
+        // Use GetList for the current list to determine the details for the Lookup column
+        $().SPServices({
+            operation: "GetList",
+            async: false,
+            cacheXML: true,
+            listName: $().SPServices.SPListNameFromUrl(),
+            completefunc: function (xData, Status) {
+                $(xData.responseXML).find("Field[DisplayName='" + opt.lookupColumn + "']").each(function() {
+                    lookupColumnStaticName = $(this).attr("StaticName");
+                    // Use GetList for the Lookup column's list to determine the list's URL
+                    $().SPServices({
+                        operation: "GetList",
+                        async: false,
+                        cacheXML: true,
+                        listName: $(this).attr("List"),
+                        completefunc: function (xData, Status) {
+                            $(xData.responseXML).find("List").each(function() {
+                                lookupListUrl = $(this).attr("WebFullUrl");
+                                // Need to handle when list is in the root site
+                                lookupListUrl = lookupListUrl !== SLASH ? lookupListUrl + SLASH : lookupListUrl;
+                            });
+                        }
+                    });
+                    // Get the NewItem form for the Lookup column's list
+                    newUrl = getListFormUrl($(this).attr("List"), "NewForm");
+                    // Stop looking;we're done
+                    return false;
+                });
+            }
+        });
+
+        if(lookupListUrl.length === 0 && opt.debug) {
+            errBox(thisFunction, "lookupColumn: " + opt.lookupColumn, "This column does not appear to be a lookup column");
+            return;
+        }
+        if(newUrl.length > 0) {
+            // Build the link to the Lookup column's list enclosed in a div with the id="SPLookupAddNew_" + lookupColumnStaticName
+            var newHref = lookupListUrl + newUrl;
+            // If requested, open the link in a new window and if requested, pass the ContentTypeID
+            newHref += opt.newWindow ?
+                    ((opt.ContentTypeID.length > 0) ? "?ContentTypeID=" + opt.ContentTypeID : "") + "' target='_blank'" :
+                    "?" + ((opt.ContentTypeID.length > 0) ? "ContentTypeID=" + opt.ContentTypeID + "&" : "") + "Source=" + escapeUrl(location.href) + "'";
+            var newLink = "<div id='SPLookupAddNew_" + lookupColumnStaticName + "'>" + "<a href='" + newHref + ">" + opt.promptText.replace(/\{0\}/g, opt.lookupColumn) + "</a></div>";
+            // Append the link to the Lookup columns's formbody table cell
+            $(lookupSelect.Obj).parents("td.ms-formbody").append(newLink);
+        } else if(opt.debug) {
+            errBox(thisFunction, "lookupColumn: " + opt.lookupColumn, "NewForm cannot be found");
+            return;
+        }
+        // If present, call completefunc when all else is done
+        if(opt.completefunc !== null) {
+            opt.completefunc();
+        }
+    }; // End $.fn.SPServices.SPLookupAddNew
+
+    // Function to return the ID of the last item created on a list by a specific user. Useful for maintaining parent/child relationships
+    // between list forms
+    $.fn.SPServices.SPGetLastItemId = function(options) {
+
+        var opt = $.extend({}, {
+            webURL: "",             // URL of the target Web.  If not specified, the current Web is used.
+            listName: "",           // The name or GUID of the list
+            userAccount: "",        // The account for the user in DOMAIN\username format. If not specified, the current user is used.
+            CAMLQuery: ""           // [Optional] For power users, this CAML fragment will be Anded with the default query on the relatedList
+        }, options);
+
+        var userId;
+        var lastId = 0;
+        $().SPServices({
+            operation: "GetUserInfo",
+            webURL: opt.webURL,
+            async: false,
+            userLoginName: (opt.userAccount !== "") ? opt.userAccount : $().SPServices.SPGetCurrentUser(),
+            completefunc: function (xData, Status) {
+                $(xData.responseXML).find("User").each(function() {
+                    userId = $(this).attr("ID");
+                });
+            }
+        });
+
+        // Get the list items for the user, sorted by Created, descending. If the CAMLQuery option has been specified, And it with
+        // the existing Where clause
+        var camlQuery = "<Query><Where>";
+        if(opt.CAMLQuery.length > 0) {
+            camlQuery += "<And>";
+        }
+        camlQuery += "<Eq><FieldRef Name='Author' LookupId='TRUE'/><Value Type='Integer'>" + userId + "</Value></Eq>";
+        if(opt.CAMLQuery.length > 0) {
+            camlQuery += opt.CAMLQuery + "</And>";
+        }
+        camlQuery += "</Where><OrderBy><FieldRef Name='Created_x0020_Date' Ascending='FALSE'/></OrderBy></Query>";
+
+        $().SPServices({
+            operation: "GetListItems",
+            async: false,
+            webURL: opt.webURL,
+            listName: opt.listName,
+            CAMLQuery: camlQuery,
+            CAMLViewFields: "<ViewFields><FieldRef Name='ID'/></ViewFields>",
+            CAMLRowLimit: 1,
+            CAMLQueryOptions: "<QueryOptions><ViewAttributes Scope='Recursive' /></QueryOptions>",
+            completefunc: function(xData) {
+                $(xData.responseXML).SPFilterNode("z:row").each(function() {
+                    lastId = $(this).attr("ows_ID");
+                });
+            }
+        });
+        return lastId;
+    }; // End $.fn.SPServices.SPGetLastItemId
+    
+    // Function which checks to see if the value for a column on the form is unique in the list.
+    $.fn.SPServices.SPRequireUnique = function (options) {
+
+        var opt = $.extend({}, {
+            columnStaticName: "Title",                  // Name of the column
+            duplicateAction: 0,                         // 0 = warn, 1 = prevent
+            ignoreCase: false,                          // If set to true, the function ignores case, if false it looks for an exact match
+            initMsg: "This value must be unique.",      // Initial message to display after setup
+            initMsgCSSClass: "ms-vb",                   // CSS class for initial message
+            errMsg: "This value is not unique.",        // Error message to display if not unique
+            errMsgCSSClass: "ms-formvalidation",        // CSS class for error message
+            showDupes: false,                           // If true, show links to the duplicate item(s) after the error message
+            completefunc: null                          // Function to call on completion of rendering the change.
+        }, options);
+
+        // Get the current item's ID from the Query String
+        var queryStringVals = $().SPServices.SPGetQueryString();
+        var thisID = queryStringVals.ID;
+        currentContext.thisList = $().SPServices.SPListNameFromUrl();
+
+        // Set the messages based on the options provided
+        var msg = "<span id='SPRequireUnique" + opt.columnStaticName + "' class='{0}'>{1}</span><br/>";
+        var firstMsg = msg.replace(/\{0\}/g, opt.initMsgCSSClass).replace(/\{1\}/g, opt.initMsg);
+        
+        // We need the DisplayName
+        var columnDisplayName = $().SPServices.SPGetDisplayFromStatic({
+            listName: currentContext.thisList,
+            columnStaticName: opt.columnStaticName
+        });
+        var columnObj = $("input[Title='" + columnDisplayName + "']");
+        $(columnObj).parent().append(firstMsg);
+
+        $(columnObj).blur(function () {
+            var columnValueIDs = [];
+            // Get the columnDisplayName's value
+            var columnValue = $(this).attr("value");
+            if(columnValue.length === 0) { return false; }
+
+            // Call the Lists Web Service (GetListItems) to see if the value already exists
+            $().SPServices({
+                operation: "GetListItems",
+                async: false,
+                listName: currentContext.thisList,
+                // Make sure we get all the items, ignoring any filters on the default view.
+                CAMLQuery: "<Query><Where><IsNotNull><FieldRef Name='" + opt.columnStaticName + "'/></IsNotNull></Where></Query>",
+                // Filter based on columnStaticName's value
+                CAMLViewFields: "<ViewFields><FieldRef Name='ID' /><FieldRef Name='" + opt.columnStaticName + "' /></ViewFields>",
+                // Override the default view rowlimit and get all appropriate rows
+                CAMLRowLimit: 0,
+                completefunc: function(xData) {
+                    var testValue = opt.ignoreCase ? columnValue.toUpperCase() : columnValue;
+                    $(xData.responseXML).SPFilterNode("z:row").each(function() {
+                        var thisValue = opt.ignoreCase ? $(this).attr("ows_" + opt.columnStaticName).toUpperCase() : $(this).attr("ows_" + opt.columnStaticName);
+                        // If this value already exists in columnStaticName and it's not the current item, then save the ID in the array
+                        if((testValue === thisValue) && ($(this).attr("ows_ID") !== thisID)) {
+                            columnValueIDs.push([$(this).attr("ows_ID"), $(this).attr("ows_" + opt.columnStaticName)]);
+                        }
+                    });
+                }
+            });
+            var newMsg = opt.initMsg;
+            $("span#SPRequireUnique" + opt.columnStaticName).html(newMsg).attr("class", opt.initMsgCSSClass);
+
+            $("input[value='OK']:disabled, input[value='Save']:disabled").removeAttr("disabled");
+            if(columnValueIDs.length > 0) {
+                newMsg = opt.errMsg;
+                $("span#SPRequireUnique" + opt.columnStaticName).html(newMsg).attr("class", opt.errMsgCSSClass);
+                if(opt.duplicateAction === 1) {
+                    $("input[Title='" + opt.columnDisplayName + "']").focus();
+                    $("input[value='OK'], input[value='Save']").attr("disabled", "disabled");
+                }
+                if(opt.showDupes) {
+                    var out = " " + columnValueIDs.length + " duplicate item" + (columnValueIDs.length > 1 ? "s" : "") + ": ";
+                    for (i=0;i < columnValueIDs.length; i++) {
+                        out += "<a href='DispForm.aspx?ID=" + columnValueIDs[i][0] + "&Source=" + location.href + "'>" + columnValueIDs[i][1] + "</a> ";
+                    }
+                    $("span#SPRequireUnique" + opt.columnStaticName).append(out);
+                }
+            }
+
+        });
+        // If present, call completefunc when all else is done
+        if(opt.completefunc !== null) {
+            opt.completefunc();
+        }
+    }; // End $.fn.SPServices.SPRequireUnique
+
+    // This function returns the DisplayName for a column based on the StaticName.
+    $.fn.SPServices.SPGetDisplayFromStatic = function (options) {
+
+        var opt = $.extend({}, {
+            webURL: "",                     // URL of the target Web.  If not specified, the current Web is used.
+            listName: "",                   // The name or GUID of the list
+            columnStaticName: "",           // StaticName of the column
+            columnStaticNames: {}           // StaticName of the columns - added in v0.7.2 to allow multiple columns
+        }, options);
+
+        var displayName = "";
+        var displayNames = {};
+        var nameCount = opt.columnStaticNames.length > 0 ? opt.columnStaticNames.length : 1;
+
+        $().SPServices({
+            operation: "GetList",
+            async: false,
+            cacheXML: true,
+            webURL: opt.webURL,
+            listName: opt.listName,
+            completefunc: function(xData) {
+                if(nameCount > 1) {
+                    for(i=0; i < nameCount; i++) {
+                        displayNames[opt.columnStaticNames[i]] = $(xData.responseXML).find("Field[StaticName='" + opt.columnStaticNames[i] + "']").attr("DisplayName");
+                    }
+                } else {
+                    displayName = $(xData.responseXML).find("Field[StaticName='" + opt.columnStaticName + "']").attr("DisplayName");
+                }
+            }
+        });
+
+        return (nameCount > 1) ? displayNames : displayName;
+
+    }; // End $.fn.SPServices.SPGetDisplayFromStatic
+
+    // This function returns the StaticName for a column based on the DisplayName.
+    $.fn.SPServices.SPGetStaticFromDisplay = function (options) {
+
+        var opt = $.extend({}, {
+            webURL: "",                     // URL of the target Web.  If not specified, the current Web is used.
+            listName: "",                   // The name or GUID of the list
+            columnDisplayName: "",          // DisplayName of the column
+            columnDisplayNames: {}          // DisplayNames of the columns - added in v0.7.2 to allow multiple columns
+        }, options);
+
+        var staticName = "";
+        var staticNames = {};
+        var nameCount = opt.columnDisplayNames.length > 0 ? opt.columnDisplayNames.length : 1;
+
+        $().SPServices({
+            operation: "GetList",
+            async: false,
+            cacheXML: true,
+            webURL: opt.webURL,
+            listName: opt.listName,
+            completefunc: function(xData) {
+                if(nameCount > 1) {
+                    for(i=0; i < nameCount; i++) {
+                        staticNames[opt.columnDisplayNames[i]] = $(xData.responseXML).find("Field[DisplayName='" + opt.columnDisplayNames[i] + "']").attr("StaticName");
+                    }
+                } else {
+                    staticName = $(xData.responseXML).find("Field[DisplayName='" + opt.columnDisplayName + "']").attr("StaticName");
+                }
+            }
+        });
+
+        return (nameCount > 1) ? staticNames : staticName;
+
+    }; // End $.fn.SPServices.SPGetStaticFromDisplay
+
+    // This function allows you to redirect to a another page from a new item form with the new
+    // item's ID. This allows chaining of forms from item creation onward.
+    $.fn.SPServices.SPRedirectWithID = function (options) {
+
+        var opt = $.extend({}, {
+            redirectUrl: "",            // Page for the redirect
+            qsParamName: "ID"           // In some cases, you may want to pass the newly created item's ID with a different
+                                        // parameter name than ID. Specify that name here, if needed.
+        }, options);
+
+        currentContext.thisList = $().SPServices.SPListNameFromUrl();
+        var queryStringVals = $().SPServices.SPGetQueryString();
+        var lastID = queryStringVals.ID;
+        var QSList = queryStringVals.List;
+        var QSRootFolder = queryStringVals.RootFolder;
+        var QSContentTypeId = queryStringVals.ContentTypeId;
+        
+        // On first load, change the form actions to redirect back to this page with the current lastID for this user and the
+        // original Source.
+        if(typeof queryStringVals.ID === "undefined") {
+            lastID = $().SPServices.SPGetLastItemId({
+                listName: currentContext.thisList
+            });
+            $("form[name='aspnetForm']").each(function() {
+                // This page...
+                var thisUrl = (location.href.indexOf("?") > 0) ? location.href.substring(0, location.href.indexOf("?")) : location.href;
+                // ... plus the Source if it exists
+                var thisSource = (typeof queryStringVals.Source === "string") ?
+                    "Source=" + queryStringVals.Source.replace(/\//g, "%2f").replace(/:/g, "%3a") : "";
+                
+                var newQS = [];
+                if(typeof QSList !== "undefined") {
+                    newQS.push("List=" + QSList);
+                }
+                if(typeof QSRootFolder !== "undefined") {
+                    newQS.push("RootFolder=" + QSRootFolder);
+                }
+                if(typeof QSContentTypeId !== "undefined") {
+                    newQS.push("ContentTypeId=" + QSContentTypeId);
+                }
+
+                var newAction = thisUrl +
+                    ((newQS.length > 0) ? ("?" + newQS.join("&") + "&") : "?") +
+                    // Set the Source to point back to this page with the lastID this user has added
+                    "Source=" + thisUrl +
+                    "?ID=" + lastID +
+                    // Pass the original source as RealSource, if present
+                    ((thisSource.length > 0) ? ("%26RealSource=" + queryStringVals.Source) : "") +
+                    // Pass the override RedirectURL, if present
+                    ((typeof queryStringVals.RedirectURL === "string") ? ("%26RedirectURL=" + queryStringVals.RedirectURL) : "");
+                $(this).attr("action", newAction);
+            });
+        // If this is the load after the item is saved, wait until the new item has been saved (commits are asynchronous),
+        // then do the redirect to redirectUrl with the new lastID, passing along the original Source.
+        } else {
+            while(queryStringVals.ID === lastID) {
+                lastID = $().SPServices.SPGetLastItemId({
+                    listName: currentContext.thisList
+                });
+            }
+            // If there is a RedirectURL parameter on the Query String, then redirect there instead of the value
+            // specified in the options (opt.redirectUrl)
+            var thisRedirectUrl = (typeof queryStringVals.RedirectURL === "string") ? queryStringVals.RedirectURL : opt.redirectUrl;
+            location.href = thisRedirectUrl + "?" + opt.qsParamName + "=" + lastID +
+                ((typeof queryStringVals.RealSource === "string") ? ("&Source=" + queryStringVals.RealSource) : "");
+        }
+    }; // End $.fn.SPServices.SPRedirectWithID
+
+    // The SPSetMultiSelectSizes function sets the sizes of the multi-select boxes for a column on a form automagically
+    // based on the values they contain. The function takes into account the fontSize, fontFamily, fontWeight, etc., in its algorithm.
+    $.fn.SPServices.SPSetMultiSelectSizes = function (options) {
+
+        var opt = $.extend({}, {
+            multiSelectColumn: "",
+            minWidth: 0,
+            maxWidth: 0,
+            debug: false
+        }, options);
+
+        var thisFunction = "SPServices.SPSetMultiSelectSizes";
+
+        // Find the multi-select column
+        var thisMultiSelect = new DropdownCtl(opt.multiSelectColumn);
+        if(thisMultiSelect.Obj.html() === null && opt.debug) { errBox(thisFunction, "multiSelectColumn: " + opt.multiSelectColumn, TXTColumnNotFound);return;}
+        if(thisMultiSelect.Type !== "M" && opt.debug) { errBox(thisFunction, "multiSelectColumn: " + opt.multiSelectColumn, "Column is not multi-select.");return;}
+
+        // Create a temporary clone of the select to use to determine the appropriate width settings.
+        // We'll append it to the end of the enclosing span.
+        var cloneId = genContainerId("SPSetMultiSelectSizes", opt.multiSelectColumn);
+        var cloneObj = $("<select id='" + cloneId + "' ></select>").appendTo(thisMultiSelect.container);
+        cloneObj.css({
+            "width": "auto",        // We want the clone to resize its width based on the contents
+            "height": 0,            // Just to keep the page clean while we are using the clone
+            "visibility": "hidden"  // And let's keep it hidden
+        });
+
+        // Add all the values to the cloned select.  First the left (possible values) select...
+        $(thisMultiSelect.master.candidateControl).find("option").each(function() {
+            cloneObj.append("<option value='" + $(this).html() + "'>" + $(this).html() + "</option>");
+        });
+        // ...then the right (selected values) select (in case some values have already been selected)
+        $(thisMultiSelect.master.resultControl).find("option").each(function() {
+            cloneObj.append("<option value='" + $(this).val() + "'>" + $(this).html() + "</option>");
+        });
+
+        // We'll add 5px for a little padding on the right.
+        var divWidth = cloneObj.width() + 5;
+        var newDivWidth = divWidth;
+        if(opt.minWidth > 0 || opt.maxWidth > 0) {
+            if(divWidth < opt.minWidth) {
+                divWidth = opt.minWidth;
+            }
+            if(newDivWidth < opt.minWidth) {
+                newDivWidth = opt.minWidth;
+            }
+            if(newDivWidth > opt.maxWidth) {
+                newDivWidth = opt.maxWidth;
+            }
+        }
+        var selectWidth = divWidth;
+
+        // Set the new widths
+        $(thisMultiSelect.master.candidateControl).css("width", selectWidth + "px").parent().css("width", newDivWidth + "px");
+        $(thisMultiSelect.master.resultControl).css("width", selectWidth + "px").parent().css("width", newDivWidth + "px");
+
+        // Remove the select's clone, since we're done with it
+        cloneObj.remove();
+
+    }; // End $.fn.SPServices.SPSetMultiSelectSizes
+
+    // Does an audit of a site's list forms to show where script is in use.
+    $.fn.SPServices.SPScriptAudit = function (options) {
+
+        var opt = $.extend({}, {
+            webURL: "",                     // [Optional] The name of the Web (site) to audit
+            listName: "",                   // [Optional] The name of a specific list to audit. If not present, all lists in the site are audited.
+            outputId: "",                   // The id of the DOM object for output
+            auditForms: true,               // Audit the form pages
+            auditViews: true,               // Audit the view pages
+            auditPages: true,               // Audit the Pages Document Library
+            auditPagesListName: "Pages",    // The Pages Document Library(ies), if desired. Either a single string or an array of strings.
+            showHiddenLists: false,         // Show output for hidden lists
+            showNoScript: false,            // Show output for lists with no scripts (effectively "verbose")
+            showSrc: true                   // Show the source location for included scripts
+        }, options);
+
+        var formTypes = [["New", "NewForm.aspx", false], ["Display", "DispForm.aspx", false], ["Edit", "EditForm.aspx", false]];
+        var listXml;
+
+        // Build the table to contain the results
+        $("#" + opt.outputId)
+            .append("<table id='SPScriptAudit' width='100%' style='border-collapse: collapse;' border=0 cellSpacing=0 cellPadding=1>" +
+                    "<tr>" +
+                        "<th></th>" +
+                        "<th>List</th>" +
+                        "<th>Page Class</th>" +
+                        "<th>Page Type</th>" +
+                        "<th>Page</th>" +
+                        (opt.showSrc ? "<th>Script References</th>" : "") +
+                    "</tr>" +
+                "</table>");
+        // Apply the CSS class to the headers
+        $("#SPScriptAudit th").attr("class", "ms-vh2-nofilter");
+        
+        // Don't bother with the lists if the options don't require them
+        if(opt.auditForms || opt.auditViews) {
+            // First, get all of the lists within the site
+            $().SPServices({
+                operation: "GetListCollection",
+                webURL: opt.webURL,
+                async: false, // Need this to be synchronous so we're assured of a valid value
+                completefunc: function (xData, Status) {
+                    $(xData.responseXML).find("List").each(function() {
+                        listXml = $(this);
+                            
+                        // If listName has been specified, then only return results for that list
+                        if((opt.listName.length === 0) || (listXml.attr("Title") === opt.listName)) {
+                            // Don't work with hidden lists unless we're asked to
+                            if((opt.showHiddenLists && listXml.attr("Hidden") === "False") || !opt.showHiddenLists) {
+    
+                                // Audit the list's forms
+                                if(opt.auditForms) {
+                                    // Get the list's Content Types, therefore the form pages
+                                    $().SPServices({
+                                        operation: "GetListContentTypes",
+                                        webURL: opt.webURL,
+                                        listName: listXml.attr("ID"),
+                                        async: false, // Need this to be synchronous so we're assured of a valid value
+                                        completefunc: function (xData, Status) {
+                                            $(xData.responseXML).find("ContentType").each(function() {
+                                                // Don't deal with folders
+                                                if($(this).attr("ID").substring(0,6) !== "0x0120") {
+                                                    var formUrls = $(this).find("FormUrls");
+                                                    for(i=0; i < formTypes.length; i++) {
+                                                        // Look for a customized form...
+                                                        $(formUrls).find(formTypes[i][0]).each(function() {
+                                                            SPScriptAuditPage(opt, listXml, "Form", this.nodeName,
+                                                                ((opt.webURL.length > 0) ? opt.webURL : $().SPServices.SPGetCurrentSite()) + SLASH + $(this).text());
+                                                            formTypes[i][2] = true;
+                                                        });
+                                                        // ...else the uncustomized form
+                                                        if(!formTypes[i][2]) {
+                                                            var defaultViewUrl = listXml.attr("DefaultViewUrl");
+                                                            SPScriptAuditPage(opt, listXml, "Form", formTypes[i][0],
+                                                                defaultViewUrl.substring(0, defaultViewUrl.lastIndexOf(SLASH)+1) + formTypes[i][1]);
+                                                        }
+                                                    }
+                                                    // Reset the form types
+                                                    for(i=0; i < formTypes.length; i++) {
+                                                        formTypes[i][2] = false;
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+    
+                                // Audit the list's views
+                                if(opt.auditViews) {
+                                    // Get the list's Views
+                                    $().SPServices({
+                                        operation: "GetViewCollection",
+                                        webURL: opt.webURL,
+                                        listName: listXml.attr("ID"),
+                                        async: false, // Need this to be synchronous so we're assured of a valid value
+                                        completefunc: function (xData, Status) {
+                                            $(xData.responseXML).find("View").each(function() {
+                                                SPScriptAuditPage(opt, listXml, "View", $(this).attr("DisplayName"), $(this).attr("Url"));
+                                            });
+                                        }
+                                    });
+                                }
+
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        // Don't bother with auditing pages if the options don't require it
+        var numLists = 0;
+        var listsArray = [];
+        if(typeof opt.auditPagesListName === "string") {
+            numLists = 1;
+            listsArray.push(opt.auditPagesListName);
+        } else {
+            numLists = opt.auditPagesListName.length;
+            listsArray = opt.auditPagesListName;
+        }
+        
+        if(opt.auditPages) {
+            for(i=0; i < numLists; i++) {
+                $().SPServices({
+                    operation: "GetList",
+                    async: false,
+                    cacheXML: true,
+                    webURL: opt.webURL,
+                    listName: listsArray[i],
+                    completefunc: function (xData, Status) {
+                        $(xData.responseXML).find("List").each(function() {
+                            listXml = $(this);
+                        });
+                    }
+                });
+                // Get all of the items from the Document Library
+                $().SPServices({
+                    operation: "GetListItems",
+                    async: false,
+                    webURL: opt.webURL,
+                    listName: listsArray[i],
+                    CAMLQuery: "<Query><Where><Neq><FieldRef Name='ContentType'/><Value Type='Text'>Folder</Value></Neq></Where></Query>",
+                    CAMLViewFields: "<ViewFields><FieldRef Name='Title'/><FieldRef Name='FileRef'/></ViewFields>",
+                    CAMLRowLimit: 0,
+                    completefunc: function(xData) {
+                        $(xData.responseXML).SPFilterNode("z:row").each(function() {
+                            var thisPageUrl = $(this).attr("ows_FileRef").split(";#")[1];
+                            var thisTitle = $(this).attr("ows_Title");
+                            var thisPageType = (typeof thisTitle !== "undefined") ? thisTitle : "";
+                            if(thisPageUrl.indexOf(".aspx") > 0) {
+                                SPScriptAuditPage(opt, listXml, "Page", thisPageType, SLASH + thisPageUrl);
+                            }
+                        });
+                    }
+                });
+            }
+        }
+        // Remove progress indicator and make the output pretty by cleaning up the ms-alternating CSS class
+        $("#SPScriptAudit tr[class='ms-alternating']:even").removeAttr("class");
+    }; // End $.fn.SPServices.SPScriptAudit
+
+    // Displays the usage of scripts in a site
+    function SPScriptAuditPage(opt, listXml, pageClass, pageType, pageUrl) {
+
+        var i = 0;
+        var jQueryPage = 0;
+        var pageScriptSrc = {};
+        pageScriptSrc.type = [];
+        pageScriptSrc.src = [];
+        pageScriptSrc.script = [];
+        var scriptRegex = RegExp("<script[\\s\\S]*?/script>", "gi");
+
+        // Fetch the page
+        $.ajax({
+            type: "GET",
+            url: pageUrl,
+            dataType: "text",
+            async: false,
+            success: function(xData) {
+
+                var scriptMatch;
+
+                while (scriptMatch = scriptRegex.exec(xData)) {
+                    var scriptLanguage = getScriptAttribute(scriptMatch, "language");
+                    var scriptType = getScriptAttribute(scriptMatch, "type");
+                    var scriptSrc = getScriptAttribute(scriptMatch, "src");
+                    if(scriptSrc !== null && scriptSrc.length > 0 && !coreScript(scriptSrc)) {
+                        pageScriptSrc.type.push((scriptLanguage !== null && scriptLanguage.length > 0) ? scriptLanguage : scriptType);
+                        pageScriptSrc.src.push(scriptSrc);
+                        jQueryPage++;
+                    }
+                }
+
+                // Only show pages without script if we've been asked to do so.
+                if((!opt.showNoScript && (pageScriptSrc.type.length > 0)) || opt.showNoScript)  {
+                    var pagePath = pageUrl.substring(0, pageUrl.lastIndexOf(SLASH)+1);
+                    var out = "<tr class=ms-alternating>" +
+                        "<td class=ms-vb-icon><a href='" + listXml.attr("DefaultViewUrl") + "'><IMG border=0 src='" + listXml.attr("ImageUrl") + "'width=16 height=16></A></TD>" +
+                        "<td class=ms-vb2><a href='" + listXml.attr("DefaultViewUrl") + "'>" + listXml.attr("Title") + ((listXml.attr("Hidden") === "True") ? '(Hidden)' : '')+ "</td>" +
+                        "<td class=ms-vb2>" + pageClass + "</td>" +
+                        "<td class=ms-vb2>" + pageType + "</td>" +
+                        "<td class=ms-vb2><a href='" + pageUrl + "'>" + fileName(pageUrl) + "</td>";
+                    if(opt.showSrc) {
+                        var thisSrcPath; 
+                        out += "<td valign='top'><table width='100%' style='border-collapse: collapse;' border=0 cellSpacing=0 cellPadding=1>";
+                        for(i=0; i < pageScriptSrc.type.length; i++) {
+                            thisSrcPath = (pageScriptSrc.src[i].substr(0,1) !== SLASH) ? pagePath + pageScriptSrc.src[i] : pageScriptSrc.src[i];
+                            out += "<tr><td class=ms-vb2 width='30%'>" + pageScriptSrc.type[i] + "</td>";
+                            out += "<td class=ms-vb2 width='70%'><a href='" + thisSrcPath + "'>" + fileName(pageScriptSrc.src[i]) + "</td></tr>";
+                        }
+                        out += "</table></td>";
+                    }
+                    $("#SPScriptAudit").append(out);
+                }
+            }
+        });
+    } // End of function SPScriptAuditPage
+    
+    function getScriptAttribute(source, attribute) {
+        var matches;
+        var regex = RegExp(attribute + "=(\"([^\"]*)\")|('([^']*)')", "gi");
+        if(matches = regex.exec(source)) {
+            return matches[2];
+        }
+        return null;
+    } // End of function getScriptAttribute
+
+    // Check to see if the script reference is part of SharePoint core so that we can ignore it
+    function coreScript(src) {
+        var i;
+        var coreScriptLocations = ["WebResource.axd", "_layouts"];
+        for(i=0; i < coreScriptLocations.length; i++) {
+            if(src.indexOf(coreScriptLocations[i]) > -1) {
+                return true;    
+            }
+        }
+        return false;
+    } // End of function coreScript
+
+    // Rearrange radio buttons or checkboxes in a form from vertical to horizontal display to save page real estate
+    $.fn.SPServices.SPArrangeChoices = function (options) {
+
+        var opt = $.extend({}, {
+            listName: $().SPServices.SPListNameFromUrl(),                   // The list name for the current form
+            columnName: "",                 // The display name of the column in the form
+            perRow: 99,                     // Maximum number of choices desired per row.
+            randomize: false                // If true, randomize the order of the options
+        }, options);
+
+        var columnFillInChoice = false;
+        var columnOptions = [];
+        var out;
+        
+        // Get information about columnName from the list to determine if we're allowing fill-in choices
+        var thisGetList = $().SPServices({
+            operation: "GetList",
+            async: false,
+            cacheXML: true,
+            listName: opt.listName
+        });
+
+        // when the promise is available...     
+        thisGetList.done(function() {
+            $(thisGetList.responseXML).find("Field[DisplayName='" + opt.columnName + "']").each(function() {
+                // Determine whether columnName allows a fill-in choice
+                columnFillInChoice = ($(this).attr("FillInChoice") === "TRUE") ? true : false;
+                // Stop looking;we're done
+                return false;
+            });
+
+            var thisFormField = findFormField(opt.columnName);
+        
+            var totalChoices = $(thisFormField).find("tr").length;
+            var choiceNumber = 0;
+            var fillinPrompt;
+            var fillinInput;
+            // Collect all of the choices
+            $(thisFormField).find("tr").each(function() {
+                choiceNumber++;
+                // If this is the fill-in prompt, save it...
+                if(columnFillInChoice && choiceNumber === (totalChoices - 1)) {
+                    fillinPrompt = $(this).find("td").html();
+                // ...or if it is the fill-in input box, save it...
+                } else if(columnFillInChoice && choiceNumber === totalChoices) {
+                    fillinInput = $(this).find("td").html();
+                // ...else push into the columnOptions array.
+                } else {
+                    columnOptions.push($(this).html());
+                }
+            });
+            out = "<TR>";
+
+            // If randomize is true, randomly sort the options
+            if(opt.randomize) {
+                columnOptions.sort(randOrd);
+            }
+
+            // Add all of the options to the out string
+            for(i=0; i < columnOptions.length; i++) {
+                out += columnOptions[i];
+                // If we've already got perRow columnOptions in the row, close off the row
+                if((i+1) % opt.perRow === 0) {
+                    out += "</TR><TR>";
+                }
+            }
+            out += "</TR>";
+
+            // If we are allowing a fill-in choice, add that option in a separate row at the bottom
+            if(columnFillInChoice) {
+                out += "<TR><TD colspan='99'>" + fillinPrompt + fillinInput + "</TD></TR>";
+            }
+
+            // Remove the existing rows...
+            $(thisFormField).find("tr").remove();
+            // ...and append the out string
+            $(thisFormField).find("table").append(out);
+
+        });
+
+    }; // End $.fn.SPServices.SPArrangeChoices
+
+    // Provide suggested values from a list for in input column based on characters typed
+    $.fn.SPServices.SPAutocomplete = function (options) {
+
+        var opt = $.extend({}, {
+            webURL: "",                         // [Optional] The name of the Web (site) which contains the sourceList
+            sourceList: "",                     // The name of the list which contains the values
+            sourceColumn: "",                   // The static name of the column which contains the values
+            columnName: "",                     // The display name of the column in the form
+            CAMLQuery: "",                      // [Optional] For power users, this CAML fragment will be Anded with the default query on the relatedList
+            CAMLQueryOptions: "<QueryOptions></QueryOptions>",  // [Optional] For power users, allows specifying the CAMLQueryOptions for the GetListItems call
+            CAMLRowLimit: 0,                    // [Optional] Override the default view rowlimit and get all appropriate rows
+            filterType: "BeginsWith",           // Type of filtering: [BeginsWith, Contains]
+            numChars: 0,                        // Wait until this number of characters has been typed before attempting any actions
+            ignoreCase: false,                  // If set to true, the function ignores case, if false it looks for an exact match
+            highlightClass: "",                 // If a class is supplied, highlight the matched characters in the values by applying that class to a wrapping span
+            uniqueVals: false,                  // If set to true, the function only adds unique values to the list (no duplicates)
+            maxHeight: 99999,                   // Sets the maximum number of values to display before scrolling occurs
+            slideDownSpeed: "fast",             // Speed at which the div should slide down when values match (milliseconds or ["fast" | "slow"])
+            processingIndicator: "_layouts/images/REFRESH.GIF",             // If present, show this while processing
+            debug: false                        // If true, show error messages;if false, run silent
+        }, options);
+
+        var matchNum;
+
+        // Find the input control for the column and save some of its attributes
+        var columnObj = $("input[Title='" + opt.columnName + "']");
+        columnObj.css("position", "");
+        var columnObjColor = columnObj.css("color");
+        var columnObjWidth = columnObj.css("width");
+
+        if(columnObj.html() === null && opt.debug) {
+            errBox("SPServices.SPAutocomplete",
+                "columnName: " + opt.columnName,
+                "Column is not an input control or is not found on page");
+            return;
+        }
+
+        // Remove the <br/> which isn't needed and messes up the formatting
+        columnObj.closest("span").find("br").remove();
+        columnObj.wrap("<div>");
+
+        // Create a div to contain the matching values and add it to the DOM
+        var containerId = genContainerId("SPAutocomplete", opt.columnName);
+        columnObj.after("<div><ul id='" + containerId + "' style='width:" + columnObjWidth + ";display:none;padding:2px;border:1px solid #2A1FAA;background-color:#FFF;position:absolute;z-index:40;margin:0'></div>");
+
+        // Set the width to match the width of the input control
+        $("#" + containerId).css("width", columnObjWidth);
+
+        // Handle keypresses
+        $(columnObj).keyup(function () {
+
+            // Get the column's value
+            var columnValue = $(this).val();
+
+            // Hide the container while we're working on it
+            $("#" + containerId).hide();
+
+            // Have enough characters been typed yet?
+            if(columnValue.length < opt.numChars) {
+                return false;
+            }
+
+            // Show the the processingIndicator as a background image in the input element
+            columnObj.css({
+                "background-image": "url(" + opt.processingIndicator + ")",
+                "background-position": "right",
+                "background-repeat": "no-repeat"
+            });
+
+            // Array to hold the matched values
+            var matchArray = [];
+            
+            // Build the appropriate CAMLQuery
+            var camlQuery = "<Query><OrderBy><FieldRef Name='" + opt.sourceColumn + "'/></OrderBy><Where>";
+            if(opt.CAMLQuery.length > 0) {
+                camlQuery += "<And>";
+            }
+            camlQuery += "<" + opt.filterType + "><FieldRef Name='" + opt.sourceColumn + "'/><Value Type='Text'>" + columnValue + "</Value></" + opt.filterType + ">";
+            if(opt.CAMLQuery.length > 0) {
+                camlQuery += opt.CAMLQuery + "</And>";
+            }
+            camlQuery += "</Where></Query>";
+
+            // Call GetListItems to find all of the potential values
+            $().SPServices({
+                operation: "GetListItems",
+                async: false,
+                webURL: opt.WebURL,
+                listName: opt.sourceList,
+                CAMLQuery: camlQuery,
+                CAMLQueryOptions: opt.CAMLQueryOptions,
+                CAMLViewFields: "<ViewFields><FieldRef Name='" + opt.sourceColumn + "' /></ViewFields>",
+                CAMLRowLimit: opt.CAMLRowLimit,
+                completefunc: function(xData) {
+                    // Handle upper/lower case if ignoreCase = true
+                    var testValue = opt.ignoreCase ? columnValue.toUpperCase() : columnValue;
+                    // See which values match and add the ones that do to matchArray
+                    $(xData.responseXML).SPFilterNode("z:row").each(function() {
+                        var thisValue = $(this).attr("ows_" + opt.sourceColumn);
+                        var thisValueTest = opt.ignoreCase ? $(this).attr("ows_" + opt.sourceColumn).toUpperCase() : $(this).attr("ows_" + opt.sourceColumn);
+                        // Make sure we have a match...
+                        if(opt.filterType === "Contains") {
+                            var firstMatch = thisValueTest.indexOf(testValue);
+                            if((firstMatch >= 0) &&
+                                // ...and that the match is not already in the array if we want uniqueness
+                                (!opt.uniqueVals || ($.inArray(thisValue, matchArray) === -1))) {
+                                matchArray.push($(this).attr("ows_" + opt.sourceColumn));
+                            }
+                        } else {
+                            // Handles normal case, which is BeginsWith and and other unknown values
+                            if(testValue === thisValueTest.substr(0,testValue.length) &&
+                                    // ...and that the match is not already in the array if we want uniqueness
+                                    (!opt.uniqueVals || ($.inArray(thisValue, matchArray) === -1))) {
+                                matchArray.push($(this).attr("ows_" + opt.sourceColumn));
+                            }
+                        }
+                    });
+                }
+            });
+
+            // Build out the set of list elements to contain the available values
+            var out = "";
+            for (i=0; i < matchArray.length; i++) {
+                // If a highlightClass has been supplied, wrap a span around each match
+                if(opt.highlightClass.length > 0) {
+                    // Set up Regex based on whether we want to ignore case
+                    var thisRegex = new RegExp(columnValue, opt.ignoreCase ? "gi" : "g");
+                    // Look for all occurrences
+                    var matches = matchArray[i].match(thisRegex);
+                    var startLoc = 0;
+                    // Loop for each occurrence, wrapping each in a span with the highlightClass CSS class
+                    for (matchNum=0; matchNum < matches.length; matchNum++) {
+                        var thisPos = matchArray[i].indexOf(matches[matchNum], startLoc);
+                        var endPos = thisPos + matches[matchNum].length;
+                        var thisSpan = "<span class='" + opt.highlightClass + "'>" + matches[matchNum] + "</span>";
+                        matchArray[i] = matchArray[i].substr(0, thisPos) + thisSpan + matchArray[i].substr(endPos);
+                        startLoc = thisPos + thisSpan.length;
+                    }
+                }
+                // Add the value to the markup for the container
+                out += "<li style='display: block;position: relative;cursor: pointer;'>" + matchArray[i] + "</li>";
+            }
+            
+            // Add all the list elements to the containerId container
+            $("#" + containerId).html(out);
+            // Set up hehavior for the available values in the list element
+            $("#" + containerId + " li").click(function () {
+                $("#" + containerId).fadeOut(opt.slideUpSpeed);
+                columnObj.val($(this).text());
+            }).mouseover(function () {
+                var mouseoverCss = {
+                    "cursor": "hand",
+                    "color": "#ffffff",
+                    "background": "#3399ff"
+                };
+                $(this).css(mouseoverCss);
+            }).mouseout(function () {
+                var mouseoutCss = {
+                    "cursor": "inherit",
+                    "color": columnObjColor,
+                    "background": "transparent"
+                };
+                $(this).css(mouseoutCss);
+            });
+
+            // If we've got some values to show, then show 'em!
+            if(matchArray.length > 0) {
+                $("#" + containerId).slideDown(opt.slideDownSpeed);
+            }
+            // Remove the processing indicator
+            columnObj.css("background-image", "");
+        });
+
+    }; // End $.fn.SPServices.SPAutocomplete
+
+    // Get the Query String parameters and their values and return in an array
+    $.fn.SPServices.SPGetQueryString = function () {
+
+        var queryStringVals = {};
+        var matches;
+        var qs = location.search.substring(1, location.search.length);
+        var args = qs.split("&");
+        var rxQS = /^([^=]+)=(.*)/i;
+
+        for(var i=0; i < args.length; i++) {
+            matches = rxQS.exec(args[i]);
+            if(rxQS.test(location.href)) {
+                if(matches !== null && matches.length > 2) {
+                    queryStringVals[matches[1]] = decodeURIComponent(matches[2]).replace(/\+/g,' ');
+                }
+            }
+        }
+        return queryStringVals;
+
+    }; // End $.fn.SPServices.SPGetQueryString
+
+    // Get the current list's GUID (ID) from the current URL.  Use of this function only makes sense if we're in a list's context,
+    // and we assume that we are calling it from an aspx page which is a form or view for the list.
+    $.fn.SPServices.SPListNameFromUrl = function (options) {
+
+        var opt = $.extend({}, {
+            listName: ""        // [Optional] Pass in the name or GUID of a list if you are not in its context. e.g., on a Web Part pages in the Pages library
+        }, options);
+
+        // Has the list name or GUID been passed in?
+        if(opt.listName.length > 0) {
+            currentContext.thisList = opt.listName;
+            return currentContext.thisList;
+        // Do we already know the current list?
+        } else if(currentContext.thisList.length > 0) {
+            return currentContext.thisList;
+        }
+
+        // Parse out the list's root URL from the current location or the passed url
+        var thisPage = location.href;
+        var thisPageBaseName = thisPage.substring(0, thisPage.indexOf(".aspx"));
+        var listPath = decodeURIComponent(thisPageBaseName.substring(0, thisPageBaseName.lastIndexOf(SLASH) + 1)).toUpperCase();
+
+        // Call GetListCollection and loop through the results to find a match with the list's URL to get the list's GUID
+        $().SPServices({
+            operation: "GetListCollection",
+            async: false,
+            completefunc: function(xData, Status) {
+                $(xData.responseXML).find("List").each(function() {
+                    var defaultViewUrl = $(this).attr("DefaultViewUrl");
+                    var listCollList = defaultViewUrl.substring(0, defaultViewUrl.lastIndexOf(SLASH) + 1).toUpperCase();
+                    if(listPath.indexOf(listCollList) > 0) {
+                        currentContext.thisList = $(this).attr("ID");
+                        return false;
+                    }
+                });
+            }
+        });
+
+        // Return the list GUID (ID)
+        return currentContext.thisList;
+
+    }; // End $.fn.SPServices.SPListNameFromUrl
+
+    // SPUpdateMultipleListItems allows you to update multiple items in a list based upon some common characteristic or metadata criteria.
+    $.fn.SPServices.SPUpdateMultipleListItems = function(options) {
+
+        var opt = $.extend({}, {
+            webURL: "",         // [Optional] URL of the target Web.  If not specified, the current Web is used.
+            listName: "",       // The list to operate on.
+            CAMLQuery: "",      // A CAML fragment specifying which items in the list will be selected and updated
+            batchCmd: "Update", // The operation to perform. By default, Update.
+            valuepairs: [],     // Valuepairs for the update in the form [[fieldname1, fieldvalue1], [fieldname2, fieldvalue2]...]
+            completefunc: null, // Function to call on completion of rendering the change.
+            debug: false        // If true, show error messages;if false, run silent
+        }, options);
+
+        var i;
+        var itemsToUpdate = [];
+        var documentsToUpdate = [];
+
+        // Call GetListItems to find all of the items matching the CAMLQuery
+        $().SPServices({
+            operation: "GetListItems",
+            async: false,
+            webURL: opt.webURL,
+            listName: opt.listName,
+            CAMLQuery: opt.CAMLQuery,
+            CAMLQueryOptions: "<QueryOptions><ViewAttributes Scope='Recursive' /></QueryOptions>",
+            completefunc: function(xData) {
+                $(xData.responseXML).SPFilterNode("z:row").each(function() {
+                    itemsToUpdate.push($(this).attr("ows_ID"));
+                    var fileRef = $(this).attr("ows_FileRef");
+                    fileRef = "/" + fileRef.substring(fileRef.indexOf(";#")+2);
+                    documentsToUpdate.push(fileRef);
+                });
+            }
+        });
+
+        var fieldNum;
+        var batch = "<Batch OnError='Continue'>";
+        for(i=0; i < itemsToUpdate.length; i++) {
+            batch += "<Method ID='" + i + "' Cmd='" + opt.batchCmd + "'>";
+            for (fieldNum=0; fieldNum < opt.valuepairs.length; fieldNum++) {
+                batch += "<Field Name='" + opt.valuepairs[fieldNum][0] + "'>" + escapeColumnValue(opt.valuepairs[fieldNum][1]) + "</Field>";
+            }
+            batch += "<Field Name='ID'>" + itemsToUpdate[i] + "</Field>";
+            if(documentsToUpdate[i].length > 0) {
+                batch += "<Field Name='FileRef'>" + documentsToUpdate[i] + "</Field>";
+            }
+            batch += "</Method>";
+        }
+        batch += "</Batch>";
+
+        // Call UpdateListItems to update all of the items matching the CAMLQuery
+        $().SPServices({
+            operation: "UpdateListItems",
+            async: false,
+            webURL: opt.webURL,
+            listName: opt.listName,
+            updates: batch,
+            completefunc: function(xData) {
+                // If present, call completefunc when all else is done
+                if(opt.completefunc !== null) {
+                    opt.completefunc(xData);
+                }
+            }
+        });
+
+    }; // End $.fn.SPServices.SPUpdateMultipleListItems
+
+    // This method for finding specific nodes in the returned XML was developed by Steve Workman. See his blog post
+    // http://www.steveworkman.com/html5-2/javascript/2011/improving-javascript-xml-node-finding-performance-by-2000/
+    // for performance details.
+    $.fn.SPFilterNode = function(name) {
+        return this.find('*').filter(function() {
+            return this.nodeName === name;
+        });
+    }; // End $.fn.SPFilterNode
+
+
+    // This function converts an XML node set to JSON
+    // Initial implementation focuses only on GetListItems
+    $.fn.SPXmlToJson = function(options) {
+
+        var opt = $.extend({}, {
+            mapping: {},            // columnName: mappedName: "mappedName", objectType: "objectType"
+            includeAllAttrs: false, // If true, return all attributes, regardless whether they are in the mapping
+            removeOws: true         // Specifically for GetListItems, if true, the leading ows_ will be stripped off the field name
+        }, options);
+
+        var attrNum;
+        var jsonObject = [];
+
+        this.each(function() {
+            var row = {};
+            var rowAttrs = this.attributes;
+
+            // Bring back all mapped columns, even those with no value
+            $.each(opt.mapping, function() { 
+                row[this.mappedName] = ""; 
+            });
+
+            // Parse through the element's attributes
+            for(attrNum = 0; attrNum < rowAttrs.length; attrNum++) {
+                var thisAttrName = rowAttrs[attrNum].name;
+                var thisMapping = opt.mapping[thisAttrName];
+                var thisObjectName = typeof thisMapping !== "undefined" ? thisMapping.mappedName : opt.removeOws ? thisAttrName.split("ows_")[1] : thisAttrName;
+                var thisObjectType = typeof thisMapping !== "undefined" ? thisMapping.objectType : undefined;
+                if(opt.includeAllAttrs || thisMapping !== undefined) {
+                    row[thisObjectName] = attrToJson(rowAttrs[attrNum].value, thisObjectType);
+                }
+            }
+            // Push this item into the JSON Object          
+            jsonObject.push(row);
+
+        });
+
+        // Return the JSON object
+        return jsonObject;
+
+    }; // End $.fn.SPServices.SPXmlToJson
+
+
+    function attrToJson(v, objectType) {
+
+        var colValue;
+
+        switch (objectType) {
+            case "DateTime":
+            case "datetime":    // For calculated columns, stored as datetime;#value
+                // Dates have dashes instead of slashes: ows_Created="2009-08-25 14:24:48"
+                colValue = dateToJsonObject(v);
+                break;
+            case "User":
+                colValue = userToJsonObject(v);
+                break;
+            case "UserMulti":
+                colValue = userMultiToJsonObject(v);
+                break;
+            case "Lookup":
+                colValue = lookupToJsonObject(v);
+                break;
+            case "LookupMulti":
+                colValue = lookupMultiToJsonObject(v);
+                break;
+            case "Boolean":
+                colValue = booleanToJsonObject(v);
+                break;
+            case "Integer":
+                colValue = intToJsonObject(v);
+                break;
+            case "Counter":
+                colValue = intToJsonObject(v);
+                break;
+            case "MultiChoice":
+                colValue = choiceMultiToJsonObject(v);
+                break;
+            case "Currency":
+            case "float":                           // For calculated columns, stored as float;#value
+                colValue = floatToJsonObject(v);
+                break;
+            case "Calc":
+                colValue = calcToJsonObject(v);
+                break;
+            case "Attachments":
+                colValue = lookupToJsonObject(v);
+                break;
+            default:
+                // All other objectTypes will be simple strings
+                colValue = stringToJsonObject(v);
+                break;
+        }
+        return colValue;
+    }
+
+    function stringToJsonObject(s) {
+        return s;
+    }
+    function intToJsonObject(s) {
+        return parseInt(s, 10);
+    }
+    function floatToJsonObject(s) {
+        return parseFloat(s);
+    }
+    function booleanToJsonObject(s) {
+        var out = s === "0" ? false : true;
+        return out;
+    }
+    function dateToJsonObject(s) {
+        return new Date(s.replace(/-/g, "/"));
+    }
+   function userToJsonObject(s) {
+        if (s.length === 0) {
+            return null;
+        } else {
+            var thisUser = new SplitIndex(s); 
+            var thisUserExpanded = thisUser.value.split(",#");
+            if(thisUserExpanded.length === 1) {
+                return {userId: thisUser.Id, userName: thisUser.value};
+            } else {
+                return {
+                    userId: thisUser.Id, 
+                    userName: thisUserExpanded[0].replace( /(,,)/g, ","), 
+                    loginName: thisUserExpanded[1].replace( /(,,)/g, ","), 
+                    email: thisUserExpanded[2].replace( /(,,)/g, ","), 
+                    sipAddress: thisUserExpanded[3].replace( /(,,)/g, ","), 
+                    title: thisUserExpanded[4].replace( /(,,)/g, ",")
+                };
+            }
+        }
+    }
+    function userMultiToJsonObject(s) {
+        if(s.length === 0) {
+            return null;
+        } else {
+            var thisUserMultiObject = [];
+            var thisUserMulti = s.split(";#");
+            for(i=0; i < thisUserMulti.length; i=i+2) {
+                var thisUser = userToJsonObject(thisUserMulti[i] + ";#" + thisUserMulti[i+1]);
+                thisUserMultiObject.push(thisUser);
+            }
+            return thisUserMultiObject;
+        }
+    }
+    function lookupToJsonObject(s) {
+        if(s.length === 0) {
+            return null;
+        } else {
+            var thisLookup = new SplitIndex(s);
+            return {lookupId: thisLookup.id, lookupValue: thisLookup.value};
+        }
+    }
+    function lookupMultiToJsonObject(s) {
+        if(s.length === 0) {
+            return null;
+        } else {
+            var thisLookupMultiObject = [];
+            var thisLookupMulti = s.split(";#");
+            for(i=0; i < thisLookupMulti.length; i=i+2) {
+                var thisLookup = lookupToJsonObject(thisLookupMulti[i] + ";#" + thisLookupMulti[i+1]);
+                thisLookupMultiObject.push(thisLookup);
+            }
+            return thisLookupMultiObject;
+        }
+    }
+    function choiceMultiToJsonObject(s) {
+        if(s.length === 0) {
+            return null;
+        } else {
+            var thisChoiceMultiObject = [];
+            var thisChoiceMulti = s.split(";#");
+            for(i=0; i < thisChoiceMulti.length; i++) {
+                if(thisChoiceMulti[i].length !== 0) {
+                    thisChoiceMultiObject.push(thisChoiceMulti[i]);
+                }
+            }
+            return thisChoiceMultiObject;
+        }
+    }
+    function calcToJsonObject(s) {
+        if(s.length === 0) {
+            return null;
+        } else {
+            var thisCalc = s.split(";#");
+            // The first value will be the calculated column value type, the second will be the value
+            return attrToJson(thisCalc[1], thisCalc[0]);
+        }
+    }
+
+    // Find a People Picker in the page
+    // Returns references to:
+    //   row - The TR which contains the People Picker (useful if you'd like to hide it at some point)
+    //   contents - The element which contains the current value
+    //   currentValue - The current value if it is set
+    //   checkNames - The Check Names image (in case you'd like to click it at some point)
+    $.fn.SPFindPeoplePicker = function(options) {
+
+        var opt = $.extend({}, {
+            peoplePickerDisplayName: "",    // The displayName of the People Picker on the form
+            valueToSet: "",                 // The value to set the People Picker to. Should be a string containing each username or groupname separated by semi-colons.
+            checkNames: true                // If set to true, the Check Names image will be clicked to resolve the names
+        }, options);
+
+        var thisRow = $("nobr").filter(function() {
+            // Ensures we get a match whether or not the People Picker is required (if required, the nobr contains a span also)
+            return $(this).contents().eq(0).text() === opt.peoplePickerDisplayName; 
+        }).closest("tr");
+
+        var thisContents = thisRow.find("div[name='upLevelDiv']");
+        var thisCheckNames = thisRow.find("img[Title='Check Names']:first");
+
+        // If a value was provided, set the value
+        if(opt.valueToSet.length > 0) {
+            thisContents.html(opt.valueToSet);
+        }
+
+        // If checkName is true, click the check names icon
+        if(opt.checkNames) {
+            thisCheckNames.click();
+        }
+        var thisCurrentValue = $.trim(thisContents.text());
+
+        // Parse the entity data
+        var dictionaryEntries = [];
+
+        // IE
+        thisContents.children("span").each(function() {
+        
+            // Grab the entity data
+            var thisData = $(this).find("div[data]").attr("data");
+
+            var dictionaryEntry = {};
+
+            // Entity data is only available in IE
+            if(typeof thisData !== "undefined") {
+                var arrayOfDictionaryEntry = $.parseXML(thisData);
+                var $xml = $(arrayOfDictionaryEntry);
+
+                $xml.find("DictionaryEntry").each(function() {
+                    var key = $(this).find("Key").text();
+                    var value = $(this).find("Value").text();
+                    dictionaryEntry[key] = value;
+                });
+                dictionaryEntries.push(dictionaryEntry);
+            // For other browsers, we'll call GetUserInfo to get the data
+            } else {
+                $().SPServices({
+                    operation: "GetUserInfo",
+                    async: false,
+                    cacheXML: true,
+                    userLoginName: $(this).attr("title"),
+                    completefunc: function(xData) {
+
+                        $(xData.responseXML).find("User").each(function() {
+                        
+                            $.each(this.attributes, function(i, attrib){ 
+                                var key = attrib.name; 
+                                var value = attrib.value; 
+                                dictionaryEntry[key] = value;
+                            });                     
+                            dictionaryEntries.push(dictionaryEntry);
+                        });
+                    }
+                });
+            }   
+        });
+    
+        return {row: thisRow, contents: thisContents, currentValue: thisCurrentValue, checkNames: thisCheckNames, dictionaryEntries: dictionaryEntries};
+    };
+
+    // Return the current version of SPServices as a string
+    $.fn.SPServices.Version = function () {
+
+        return VERSION;
+
+    }; // End $.fn.SPServices.Version
+
+
+////// PRIVATE FUNCTIONS ////////
+
+    // Get the current context (as much as we can) on startup
+    // See: http://johnliu.net/blog/2012/2/3/sharepoint-javascript-current-page-context-info.html
+    function SPServicesContext() {
+    
+        // SharePoint 2010 gives us a context variable
+        if(typeof _spPageContextInfo !== "undefined") {
+            this.thisSite = _spPageContextInfo.webServerRelativeUrl;
+            this.thisList = _spPageContextInfo.pageListId;
+            this.thisUserId = _spPageContextInfo.userId;
+        // In SharePoint 2007, we know the UserID only
+        } else {
+             this.thisSite = (typeof L_Menu_BaseUrl !== "undefined") ? L_Menu_BaseUrl : "";
+            this.thisList = "";
+            this.thisUserId = (typeof _spUserId !== "undefined") ? _spUserId : undefined;
+        }
+        
+    } // End of function SPServicesContext
+
+
+    // Display a column (field) formatted correctly based on its definition in the list.
+    // NOTE: Currently not dealing with locale differences.
+    //   columnXML          The XML node for the column from a GetList operation
+    //   columnValue        The text representation of the column's value
+    //   opt                The current set of options
+    function showColumn(listXML, columnXML, columnValue, opt) {
+
+        if(typeof columnValue === "undefined") {
+            return "";
+        }
+
+        var i;
+        var outString = "";
+        var dispUrl;
+        var numDecimals;
+        var outArray =[];
+        var webUrl = opt.relatedWebURL.length > 0 ? opt.relatedWebURL : $().SPServices.SPGetCurrentSite();
+
+        switch(columnXML.attr("Type")) {
+            case "Text":
+                outString = columnValue;
+                break;
+            case "URL":
+                switch(columnXML.attr("Format")) {
+                    // URL as hyperlink
+                    case "Hyperlink":
+                        outString = "<a href='" + columnValue.substring(0, columnValue.search(",")) + "'>" +
+                            columnValue.substring(columnValue.search(",") + 1) + "</a>";
+                        break;
+                    // URL as image
+                    case "Image":
+                        outString = "<img alt='" + columnValue.substring(columnValue.search(",") + 1) +
+                            "' src='" + columnValue.substring(0, columnValue.search(",")) + "'/>";
+                        break;
+                    // Just in case
+                    default:
+                        outString = columnValue;
+                        break;                      
+                }
+                break;
+            case "User":
+            case "UserMulti":
+                var userMultiValues = columnValue.split(";#");
+                for(i=0; i < userMultiValues.length; i = i+2) {
+                    outArray.push("<a href='/_layouts/userdisp.aspx?ID=" + userMultiValues[i] +
+                        "&Source=" + escapeUrl(location.href) + "'>" +
+                        userMultiValues[i+1] +  "</a>");
+                }
+                outString = outArray.join(", ");
+                break;
+            case "Calculated":
+                var calcColumn = columnValue.split(";#");
+                outString = calcColumn[1];
+                break;
+            case "Number":
+                numDecimals = columnXML.attr("Decimals");
+                outString = typeof numDecimals === "undefined" ?
+                    parseFloat(columnValue).toString() :
+                    parseFloat(columnValue).toFixed(numDecimals).toString();
+                break;
+            case "Currency":
+                numDecimals = columnXML.attr("Decimals");
+                outString = typeof numDecimals === "undefined" ?
+                    parseFloat(columnValue).toFixed(2).toString() :
+                    parseFloat(columnValue).toFixed(numDecimals).toString();
+                break;
+            case "Lookup":
+                switch(columnXML.attr("Name")) {
+                    case "FileRef":
+                        // Get the display form URL for the lookup source list
+                        dispUrl = listXML.attr("BaseType") === "1" ? listXML.attr("RootFolder") + SLASH + "Forms/DispForm.aspx" :
+                            listXML.attr("RootFolder") + SLASH + "DispForm.aspx";
+                        outString = "<a href='" + dispUrl +
+                            "?ID=" + columnValue.substring(0, columnValue.search(";#")) + "&RootFolder=*&Source=" + escapeUrl(location.href) + "'>" +
+                            columnValue.substring(columnValue.search(";#") + 2) + "</a>";
+                        break;
+                    case "FileDirRef":
+                        // Get the display form URL for the lookup source list
+                        dispUrl = SLASH + columnValue.substring(columnValue.search(";#") + 2);
+                        outString = "<a href='" + dispUrl + "'>" +
+                            columnValue.substring(columnValue.search(";#") + 2) + "</a>";
+                        break;
+                    // Any other lookup column
+                    default:
+                        // Get the display form URL for the lookup source list
+                        dispUrl = getListFormUrl(columnXML.attr("List"), "DisplayForm");
+                        outString = "<a href='" + opt.relatedWebURL + SLASH + dispUrl +
+                            "?ID=" + columnValue.substring(0, columnValue.search(";#")) + "&RootFolder=*&Source=" + escapeUrl(location.href) + "'>" +
+                            columnValue.substring(columnValue.search(";#") + 2) + "</a>";
+                        break;                      
+                }
+                break;
+            case "LookupMulti":
+                // Get the display form URL for the lookup source list
+                dispUrl = getListFormUrl(columnXML.attr("List"), "DisplayForm");
+                // Show all the values as links to the items, separated by commas
+                outString = "";
+                if(columnValue.length > 0) {
+                    var lookupMultiValues = columnValue.split(";#");
+                    for(i=0; i < lookupMultiValues.length / 2; i++) {
+                        outArray.push("<a href='" + webUrl + SLASH + dispUrl +
+                            "?ID=" + lookupMultiValues[i * 2] + "&RootFolder=*&Source=" + escapeUrl(location.href) + "'>" +
+                            lookupMultiValues[(i * 2) + 1] + "</a>");
+                    }
+                }
+                outString = outArray.join(", ");
+                break;
+            case "File":
+                fileName = columnValue.substring(columnValue.search(";#") + 2);
+                outString = "<a href='" + listXML.attr("RootFolder") + SLASH + fileName + "'>" + fileName + "</a>";
+                break;
+            case "Counter":
+                outString = columnValue;
+                break;
+            case "DateTime":
+                outString = columnValue;
+                break;
+            default:
+                outString = columnValue;
+                break;
+        }
+        return outString;
+    } // End of function showColumn
+
+
+    // Show a single attribute of a node, enclosed in a table
+    //   node               The XML node
+    //   opt                The current set of options
+    function showAttrs(node) {
+        var i;
+        var out = "<table class='ms-vb' width='100%'>";
+        for (i=0; i < node.attributes.length; i++) {
+            out += "<tr><td width='10px' style='font-weight:bold;'>" + i + "</td><td width='100px'>" +
+                node.attributes.item(i).nodeName + "</td><td>" + checkLink(node.attributes.item(i).nodeValue) + "</td></tr>";
+        }
+        out += "</table>";
+        return out;
+    } // End of function showAttrs
+
+
+    // Find a dropdown (or multi-select) in the DOM. Returns the dropdown onject and its type:
+    // S = Simple (select);C = Compound (input + select hybrid);M = Multi-select (select hybrid)
+    function DropdownCtl(colName) {
+        // Simple
+        if((this.Obj = $("select[Title='" + colName + "']")).length === 1) {
+            this.Type = "S";
+        // Compound
+        } else if((this.Obj = $("input[Title='" + colName + "']")).length === 1) {
+            this.Type = "C";
+        // Multi-select: This will find the multi-select column control in English and most other languages sites where the Title looks like 'Column Name possible values'
+        } else if((this.Obj = $("select[ID$='SelectCandidate'][Title^='" + colName + " ']")).length === 1) {
+            this.Type = "M";
+        // Multi-select: This will find the multi-select column control on a Russian site (and perhaps others) where the Title looks like '????????? ????????: Column Name'
+        } else if((this.Obj = $("select[ID$='SelectCandidate'][Title$=': " + colName + "']")).length === 1) {
+            this.Type = "M";
+        // Multi-select: This will find the multi-select column control on a German site (and perhaps others) where the Title looks like 'Mögliche Werte für &quot;Column name&quot;.'
+        } else if((this.Obj = $("select[ID$='SelectCandidate'][Title$='\"" + colName + "\".']")).length === 1) {
+            this.Type = "M";
+        // Multi-select: This will find the multi-select column control on a Italian site (and perhaps others) where the Title looks like "Valori possibili Column name"
+        } else if((this.Obj = $("select[ID$='SelectCandidate'][Title$=' " + colName + "']")).length === 1) {
+            this.Type = "M";
+        } else {
+            this.Type = null;
+        }
+        
+        if(this.Type === "M") {
+            // Find the important bits of the multiselect control
+            this.container = this.Obj.closest("span");
+            this.MultiLookupPickerdata = this.container.find("input[id$='" + multiLookupPrefix + "_data'], input[id$='" + multiLookupPrefix2013 + "_data']");
+            var addButtonId = this.container.find("[id$='AddButton']").attr("id");
+            this.master =
+                window[addButtonId.replace(/AddButton/, multiLookupPrefix + "_m")] ||   // SharePoint 2007
+                window[addButtonId.replace(/AddButton/, multiLookupPrefix2013 + "_m")]; // SharePoint 2013
+        }
+    } // End of function DropdownCtl
+
+    // Returns the selected value(s) for a dropdown in an array. Expects a dropdown object as returned by the DropdownCtl function.
+    // If matchOnId is true, returns the ids rather than the text values for the selection options(s).
+    function getDropdownSelected(columnSelect, matchOnId) {
+
+        var columnSelectSelected = [];
+        
+        switch(columnSelect.Type) {
+            case "S":
+                if(matchOnId) {
+                    columnSelectSelected.push(columnSelect.Obj.find("option:selected").val() || []);
+                } else {
+                    columnSelectSelected.push(columnSelect.Obj.find("option:selected").text() || []);
+                }
+                break;
+            case "C":
+                if(matchOnId) {
+                    columnSelectSelected.push($("input[id='"+ columnSelect.Obj.attr("optHid") + "']").val() || []);
+                } else {
+                    columnSelectSelected.push(columnSelect.Obj.val() || []);
+                }               
+                break;
+            case "M":
+                $(columnSelect.master.resultControl).find("option").each(function() {
+                    if(matchOnId) {
+                        columnSelectSelected.push($(this).val());
+                    } else {
+                        columnSelectSelected.push($(this).html());                  
+                    }
+                });
+                break;
+            default:
+                break;
+        }
+        return columnSelectSelected;
+
+    } // End of function getDropdownSelected
+    
+    // Build an error message based on passed parameters
+    function errBox(func, param, msg) {
+        var errMsg = "<b>Error in function</b><br/>" + func + "<br/>" +
+            "<b>Parameter</b><br/>" + param + "<br/>" +
+            "<b>Message</b><br/>" + msg + "<br/><br/>" +
+            "<span onmouseover='this.style.cursor=\"hand\";' onmouseout='this.style.cursor=\"inherit\";' style='width=100%;text-align:right;'>Click to continue</span></div>";
+        modalBox(errMsg);
+    } // End of function errBox
+
+    // Call this function to pop up a branded modal msgBox
+    function modalBox(msg) {
+        var boxCSS = "position:absolute;width:300px;height:150px;padding:10px;background-color:#000000;color:#ffffff;z-index:30;font-family:'Arial';font-size:12px;display:none;";
+        $("#aspnetForm").parent().append("<div id='SPServices_msgBox' style=" + boxCSS + ">" + msg);
+        var height = $("#SPServices_msgBox").height();
+        var width = $("#SPServices_msgBox").width();
+        var leftVal = ($(window).width() / 2) - (width / 2) + "px";
+        var topVal = ($(window).height() / 2) - (height / 2) - 100 + "px";
+        $("#SPServices_msgBox").css({border:'5px #C02000 solid', left:leftVal, top:topVal}).show().fadeTo("slow", 0.75).click(function () {
+            $(this).fadeOut("3000", function () {
+                $(this).remove();
+            });
+        });
+    } // End of function modalBox
+
+    // Generate a unique id for a containing div using the function name and the column display name
+    function genContainerId(funcname, columnName) {
+        return funcname + "_" + $().SPServices.SPGetStaticFromDisplay({
+            listName: $().SPServices.SPListNameFromUrl(),
+            columnDisplayName: columnName
+        });
+    } // End of function genContainerId
+    
+    // Get the URL for a specified form for a list
+    function getListFormUrl(l, f) {
+
+        var u;
+        $().SPServices({
+            operation: "GetFormCollection",
+            async: false,
+            listName: l,
+            completefunc: function (xData, Status) {
+                u = $(xData.responseXML).find("Form[Type='" + f + "']").attr("Url");
+            }
+        });
+        return u;
+
+    } // End of function getListFormUrl
+
+    // Add the option values to the SOAPEnvelope.payload for the operation
+    //  opt = options for the call
+    //  paramArray = an array of option names to add to the payload
+    //      "paramName" if the parameter name and the option name match
+    //      ["paramName", "optionName"] if the parameter name and the option name are different (this handles early "wrappings" with inconsistent naming)
+    //      {name: "paramName", sendNull: false} indicates the element is marked as "add to payload only if non-null"
+    function addToPayload(opt, paramArray) {
+
+        var i;
+
+        for(i=0; i < paramArray.length; i++) {
+            // the parameter name and the option name match
+            if(typeof paramArray[i] === "string") {
+                SOAPEnvelope.payload += wrapNode(paramArray[i], opt[paramArray[i]]);
+            // the parameter name and the option name are different 
+            } else if($.isArray(paramArray[i]) && paramArray[i].length === 2) {
+                SOAPEnvelope.payload += wrapNode(paramArray[i][0], opt[paramArray[i][1]]);
+            // the element not a string or an array and is marked as "add to payload only if non-null"
+            } else if((typeof paramArray[i] === "object") && (paramArray[i].sendNull !== undefined)) {
+                SOAPEnvelope.payload += ((opt[paramArray[i].name] === undefined) || (opt[paramArray[i].name].length === 0)) ? "" : wrapNode(paramArray[i].name, opt[paramArray[i].name]);
+            // something isn't right, so report it
+            } else {
+                errBox(opt.operation, "paramArray[" + i + "]: " + paramArray[i], "Invalid paramArray element passed to addToPayload()");
+            }
+        }
+    } // End of function addToPayload
+
+    // Finds the td which contains a form field in default forms using the comment which contains:
+    //  <!--  FieldName="Title"
+    //      FieldInternalName="Title"
+    //      FieldType="SPFieldText"
+    //  -->
+    // as the "anchor" to find it. Necessary because SharePoint doesn't give all field types ids or specific classes.
+    function findFormField(columnName) {
+        var thisFormBody;
+        // There's no easy way to find one of these columns; we'll look for the comment with the columnName
+        var searchText = RegExp("FieldName=\"" + columnName.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&") + "\"", "gi");
+        // Loop through all of the ms-formbody table cells
+        $("td.ms-formbody, td.ms-formbodysurvey").each(function() {
+            // Check for the right comment
+            if(searchText.test($(this).html())) {
+                thisFormBody = $(this);
+                // Found it, so we're done
+                return false;
+            }
+        });
+        return thisFormBody;
+    } // End of function findFormField
+    
+    // The SiteData operations have the same names as other Web Service operations. To make them easy to call and unique, I'm using
+    // the SiteData prefix on their names. This function replaces that name with the right name in the SOAPEnvelope.
+    function siteDataFixSOAPEnvelope(SOAPEnvelope, siteDataOperation) {
+        var siteDataOp = siteDataOperation.substring(8);
+        SOAPEnvelope.opheader = SOAPEnvelope.opheader.replace(siteDataOperation, siteDataOp);
+        SOAPEnvelope.opfooter = SOAPEnvelope.opfooter.replace(siteDataOperation, siteDataOp);
+        return SOAPEnvelope;
+    } // End of function siteDataFixSOAPEnvelope
+
+    // Wrap an XML node (n) around a value (v)
+    function wrapNode(n, v) {
+        var thisValue = typeof v !== "undefined" ? v : "";
+        return "<" + n + ">" + thisValue + "</" + n + ">";
+    }
+
+    // Generate a random number for sorting arrays randomly
+    function randOrd() {
+        return (Math.round(Math.random())-0.5);
+    }
+
+    // If a string is a URL, format it as a link, else return the string as-is
+    function checkLink(s) {
+        return ((s.indexOf("http") === 0) || (s.indexOf(SLASH) === 0)) ? "<a href='" + s + "'>" + s + "</a>" : s;
+    }
+
+    // Get the filename from the full URL
+    function fileName(s) {
+        return s.substring(s.lastIndexOf(SLASH)+1,s.length);
+    }
+
+/* Taken from http://dracoblue.net/dev/encodedecode-special-xml-characters-in-javascript/155/ */
+    var xml_special_to_escaped_one_map = {
+        '&': '&amp;',
+        '"': '&quot;',
+        '<': '&lt;',
+        '>': '&gt;'};
+    var escaped_one_to_xml_special_map = {
+        '&amp;': '&',
+        '&quot;': '"',
+        '&lt;': '<',
+        '&gt;': '>'};
+    
+    function encodeXml(string) {
+        return string.replace(/([\&"<>])/g, function(str, item) {
+            return xml_special_to_escaped_one_map[item];
+        });
+    }
+    function decodeXml(string) {
+        return string.replace(/(&quot;|&lt;|&gt;|&amp;)/g,
+            function(str, item) {
+                return escaped_one_to_xml_special_map[item];
+        });
+    }
+/* Taken from http://dracoblue.net/dev/encodedecode-special-xml-characters-in-javascript/155/ */
+
+    // Escape column values
+    function escapeColumnValue(s) {
+        if(typeof s === "string") {
+            return s.replace(/&(?![a-zA-Z]{1,8};)/g, "&amp;");
+        } else {
+            return s;
+        }
+    }
+
+    // Escape Url
+    function escapeUrl(u) {
+        return u.replace(/&/g,'%26');
+    }
+
+    // Split values like 1;#value into id and value                             
+    function SplitIndex(s) {
+        var spl = s.split(";#");
+        this.id = spl[0];
+        this.value = spl[1];
+    }
+
+
+})(jQuery);
 
 /**
 * vkBeautify - javascript plugin to pretty-print or minify text in XML, JSON, CSS and SQL formats.
@@ -2521,146 +6700,154 @@ window.vkbeautify = new vkbeautify();
 
 //-------- START SPWidgets plugin: inserted by build script ----------------- 
 
-(function(g){var r=g;document.head||(document.head=document.getElementsByTagName("head")[0]);(function(){try{g.pt||(g.pt={})}catch(c){g.pt={}}void 0===g.pt._cache&&(g.pt._cache={});g.SPWidgets={};g.SPWidgets.version="20131027104632";g.SPWidgets.defaults={};g.fn.SPMsgHasError=function(){var c=g(this).find("ErrorCode"),d=!1;if(!c.length)return g(this).find("faultcode").length?!0:!1;c.each(function(){if("0x00000000"!==g(this).text())return d=!0,!1});return d};g.fn.SPGetMsgError=function(){var c=
-g(this),d="",b=c.find("ErrorCode"),e=0;b.length||(b=c.find("faultcode"));if(!b.length)return"";b.each(function(){var a=g(this);"0x00000000"!==a.text()&&(e+=1,d+="("+e+") "+a.text()+": "+a.parent().children().not(a).text()+"\n")});return d=e+" error(s) encountered! \n"+d};g.SPWidgets.fillTemplate=function(c,d){var b,e,a,h,f,l,p,n,k;"object"===typeof c&&1===arguments.length&&(d=c.data,c=c.tmplt);b="";e="string"!==typeof c?String(g("<div/>").append(c).html()):c;a=e.match(/(\{\{.*?\}\})/g);g.isArray(d)||
-(d=[d]);if(null!==a)for(l=0,p=d.length;l<p;l++){n=e;h=0;for(f=a.length;h<f;h++)a[h]=a[h].replace(/[\{\{\}\}]/g,""),k=d[l][a[h]]||"",g.isFunction(k)&&(k=k()),n=n.replace("{{"+a[h]+"}}",k);b+=n}return b};g.SPWidgets.parseLookupFieldValue=function(c){var d=[],b=String(c).split(";#"),e=b.length,a,h;if(void 0===c)return d;for(c=0;c<e;c++)a=b[c],c++,h=b[c],(a||h)&&d.push({id:a,title:h});return d};g.SPWidgets.getCamlLogical=function(c){c=g.extend({},{type:"AND",values:[],onEachValue:null},c);var d="<And>",
-b="</And>",e="",a=0,h=0,f=!1;c.type=String(c.type).toUpperCase();g.isArray(c.values)||(c.values=[c.values]);"AND"!==c.type&&(d="<Or>",b="</Or>");e=d;a=c.values.length;h=a-1;f=g.isFunction(c.onEachValue);2>a&&(e="");for(d=0;d<a;d++)if(e=f?e+String(c.onEachValue(c.values[d])).toString():e+String(c.values[d]).toString(),1<h-d){e+=g.SPWidgets.getCamlLogical(g.extend({},c,{values:c.values.slice(d+1,a-d)}));break}1<a&&(e+=b);return e};g.SPWidgets.SPGetDateString=function(c,d){function b(a){return 10>a?
-"0"+a:a}d=String(d||"local").toLowerCase();c=c||new Date;var e="";return e="utc"===d?c.getUTCFullYear()+"-"+b(c.getUTCMonth()+1)+"-"+b(c.getUTCDate())+"T"+b(c.getUTCHours())+":"+b(c.getUTCMinutes())+":"+b(c.getUTCSeconds())+"Z":c.getFullYear()+"-"+b(c.getMonth()+1)+"-"+b(c.getDate())+"T"+b(c.getHours())+":"+b(c.getMinutes())+":"+b(c.getSeconds())};g.SPWidgets.parseDateString=function(c){var d=null,b,e;if(!c)return d;if(d=Date.parse(10===c.length?c+"T00:00":c))return new Date(d);e=[1,4,5,6,7,10,11];
-c=c.match(/^(\d{4}|[+\-]\d{6})(?:-(\d{2})(?:-(\d{2}))?)?(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{3}))?)?(?:(Z)|([+\-])(\d{2})(?::(\d{2}))?)?)?$/);if(!c)return d;d=0;for(b=e.length;d<b;d++)c[e[d]]=~~c[e[d]];--c[2];"Z"===c[8]?(void 0!==c[9]&&(e=60*c[10]+c[11],"+"===c[9]&&(e=-e),c[5]+=e),d=new Date(Date.UTC(c[1],c[2],c[3],c[4],c[5],c[6],c[7]))):d=new Date(c[1],c[2],c[3],c[4],c[5],c[6],c[7]);return d};g.SPWidgets.makeSameHeight=function(c,d){var b=0,e=g(c);e.each(function(){var a=g(this).css("height","");
-b<a.outerHeight(!0)&&(b=a.outerHeight(!0))});0<b&&(d&&(b+=d),e.height(b));return c};g.SPWidgets.escapeXML=function(c){return"string"!==typeof c?"":c.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/'/g,"&apos;").replace(/"/g,"&quot;")};g.SPWidgets.unEscapeXML=function(c){return"string"!==typeof c?"":c.replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&amp;/g,"&").replace(/&apos;/g,"'").replace(/&quot;/g,'"')};g.SPWidgets.getRuntimeInfo=function(){function c(){this.SPWidgets=
-g.SPWidgets.version;this.jQuery=g.fn.jquery||"?";this.SPServices=this.jQueryUICss=this.jQueryUI="?";return this}c.prototype.asString=function(){var c="",a;for(a in this)this.hasOwnProperty(a)&&(c+="[ "+a+" = "+this[a]+" ] ");return c};var d=new c,b=g('<div style="position:fixed;width:100px;left:-1000px;"/>').appendTo("body"),e="";try{d.jQueryUI=r.ui.version}catch(a){}try{d.SPServices=g().SPServices.Version()}catch(h){g.fn.SPServices&&(d.SPServices="loaded")}e=b.css("background-image");b.addClass("ui-widget-header");
-b.css("background-image")!==e&&(d.jQueryUICss="loaded");b.remove();return d};g.SPWidgets.getSPVersion=function(c){var d={12:"2007",14:"2010",15:"2013"},b=12;SP&&(b=14,SP.ClientSchemaVersions?SP.ClientSchemaVersions.currentVersion&&(b=parseInt(SP.ClientSchemaVersions.currentVersion)):(b=parseInt(_spPageContextInfo.webUIVersion),4===b&&(b=14)));c&&(b=d[b]||b);return b}})(r);(function(c){var m={initDone:!1,maxColumns:20};c.SPWidgets.defaults.board={list:"",field:"",CAMLQuery:"<Query></Query>",CAMLViewFields:"",
-fieldFilter:null,optionalLabel:"(none)",template:null,webURL:c().SPServices.SPGetCurrentSite(),showColPicker:!1,colPickerLabel:"Columns",colPickerVisible:[],colPickerCloseLabel:"Close",colPickerApplyLabel:"Apply",colPickerCheckLabel:"Check-Uncheck All",colPickerTotalLabel:"Selected.",colPickerMaxColMsg:"Can not exceed 10 columns!",colPickerMinColMsg:"Mininum of 2 required!",onGetListItems:null,onPreUpdate:null,onBoardCreate:null};c.fn.SPShowBoard=function(d){m.initDone||(m.initDone=!0,""!==m.styleSheet&&
-c('<style type="text/css">\n\n'+m.styleSheet+"\n\n</style>").prependTo("head"));var b=arguments;return this.each(function(){var e=c(this),a="string"===typeof d,h=e.hasClass("hasSPShowBoard"),f=null,l="",g=null;if(h&&!a)return this;if(a&&h&&!e.hasClass("loadingSPShowBoard"))return l=d.toLowerCase(),g=e.data("SPShowBoardOptions"),"refresh"===l?g._getListItems().then(function(){g.showItemsOnBoard({refresh:!0})}):"redraw"===l?g.setBoardColumnHeight():"setvisible"===l&&g.showColPicker&&g.setUserDefinedVisibleCol(b[1]),
-this;if(e.hasClass("loadingSPShowBoard"))return this;f=c.extend({},c.SPWidgets.defaults.board,d,{ele:e,states:[],statesMap:{},tmpltHeader:"",tmpltState:"",statesCntr:"",headersCntr:"",listItems:[],initDone:!1,formUrls:null,isStateRequired:!0,maxColumnVisible:10,showNumberOfColumns:10,getBoardStates:function(){return c.Deferred(function(a){c().SPServices({operation:"GetList",listName:f.list,cacheXML:!0,async:!1,webURL:f.webURL,completefunc:function(b,d){var h=c(b.responseXML),l=h.find("Fields Field[StaticName='"+
-f.field+"']");if(!l.length){l=h.find("Fields Field[DisplayName='"+f.field+"']");if(!l.length){a.rejectWith(e,["Field ("+f.field+") not found in list definition!",b,d]);return}f._origField=f.field;f.field=l.attr("StaticName")}"FALSE"===l.attr("Required")&&(f.isStateRequired=!1);switch(l.attr("Type").toLowerCase()){case "choice":f.isStateRequired||(f.states.push({type:"choice",title:f.optionalLabel,name:f.optionalLabel}),f.statesMap[""]=f.states[f.states.length-1]);f.fieldFilter&&(f.fieldFilter=f.fieldFilter.split(/\,/));
-l.find("CHOICES CHOICE").each(function(a,b){var e=c(this).text();if(!f.fieldFilter||c.grep(f.fieldFilter,function(c){return c===e}).length){if(a>=m.maxColumns){try{console.log("SPWIDGETS:BOARD:Warning: Can only build a max of "+m.maxColumns+" columns!")}catch(d){}return!1}f.states.push({type:"choice",title:e,name:e});f.statesMap[e]=f.states[f.states.length-1]}});a.resolveWith(f,[b,d]);break;case "lookup":f.fieldFilter||(f.fieldFilter="<Query></Query>");c().SPServices({operation:"GetListItems",listName:l.attr("List"),
-async:!0,cacheXML:!0,CAMLQuery:f.fieldFilter,webURL:f.webURL,CAMLRowLimit:m.maxColumns,CAMLViewFields:'<ViewFields><FieldRef Name="'+l.attr("ShowField")+'" /></ViewFields>',completefunc:function(b,d){if("error"===d)a.rejectWith(e,["Communications Error!",b,d]);else{var k=c(b.responseXML);k.SPMsgHasError()?a.rejectWith(e,[k.SPGetMsgError(),b,d]):(f.isStateRequired||(f.states.push({type:"lookup",title:f.optionalLabel,name:""}),f.statesMap[""]=f.states[f.states.length-1]),k.SPFilterNode("z:row").each(function(a,
-b){if(a>=m.maxColumns){try{console.log("SPWIDGETS:BOARD:Warning: Can only build a max of "+m.maxColumns+" columns!")}catch(e){}return!1}var d=c(this),k=d.attr("ows_ID"),d=d.attr("ows_"+l.attr("ShowField")),k=k+";#"+d;f.states.push({type:"lookup",title:d,name:k});f.statesMap[k]=f.states[f.states.length-1]}),a.resolveWith(f,[b,d]))}}});break;default:a.rejectWith(e,["Field ("+f.field+") Type ("+l.attr("Type")+") is not supported!",b,d])}}})}).promise()},_getListItems:function(){return c.Deferred(function(a){function b(d){c.isFunction(f.onGetListItems)&&
-f.onGetListItems.call(e,f.listItems,d);a.resolveWith(e,[f.listItems])}c.isFunction(f.CAMLQuery)?f.CAMLQuery.call(e,function(a){c.isArray(a)&&(f.listItems=a,b(f.CAMLQuery))},d):c().SPServices({operation:"GetListItems",listName:f.list,async:!0,CAMLQuery:f.CAMLQuery,CAMLRowLimit:0,CAMLViewFields:f.CAMLViewFields,webURL:f.webURL,completefunc:function(d,h){if("error"===h)a.rejectWith(e,["Communications Error!",d,h]);else{var l=c(d.responseXML);l.SPMsgHasError()?a.rejectWith(e,[l.SPGetMsgError(),d,h]):
-(f.listItems=l.SPFilterNode("z:row").SPXmlToJson({includeAllAttrs:!0}),b(l))}}})}).promise()},getBoardItemDataObject:function(a){var b=null,d,e,h;if(a)for(a=String(a),d=0,e=f.listItems.length;d<e;d++)h=f.listItems[d].ID,c.isFunction(h)&&(h=f.listItems[d].ID()),h=String(h),a===h&&(b=f.listItems[d],d=e+e);return b},showItemsOnBoard:function(a){function b(a,h){var k="",l=null,n="";c.isFunction(f.template)?(k=f.template.call(e,a,h))&&(k=String(k)):k=c.SPWidgets.fillTemplate(f.template,s);void 0!==h&&
-""!==k?h.html(k):""!==k&&(l=a.ID,c.isFunction(a.ID)&&(l=a.ID()),void 0===m[p]&&(m[p]=""),f.initDone&&d.refresh&&(n+=" spwidget-temp"),m[p]+='<div class="spwidget-board-state-item ui-state-default ui-corner-all'+n+'" data-id="'+l+'">'+k+"</div>");return k}var d=c.extend({},{rows:f.listItems,refresh:!1,doBoardInsert:!0},a);a=[];var h=[],l=[],m={},g=null,p=null,q=g=null,s=null,w;if(!d.refresh)for(q=0,w=f.states.length;q<w;q++)f.states[q].headerTotalEle.html("0"),f.states[q].dataEle.empty();q=0;for(w=
-d.rows.length;q<w;q++)s=d.rows[q],p=s[f.field]||"",g=s.ID,c.isFunction(p)&&(p=s[f.field]()),c.isFunction(g)&&(g=g()),f.statesMap[p]&&(!1===d.refresh?(f.initDone&&a.push(s),b(s)):(g=f.statesCntr.find("div[data-id='"+g+"']"),g.length?(g.addClass("spwidget-temp"),g.closest("div.spwidget-board-state").data("boardstate")!==p&&(g.appendTo(f.statesMap[p].dataEle),l.push(s)),b(s,g)):(f.initDone&&a.push(s),b(s))));if(d.doBoardInsert){for(q in m)m.hasOwnProperty(q)&&""!==m[q]&&f.statesMap[q].dataEle.append(m[q]);
-f.updBoardHeaders();c.pt.addHoverEffect(e.find(".spwidget-board-state-item"))}f.initDone&&d.refresh&&f.statesCntr.find("div.spwidget-board-state-item").not("div.spwidget-temp").each(function(){h.push(f.getBoardItemDataObject(c(this).data("id")));c(this).remove()}).end().removeClass("spwidget-temp");f.initDone&&(f.statesCntr.find("div.spwidget-board-state").sortable("refresh").end().disableSelection(),f.setBoardColumnHeight(),q=f.getEventObject(),a.length&&(q.itemsModified.length=0,q.itemsModified.push(a),
-e.trigger("spwidget:boarditemadd",[e,c.extend({},q)])),h.length&&(q.itemsModified.length=0,q.itemsModified.push(h),e.trigger("spwidget:boarditemremove",[e,c.extend({},q)])),q.itemsModified.length=0,q.itemsModified.push.apply(q.itemsModified,a),q.itemsModified.push.apply(q.itemsModified,h),q.itemsModified.push.apply(q.itemsModified,l),q.itemsModified.length&&e.trigger("spwidget:boardchange",[e,q]));return m},updBoardHeaders:function(a){var b;if(!c.extend({},{state:null},a).state)for(a=0,b=f.states.length;a<
-b;a++)f.states[a].headerTotalEle.html(f.states[a].dataEle.children().length)},getEventObject:function(a){a||(a=f.statesCntr.find("div.spwidget-board-state-item:first"));a=c(a);a={stateTotals:{},itemTotal:0,currentState:a.closest("div.spwidget-board-state").data("boardstate"),itemObj:f.getBoardItemDataObject(a.data("id"))||{},itemsModified:[]};var b,d;b=0;for(d=f.states.length;b<d;b++)a.itemTotal+=a.stateTotals[f.states[b].name]=Number(f.states[b].headerTotalEle.text());return a},getListFormUrl:function(a){function b(){c().SPServices({operation:"GetFormCollection",
-listName:f.list,webURL:f.webURL,cacheXML:!0,async:!1,completefunc:function(a,b){c(a.responseXML).find("Form").each(function(){var a=c(this);f.formUrls[String(a.attr("Type")).toLowerCase()]=f.webURL+"/"+a.attr("Url")})}})}a=String(a).toLowerCase();null===f.formUrls&&(f.formUrls={},b());return f.formUrls[a]||""},setBoardColumnClass:function(a){var b=f.headersCntr.add(f.statesCntr);a=parseInt(a);if(!a||2>a)a=0,c.each(f.states,function(c,b){b.isVisible&&a++});if(f.showNumberOfColumns===a)return f;b.addClass("spwidget-states-"+
-a);f.showNumberOfColumns&&b.removeClass("spwidget-states-"+f.showNumberOfColumns);f.showNumberOfColumns=a;return f},setupColumnPicker:function(){var a=e.find(".spwidget-board-column-list-cntr"),b=a.find("div.spwidget-board-column-list"),d=a.children("div.ui-state-default:last"),h={$totalCntr:a.find("span.spwidget-board-column-total"),setTotalSelected:function(){var a=h.getSelected().length;h.$totalCntr.html(a);return a},getSelected:function(){return b.find("a.ui-state-highlight")},showMessage:function(a){c('<div class="spwidget-board-msg ui-state-error ui-corner-all">'+
-a+"</div>").appendTo(d).fadeOut(8E3,function(){c(this).remove()})},setSelected:function(){var a=b.find("a");c.each(f.states,function(c,b){var f=a.filter("[data-board_col_index='"+c+"']");b.isVisible?h.selectColumn(f,!1):h.selectColumn(f,!0)});h.setTotalSelected()},selectColumn:function(a,b){c(a).each(function(){var a=c(this),f=a.find(".ui-icon");a.hasClass("ui-state-highlight")||b?!1!==b&&(f.removeClass("ui-icon-check"),a.removeClass("ui-state-highlight")):(f.addClass("ui-icon-check"),a.addClass("ui-state-highlight"))});
-return a},setVisibleColumns:function(a){a||(a=h.getSelected());var b=a.length;c.each(f.states,function(c,b){a.filter("[data-board_col_index='"+c+"']").length?!1===b.isVisible&&(b.isVisible=!0,b.dataEle.css("display",""),b.headerEle.css("display","")):(b.isVisible=!1,b.dataEle.css("display","none"),b.headerEle.css("display","none"))});f.setBoardColumnClass(b);f.setBoardColumnHeight()}};h.setUserDefinedVisibleCol=f.setUserDefinedVisibleCol=function(a){var d=0,e="";c.isArray(a)&&(c.each(a,function(a,
-b){c.each(f.states,function(a,c){if(c.title===b)return d++,1<d&&(e+=","),e+="a[data-board_col_name='"+c.name+"']",!1});if(d>=f.maxColumnVisible)return!1}),2<=d&&(h.setVisibleColumns(b.find(e)),h.triggerEvent()))};h.triggerEvent=function(){var a=[];f.initDone&&(c.each(f.statesMap,function(c,b){b.isVisible&&a.push(b.title)}),f.ele.trigger("spwidget:boardColumnChange",[f.ele,a]))};a.find("button[name='apply']").button({label:f.colPickerApplyLabel,icons:{secondary:"ui-icon-circle-check"}}).on("click",
-function(c){c=h.getSelected();var b=c.length;b>f.maxColumnVisible?h.showMessage(f.colPickerMaxColMsg):2>b?h.showMessage(f.colPickerMinColMsg):(a.hide(),h.setVisibleColumns(c),h.triggerEvent())});a.find("button[name='check']").attr("title",f.colPickerCheckLabel).button({text:!1,icons:{primary:"ui-icon-check"}}).on("click",function(a){a=h.getSelected();a.length?h.selectColumn(a,!0):h.selectColumn(b.find("a"));h.setTotalSelected()});a.find("button[name='close']").attr("title",f.colPickerCloseLabel).button({text:!1,
-icons:{primary:"ui-icon-circle-close"}}).on("click",function(c){a.hide()});e.find("div.spwidget-board-settings").css("display","").find("div.spwidget-board-settings-columns").each(function(){var b=c(this);b.button({label:f.colPickerLabel,icons:{secondary:"ui-icon-triangle-1-s"}}).on("click.SPWidgets",function(){a.is(":visible")?a.hide():(h.setSelected(),a.show().position({my:"left top",at:"left bottom",of:b}))});return!1});b.each(function(){var a=c(this),b="";c.each(f.states,function(a,c){b+='<a href="javascript:" data-board_col_index="'+
-a+'" data-board_col_name="'+c.name+'"><span class="ui-icon ui-icon-minus"></span><span>'+c.title+"</span></a>"});a.html(b);return!1}).on("click","a",function(){h.selectColumn(this);h.setTotalSelected()});a.find("span.spwidget-board-column-total-label").html(f.colPickerTotalLabel);c.isArray(f.colPickerVisible)&&f.colPickerVisible.length&&h.setUserDefinedVisibleCol(f.colPickerVisible)},setBoardColumnHeight:function(){f.statesCntr.is(":visible")&&c.SPWidgets.makeSameHeight(f.statesCntr.find("div.spwidget-board-state:visible"),
-20);f.headersCntr.is(":visible")&&c.SPWidgets.makeSameHeight(f.headersCntr.find("div.spwidget-board-state:visible"),0)}});if(!f.list||!f.field)return e.html("<div>SPWidgets:Board [ERROR] Missing required input parameters!</div>"),this;e.addClass("loadingSPShowBoard").data("SPShowBoardOptions",f);f.getBoardStates().then(function(){""===f.CAMLViewFields?f.CAMLViewFields='<ViewFields><FieldRef Name="ID" /><FieldRef Name="Title" /><FieldRef Name="'+f.field+'" /></ViewFields>':0>f.CAMLViewFields.indexOf(f.field)&&
-(f.CAMLViewFields=f.CAMLViewFields.replace(/\<\/ViewFields\>/i,'<FieldRef Name="'+f.field+'" /></ViewFields>'));e.html(c(m.htmlTemplate).filter("div.spwidget-board"));f.tmpltHeader=c("<div/>").append(e.find("div.spwidget-board-headers-cntr div.spwidget-board-state").clone()).html();f.tmpltState=c("<div/>").append(e.find("div.spwidget-board-states-cntr div.spwidget-board-state")).html();f.states.length<=f.maxColumnVisible?f.showNumberOfColumns=f.states.length:f.showColPicker=!0;f.statesCntr=e.find("div.spwidget-board-states-cntr").addClass("spwidget-states-"+
-f.showNumberOfColumns).empty();f.headersCntr=e.find("div.spwidget-board-headers-cntr").addClass("spwidget-states-"+f.showNumberOfColumns).empty();c.each(f.states,function(a,b){b.headerEle=c(f.tmpltHeader).appendTo(f.headersCntr).attr("data-boardstate",b.name).attr("data-boardindex",a).html(b.title);b.dataEle=c(f.tmpltState).appendTo(f.statesCntr).attr("data-boardindex",a).attr("data-boardstate",b.name);b.headerTotalEle=c('<span>&nbsp;[<span class="spwidget-state-item-total">0</span>]</span>').appendTo(b.headerEle).find("span.spwidget-state-item-total");
-b.isVisible=!0;a>f.maxColumnVisible-1&&(b.headerEle.css("display","none"),b.dataEle.css("display","none"),b.isVisible=!1)});c(f.headersCntr,f.statesCntr).append('<div style="clear:both;"></div>');!0===f.showColPicker&&f.setupColumnPicker();e.on("sortreceive sortremove",function(a,b){f.updBoardHeaders();c(b.item).removeClass("ui-state-hover")}).on("sortreceive",function(a,b){var d=f.getEventObject(b.item),h=c.Deferred(),l="",l=c.isFunction(d.itemObj.ID)?d.itemObj.ID():d.itemObj.ID;d.updates=[];d.updatePromise=
-h.promise();d.updates.push([f.field,d.currentState]);if(c.isFunction(f.onPreUpdate)&&!0===f.onPreUpdate.call(b.item,a,b.item,d)||!d.updates.length)return this;c().SPServices({operation:"UpdateListItems",listName:f.list,async:!0,ID:l,valuepairs:d.updates,webURL:f.webURL,completefunc:function(f,l){if("error"===l)h.rejectWith(e,["Communications Error!",f,l]);else{var g=c(f.responseXML),m=null;g.SPMsgHasError()?h.rejectWith(e,[g.SPGetMsgError(),f,l]):(m=c(f.responseXML).SPFilterNode("z:row").SPXmlToJson({includeAllAttrs:!0}),
-c(a.target).trigger("spwidget:boardchange",[b.item,d]),h.resolveWith(a.target,[m[0],d.itemObj,f]))}}})}).on("click","a.spwidgets-board-action",function(a){a=c(a.currentTarget);var b=String(a.data("spwidgets_board_action")).toLowerCase(),d="",e=c.pt.getEscapedUrl(window.location.href);switch(b){case "edit-item":d=f.getListFormUrl("EditForm");break;case "view-item":d=f.getListFormUrl("DisplayForm")}window.location.href=d+"?ID="+a.data("spwidgets_id")+"&Source="+e;return this});null===f.template&&(f.template=
-c(m.htmlTemplate).filter("div.spwidget-item-template"));f._getListItems().then(function(){f.showItemsOnBoard();f.statesCntr.find("div.spwidget-board-state").each(function(){var a=c(this);a.sortable({connectWith:a.siblings(),containment:e,cursor:"move",tolerance:"pointer",opacity:".80",placeholder:"ui-state-highlight spwidget-board-placeholder",forcePlaceholderSize:!0,remove:function(a,c){f.setBoardColumnHeight()}})});f.statesCntr.disableSelection();f.initDone=!0;f.setBoardColumnHeight();e.addClass("hasSPShowBoard").removeClass("loadingSPShowBoard");
-c.isFunction(f.onBoardCreate)&&f.onBoardCreate.call(e,f.getEventObject());c(e).trigger("spwidget:boardcreate",[e,f.getEventObject()])})}).fail(function(a,c,b){e.append('<div class="ui-state-error"><p>'+a+"</p></div>")});return this})};m.styleSheet="/** \n * Stylesheet for the Board widget\n * \n * BUILD: September 07, 2013 - 03:52 PM\n */\ndiv.spwidget-board {\n    width: 100%;\n    position: relative;\n}\n\ndiv.spwidget-board div.spwidget-board-headers,\ndiv.spwidget-board div.spwidget-board-headers-cntr,\ndiv.spwidget-board div.spwidget-board-states-cntr, \ndiv.spwidget-board div.spwidget-board-states {\n    width: 100%;\n}\n\ndiv.spwidget-board div.spwidget-board-state {\n    width: 49%;\n    float: left;\n    margin: .1%;\n    padding: .2%;\n    overflow: auto;\n}\n\ndiv.spwidget-board div.spwidget-board-headers-cntr {\n    border: none;\n}\ndiv.spwidget-board div.spwidget-board-headers-cntr div.spwidget-board-state {\n    text-align: center;\n    font-weight: bold;\n    font-size: 1.1em;\n    overflow: hidden;\n    word-wrap: break-word;\n}\ndiv.spwidget-board div.spwidget-board-states div.spwidget-board-state {\n    margin-bottom: 1em;\n    min-height: 10em;\n}\n\ndiv.spwidget-board div.spwidget-board-state div.spwidget-board-state-item {\n    padding: .2em;\n    margin: .5em .2em;\n    font-weight: normal;\n    cursor: move;\n    overflow: auto;\n}\ndiv.spwidget-board div.spwidget-board-state-item div.spwidget-board-item-actions{\n    margin-top: .2em;\n    padding: .2em .5em;\n    overflow: hidden;\n}\ndiv.spwidget-board .spwidget-board-placeholder {\n    height: 3em;\n}\n\n/** Setting container */\ndiv.spwidget-board-settings {\n    font-size: .8em;\n    margin: .2em;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list-cntr {\n    z-index: 5;\n    position: absolute;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list-cntr > div {\n    padding: .2em;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list-cntr > div:first-child,\ndiv.spwidget-board-settings div.spwidget-board-column-list-cntr > div:last-child {\n    text-align: right;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list {\n    width: 20em;\n    height: 17em;\n    overflow: auto;\n    position: relative\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list-cntr .spwidget-board-msg {\n    position: absolute;\n    top: 1px;\n    left: 1px;\n    padding: .2em;\n}\ndiv.spwidget-board-settings div.ui-state-default {\n    position: relative;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list > a {\n    display: block;\n    margin: .2em;\n    padding: .2em;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list > a > span.ui-icon {\n    display: inline-block;\n}\n\n/* Number of Columns (96 % #columns)\n * Currently support 10 columns. \n */\ndiv.spwidget-board .spwidget-states-3 div.spwidget-board-state {\n    width: 32.4%;\n}\ndiv.spwidget-board .spwidget-states-4 div.spwidget-board-state {\n    width: 24%;\n}\ndiv.spwidget-board .spwidget-states-5 div.spwidget-board-state {\n    width: 19.1%;\n}\ndiv.spwidget-board .spwidget-states-6 div.spwidget-board-state {\n    width: 15.8%;\n}\ndiv.spwidget-board .spwidget-states-7 div.spwidget-board-state {\n    width: 13.4%;\n}\ndiv.spwidget-board .spwidget-states-8 div.spwidget-board-state {\n    width: 11.6%;\n}\ndiv.spwidget-board .spwidget-states-9 div.spwidget-board-state {\n    width: 10.2%;\n}\ndiv.spwidget-board .spwidget-states-10 div.spwidget-board-state {\n    width: 9.1%;\n}\n";
-m.htmlTemplate='<div class="spwidget-board">\n    <div class="spwidget-board-settings" style="display:none;">\n        <div class=\'spwidget-board-settings-columns\'>Columns</div>\n        <div class="spwidget-board-column-list-cntr ui-widget-content ui-corner-all" style="display: none">\n            <div class="ui-state-default">\n                <span>\n                    <span class="spwidget-board-column-total"></span> \n                    <span class="spwidget-board-column-total-label">Selected.</span>\n                </span>\n                <button type="button" name="check" title="Check-Uncheck All">Check</button>\n                <button type="button" name="close" title="Close">Close</button>\n            </div>\n            <div class="spwidget-board-column-list">\n            </div>\n            <div class="ui-state-default">\n                <button type="button" name="apply">Apply</button>\n            </div>\n        </div>\n    </div>\n    <div class="spwidget-board-headers">\n        <div class="spwidget-board-headers-cntr ui-widget-content ui-corner-all">\n            <div class="spwidget-board-state ui-widget-content ui-corner-all"></div>\n            <div style="clear:both;"></div>\n        </div>\n    </div>\n    <div style="clear:both;"></div>\n    <div class="spwidget-board-states">\n        <div class="spwidget-board-states-cntr">\n            <div class="spwidget-board-state ui-widget-content ui-corner-all"></div>\n            <div style="clear:both;"></div>\n        </div>\n    </div>\n    <div style="clear:both;"></div>\n</div>\n<div class="spwidget-item-template">\n    <div>\n        <div>#{{ID}}: {{Title}}</div>\n        <div class="ui-state-active ui-corner-all spwidget-board-item-actions">\n            <a class="spwidgets-board-action" href="javascript:" title="View Item" data-spwidgets_id="{{ID}}" data-spwidgets_board_action="view-item"><img src="/_layouts/images/icgen.gif" border="0"/></a>\n            <a class="spwidgets-board-action" href="javascript:" title="Edit Item" data-spwidgets_id="{{ID}}" data-spwidgets_board_action="edit-item"><img src="/_layouts/images/CMSEditSourceDoc.GIF" border="0"/></a>\n        </div>\n    </div>\n</div>\n'})(r);
-(function(c){var g={_islookupFieldCssDone:!1,_isLookupbodyEventDone:!1};c.SPWidgets.defaults.LookupField={list:"",allowMultiples:!0,inputLabel:"",inputPlaceholder:"Type and Pick",readOnly:!1,exactMatch:!0,uiContainer:null,selectFields:["Title"],filter:"",filterFields:["Title"],filterOrderBy:"",template:'<div>{{Title}} <span class="spwidgets-item-remove">[x]</span></div>',listTemplate:"{{Title}}",listHeight:0,onItemAdd:null,onItemRemove:null,onReady:null,msgNoItems:"",maxResults:50,minLength:2,hideInput:!0,
-padDelimeter:!1,showSelector:!1};c.fn.SPLookupField=function(d){g._islookupFieldCssDone||(g._islookupFieldCssDone=!0,c('<style type="text/css">\n\n'+g.styleSheet+"\n\n</style>").prependTo("head"));var b=arguments;this.each(function(){var e=c(this);if(!e.is("input")&&!e.is("textarea")||e.hasClass("hasLookupSPField")){if("string"===typeof d&&e.is("input")){var a=e.data("SPWidgetLookupFieldUI").data("SPWidgetLookupFieldOpt");if("method"===d.toLowerCase()){var e=String(b[1]||"").toLowerCase(),h=b[2];
-"clear"===e?(c.isArray(h)||(h=h?[h]:[]),h.length?function(){var b=c();c.each(h,function(c,f){b=b.add(a._selectedItemsCntr.find("div.spwidgets-item-id-"+f))});g.removeItem(a,b)}():g.removeItem(a,a._selectedItemsCntr.find("div.spwidgets-item"))):"add"===e&&g.addItem(a,h)}}return this}a=c.extend({},c.SPWidgets.defaults.LookupField,d,{_ele:e.css("display","none").addClass("hasLookupSPField")});a.showSelectedItems=function(b,f){var d=a._selectedItemsCntr.css("display",""),e=[],h=!1;d.find("div.spwidgets-item").length&&
-!1!==a.allowMultiples||d.empty();c.isArray(b)?e=b:e.push(b);c.each(e,function(b,e){if(!d.find("div.spwidgets-item-id-"+e.ID).length){var l=c('<div class="spwidgets-item spwidgets-item-id-'+e.ID+'" data-spid="'+e.ID+'" style="display:none">'+c.SPWidgets.fillTemplate(a.template,e)+"</div>").appendTo(d).find(".spwidgets-item-remove").on("click.SPWidgets",function(c){g.removeItem(a,this)}).end();c.isFunction(a.onItemAdd)&&!0!==f&&a.onItemAdd.call(a._ele,l,e,a._cntr);0<d.find("div.spwidgets-item-id-"+
-e.ID).length&&(h=!0,l.fadeIn("slow").promise().then(function(){c(this).css("display","")}),!0!==f&&a.storeItemIDs(e.ID,a.allowMultiples),!1===a.allowMultiples&&!0===a.hideInput&&a._lookupInputEleCntr.css("display","none"))}});a.readOnly&&a._cntr.find(".spwidgets-item-remove").remove();h&&a._ele.trigger("change")};a.storeItemIDs=function(b,f){var d=c.trim(a._ele.val()),e=!1;c.isArray(b)||(b=[b]);!0!==f&&(d="");c.each(b,function(c,b){b&&(1>d.length&&(!0===a.padDelimeter&&!e)&&(d+=";#",e=!0),0<d.length&&
-(d+=";#"),d+=b+";#")});a._ele.val(d)};a.showCurrentInputSelection=function(b){return c.Deferred(function(f){var d=c.extend({},{async:!0},b),e=c.SPWidgets.parseLookupFieldValue(a._ele.val());e.length?c().SPServices({operation:"GetListItems",async:d.async,listName:a.list,CAMLQuery:"<Query><Where>"+c.SPWidgets.getCamlLogical({type:"OR",values:e,onEachValue:function(a){var b="";a.id&&(b="<Eq><FieldRef Name='ID'/><Value Type='Counter'>"+a.id+"</Value></Eq>");return b}})+"</Where></Query>",CAMLViewFields:"<ViewFields>"+
-a._selectFields+"</ViewFields>",CAMLRowLimit:0,completefunc:function(b,d){var e=c(b.responseXML).SPFilterNode("z:row").SPXmlToJson({includeAllAttrs:!0,removeOws:!0});a.addToAutocompleteCache(e);a.showSelectedItems(e,!0);f.resolveWith(a,[b,d])}}):f.resolveWith(a,[null,null])}).promise()};a.getItemObjectFromCache=function(b){var f=null;c.each(a._autocompleteCache,function(a,d){c.each(d,function(a,c){if(c.ID==b)return f=c,!1});if(null!==f)return!1});return f};a.addToAutocompleteCache=function(b){c.isArray(b)||
-(b=[b]);c.each(b,function(b,c){a._autocompleteCache[c.ID]||(a._autocompleteCache[c.ID]=[]);a._autocompleteCache[c.ID].push(c)})};a._cntr=c(g.htmlTemplate).find(".spwidgets-lookup-cntr").clone(1);null===a.uiContainer?a._cntr.insertAfter(a._ele):a._cntr.appendTo(c(a.uiContainer));a._selectedItemsCntr=a._cntr.find("div.spwidgets-lookup-selected");a._lookupInputEleCntr=a._cntr.find("div.spwidgets-lookup-input");a._lookupInputEle=a._lookupInputEleCntr.find("input[name='spwidgetLookupInput']");a._ignoreKeywordsRegEx=
+(function(h){var r=h;document.head||(document.head=document.getElementsByTagName("head")[0]);(function(){try{h.pt||(h.pt={})}catch(c){h.pt={}}void 0===h.pt._cache&&(h.pt._cache={});h.SPWidgets={};h.SPWidgets.version="20140112083148";h.SPWidgets.defaults={};h.fn.SPMsgHasError=function(){var c=h(this).find("ErrorCode"),f=!1;if(!c.length)return h(this).find("faultcode").length?!0:!1;c.each(function(){if("0x00000000"!==h(this).text())return f=!0,!1});return f};h.fn.SPGetMsgError=function(){var c=
+h(this),f="",b=c.find("ErrorCode"),d=0;b.length||(b=c.find("faultcode"));if(!b.length)return"";b.each(function(){var a=h(this);"0x00000000"!==a.text()&&(d+=1,f+="("+d+") "+a.text()+": "+a.parent().children().not(a).text()+"\n")});return f=d+" error(s) encountered! \n"+f};h.SPWidgets.fillTemplate=function(c,f){var b,d,a,g,e,m,n,q,l;"object"===typeof c&&1===arguments.length&&(f=c.data,c=c.tmplt);b="";d="string"!==typeof c?String(h("<div/>").append(c).html()):c;a=d.match(/(\{\{.*?\}\})/g);h.isArray(f)||
+(f=[f]);if(null!==a)for(m=0,n=f.length;m<n;m++){q=d;g=0;for(e=a.length;g<e;g++)a[g]=a[g].replace(/[\{\}]/g,""),l=f[m][a[g]]||"",h.isFunction(l)&&(l=l()),q=q.replace("{{"+a[g]+"}}",l);b+=q}return b};h.SPWidgets.parseLookupFieldValue=function(c){var f=[],b=String(c).split(";#"),d=b.length,a,g;if(void 0===c)return f;for(c=0;c<d;c++)a=b[c],c++,g=b[c],(a||g)&&f.push({id:a,title:g});return f};h.SPWidgets.getCamlLogical=function(c){c=h.extend({},{type:"AND",values:[],onEachValue:null},c);var f="<And>",b=
+"</And>",d="",a=0,g=0,e=!1;c.type=String(c.type).toUpperCase();h.isArray(c.values)||(c.values=[c.values]);"AND"!==c.type&&(f="<Or>",b="</Or>");d=f;a=c.values.length;g=a-1;e=h.isFunction(c.onEachValue);2>a&&(d="");for(f=0;f<a;f++)if(d=e?d+String(c.onEachValue(c.values[f])).toString():d+String(c.values[f]).toString(),1<g-f){d+=h.SPWidgets.getCamlLogical(h.extend({},c,{values:c.values.slice(f+1,a-f)}));break}1<a&&(d+=b);return d};h.SPWidgets.SPGetDateString=function(c,f){function b(a){return 10>a?"0"+
+a:a}f=String(f||"local").toLowerCase();c=c||new Date;var d="";return d="utc"===f?c.getUTCFullYear()+"-"+b(c.getUTCMonth()+1)+"-"+b(c.getUTCDate())+"T"+b(c.getUTCHours())+":"+b(c.getUTCMinutes())+":"+b(c.getUTCSeconds())+"Z":c.getFullYear()+"-"+b(c.getMonth()+1)+"-"+b(c.getDate())+"T"+b(c.getHours())+":"+b(c.getMinutes())+":"+b(c.getSeconds())};h.SPWidgets.parseDateString=function(c){var f=null,b,d;if(!c)return f;if(f=Date.parse(10===c.length?c+"T00:00":c))return new Date(f);d=[1,4,5,6,7,10,11];c=
+c.match(/^(\d{4}|[+\-]\d{6})(?:-(\d{2})(?:-(\d{2}))?)?(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{3}))?)?(?:(Z)|([+\-])(\d{2})(?::(\d{2}))?)?)?$/);if(!c)return f;f=0;for(b=d.length;f<b;f++)c[d[f]]=~~c[d[f]];--c[2];"Z"===c[8]?(void 0!==c[9]&&(d=60*c[10]+c[11],"+"===c[9]&&(d=-d),c[5]+=d),f=new Date(Date.UTC(c[1],c[2],c[3],c[4],c[5],c[6],c[7]))):f=new Date(c[1],c[2],c[3],c[4],c[5],c[6],c[7]);return f};h.SPWidgets.makeSameHeight=function(c,f,b){var d=0,a=h(c);b||(b="height");a.each(function(){var a=h(this).css(b,
+"");d<a.outerHeight(!0)&&(d=a.outerHeight(!0))});0<d&&(f&&(d+=f),a.css(b,d));return c};h.SPWidgets.escapeXML=function(c){return"string"!==typeof c?"":c.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/'/g,"&apos;").replace(/"/g,"&quot;")};h.SPWidgets.unEscapeXML=function(c){return"string"!==typeof c?"":c.replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&amp;/g,"&").replace(/&apos;/g,"'").replace(/&quot;/g,'"')};h.SPWidgets.getRuntimeInfo=function(){function c(){this.SPWidgets=
+h.SPWidgets.version;this.jQuery=h.fn.jquery||"?";this.SPServices=this.jQueryUICss=this.jQueryUI="?";return this}c.prototype.asString=function(){var a="",c;for(c in this)this.hasOwnProperty(c)&&(a+="[ "+c+" = "+this[c]+" ] ");return a};var f=new c,b=h('<div style="position:fixed;width:100px;left:-1000px;"/>').appendTo("body"),d="";try{f.jQueryUI=r.ui.version}catch(a){}try{f.SPServices=h().SPServices.Version()}catch(g){h.fn.SPServices&&(f.SPServices="loaded")}d=b.css("background-image");b.addClass("ui-widget-header");
+b.css("background-image")!==d&&(f.jQueryUICss="loaded");b.remove();return f};h.SPWidgets.getSPVersion=function(c){var f={12:"2007",14:"2010",15:"2013"},b=12;"undefined"!==typeof SP&&(b=14,SP.ClientSchemaVersions?SP.ClientSchemaVersions.currentVersion&&(b=parseInt(SP.ClientSchemaVersions.currentVersion)):(b=parseInt(_spPageContextInfo.webUIVersion),4===b&&(b=14)));c&&(b=f[b]||b);return b}})(r);(function(c){var k={initDone:!1,maxColumns:20};c.SPWidgets.defaults.board={list:"",field:"",CAMLQuery:"<Query></Query>",
+CAMLViewFields:"",fieldFilter:null,optionalLabel:"(none)",template:null,webURL:c().SPServices.SPGetCurrentSite(),showColPicker:!1,colPickerLabel:"Columns",colPickerVisible:[],colPickerCloseLabel:"Close",colPickerApplyLabel:"Apply",colPickerCheckLabel:"Check-Uncheck All",colPickerTotalLabel:"Selected.",colPickerMaxColMsg:"Can not exceed 10 columns!",colPickerMinColMsg:"Mininum of 2 required!",onGetListItems:null,onPreUpdate:null,onBoardCreate:null};c.fn.SPShowBoard=function(f){k.initDone||(k.initDone=
+!0,""!==k.styleSheet&&c('<style type="text/css">\n\n'+k.styleSheet+"\n\n</style>").prependTo("head"));var b=arguments;return this.each(function(){var d=c(this),a="string"===typeof f,g=d.hasClass("hasSPShowBoard"),e=null,m="",h=null;if(g&&!a)return this;if(a&&g&&!d.hasClass("loadingSPShowBoard"))return m=f.toLowerCase(),h=d.data("SPShowBoardOptions"),"refresh"===m?h._getListItems().then(function(){h.showItemsOnBoard({refresh:!0})}):"redraw"===m?h.setBoardColumnHeight():"setvisible"===m&&h.showColPicker&&
+h.setUserDefinedVisibleCol(b[1]),this;if(d.hasClass("loadingSPShowBoard"))return this;e=c.extend({},c.SPWidgets.defaults.board,f,{ele:d,states:[],statesMap:{},tmpltHeader:"",tmpltState:"",statesCntr:"",headersCntr:"",listItems:[],initDone:!1,formUrls:null,isStateRequired:!0,maxColumnVisible:10,showNumberOfColumns:10,getBoardStates:function(){return c.Deferred(function(a){c().SPServices({operation:"GetList",listName:e.list,cacheXML:!0,async:!1,webURL:e.webURL,completefunc:function(b,f){var g=c(b.responseXML),
+m=g.find("Fields Field[StaticName='"+e.field+"']");if(!m.length){m=g.find("Fields Field[DisplayName='"+e.field+"']");if(!m.length){a.rejectWith(d,["Field ("+e.field+") not found in list definition!",b,f]);return}e._origField=e.field;e.field=m.attr("StaticName")}"FALSE"===m.attr("Required")&&(e.isStateRequired=!1);switch(m.attr("Type").toLowerCase()){case "choice":e.isStateRequired||(e.states.push({type:"choice",title:e.optionalLabel,name:e.optionalLabel}),e.statesMap[""]=e.states[e.states.length-
+1]);e.fieldFilter&&(e.fieldFilter=e.fieldFilter.split(/\,/));m.find("CHOICES CHOICE").each(function(a,b){var d=c(this).text();if(!e.fieldFilter||c.grep(e.fieldFilter,function(a){return a===d}).length){if(a>=k.maxColumns){try{console.log("SPWIDGETS:BOARD:Warning: Can only build a max of "+k.maxColumns+" columns!")}catch(f){}return!1}e.states.push({type:"choice",title:d,name:d});e.statesMap[d]=e.states[e.states.length-1]}});a.resolveWith(e,[b,f]);break;case "lookup":e.fieldFilter||(e.fieldFilter="<Query></Query>");
+c().SPServices({operation:"GetListItems",listName:m.attr("List"),async:!0,cacheXML:!0,CAMLQuery:e.fieldFilter,webURL:e.webURL,CAMLRowLimit:k.maxColumns,CAMLViewFields:'<ViewFields><FieldRef Name="'+m.attr("ShowField")+'" /></ViewFields>',completefunc:function(b,f){if("error"===f)a.rejectWith(d,["Communications Error!",b,f]);else{var g=c(b.responseXML);g.SPMsgHasError()?a.rejectWith(d,[g.SPGetMsgError(),b,f]):(e.isStateRequired||(e.states.push({type:"lookup",title:e.optionalLabel,name:""}),e.statesMap[""]=
+e.states[e.states.length-1]),g.SPFilterNode("z:row").each(function(a,b){if(a>=k.maxColumns){try{console.log("SPWIDGETS:BOARD:Warning: Can only build a max of "+k.maxColumns+" columns!")}catch(d){}return!1}var f=c(this),g=f.attr("ows_ID"),f=f.attr("ows_"+m.attr("ShowField")),g=g+";#"+f;e.states.push({type:"lookup",title:f,name:g});e.statesMap[g]=e.states[e.states.length-1]}),a.resolveWith(e,[b,f]))}}});break;default:a.rejectWith(d,["Field ("+e.field+") Type ("+m.attr("Type")+") is not supported!",
+b,f])}}})}).promise()},_getListItems:function(){return c.Deferred(function(a){function b(f){c.isFunction(e.onGetListItems)&&e.onGetListItems.call(d,e.listItems,f);a.resolveWith(d,[e.listItems])}c.isFunction(e.CAMLQuery)?e.CAMLQuery.call(d,function(a){c.isArray(a)&&(e.listItems=a,b(e.CAMLQuery))},f):c().SPServices({operation:"GetListItems",listName:e.list,async:!0,CAMLQuery:e.CAMLQuery,CAMLRowLimit:0,CAMLViewFields:e.CAMLViewFields,webURL:e.webURL,completefunc:function(f,g){if("error"===g)a.rejectWith(d,
+["Communications Error!",f,g]);else{var m=c(f.responseXML);m.SPMsgHasError()?a.rejectWith(d,[m.SPGetMsgError(),f,g]):(e.listItems=m.SPFilterNode("z:row").SPXmlToJson({includeAllAttrs:!0}),b(m))}}})}).promise()},getBoardItemDataObject:function(a){var b=null,d,f,g;if(a)for(a=String(a),d=0,f=e.listItems.length;d<f;d++)g=e.listItems[d].ID,c.isFunction(g)&&(g=e.listItems[d].ID()),g=String(g),a===g&&(b=e.listItems[d],d=f+f);return b},showItemsOnBoard:function(a){function b(a,g){var l="",m=null,q="";c.isFunction(e.template)?
+(l=e.template.call(d,a,g))&&(l=String(l)):l=c.SPWidgets.fillTemplate(e.template,s);void 0!==g&&""!==l?g.html(l):""!==l&&(m=a.ID,c.isFunction(a.ID)&&(m=a.ID()),void 0===k[n]&&(k[n]=""),e.initDone&&f.refresh&&(q+=" spwidget-temp"),k[n]+='<div class="spwidget-board-state-item ui-state-default ui-corner-all'+q+'" data-id="'+m+'">'+l+"</div>");return l}var f=c.extend({},{rows:e.listItems,refresh:!1,doBoardInsert:!0},a);a=[];var g=[],m=[],k={},h=null,n=null,p=h=null,s=null,w;if(!f.refresh)for(p=0,w=e.states.length;p<
+w;p++)e.states[p].headerTotalEle.html("0"),e.states[p].dataEle.empty();p=0;for(w=f.rows.length;p<w;p++)s=f.rows[p],n=s[e.field]||"",h=s.ID,c.isFunction(n)&&(n=s[e.field]()),c.isFunction(h)&&(h=h()),e.statesMap[n]&&(!1===f.refresh?(e.initDone&&a.push(s),b(s)):(h=e.statesCntr.find("div[data-id='"+h+"']"),h.length?(h.addClass("spwidget-temp"),h.closest("div.spwidget-board-state").data("boardstate")!==n&&(h.appendTo(e.statesMap[n].dataEle),m.push(s)),b(s,h)):(e.initDone&&a.push(s),b(s))));if(f.doBoardInsert){for(p in k)k.hasOwnProperty(p)&&
+""!==k[p]&&e.statesMap[p].dataEle.append(k[p]);e.updBoardHeaders();c.pt.addHoverEffect(d.find(".spwidget-board-state-item"))}e.initDone&&f.refresh&&e.statesCntr.find("div.spwidget-board-state-item").not("div.spwidget-temp").each(function(){g.push(e.getBoardItemDataObject(c(this).data("id")));c(this).remove()}).end().removeClass("spwidget-temp");e.initDone&&(e.statesCntr.find("div.spwidget-board-state").sortable("refresh").end().disableSelection(),e.setBoardColumnHeight(),p=e.getEventObject(),a.length&&
+(p.itemsModified.length=0,p.itemsModified.push(a),d.trigger("spwidget:boarditemadd",[d,c.extend({},p)])),g.length&&(p.itemsModified.length=0,p.itemsModified.push(g),d.trigger("spwidget:boarditemremove",[d,c.extend({},p)])),p.itemsModified.length=0,p.itemsModified.push.apply(p.itemsModified,a),p.itemsModified.push.apply(p.itemsModified,g),p.itemsModified.push.apply(p.itemsModified,m),p.itemsModified.length&&d.trigger("spwidget:boardchange",[d,p]));return k},updBoardHeaders:function(a){var b;if(!c.extend({},
+{state:null},a).state)for(a=0,b=e.states.length;a<b;a++)e.states[a].headerTotalEle.html(e.states[a].dataEle.children().length)},getEventObject:function(a){a||(a=e.statesCntr.find("div.spwidget-board-state-item:first"));a=c(a);a={stateTotals:{},itemTotal:0,currentState:a.closest("div.spwidget-board-state").data("boardstate"),itemObj:e.getBoardItemDataObject(a.data("id"))||{},itemsModified:[]};var b,d;b=0;for(d=e.states.length;b<d;b++)a.itemTotal+=a.stateTotals[e.states[b].name]=Number(e.states[b].headerTotalEle.text());
+return a},getListFormUrl:function(a){function b(){c().SPServices({operation:"GetFormCollection",listName:e.list,webURL:e.webURL,cacheXML:!0,async:!1,completefunc:function(a,b){c(a.responseXML).find("Form").each(function(){var a=c(this);e.formUrls[String(a.attr("Type")).toLowerCase()]=e.webURL+"/"+a.attr("Url")})}})}a=String(a).toLowerCase();null===e.formUrls&&(e.formUrls={},b());return e.formUrls[a]||""},setBoardColumnClass:function(a){var b=e.headersCntr.add(e.statesCntr);a=parseInt(a);if(!a||2>
+a)a=0,c.each(e.states,function(c,b){b.isVisible&&a++});if(e.showNumberOfColumns===a)return e;b.addClass("spwidget-states-"+a);e.showNumberOfColumns&&b.removeClass("spwidget-states-"+e.showNumberOfColumns);e.showNumberOfColumns=a;return e},setupColumnPicker:function(){var a=d.find(".spwidget-board-column-list-cntr"),b=a.find("div.spwidget-board-column-list"),f=a.children("div.ui-state-default:last"),g={$totalCntr:a.find("span.spwidget-board-column-total"),setTotalSelected:function(){var a=g.getSelected().length;
+g.$totalCntr.html(a);return a},getSelected:function(){return b.find("a.ui-state-highlight")},showMessage:function(a){c('<div class="spwidget-board-msg ui-state-error ui-corner-all">'+a+"</div>").appendTo(f).fadeOut(8E3,function(){c(this).remove()})},setSelected:function(){var a=b.find("a");c.each(e.states,function(c,b){var e=a.filter("[data-board_col_index='"+c+"']");b.isVisible?g.selectColumn(e,!1):g.selectColumn(e,!0)});g.setTotalSelected()},selectColumn:function(a,b){c(a).each(function(){var a=
+c(this),e=a.find(".ui-icon");a.hasClass("ui-state-highlight")||b?!1!==b&&(e.removeClass("ui-icon-check"),a.removeClass("ui-state-highlight")):(e.addClass("ui-icon-check"),a.addClass("ui-state-highlight"))});return a},setVisibleColumns:function(a){a||(a=g.getSelected());var b=a.length;c.each(e.states,function(c,b){a.filter("[data-board_col_index='"+c+"']").length?!1===b.isVisible&&(b.isVisible=!0,b.dataEle.css("display",""),b.headerEle.css("display","")):(b.isVisible=!1,b.dataEle.css("display","none"),
+b.headerEle.css("display","none"))});e.setBoardColumnClass(b);e.setBoardColumnHeight()}};g.setUserDefinedVisibleCol=e.setUserDefinedVisibleCol=function(a){var d=0,f="";if(!c.isArray(a)||!a.length){if(!c.isArray(a)&&"all"!==String(a).toLowerCase())return;a=[];c.each(e.states,function(c,b){a.push(b.title)})}c.each(a,function(a,b){c.each(e.states,function(a,c){if(c.title===b)return d++,1<d&&(f+=","),f+="a[data-board_col_name='"+c.name+"']",!1});if(d>=e.maxColumnVisible)return!1});2<=d&&(g.setVisibleColumns(b.find(f)),
+g.triggerEvent())};g.triggerEvent=function(){var a=[];e.initDone&&(c.each(e.statesMap,function(c,b){b.isVisible&&a.push(b.title)}),e.ele.trigger("spwidget:boardColumnChange",[e.ele,a]))};a.find("button[name='apply']").button({label:e.colPickerApplyLabel,icons:{secondary:"ui-icon-circle-check"}}).on("click",function(c){c=g.getSelected();var b=c.length;b>e.maxColumnVisible?g.showMessage(e.colPickerMaxColMsg):2>b?g.showMessage(e.colPickerMinColMsg):(a.hide(),g.setVisibleColumns(c),g.triggerEvent())});
+a.find("button[name='check']").attr("title",e.colPickerCheckLabel).button({text:!1,icons:{primary:"ui-icon-radio-off"}}).on("click",function(a){a=g.getSelected();a.length?g.selectColumn(a,!0):g.selectColumn(b.find("a"));g.setTotalSelected()});a.find("button[name='close']").attr("title",e.colPickerCloseLabel).button({text:!1,icons:{primary:"ui-icon-circle-close"}}).on("click",function(c){a.hide()});d.find("div.spwidget-board-settings").css("display","").find("div.spwidget-board-settings-columns").each(function(){var b=
+c(this);b.button({label:e.colPickerLabel,icons:{secondary:"ui-icon-triangle-1-s"}}).on("click.SPWidgets",function(){a.is(":visible")?a.hide():(g.setSelected(),a.show().position({my:"left top",at:"left bottom",of:b}))});return!1});b.each(function(){var a=c(this),b="";c.each(e.states,function(a,c){b+='<a href="javascript:" data-board_col_index="'+a+'" data-board_col_name="'+c.name+'"><span class="ui-icon ui-icon-minus"></span><span>'+c.title+"</span></a>"});a.html(b);return!1}).on("click","a",function(){g.selectColumn(this);
+g.setTotalSelected()});a.find("span.spwidget-board-column-total-label").html(e.colPickerTotalLabel);c.isArray(e.colPickerVisible)&&e.colPickerVisible.length&&g.setUserDefinedVisibleCol(e.colPickerVisible)},setBoardColumnHeight:function(){e.statesCntr.is(":visible")&&c.SPWidgets.makeSameHeight(e.statesCntr.find("div.spwidget-board-state:visible"),20,"min-height");e.headersCntr.is(":visible")&&c.SPWidgets.makeSameHeight(e.headersCntr.find("div.spwidget-board-state:visible"),0,"min-height")}});if(!e.list||
+!e.field)return d.html("<div>SPWidgets:Board [ERROR] Missing required input parameters!</div>"),this;d.addClass("loadingSPShowBoard").data("SPShowBoardOptions",e);e.getBoardStates().then(function(){""===e.CAMLViewFields?e.CAMLViewFields='<ViewFields><FieldRef Name="ID" /><FieldRef Name="Title" /><FieldRef Name="'+e.field+'" /></ViewFields>':0>e.CAMLViewFields.indexOf(e.field)&&(e.CAMLViewFields=e.CAMLViewFields.replace(/\<\/ViewFields\>/i,'<FieldRef Name="'+e.field+'" /></ViewFields>'));d.html(c(k.htmlTemplate).filter("div.spwidget-board"));
+e.tmpltHeader=c("<div/>").append(d.find("div.spwidget-board-headers-cntr div.spwidget-board-state").clone()).html();e.tmpltState=c("<div/>").append(d.find("div.spwidget-board-states-cntr div.spwidget-board-state")).html();e.states.length<=e.maxColumnVisible?e.showNumberOfColumns=e.states.length:e.showColPicker=!0;e.statesCntr=d.find("div.spwidget-board-states-cntr").addClass("spwidget-states-"+e.showNumberOfColumns).empty();e.headersCntr=d.find("div.spwidget-board-headers-cntr").addClass("spwidget-states-"+
+e.showNumberOfColumns).empty();c.each(e.states,function(a,b){b.headerEle=c(e.tmpltHeader).appendTo(e.headersCntr).attr("data-boardstate",b.name).attr("data-boardindex",a).html(b.title);b.dataEle=c(e.tmpltState).appendTo(e.statesCntr).attr("data-boardindex",a).attr("data-boardstate",b.name);b.headerTotalEle=c('<span>&nbsp;[<span class="spwidget-state-item-total">0</span>]</span>').appendTo(b.headerEle).find("span.spwidget-state-item-total");b.isVisible=!0;a>e.maxColumnVisible-1&&(b.headerEle.css("display",
+"none"),b.dataEle.css("display","none"),b.isVisible=!1)});c(e.headersCntr,e.statesCntr).append('<div style="clear:both;"></div>');!0===e.showColPicker&&e.setupColumnPicker();d.on("sortreceive sortremove",function(a,b){e.updBoardHeaders();c(b.item).removeClass("ui-state-hover")}).on("sortreceive",function(a,b){var g=e.getEventObject(b.item),f=c.Deferred(),m="",m=c.isFunction(g.itemObj.ID)?g.itemObj.ID():g.itemObj.ID;g.updates=[];g.updatePromise=f.promise();g.updates.push([e.field,g.currentState]);
+if(c.isFunction(e.onPreUpdate)&&!0===e.onPreUpdate.call(b.item,a,b.item,g)||!g.updates.length)return this;c().SPServices({operation:"UpdateListItems",listName:e.list,async:!0,ID:m,valuepairs:g.updates,webURL:e.webURL,completefunc:function(e,m){if("error"===m)f.rejectWith(d,["Communications Error!",e,m]);else{var k=c(e.responseXML),h=null;k.SPMsgHasError()?f.rejectWith(d,[k.SPGetMsgError(),e,m]):(h=c(e.responseXML).SPFilterNode("z:row").SPXmlToJson({includeAllAttrs:!0}),c(a.target).trigger("spwidget:boardchange",
+[b.item,g]),f.resolveWith(a.target,[h[0],g.itemObj,e]))}}})}).on("click","a.spwidgets-board-action",function(a){a=c(a.currentTarget);var b=String(a.data("spwidgets_board_action")).toLowerCase(),d="",g=c.pt.getEscapedUrl(window.location.href);switch(b){case "edit-item":d=e.getListFormUrl("EditForm");break;case "view-item":d=e.getListFormUrl("DisplayForm")}window.location.href=d+"?ID="+a.data("spwidgets_id")+"&Source="+g;return this});null===e.template&&(e.template=c(k.htmlTemplate).filter("div.spwidget-item-template"));
+e._getListItems().then(function(){e.showItemsOnBoard();e.statesCntr.find("div.spwidget-board-state").each(function(){var a=c(this);a.sortable({connectWith:a.siblings(),containment:d,cursor:"move",tolerance:"pointer",opacity:".80",placeholder:"ui-state-highlight spwidget-board-placeholder",forcePlaceholderSize:!0,remove:function(a,c){e.setBoardColumnHeight()}})});e.statesCntr.disableSelection();e.initDone=!0;e.setBoardColumnHeight();d.addClass("hasSPShowBoard").removeClass("loadingSPShowBoard");c.isFunction(e.onBoardCreate)&&
+e.onBoardCreate.call(d,e.getEventObject());c(d).trigger("spwidget:boardcreate",[d,e.getEventObject()])})}).fail(function(a,c,b){d.append('<div class="ui-state-error"><p>'+a+"</p></div>")});return this})};k.styleSheet="/** \n * Stylesheet for the Board widget\n * \n * BUILD: Paul:December 27, 2013 10:12 AM\n */\ndiv.spwidget-board {\n    width: 100%;\n    position: relative;\n}\n\ndiv.spwidget-board div.spwidget-board-headers,\ndiv.spwidget-board div.spwidget-board-headers-cntr,\ndiv.spwidget-board div.spwidget-board-states-cntr, \ndiv.spwidget-board div.spwidget-board-states {\n    width: 100%;\n}\n\ndiv.spwidget-board div.spwidget-board-state {\n    width: 49%;\n    float: left;\n    margin: .1%;\n    padding: .2%;\n    overflow: auto;\n}\n\ndiv.spwidget-board div.spwidget-board-headers-cntr div.spwidget-board-state {\n    text-align: center;\n    font-weight: bold;\n    font-size: 1.1em;\n    overflow: hidden;\n    word-wrap: break-word;\n}\ndiv.spwidget-board div.spwidget-board-states div.spwidget-board-state {\n    margin-bottom: 1em;\n    min-height: 10em;\n}\n\ndiv.spwidget-board div.spwidget-board-state div.spwidget-board-state-item {\n    padding: .2em;\n    margin: .5em .2em;\n    font-weight: normal;\n    cursor: move;\n    overflow: auto;\n}\ndiv.spwidget-board div.spwidget-board-state-item div.spwidget-board-item-actions{\n    margin-top: .2em;\n    padding: .2em .5em;\n    overflow: hidden;\n}\ndiv.spwidget-board .spwidget-board-placeholder {\n    height: 3em;\n}\n\n/** Setting container */\ndiv.spwidget-board-settings {\n    font-size: .8em;\n    margin: .2em;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list-cntr {\n    z-index: 5;\n    position: absolute;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list-cntr > div {\n    padding: .2em;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list-cntr > div:first-child,\ndiv.spwidget-board-settings div.spwidget-board-column-list-cntr > div:last-child {\n    text-align: right;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list {\n    width: 20em;\n    height: 17em;\n    overflow: auto;\n    position: relative\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list-cntr .spwidget-board-msg {\n    position: absolute;\n    top: 1px;\n    left: 1px;\n    padding: .2em;\n}\ndiv.spwidget-board-settings div.ui-state-default {\n    position: relative;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list > a {\n    display: block;\n    margin: .2em;\n    padding: .2em;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list > a > span.ui-icon {\n    display: inline-block;\n}\n\n/* Number of Columns (96 % #columns)\n * Currently support 10 columns. \n */\ndiv.spwidget-board .spwidget-states-3 div.spwidget-board-state {\n    width: 32.4%;\n}\ndiv.spwidget-board .spwidget-states-4 div.spwidget-board-state {\n    width: 24%;\n}\ndiv.spwidget-board .spwidget-states-5 div.spwidget-board-state {\n    width: 19.1%;\n}\ndiv.spwidget-board .spwidget-states-6 div.spwidget-board-state {\n    width: 15.8%;\n}\ndiv.spwidget-board .spwidget-states-7 div.spwidget-board-state {\n    width: 13.4%;\n}\ndiv.spwidget-board .spwidget-states-8 div.spwidget-board-state {\n    width: 11.6%;\n}\ndiv.spwidget-board .spwidget-states-9 div.spwidget-board-state {\n    width: 10.2%;\n}\ndiv.spwidget-board .spwidget-states-10 div.spwidget-board-state {\n    width: 9.1%;\n}\n";
+k.htmlTemplate='<div class="spwidget-board">\n    <div class="spwidget-board-settings" style="display:none;">\n        <div class=\'spwidget-board-settings-columns\'>Columns</div>\n        <div class="spwidget-board-column-list-cntr ui-widget-content ui-corner-all" style="display: none">\n            <div class="ui-state-default">\n                <span>\n                    <span class="spwidget-board-column-total"></span> \n                    <span class="spwidget-board-column-total-label">Selected.</span>\n                </span>\n                <button type="button" name="check" title="Check-Uncheck All">Check</button>\n                <button type="button" name="close" title="Close">Close</button>\n            </div>\n            <div class="spwidget-board-column-list">\n            </div>\n            <div class="ui-state-default">\n                <button type="button" name="apply">Apply</button>\n            </div>\n        </div>\n    </div>\n    <div class="spwidget-board-headers">\n        <div class="spwidget-board-headers-cntr">\n            <div class="spwidget-board-state ui-widget-content ui-corner-all"></div>\n            <div style="clear:both;"></div>\n        </div>\n    </div>\n    <div style="clear:both;"></div>\n    <div class="spwidget-board-states">\n        <div class="spwidget-board-states-cntr">\n            <div class="spwidget-board-state ui-widget-content ui-corner-all"></div>\n            <div style="clear:both;"></div>\n        </div>\n    </div>\n    <div style="clear:both;"></div>\n</div>\n<div class="spwidget-item-template">\n    <div>\n        <div>#{{ID}}: {{Title}}</div>\n        <div class="ui-state-active ui-corner-all spwidget-board-item-actions">\n            <a class="spwidgets-board-action" href="javascript:" title="View Item" data-spwidgets_id="{{ID}}" data-spwidgets_board_action="view-item"><img src="/_layouts/images/icgen.gif" border="0"/></a>\n            <a class="spwidgets-board-action" href="javascript:" title="Edit Item" data-spwidgets_id="{{ID}}" data-spwidgets_board_action="edit-item"><img src="/_layouts/images/CMSEditSourceDoc.GIF" border="0"/></a>\n        </div>\n    </div>\n</div>\n'})(r);
+(function(c){var k={_islookupFieldCssDone:!1,_isLookupbodyEventDone:!1};c.SPWidgets.defaults.LookupField={list:"",allowMultiples:!0,inputLabel:"",inputPlaceholder:"Type and Pick",readOnly:!1,exactMatch:!0,uiContainer:null,selectFields:["Title"],filter:"",filterFields:["Title"],filterOrderBy:"",template:'<div>{{Title}} <span class="spwidgets-item-remove">[x]</span></div>',listTemplate:"{{Title}}",listHeight:0,onItemAdd:null,onItemRemove:null,onReady:null,msgNoItems:"",maxResults:50,minLength:2,hideInput:!0,
+padDelimeter:!1,showSelector:!1};c.fn.SPLookupField=function(f){k._islookupFieldCssDone||(k._islookupFieldCssDone=!0,c('<style type="text/css">\n\n'+k.styleSheet+"\n\n</style>").prependTo("head"));var b=arguments;this.each(function(){var d=c(this);if(!d.is("input")&&!d.is("textarea")||d.hasClass("hasLookupSPField")){if("string"===typeof f&&d.is("input")){var a=d.data("SPWidgetLookupFieldUI").data("SPWidgetLookupFieldOpt");if("method"===f.toLowerCase()){var d=String(b[1]||"").toLowerCase(),g=b[2];
+"clear"===d?(c.isArray(g)||(g=g?[g]:[]),g.length?function(){var b=c();c.each(g,function(c,e){b=b.add(a._selectedItemsCntr.find("div.spwidgets-item-id-"+e))});k.removeItem(a,b)}():k.removeItem(a,a._selectedItemsCntr.find("div.spwidgets-item"))):"add"===d&&k.addItem(a,g)}}return this}a=c.extend({},c.SPWidgets.defaults.LookupField,f,{_ele:d.css("display","none").addClass("hasLookupSPField")});a.showSelectedItems=function(b,e){var d=a._selectedItemsCntr.css("display",""),g=[],f=!1;d.find("div.spwidgets-item").length&&
+!1!==a.allowMultiples||d.empty();c.isArray(b)?g=b:g.push(b);c.each(g,function(b,g){if(!d.find("div.spwidgets-item-id-"+g.ID).length){var m=c('<div class="spwidgets-item spwidgets-item-id-'+g.ID+'" data-spid="'+g.ID+'" style="display:none">'+c.SPWidgets.fillTemplate(a.template,g)+"</div>").appendTo(d).find(".spwidgets-item-remove").on("click.SPWidgets",function(c){k.removeItem(a,this)}).end();c.isFunction(a.onItemAdd)&&!0!==e&&a.onItemAdd.call(a._ele,m,g,a._cntr);0<d.find("div.spwidgets-item-id-"+
+g.ID).length&&(f=!0,m.fadeIn("slow").promise().then(function(){c(this).css("display","")}),!0!==e&&a.storeItemIDs(g.ID,a.allowMultiples),!1===a.allowMultiples&&!0===a.hideInput&&a._lookupInputEleCntr.css("display","none"))}});a.readOnly&&a._cntr.find(".spwidgets-item-remove").remove();f&&a._ele.trigger("change")};a.storeItemIDs=function(b,e){var d=c.trim(a._ele.val()),g=!1;c.isArray(b)||(b=[b]);!0!==e&&(d="");c.each(b,function(c,b){b&&(1>d.length&&(!0===a.padDelimeter&&!g)&&(d+=";#",g=!0),0<d.length&&
+(d+=";#"),d+=b+";#")});a._ele.val(d)};a.showCurrentInputSelection=function(b){return c.Deferred(function(e){var d=c.extend({},{async:!0},b),g=c.SPWidgets.parseLookupFieldValue(a._ele.val());g.length?c().SPServices({operation:"GetListItems",async:d.async,listName:a.list,CAMLQuery:"<Query><Where>"+c.SPWidgets.getCamlLogical({type:"OR",values:g,onEachValue:function(a){var b="";a.id&&(b="<Eq><FieldRef Name='ID'/><Value Type='Counter'>"+a.id+"</Value></Eq>");return b}})+"</Where></Query>",CAMLViewFields:"<ViewFields>"+
+a._selectFields+"</ViewFields>",CAMLRowLimit:0,completefunc:function(b,d){var g=c(b.responseXML).SPFilterNode("z:row").SPXmlToJson({includeAllAttrs:!0,removeOws:!0});a.addToAutocompleteCache(g);a.showSelectedItems(g,!0);e.resolveWith(a,[b,d])}}):e.resolveWith(a,[null,null])}).promise()};a.getItemObjectFromCache=function(b){var e=null;c.each(a._autocompleteCache,function(a,d){c.each(d,function(a,c){if(c.ID==b)return e=c,!1});if(null!==e)return!1});return e};a.addToAutocompleteCache=function(b){c.isArray(b)||
+(b=[b]);c.each(b,function(b,c){a._autocompleteCache[c.ID]||(a._autocompleteCache[c.ID]=[]);a._autocompleteCache[c.ID].push(c)})};a._cntr=c(k.htmlTemplate).find(".spwidgets-lookup-cntr").clone(1);null===a.uiContainer?a._cntr.insertAfter(a._ele):a._cntr.appendTo(c(a.uiContainer));a._selectedItemsCntr=a._cntr.find("div.spwidgets-lookup-selected");a._lookupInputEleCntr=a._cntr.find("div.spwidgets-lookup-input");a._lookupInputEle=a._lookupInputEleCntr.find("input[name='spwidgetLookupInput']");a._ignoreKeywordsRegEx=
 /^(of|and|a|an|to|by|the|or)$/i;a._cntr.data("SPWidgetLookupFieldOpt",a);a._ele.data("SPWidgetLookupFieldUI",a._cntr);a.showSelector?(a._selectorCntr=a._cntr.find("div.spwidget-lookup-selector-cntr"),a._queryInitDone=!1,a._cntr.find(".spwidget-lookup-selector-showhide").on("click",function(b){a._selectorCntr.is(":visible")?a._selectorCntr.css("display","none"):(a._selectorCntr.css("display","block").position({my:"left top",at:"left bottom",of:a._lookupInputEle}),a._queryInitDone||(a._queryInitDone=
-!0,g.doSelectorDataInit(a)))}),a._selectorCntr.find("button[name='close']").button({text:!1,icons:{primary:"ui-icon-circle-close"}}).click(function(){a._selectorCntr.css("display","none")}),a._lookupInputEle.on("focus",function(b){a._selectorCntr.is(":visible")&&a._selectorCntr.css("display","none")})):a._cntr.find(".spwidget-lookup-selector-showhide,.spwidget-lookup-selector-cntr").remove();a.inputLabel?a._cntr.find("div.spwidgets-lookup-input label").empty().append(a.inputLabel):a._cntr.find("div.spwidgets-lookup-input label").remove();
+!0,k.doSelectorDataInit(a)))}),a._selectorCntr.find("button[name='close']").button({text:!1,icons:{primary:"ui-icon-circle-close"}}).click(function(){a._selectorCntr.css("display","none")}),a._lookupInputEle.on("focus",function(b){a._selectorCntr.is(":visible")&&a._selectorCntr.css("display","none")})):a._cntr.find(".spwidget-lookup-selector-showhide,.spwidget-lookup-selector-cntr").remove();a.inputLabel?a._cntr.find("div.spwidgets-lookup-input label").empty().append(a.inputLabel):a._cntr.find("div.spwidgets-lookup-input label").remove();
 a.inputPlaceholder&&a._lookupInputEleCntr.find("input").attr("placeholder",a.inputPlaceholder);!0===a.readOnly&&(a._lookupInputEleCntr.css("display","none"),a._cntr.find("div.spwidget-lookup").addClass("spwidget-lookup-readyonly"));a._selectFields="";c.each(a.selectFields,function(b,c){a._selectFields+="<FieldRef Name='"+c+"'/>"});a._templateTokens=String(a.template).match(/(\$\{.*?\})/g);null==a._templateTokens&&(a._templateTokens=[]);c.each(a._templateTokens,function(b,c){a._templateTokens[b]=c.replace(/[\$\{\}]/g,
-"")});var f=a._autocompleteCache={};a._cntr.find("div.spwidgets-lookup-input input").autocomplete({minLength:2,appendTo:a._cntr,open:function(b,f){c(this).autocomplete("widget").each(function(){0<a.listHeight&&c(this).css("height",a.listHeight+"px");return!1})},source:function(b,d){b.term=c.trim(b.term);var e=String(c.trim(b.term)).toUpperCase();if(e in f)d(f[e]);else{f[e]=[];var h=[],g=String(b.term);if(null===g.match(/\D/)&&null!==g.match(/\d/))h.push("<Eq><FieldRef Name='ID'/><Value Type='Counter'>"+
-g+"</Value></Eq>");else{g=[b.term];a.exactMatch||(g=String(b.term).split(/ /));for(var m=0,u=a.filterFields.length;m<u;m++){for(var y=[],v=0,z=g.length;v<z;v++)a._ignoreKeywordsRegEx.test(g[v])||y.push("<Contains><FieldRef Name='"+a.filterFields[m]+"'/><Value Type='Text'>"+g[v]+"</Value></Contains>");h.push(c.SPWidgets.getCamlLogical({values:y,type:"AND"}))}}h=c.SPWidgets.getCamlLogical({values:h,type:"OR"});a.filter&&(h=c.SPWidgets.getCamlLogical({values:[h,a.filter],type:"AND"}));c().SPServices({operation:"GetListItems",
-listName:a.list,async:!0,CAMLQuery:"<Query><Where>"+h+"</Where>"+a.filterOrderBy+"</Query>",CAMLRowLimit:a.maxResults,CAMLViewFields:"<ViewFields>"+a._selectFields+"</ViewFields>",completefunc:function(b,h){c(b.responseXML).SPFilterNode("z:row").each(function(){var b=c(this).SPXmlToJson({includeAllAttrs:!0})[0];b.value="";b.label=c.SPWidgets.fillTemplate(a.listTemplate,b);f[e].push(b)});d(f[e])}})}},select:function(b,c){a.showSelectedItems(c.item)}}).on("keyup.SPWidgets",function(b){if(13==b.which){var f=
-c(b.target).val();f&&String(f).length<a.minLength&&c(b.target).autocomplete("search",f+"    ")}});a._ele.val()?a.showCurrentInputSelection().then(function(b,f){c.isFunction(a.onReady)&&a.onReady.call(a._ele,a._cntr)}):c.isFunction(a.onReady)&&a.onReady.call(a._ele,a._cntr);return this});return this};g.removeItem=function(d,b){var e=c(b).closest("div.spwidgets-item"),a=d._selectedItemsCntr,h=[];if(c.isFunction(d.onItemRemove)){e.each(function(){h.push(d.getItemObjectFromCache(c(this).data("spid")))});
-if(!1===d.onItemRemove.call(d._ele,e,h,d._cntr))return g;h=[]}e.fadeOut("fast").promise().then(function(){e.remove();!d.msgNoItems&&(!1===d.allowMultiples||!0===d.allowMultiples&&1>a.find("div.spwidgets-item").length)&&a.css("display","none");!1===d.allowMultiples&&!0===d.hideInput&&d._lookupInputEleCntr.css("display","");1>a.find("div.spwidgets-item").length&&d.msgNoItems&&a.append("<div>"+d.msgNoItems+"</div>");a.find("div.spwidgets-item").each(function(){h.push(c(this).data("spid"))});d._lookupInputEleCntr.find("input").focus();
-d.storeItemIDs(h);d._ele.change()});return g};g.addItem=function(c,b){if(!b||"string"!==typeof b)return c;var e=c._ele.val();""===e&&!0===c.padDelimeter&&(e+=";#");e&&(e+=";#");c._ele.val(e+b);c.showCurrentInputSelection();return c};g.doSelectorDataInit=function(d){var b={$resultsCntr:d._selectorCntr.find("div.spwidget-lookup-selector-item-cntr"),nextPageToken:"",isLoading:!1,hasMorePages:!0,$lastPage:c(),queryXml:d.filter?"<Query><Where>"+d.filter+"</Where>"+d.filterOrderBy+"</Query>":"<Query>"+
-d.filterOrderBy+"</Query>"};g._isLookupbodyEventDone||(g._isLookupbodyEventDone=!0,c("body").on("click",function(b){b=c(b.target);var a=c("div.spwidget-lookup-selector-cntr:visible"),d=null;a.length&&(d=b.closest("div.spwidget-lookup-selector-cntr"),!d.length&&b.is(".spwidget-lookup-selector-showhide")&&(d=b.parent().find("div.spwidget-lookup-selector-cntr")),a.not(d).hide())}));b.getListRows=function(){return c.Deferred(function(e){b.isLoading?e.resolveWith($lastPage,[$lastPage]):(b.isLoading=!0,
-c().SPServices({operation:"GetListItems",listName:d.list,async:!0,CAMLQuery:b.queryXml,CAMLRowLimit:d.maxResults,CAMLViewFields:"<ViewFields>"+d._selectFields+"</ViewFields>",CAMLQueryOptions:function(){if(""!==b.nextPageToken)return"<QueryOptions><Paging ListItemCollectionPositionNext='"+c.SPWidgets.escapeXML(b.nextPageToken)+"'/></QueryOptions>"}(),completefunc:function(a,h){var f=c(a.responseXML),g=f.SPFilterNode("rs:data").eq(0),m=f.SPFilterNode("z:row").SPXmlToJson({includeAllAttrs:!0,removeOws:!0}),
-f=c("<div/>").insertBefore(b.$nextPage),n="";b.nextPageToken=g.attr("ListItemCollectionPositionNext")||"";""===b.nextPageToken&&(b.hasMorePages=!1);c.each(m,function(a,b){d.addToAutocompleteCache(b);b.value="";b.label=c.SPWidgets.fillTemplate(d.listTemplate,b);n+='<div class="spwidget-lookup-item" data-spwidgetsindex="'+a+'">'+b.label+"</div>"});f.html(n).find("div.spwidget-lookup-item").each(function(){var a=c(this);a.hover(function(){a.addClass("ui-state-hover")},function(){a.removeClass("ui-state-hover")})}).end().on("click",
-"div.spwidget-lookup-item",function(a){a=c(this).data("spwidgetsindex");d.showSelectedItems(m[a])});b.isLoading=!1;e.resolveWith(f,[f])}}))})};b.$nextPage=c('<div class="ui-state-highlight spwidget-lookup-selector-next">Next...</div>').appendTo(b.$resultsCntr.empty()).click(function(c){b.hasMorePages&&(b.$nextPage.css("display","none"),b.getListRows().then(function(a){b.hasMorePages?b.$nextPage.css("display",""):a.children().length||a.append("<div class='ui-state-highlight'>No Items Found!</div>");
-b.$resultsCntr.scrollTop(a.position().top)}))});b.$nextPage.click();return d};g.styleSheet='/**\n * Stylesheet for the Lookup Field widget.\n * \n */\n\n.spwidgets-lookup-cntr {\n    position: relative;\n    display: inline-block;\n    zoom: 1; /* IE7 hack */\n    *display: inline; /* IE7 hack */\n}\n\n\n.spwidgets-lookup-cntr .spwidgets-lookup-selected {\n    -moz-appearance: textfield;\n    -webkit-appearance: textfield;\n    background-color: white;\n    background-color: -moz-field;\n    border: 1px solid  darkgray;\n    box-shadow: 1px 1px 1px 0 lightgray inset;  \n    font: -moz-field;\n    font: -webkit-small-control;\n    margin-top: 5px;\n    padding: 2px 5px; \n}\n\n.spwidgets-lookup-cntr  .spwidgets-lookup-selected .spwidgets-item {\n    display: inline-block;\n    margin-left: .5em;\n}\n.spwidgets-lookup-cntr .spwidgets-item:first-child {\n    margin-left: 0px;\n}\n.spwidgets-lookup-cntr .spwidgets-item-remove {\n    color: red;\n    font-size: xx-small;\n    vertical-align: super;\n    cursor: pointer;\n}\n\n.spwidgets-lookup-cntr .spwidgets-lookup-input {\n    margin: .2em 0em;\n    position: relative;\n}\n.spwidgets-lookup-cntr .spwidgets-lookup-input input {\n    width: 99%;\n}\n.spwidgets-lookup-cntr ul.ui-autocomplete {\n    overflow: auto;\n    z-index: 1;\n}\n\n/* Ready only display */\n.spwidgets-lookup-cntr div.spwidget-lookup-readyonly .spwidgets-lookup-selected {\n    -moz-appearance: none;\n    -webkit-appearance: none;\n    background-color: transparent;\n    border: none;\n    box-shadow: none;\n    font: inherit;\n}\n.spwidgets-lookup-cntr div.spwidget-lookup-readyonly .spwidgets-item-remove {\n    display: none;\n}\n\n/** SELECTOR */\n.spwidgets-lookup-cntr .spwidget-lookup-selector-showhide {\n    background-repeat: no-repeat;\n    background-image: url("/_layouts/images/bizdatacontentsource.gif");\n    cursor: pointer;\n    display: block;\n    position: absolute;\n    text-indent: -99999px;\n    z-index: 5;\n    height: 16px;\n    width: 16px;\n    right: 5px;\n    top: .3em;\n}\n.spwidgets-lookup-cntr div.spwidget-lookup-selector-cntr {\n    display: none;\n    position: absolute;\n    left: 0px;\n    z-index: 10;\n    padding: .2em;\n    width: 98%;\n    font-size: .8em;\n}\n.spwidgets-lookup-cntr div.spwidget-lookup-selector-cntr > .ui-state-default {\n    padding: .2em;\n    text-align: right;\n}\n\n.spwidgets-lookup-cntr div.spwidget-lookup-selector-item-cntr {\n    height: 15em;\n    overflow: auto;\n    padding: .2em;\n    font-size: 1em;\n}\n.spwidgets-lookup-cntr div.spwidget-lookup-selector-item-cntr .ui-state-highlight {\n    padding: .5em;\n    margin: 1em .2em;\n    text-align: center;\n    font-size: 1.1em;\n    font-weight: bold;\n}\n.spwidgets-lookup-cntr div.spwidget-lookup-selector-item-cntr .spwidget-lookup-selector-next {\n    cursor: pointer;\n}\n.spwidgets-lookup-cntr div.spwidget-lookup-selector-item-cntr .spwidget-lookup-item {\n    padding: .2em .5em;\n    margin: .2em;\n    cursor: pointer;\n    font-weight: normal;\n}\n\n';
-g.htmlTemplate='<div>\n    <div class="spwidgets-lookup-cntr">\n        <div class="spwidget-lookup">\n            <div class="spwidgets-lookup-selected" style="display:none;">\n            </div>\n            <div class="spwidgets-lookup-input">\n                <label>Add</label>\n                <input type="text" name="spwidgetLookupInput" value="" />\n                <span class="spwidget-lookup-selector-showhide" title="Browse">Browse</span>\n                <div class="spwidget-lookup-selector-cntr ui-widget-content">\n                    <div class="ui-state-default">\n                        <button type="button" name="close" title="Close">Close</button>\n                    </div>\n                    <div class="spwidget-lookup-selector-item-cntr"></div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n\n'})(r);
-(function(){g.pt.pickSPUser={_isPickSPUserCssDone:!1};g.fn.pickSPUser=function(c){g.pt.pickSPUser._isPickSPUserCssDone||(g.pt.pickSPUser._isPickSPUserCssDone=!0,g('<style type="text/css">\n\n'+g.pt.pickSPUser.styleSheet+"\n\n</style>").prependTo("head"));var m=arguments;this.each(function(){var d=g(this);if(!d.is("input")||d.hasClass("hasPickSPUser"))return"string"===typeof c&&d.is("input")?g.pt.pickSPUser.handleAction.apply(this,m):this;var b=g.extend({},{allowMultiples:!0,maxSearchResults:50,webURL:g().SPServices.SPGetCurrentSite(),
-type:"User",onPickUser:null,onCreate:null,onRemoveUser:null,inputPlaceholder:"Type and Pick"},c,{eleUserInput:d.css("display","none").addClass("hasPickSPUser")});b.maxSearchResults=parseInt(b.maxSearchResults)||50;var e=g(g.pt.pickSPUser.htmlTemplate).find(".pt-pickSPUser").clone(1).insertAfter(d);b.eleSelected=e.find("div.pt-pickSPUser-selected").empty().on("click",".tt-delete-icon",function(){g.pt.pickSPUser.removeUser(this)});b.elePickInput=e.find("div.pt-pickSPUser-input");b.addPeopleToList=function(a,
-c){var d=(new String(a)).split(";#"),e=d.length,m,k,x;for(m=0;m<e;m++)k=d[m],m++,x=d[m],k=g.pt.pickSPUser.getUserHtmlElement(b,k,x).appendTo(b.eleSelected),function(a,c){b.getSearchResults(c).done(function(b,f,d){var e=String(c).toLowerCase();g.each(b,function(b,c){if(String(c.displayName).toLowerCase()===e)return a.data("pickspuser_object",c),!1})})}(k,x);g.pt.addHoverEffect(b.eleSelected.find("div.pt-pickSPUser-person-cntr"));!1===b.allowMultiples&&b.elePickInput.css("display","none");g.pt.pickSPUser.storeListOfUsers(b.eleSelected,
-c)};b.getSearchResults=function(a){return g.Deferred(function(c){g().SPServices({operation:"SearchPrincipals",searchText:a,maxResults:b.maxSearchResults,principalType:b.type,async:!0,webURL:b.webURL,completefunc:function(a,b){var d=[];g(a.responseXML).find("PrincipalInfo").each(function(){var a=g(this),a={displayName:a.find("DisplayName").text(),accountId:a.find("UserInfoID").text(),accountName:a.find("AccountName").text(),accountType:a.find("PrincipalType").text(),value:a.find("DisplayName").text(),
-label:""};a.label+=a.displayName;d.push(a)});c.resolveWith(a,[d,a,b])}})}).promise()};!0===b.allowMultiples&&b.eleSelected.addClass("pt-pickSPUser-selected-multiple");d.val()&&b.addPeopleToList(d.val(),noEvents);var a={};b.elePickInput.find("input[name='pickSPUserInputField']").attr("placeholder",b.inputPlaceholder).autocomplete({minLength:3,appendTo:b.elePickInput,source:function(c,f){c.term in a?f(a[c.term]):(a[c.term]=[],b.getSearchResults(c.term).then(function(b,d,e){a[c.term].push.apply(a[c.term],
-b);f(a[c.term])}))},select:function(a,c){if(!1===b.allowMultiples)b.eleSelected.empty();else if(b.eleSelected.find("div[data-pickspuserid='"+c.item.accountId+"']").length)return;g.pt.pickSPUser.getUserHtmlElement(b,c.item.accountId,c.item.displayName).appendTo(b.eleSelected).data("pickspuser_object",c.item);g.pt.pickSPUser.storeListOfUsers(e);g.pt.addHoverEffect(e.find("div.pt-pickSPUser-person-cntr"));setTimeout(function(){a.target.value=""},50);!1===b.allowMultiples&&b.elePickInput.hide();g.isFunction(b.onPickUser)&&
-b.onPickUser.call(b.eleUserInput,g.extend({},c.item));d.trigger(g.Event("spwidget:peoplePickerAdd"),[b.eleUserInput,g.extend({},c.item)])}});e.data("pickSPUserContainerOpt",b);d.data("pickSPUserContainer",e);g.isFunction(b.onCreate)&&b.onCreate.call(d,d);d.trigger(g.Event("spwidget:peoplePickerCreate"),[b.eleUserInput]);return this});return this};g.pt.pickSPUser.getUserHtmlElement=function(c,m,d){c=g(g.pt.pickSPUser.htmlTemplate).find(".pt-pickSPUser-person").clone(1);c.attr("data-pickSPUserID",m);
-c.find("span.pt-person-name").append(d).end().attr("data-pickSPUserNAME",d);return c};g.pt.pickSPUser.removeUser=function(c){var m=g(c).closest("div.pt-pickSPUser"),d=m.data("pickSPUserContainerOpt");c=g(c).closest("div.pt-pickSPUser-person");var b=c.data("pickspuser_object");g.isFunction(d.onRemoveUser)&&d.onRemoveUser.call(d.ele,d.ele,c,b);c.fadeOut("fast",function(){g(this).remove();g.pt.pickSPUser.storeListOfUsers(m)});!1===d.allowMultiples&&d.elePickInput.show("fast",function(){d.elePickInput.find("input").focus()});
-d.eleUserInput.trigger(g.Event("spwidget:peoplePickerRemove"),[d.eleUserInput,b])};g.pt.pickSPUser.storeListOfUsers=function(c,m){var d=g(c).closest("div.pt-pickSPUser"),b=d.data("pickSPUserContainerOpt"),e="",a={};d.find("div.pt-pickSPUser-selected div.pt-pickSPUser-person").each(function(){a[g(this).attr("data-pickSPUserID")]||(a[g(this).attr("data-pickSPUserID")]=!0,e&&(e+=";#"),e+=g(this).attr("data-pickSPUserID"),e+=";#",e+=g(this).attr("data-pickSPUserNAME"))});b.eleUserInput.val(e);m||b.eleUserInput.change()};
-g.pt.pickSPUser.handleAction=function(c,m,d){c=String(c).toLowerCase();m=String(m).toLowerCase();var b=g(this).data("pickSPUserContainer").data("pickSPUserContainerOpt"),e=this;if("method"===c)switch(m){case "clear":b.eleUserInput.val("");b.eleSelected.empty();!1===b.allowMultiples&&(b.eleSelected.css("display","none"),b.elePickInput.show());break;case "destroy":g(this).hasClass("hasPickSPUser")&&g(this).removeClass("hasPickSPUser").next(".pt-pickSPUser").remove().show().trigger("change");break;case "add":b.addPeopleToList(d);
-break;case "remove":d&&(c=b.eleSelected.find("div[data-pickspuserid='"+d+"']"),c.length||(c=b.eleSelected.find("div[data-pickspusername='"+d+"']")),c.length&&g.pt.pickSPUser.removeUser(c));break;case "getSelected":e=g.SPWidgets.parseLookupFieldValue(b.eleUserInput.val())}return e};g.pt.pickSPUser.styleSheet="/**\n * Styles for the Pick User Widget\n */\n.pt-pickSPUser .pt-pickSPUser-selected-multiple {\n    min-height: 3em;\n}\n\n.pt-pickSPUser .pt-pickSPUser-selected .pt-pickSPUser-person {\n    float: left;\n    margin-left: .2em;\n}\n.pt-pickSPUser .pt-pickSPUser-hint {\n    font-size: .9em;\n}\n\n.pt-pickSPUser div.pt-pickSPUser-input input.ui-autocomplete {\n    width: 99%;\n}\n.pt-pickSPUser div.pt-pickSPUser-input ul.ui-autocomplete {\n    z-index: 1;\n}\n\n.pt-pickSPUser .pt-pickSPUser-person-cntr {\n    margin: .2em 0em;\n    padding: .2em;\n    position: relative;\n}\n\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-person-name {\n    padding-right: 2em;\n}\n\n/* Item action container (delete button) */\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-pickSPUser-person-actions {\n    position: absolute;\n    right: 1px;\n    top: 1px;\n    padding: .2em;\n    display: none;\n}\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-pickSPUser-person-actions .pt-pickSPUser-person-action-links,\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-pickSPUser-person-actions .pt-pickSPUser-person-action-links .tt-confirm-delete {\n    float:right;\n}\n\n/* Make the action visible if we hover or we are trying to confirm a deletion */\n.pt-pickSPUser .pt-pickSPUser-person-cntr.ui-state-hover .pt-pickSPUser-person-actions,\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-pickSPUser-person-actions.tt-confirm,\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-pickSPUser-person-actions a {\n    display:block;\n    float: right;\n}\n\n/* autocomplete busy image */\n.ui-autocomplete-loading {\n    background: white url('/_layouts/images/loading.gif') right center no-repeat;\n}\n\n\n";
-g.pt.pickSPUser.htmlTemplate='\x3c!--\n    Html Templates for the PickSPUser plugin.\n    \n    |\n    |   $Author$\n    | $Revision$\n    |     $Date$\n    |       $Id$\n    |\n--\x3e\n<div>\n    <div class="pt-pickSPUser">\n        <div class="pt-pickSPUser-selected">\n            None Selected!\n        </div>\n        <div style="clear:both"></div>\n        <div class="pt-pickSPUser-input" \n                title="Type user name above to view search results.">\n            <input name="pickSPUserInputField" value="" type="text"/>\n        </div>\n    </div>\n    \n    <div class="pt-pickSPUser-person">\n        <div class="pt-pickSPUser-person-cntr ui-state-default ui-corner-all">\n            <span class="pt-person-name"></span>\n            <div class="pt-pickSPUser-person-actions">\n                <div class="tt-record-item-action-links">\n                    <a class="tt-delete-icon" href="javascript:" onclick="jQuery.pt.pickSPUser.removeUser(this);">\n                        <img style="border: medium none; margin-right: 2px;" alt="Delete" src="/_layouts/images/delitem.gif">\n                    </a>\n                    <div style="clear:both;"></div>\n                </div>\n                <div style="clear:both;"></div>\n            </div>\n        </div>\n    </div>\n</div>\n';
-g.pt.addHoverEffect=function(c){return g(c).each(function(){if(!g(this).hasClass("addHoverEffectDone")){g(this).addClass("addHoverEffectDone");var c=this;g(c).mouseenter(function(){g(c).toggleClass("ui-state-hover")});g(c).mouseleave(function(){g(c).toggleClass("ui-state-hover")})}})}})(r);(function(c){var g={isSPUploadCssDone:!1};c.SPWidgets.defaults.upload={listName:"",folderPath:"",uploadDonePage:"/_layouts/images/STS_ListItem_43216.gif",onPageChange:null,onUploadDone:null,uploadUrlOpt:"",overwrite:!1,
-uploadPage:"",overlayClass:"",overlayBgColor:"white",overlayMessage:"<div>Working on it</div>",selectFileMessage:"Click here to select file...",uploadDoneMessage:"Upload Successful!",fileNameErrorMessage:'A file name cannot contain any of the following characters: \\ / : * ? " &lt; &gt; | # { } % ~ &amp;',noFileErrorMessage:"No file selected!",checkInFormHeight:"25em",webURL:c().SPServices.SPGetCurrentSite()};c.fn.SPControlUpload=function(d){return c(this).each(function(){var b=c.extend({},c.SPWidgets.defaults.upload,
-d),e;g.isSPUploadCssDone||(g.isSPUploadCssDone=!0,c('<style type="text/css">\n\n'+g.StyleSheet+"\n\n</style>").prependTo("head"));b.showHideBusy=function(a){return c.Deferred(function(c){a?b.$busyOverlay.fadeOut("fast").promise().then(function(){c.resolve()}):b.$busyOverlay.fadeIn("slow").promise().then(function(){c.resolve()})}).promise()};b.showHideFullForm=function(a){a?(b.$content.removeClass("spwidget-show-full-form"),b.$iframeCntr.css({overflow:"",height:""})):(b.$content.addClass("spwidget-show-full-form"),
-b.$iframeCntr.css({overflow:"auto",height:"auto"}));return b};b.showHideSuccess=function(a){a?b.$successCntr.stop().fadeOut().promise(function(){b.$successCntr.css("display","none")}):b.$successCntr.stop().show().promise(function(){b.$successCntr.css("display","block")});return b};b.showError=function(a){a=c.extend({},{message:"",autoHide:!0},a);b.$errorCntrMsg.html(a.message);b.$errorCntr.stop().css("display","block");a.autoHide&&b.$errorCntr.animate({opacity:1},5E3,function(){b.clearError()});return b};
-b.clearError=function(){b.$errorCntr.css("display","none");return b};b.resetWidget=function(){b.ev={state:1,action:"uploading",hideOverlay:!0,pageUrl:"",page:null,isUploadDone:!1,file:{}};b.$iframe.attr("src",b.uploadPage);return b};b.getUploadedFileRow=function(){var a={};c().SPServices({operation:"GetListItems",async:!1,webURL:b.webURL,listName:b.listName,CAMLQuery:"<Query><Where><Eq><FieldRef Name='Author' LookupId='TRUE'/><Value Type='Integer'><UserID/></Value></Eq></Where><OrderBy><FieldRef Name='Created' Ascending='FALSE'/></OrderBy></Query>",
-CAMLViewFields:"<ViewFields><FieldRef Name='ID'/><FieldRef Name='EncodedAbsUrl'/><FieldRef Name='FileLeafRef' /><FieldRef Name='Author' /><FieldRef Name='Editor' /><FieldRef Name='Created' /><FieldRef Name='Modified' /></ViewFields>",CAMLRowLimit:1,CAMLQueryOptions:"<QueryOptions><ViewAttributes Scope='Recursive' /></QueryOptions>",completefunc:function(b,f){var d=c(b.responseXML).SPFilterNode("z:row").SPXmlToJson({includeAllAttrs:!0});d.length&&(a=d[0])}});return a};b.isUploadPage=function(a){var c=
-!1,f=document.createElement("a"),d=null;f.href=String(a).toLowerCase();b.userUploadPage?(d=document.createElement("a"),d.href=String(b.userUploadPage).toLowerCase(),f.pathname===d.pathname&&(c=!0)):c=/upload(ex)?\.aspx$/.test(f.pathname);return c};b.listName&&0!==b.listName.indexOf("{")&&(b.listName=c.pt.getListUID(b.listName));if(!b.listName)return c(this).html('<div class="ui-state-error">Input parameter [listName] not valid!</div>'),this;b.spVersion=c.SPWidgets.getSPVersion(!0);b.userUploadPage=
-b.uploadPage;b.uploadPage=String(b.uploadPage);if(b.uploadPage)-1===b.uploadPage.toLowerCase().indexOf("http")&&(e="/",0==b.uploadPage.indexOf("/")&&(e=""),b.uploadPage=b.webURL+e+b.uploadPage);else switch(b.spVersion){case "2013":b.uploadPage=b.webURL+"/_layouts/15/UploadEx.aspx";break;case "2010":b.uploadPage=b.webURL+"/_layouts/UploadEx.aspx";break;default:b.uploadPage=b.webURL+"/_layouts/Upload.aspx"}-1===String(b.uploadDonePage).toLowerCase().indexOf("http")&&(e="/",0==b.uploadDonePage.indexOf("/")&&
-(e=""),b.uploadDonePage=b.webURL+e+b.uploadDonePage);b._iframeLoadId=1;b._uploadUrlParams="?List="+c.pt.getEscapedUrl(b.listName)+"&RootFolder="+c.pt.getEscapedUrl(b.folderPath)+"&Source="+c.pt.getEscapedUrl(b.uploadDonePage)+"&"+b.uploadUrlOpt;b.uploadPage+=b._uploadUrlParams;b._lastError="";b._reloadCount=0;b.ev={state:1,action:"uploading",hideOverlay:!0,pageUrl:"",page:null,isUploadDone:!1,file:{}};b.$ele=c(this);e={};b.overlayBgColor&&(e["background-color"]=b.overlayBgColor);b.$cntr=c(c(g.HtmlUI).filter("div.SPControlUploadUI").clone()).appendTo(b.$ele.addClass("hasSPControlUploadUI").empty()).data("SPControlUploadOptions",
-b);b.$buttonCntr=b.$cntr.find("div.buttonPane").click(function(a){g.onUpload(this)});b.$content=b.$cntr.find("div.mainContainer");b.$iframeCntr=b.$cntr.find("div.iFrameWindow");b.$iframe=b.$iframeCntr.children("iframe");b.$busyOverlay=b.$cntr.find("div.loadingOverlay");b.$busyOverlayMsg=b.$busyOverlay.find("div.loadingOverlayMsg");b.$successCntr=b.$cntr.find("div.spwidget-success-cntr");b.$errorCntr=b.$cntr.find("div.spwidget-error-cntr");b.$errorCntrMsg=b.$errorCntr.find(".spwidget-msg");b.reInvalidChr=
-/[\/:*?"<>|#{}%~&]/;b.$successCntr.on("click",".spwidget-close",function(a){b.showHideSuccess(!0)}).find(".spwidget-msg").html(b.uploadDoneMessage);b.$errorCntr.on("click",".spwidget-close",function(a){b.clearError()});b.$busyOverlay.addClass(b.overlayClass).css(e);b.$busyOverlayMsg.html(b.overlayMessage);b.showHideBusy();b.$cntr.find("iframe").css("height",b.checkInFormHeight).load(function(a){g.onIframeChange(b.$ele.find(".SPControlUploadUI"))}).attr("src",b.uploadPage).end();return this})};g.onUpload=
-function(d){var b=c(d).closest(".SPControlUploadUI"),e=b.find("iframe").contents(),a=e.find("input[type='file']").closest("tr").siblings().find("span");d=b.data("SPControlUploadOptions");var h=d.ev;a.css("display","none");if(e.find("input[type='file']").val())if(d.reInvalidChr.test(e.find("div.SPControlUploadModUIFileSelected").text()))d.showError({message:d.fileNameErrorMessage});else{h.state=2;h.action="preLoad";if(d.onPageChange&&!1===d.onPageChange.call(d.$ele,h))return!1;d.showHideFullForm(!0);
-d.showHideBusy().then(function(){e.find("input[type='button'][id$='btnOK']").click();if(a.is(":visible"))return b.find(".loadingOverlay").css("display","none").end(),!1})}else d.showError({message:d.noFileErrorMessage})};g.onIframeChange=function(d){var b=c(d).closest(".SPControlUploadUI"),e=b.data("SPControlUploadOptions"),a=0;"preLoad"===e.ev.action?e.ev.action="postLoad":(e._iframeLoadId++,a=e._iframeLoadId,setTimeout(function(){if(a===e._iframeLoadId){var d=c(b.find("iframe").contents()),f=e.ev,
-l=d.find("form").eq(0);f.pageUrl=d[0].location.href;f.page=d;e.$iframeCntr.scrollTop(0);d.scrollTop(0);if(e.isUploadPage(f.pageUrl)){d.find("body").css({overflow:"hidden"});l.children(":visible").hide().end().append(c(g.HtmlUI).filter("div#SPControlUploadModUI").clone()).find("div.SPControlUploadModUIFileSelected").html(e.selectFileMessage);if(RegExp(/error/i).test(c.trim(d.find(".ms-pagetitle").text()))||RegExp(/error/i).test(c.trim(d.find("title").text()))||RegExp(/error\.aspx/i).test(c.trim(d.find("form").attr("action")))){e._lastError=
-d.find("[id$='LabelMessage']").text();if(1<e._reloadCount){alert("Error encountered during upload which is causing program to loop. Last upload error was: "+e._lastError);b.find(".loadingOverlay").fadeOut();return}e._reloadCount+=1;b.find("iframe").attr("src",e.uploadPage);return}if(d.find("#GearPage")&&!d.find("input[type='file']").length)return;d.find("input[type='file']").closest("table").appendTo(d.find("#SPControlUploadModUI")).removeClass("ms-authoringcontrols");var p=d.find("#SPControlUploadModUI").find("input[type='file']").closest("tr").siblings().css("display",
-"none").end().end().siblings("tr .ms-error").css("display","").end().on("change focus click",function(a){a=c(this).val();var b="",f="/_layouts/images/urn-content-classes-smartfolder16.gif";if(a){try{b=a.substr(a.lastIndexOf(".")+1)}catch(g){b="GEN"}f="/_layouts/images/IC"+b.toUpperCase()+".GIF";a=a.replace(/\\/g,"/").split("/").pop()||a}else a=e.selectFileMessage;d.find("#SPControlUploadModUI > div").html(a).css("background-image","url('"+f+"')")}).css({cursor:"pointer",height:"100px",position:"absolute",
-left:"0px",top:"0px",filter:"alpha(opacity=1)",opacity:"0.01",outline:"none","-moz-opacity":"0.01","font-size":"100px","z-index":"5"});l.on("mousemove",function(a){p.css({left:a.pageX-(p.width()-50),top:a.pageY-30}).blur()});e._lastError&&(e.showError({message:e._lastError}),e._lastError="");e._reloadCount=0;e.overwrite?d.find("input[type='checkbox'][name$='OverwriteSingle']").prop("checked","checked"):d.find("input[type='checkbox'][name$='OverwriteSingle']").prop("checked","");f.state=1;f.action=
-"postLoad";f.hideOverlay=!0}else{f.state=3;f.action="postLoad";f.hideOverlay=!0;if(g.isSameUrlPage(f.pageUrl,e.uploadDonePage))f.isUploadDone=!0,f.hideOverlay=!1,e.showHideBusy(),e.showHideSuccess();else{var n=l.prop("onsubmit");l.children(":visible").css("display","none").addClass("ptWasVisible").end().find("input[title='Name']").closest("div[id^='WebPart']").appendTo(d.find("form")).css("display","").removeClass("ptWasVisible");l[0].onsubmit=function(){e.showHideBusy();var a=!0;c.isFunction(e.onPageChange)&&
-(a=e.onPageChange.call(e.$ele,c.extend({},f,{state:3,action:"preLoad"})));if(!1===a)return e.showHideBusy(!0),a;c.isFunction(n)&&(a=n());if(!1===a)return e.showHideBusy(!0),a;e.showHideFullForm(!0);return a}}c(b.find("iframe")[0].contentWindow).unload(function(a){e.showHideBusy();e.showHideFullForm(!0);if(c.isFunction(e.onPageChange))return e.onPageChange.call(e.$ele,c.extend({},f,{state:3,action:"preLoad"}))})}e.onPageChange&&e.onPageChange.call(e.$ele,f);if("postload"!==f.action.toLowerCase()||
-!0===f.hideOverlay)e.showHideBusy(!0),!1===f.isUploadDone&&3===f.state&&e.showHideFullForm();f.isUploadDone&&(e.resetWidget(),e.$successCntr.animate({opacity:1},3E3,function(){e.showHideSuccess(!0)}),c.isFunction(e.onUploadDone)&&e.onUploadDone.call(e.$ele,f.file))}},500))};g.isSameUrlPage=function(c,b){if(!c||!b)return!1;var e=c;-1<c.indexOf("?")&&(e=c.substring(0,c.indexOf("?")));return 0==b.indexOf(e)?!0:!1};c.pt.getEscapedUrl=escapeProperly;c.pt.getUnEscapedUrl=unescapeProperly;c.pt.getListUID=
-function(d){if(!d)return"";var b="";if(c.pt._cache["getListUID:"+d])return b=c.pt._cache["getListUID:"+d];c().SPServices({operation:"GetList",listName:d,async:!1,completefunc:function(d,a){b=c(d.responseXML).find("List").attr("ID")}});b&&(c.pt._cache["getListUID:"+d]=b);return b};g.StyleSheet="/**\n * FILE: jquery.SPControlUpload.css\n * \n * \n */\n.spcontrolupload .mainContainer {\n\tposition: relative;\n\tdisplay:block;\n\theight: 4em;\n}\n\n.spcontrolupload .iFrameWindow,\n.spcontrolupload .buttonPane,\n.spcontrolupload .spwidget-success-cntr,\n.spcontrolupload .loadingOverlay {\n    position: absolute;\n    top: 0px;\n    height: 3em;\n    width: 100%;\n}\n.spcontrolupload .buttonPane {\n    left: 0px;\n    width: 10%;\n    overflow: hidden;\n    cursor: pointer;\n}\n.spcontrolupload .buttonPane .upload_button {\n    font-weight: bold;\n    font-size: 1.1em;\n    text-align: center;\n    margin-top: .8em;\n}\n\n.spcontrolupload .iFrameWindow {\n    width: 90%;\n    left: 10%;\n    overflow: hidden;\n}\n.spcontrolupload .iFrameWindow iframe {\n\toverflow: auto;\n\twidth: 100%;\n\theight: 99%;\n}\n\n.spcontrolupload .spwidget-show-full-form .iFrameWindow {\n    overflow: auto;\n    width: 100%;\n    margin: 0em;\n    left: 0px;\n    right: auto;\n}\n\n.spcontrolupload .loadingOverlayMsg {\n\tfont-size: 1em;\n\tbackground-position: left top;\n    background-repeat: no-repeat;\n    background-image: url('/_layouts/images/loadingcirclests16.gif');\n    margin: 0.5em;\n    padding-left: 25px;\n}\n\n.spcontrolupload .spwidget-success-cntr,\n.spcontrolupload .spwidget-error-cntr {\n    display: none;\n}\n.spcontrolupload div.spwidget-msg-cntr {\n    margin: 0.5em .5em .5em 3em;\n\tfont-size: 1em;\n\tbackground-position: left top;\n    background-repeat: no-repeat;    \n}\n.spcontrolupload .spwidget-close {\n    color: red;\n    font-size: xx-small;\n    font-weight: bold;\n    vertical-align: super;\n    cursor: pointer;\n}\n\n.spcontrolupload .spwidget-success-cntr div.spwidget-msg-cntr {\n    background-image: url('/_layouts/images/STS_ListItem_43216.gif');\n    padding-left: 30px;\n}\n\n.spcontrolupload .spwidget-error-cntr {\n    bottom: -1.5em;\n    left: 0px;\n    width: 100%;\n    position: absolute;\n}\n\n\n\n";
-g.HtmlUI='<div class="SPControlUploadUI spcontrolupload">\n    <div class="mainContainer">\n        <div class="buttonPane ui-state-default">\n            <div class="upload_button">\n                Upload\n            </div>\n        </div>\n        <div class="iFrameWindow ui-state-default">\n            <iframe name="SPControlUploadUI" frameborder="0" scrollbars="yes" scrolling="yes"></iframe>\n        </div>\n        <div class="loadingOverlay ui-widget-content">\n            <div class="loadingOverlayMsg"></div>\n        </div>\n        <div class="spwidget-success-cntr ui-widget-content">\n            <div class="spwidget-msg-cntr">\n                <span class="spwidget-msg">Upload Successful!</span> \n                <span class="spwidget-close">x</span> \n            </div>\n        </div>\n        <div class="spwidget-error-cntr ui-state-error">\n            <div class="spwidget-msg-cntr">\n                <span class="spwidget-msg">Error</span> \n                <span class="spwidget-close">x</span> \n            </div>\n        </div>\n    </div>\n</div>\n\n<div id="SPControlUploadModUI" \n    style="\n        position:   absolute;\n        width:      99.9%;\n        height:     99.9%;\n        left:       0px;\n        top:        0px;\n        padding-left:       .5em;\n        background-color:   white;">\n    <div class="SPControlUploadModUIFileSelected"\n        style="\n        background-position: left center;\n        background-repeat: no-repeat;\n        background-image: url(\'/_layouts/images/urn-content-classes-smartfolder16.gif\');\n        padding: 0.5em 2em;">Select...</div>\n</div>\n'})(r);
-(function(c){var g={isInitDone:!1,evNamespace:".spwidgets.spdatefield"};c.SPWidgets.defaults.date={allowMultiples:!1,delimeter:";",remainOpen:!0,datepicker:{dateFormat:"mm/dd/yy",buttonImage:"/_layouts/images/CALENDAR.GIF",showOn:"both",buttonImageOnly:!0},dateTemplate:'{{date}} <span class="spwidgets-item-remove">[x]</span>',showTimepicker:!1,timeFormat:" {{hour}}:{{minutes}} {{ampm}}",timeUTC:!0,labelHour:"Hour",labelMinutes:"Minutes",labelAMPM:"AM|PM",labelTime:"Time",labelSet:"Set"};c.fn.SPDateField=
-function(d){var b=arguments,e=this;g.isInitDone||(g.isInitDone=!0,""!==g.styleSheet&&c('<style type="text/css">\n\n'+g.styleSheet+"\n\n</style>").prependTo("head"),c("body").on("click"+g.evNamespace,g.onPageClick));return"string"===typeof d?function(){var a=String(b[0]).toLowerCase(),d=e;c(e).each(function(f,g){if(c(e).hasClass("hasSPDateField")){var m=c(g),n=m.data("SPDateFieldInstance");if(n&&0<m.length)switch(a){case "getdate":d=n.getDate();break;case "setdate":b[1]&&n.setDate({date:b[1],format:b[2]||
-n.opt.datepicker.dateFormat});break;case "removedate":b[1]&&n.removeDate({date:b[1],format:b[2]||n.opt.datepicker.dateFormat});break;case "reset":n.reset();break;case "destroy":n.destroy()}}});return d}():this.each(function(){var a={$ele:c(this).addClass("hasSPDateField")};a.$ele.is("input[type='text']")&&(a.eleOrigVal=a.$ele.val(),a.$ele.val(""),a.opt=c.extend(!0,{},c.SPWidgets.defaults.date,d),a.$ui=c(g.htmlTemplate).filter("div.spwidget-date-cntr").clone().insertAfter(a.$ele).css("display","none"),
-a.$input=a.$ui.find("input[name='SPDateFieldInput']").val(a.$ele.val()),a.$dtCntr=a.$ui.find("div.spwidget-date-selected-cntr"),a.getDate=function(){var b={input:a.$ele.val(),dates:[]};b.input&&(a.opt.allowMultiples?b.dates=b.input.split(a.opt.delimeter):b.dates.push(b.input));return b},a.reset=function(){a.$input.val("").datepicker("hide");a.$ele.val("").change();a.$dtCntr.empty();return a},a.setDate=function(b){var d=c.extend({},{date:"",time:"",format:a.opt.datepicker.dateFormat,setDatepicker:!0,
-triggerEvent:!0},b),e=a.$ele.val(),g="";if(!d.date)return a;c.isArray(d.date)||(d.date=[d.date]);c.each(d.date,function(b,h){var m=h,t="",u="";if(!(m instanceof Date))if(m=String(m),-1<m.indexOf("T"))m=c.SPWidgets.parseDateString(m);else try{m=c.datepicker.parseDate(d.format,h)}catch(y){return a}t=c.datepicker.formatDate("yy-mm-dd",m);u=c.datepicker.formatDate(a.opt.datepicker.dateFormat,m);a.opt.showTimepicker&&(t=c.SPWidgets.SPGetDateString(m,a.opt._timeFmt),u+=a.$timepicker.formatTime(m));a.opt.allowMultiples?
-0>e.indexOf(t)&&(e&&(e+=a.opt.delimeter),e+=t,g+='<span class="spwidgets-item" data-spwidget_dt1="'+t+'" data-spwidget_dt2="'+u+'">'+c.SPWidgets.fillTemplate({tmplt:a.opt.dateTemplate,data:{date:u}})+" </span>"):(e=t,g=u)});a.opt.allowMultiples?a.$dtCntr.append(g):d.setDatepicker&&a.$input.val(g);a.$ele.val(e);d.triggerEvent&&a.$ele.change();return a},a.removeDate=function(b){var d=c.extend({},{date:"",format:a.opt.datepicker.dateFormat},b),e=a.getDate();if(!d.date)return a;c.isArray(d.date)||(d.date=
-[d.date]);c.each(d.date,function(b,g){var h=g,m="",t="";if(!(h instanceof Date))try{h=c.datepicker.parseDate(d.format,g)}catch(u){return a}m=a.opt.showTimepicker?c.SPWidgets.SPGetDateString(h,a.opt._timeFmt):c.datepicker.formatDate("yy-mm-dd",h);t=RegExp("("+a.opt.delimeter+")?"+m,"g");e.input=e.input.replace(t,"");a.opt.allowMultiples&&a.$dtCntr.find("span[data-spwidget_dt1='"+m+"']").remove()});e.input=e.input.replace(RegExp("^"+a.opt.delimeter),"").replace(RegExp(a.opt.delimeter+"$"),"");a.$ele.val(e.input).change();
-return a},a.destroy=function(){a.$ele.removeData("SPDateFieldInstance");a.$ele.removeClass("hasSPDateField").css("display","");a.$ui.css("display","none");a.$input.datepicker("hide");a.$input.datepicker("destroy");a.$timepicker&&(a.$timepicker.$timePicker.off(".spdatefield"),a.$input.off(".spdatefield"));a.$ui.remove()},a.createDatePicker=function(){var b={};if(a.opt.showTimepicker){b.$selectorCntr=c(g.htmlTemplate).filter("div.spwidget-datetime-selector").clone().appendTo(a.$input.parent()).css("display",
-"none");b.$datePicker=b.$selectorCntr.find("div.spwidget-date-selector");b.$timePicker=b.$selectorCntr.find("div.spwidget-time-selector");b.$setButton=b.$selectorCntr.find("div.spwidget-btn-set");b.$hourSelect=b.$timePicker.find("select.spwidget-hour");b.$minSelect=b.$timePicker.find("select.spwidget-min");b.$ampmSelect=b.$timePicker.find("select.spwidget-ampm");b.heightDone=!1;b.firstShowDone=!1;b.getTime=function(){var a={hour:b.$hourSelect.val(),minutes:b.$minSelect.val(),ampm:b.$ampmSelect.val()};
-a.hour24=a.hour;"PM"===a.ampm&&"12"!==a.hour?a.hour24=String(parseInt(a.hour)+12):"AM"===a.ampm&&"12"===a.hour&&(a.hour24="0");return a};b.formatTime=function(d){var e=d,g="";d instanceof Date?(e={hour:d.getHours(),hour24:String(d.getHours()),minutes:String(d.getMinutes()),ampm:"AM"},12<e.hour?(e.hour=String(e.hour-12),e.ampm="PM"):12===e.hour&&(e.ampm="PM"),e.hour=String(e.hour),"0"===e.hour&&(e.hour="12"),2>String(e.minutes).length&&(e.minutes="0"+e.minutes)):d||(e=b.getTime());return g=c.SPWidgets.fillTemplate(a.opt.timeFormat,
-e)};b.updateDateTime=function(c){var d=b.getTime();c instanceof Date||(c=b.$datePicker.datepicker("getDate"),null===c&&(c=new Date));c.setHours(d.hour24);c.setMinutes(d.minutes);a.setDate({date:c,format:a.opt.datepicker.dateFormat,setDatepicker:!0})};b.showPicker=function(){b.$selectorCntr.show(function(){var d,e;b.heightDone||(b.heightDone=!0,c.SPWidgets.makeSameHeight(b.$datePicker.find("div.ui-datepicker-inline").add(b.$timePicker)));b.firstShowDone||(b.firstShowDone=!0,d=a.getDate(),d=d.dates.length?
-c.SPWidgets.parseDateString(d.dates[d.dates.length-1]):new Date,e=d.getHours(),0===e?e="12":12<e&&(e-=12),b.$hourSelect.val(e),b.$minSelect.val("00"),11<d.getHours()?b.$ampmSelect.val("PM"):b.$ampmSelect.val("AM"),b.$datePicker.datepicker("setDate",d))}).position({my:"left top",at:"left bottom",of:a.$input})};a.opt.datepicker.altFormat="";a.opt.datepicker.altField="";if(a.opt.datepicker.buttonImage)c('<img class="ui-datepicker-trigger" src="'+a.opt.datepicker.buttonImage+'" alt="..." title="...">').appendTo(a.$input.parent()).on("click"+
-g.evNamespace,function(){b.showPicker()});a.opt.allowMultiples&&(b.$selectorCntr.addClass("spwidget-date-multiples-cntr"),b.$setButton.find("div.spwidget-btn").button({label:a.opt.labelSet}).on("click"+g.evNamespace,function(a){b.updateDateTime();return this}));b.$timePicker.find("div.ui-widget-header").html(a.opt.labelTime).end().find("div.spwidget-time-hour > label").html(a.opt.labelHour).end().find("div.spwidget-time-min > label").html(a.opt.labelMinutes).end().find("div.spwidget-time-ampm > label").html(a.opt.labelAMPM).end();
-c.isFunction(a.opt.datepicker.onSelect)&&(a.opt.datepicker._onSelect=a.opt.datepicker.onSelect);a.opt.datepicker.numberOfMonths=1;a.opt.datepicker.onSelect=function(d,e){if(a.opt.allowMultiples)return this;b.updateDateTime(new Date(e.currentYear,e.currentMonth,e.currentDay));c.isFunction(a.opt.datepicker._onSelect)&&a.opt.datepicker._onSelect.call(this,d,e)};b.$datePicker.datepicker(a.opt.datepicker);b.$timePicker.on("change"+g.evNamespace+" keyup"+g.evNamespace,"select",function(c){if(a.opt.allowMultiples)return this;
-b.updateDateTime();return this});a.$input.on("focus"+g.evNamespace,function(){b.showPicker()})}else a.opt.allowMultiples&&a.opt.remainOpen&&(a.opt.datepicker.showAnim=""),c.isFunction(a.opt.datepicker.onSelect)&&(a.opt.datepicker._onSelect=a.opt.datepicker.onSelect),a.opt.datepicker.onSelect=function(b,d){a.setDate({date:b,format:d.settings.dateFormat,setDatepicker:!1});c.isFunction(a.opt.datepicker._onSelect)&&a.opt.datepicker._onSelect.call(this,b,d);a.opt.allowMultiples&&a.$input.val("");a.opt.allowMultiples&&
-a.opt.remainOpen&&setTimeout(function(){a.$input.datepicker("show")},5)},a.$input.datepicker(a.opt.datepicker);return b},a.opt._timeFmt=a.opt.timeUTC?"utc":"local",a.opt.datepicker.altFormat="yy-mm-dd",a.opt.datepicker.altField=a.$ele,a.opt.allowMultiples&&(a.opt.datepicker.altFormat="",a.opt.datepicker.altField="",a.$dtCntr.css("display","").on("click",".spwidgets-item-remove",function(b){b=c(b.target).closest(".spwidgets-item").data("spwidget_dt1");a.opt.allowMultiples&&(b=c.SPWidgets.parseDateString(b));
-a.removeDate({date:b,format:"yy-mm-dd"})})),a.$ele.css("display","none").data("SPDateFieldInstance",a),a.$timepicker=a.createDatePicker(),a.eleOrigVal&&a.setDate({date:a.eleOrigVal.split(a.opt.delimeter),format:"yy-mm-dd",triggerEvent:!1}),a.$input.on("change",function(b){b.stopPropagation();a.$ele.change()}),a.$ui.css("display",""))})};g.onPageClick=function(d){d=c(d.target);var b=c("div.spwidget-datetime-selector:visible"),e=null;if(!c.contains(document.documentElement,d[0]))return this;b.length&&
-(e=d.closest("div.spwidget-datetime-selector"),!e.length&&d.is("input.spwidget-date-datepicker,.ui-datepicker-trigger")&&(e=d.parent().find("div.spwidget-datetime-selector")),b.not(e).hide());return this};g.styleSheet='.spwidget-date-cntr {\n    display: inline-block;   \n    position: relative;\n}\n.spwidget-date-cntr div.spwidget-date-input-cntr {\n    position: relative;\n}\n.spwidget-date-cntr input {\n    width: 99%;\n}\n.spwidget-date-cntr img.ui-datepicker-trigger {\n    display: block;\n    position: absolute;\n    right: 2%;\n    top: .3em;\n}\n\n.spwidget-date-cntr .spwidgets-item-remove {\n    color: red;\n    font-size: xx-small;\n    vertical-align: super;\n    cursor: pointer;\n}\n/** --------------------------- Date and Time picker -- */\n.spwidget-date-cntr div.spwidget-datetime-selector {\n    padding: .5em;\n    position: absolute;\n    width: 26em;\n    z-index: 1;\n}\n.spwidget-date-cntr div.spwidget-datetime-selector div.ui-datepicker-inline {\n    width: 14em;\n}\n\n.spwidget-date-cntr div.spwidget-datetime-selector div.spwidget-date-selector,\n.spwidget-date-cntr div.spwidget-datetime-selector div.spwidget-time-selector {\n    float: left;\n}\n.spwidget-date-cntr div.spwidget-selectors:before,\n.spwidget-date-cntr div.spwidget-selectors:after {\n    content: "";\n    display: table;\n    line-height: 0;\n}\n.spwidget-date-cntr div.spwidget-selectors:after {\n    clear: both;    \n}\n.spwidget-date-cntr div.spwidget-datetime-selector select.spwidget-hour,\n.spwidget-date-cntr div.spwidget-datetime-selector select.spwidget-min,\n.spwidget-date-cntr div.spwidget-datetime-selector select.spwidget-ampm {\n    font-size: 1.2em;\n}\n/* Time selector */\n.spwidget-date-cntr div.spwidget-time-selector {\n    margin-left: .2em;\n    width: 11em;\n}\n.spwidget-date-cntr div.spwidget-time-selector-cntr {\n    padding: .2em;\n}\n.spwidget-date-cntr div.spwidget-time-selector div.ui-widget-header {\n    text-align: center;\n    line-height: 2em;\n    margin-bottom: .5em;\n}\n.spwidget-date-cntr .spwidget-time-hour,\n.spwidget-date-cntr .spwidget-time-min,\n.spwidget-date-cntr .spwidget-time-ampm {\n    margin-top: .2em;\n    padding: .2em;\n}\n.spwidget-date-cntr .spwidget-time-selector-cntr select,\n.spwidget-date-cntr .spwidget-time-selector-cntr label {\n    overflow: hidden;\n    display: inline-block;\n    font-weight: bold;\n}\n.spwidget-date-cntr .spwidget-time-selector-cntr select {\n    width: 4em;\n}\n.spwidget-date-cntr .spwidget-time-selector-cntr label {\n    width: 5em;\n    font-size: .9em;\n}\n.spwidget-btn-set {\n    display: none;\n    position: absolute;\n    right: .2em;\n    bottom: .2em;\n}\n.spwidget-date-multiples-cntr .spwidget-btn-set {\n    display: block;\n}\n';
-g.htmlTemplate='<div class="spwidget-date-cntr">\n    <div class="spwidget-date-selected-cntr" style="display:none;"></div>\n    <div class="spwidget-date-input-cntr">\n        <input class="spwidget-date-datepicker" name="SPDateFieldInput" value="" />\n    </div>\n</div>\n<div class="spwidget-datetime-selector ui-widget-content ui-corner-all">\n    <div class="spwidget-selectors">\n        <div class="spwidget-date-selector"></div>\n        <div class="spwidget-time-selector ui-widget-content ui-corner-all">\n            <div class="spwidget-time-selector-cntr">\n                <div class="ui-widget-header ui-helper-clearfix ui-corner-all">\n                    Time\n                </div>\n                <div class="spwidget-time-hour">\n                    <label>Hour</label>\n                    <select name="spwidget_hour" class="spwidget-hour">\n                        <option value="1"> 1</option>\n                        <option value="2"> 2</option>\n                        <option value="3"> 3</option>\n                        <option value="4"> 4</option>\n                        <option value="5"> 5</option>\n                        <option value="6"> 6</option>\n                        <option value="7"> 7</option>\n                        <option value="8"> 8</option>\n                        <option value="9"> 9</option>\n                        <option value="10">10</option>\n                        <option value="11">11</option>\n                        <option value="12">12</option>\n                    </select>\n                </div>\n                <div class="spwidget-time-min">   \n                    <label>Minutes</label>\n                    <select name="spwidget_min" class="spwidget-min">\n                        <option value="00">00</option>\n                        <option value="05">05</option>\n                        <option value="10">10</option>\n                        <option value="15">15</option>\n                        <option value="20">20</option>\n                        <option value="25">25</option>\n                        <option value="30">30</option>\n                        <option value="35">35</option>\n                        <option value="40">40</option>\n                        <option value="45">45</option>\n                        <option value="50">50</option>\n                        <option value="55">55</option>\n                    </select>\n                </div>\n                <div class="spwidget-time-ampm">\n                    <label>AM|PM</label>\n                    <select name="spwidget_ampm" class="spwidget-ampm">\n                        <option value="AM">AM</option>\n                        <option value="PM">PM</option>\n                    </select>\n                </div>\n            </div>\n        </div>\n    </div>\n    <div class="spwidget-btn-set">\n        <div class="spwidget-btn">\n            Set\n        </div>\n    </div>\n</div>\n'})(r);
-(function(c){var g={isInitDone:!1,templates:null};c.SPWidgets.defaults.filter={list:"",webURL:c().SPServices.SPGetCurrentSite(),columns:["Title"],textFieldTooltip:"Use a semicolon to delimiter multiple keywords.",definedClass:"spwidget-column-dirty",showFilterButton:!0,showFilterButtonTop:!0,filterButtonLabel:"Filter",onFilterClick:null,onReady:null,onReset:null,ignoreKeywords:/^(of|and|a|an|to|by|the|or|from)$/i,delimeter:";"};c.fn.SPFilterPanel=function(d){var b=arguments;g.isInitDone||(g.isInitDone=
-!0,""!==g.styleSheet&&c('<style type="text/css">\n\n'+g.styleSheet+"\n\n</style>").prependTo("head"),g.templates=c(g.htmlTemplate));return"string"===typeof d?this.eq(0).hasClass("hasSPFilterPanel")?function(c){c=c.eq(0).find("div.spwidget-filter").data("SPFilterPanelInst");var a=d.toLowerCase(),h=c.$ele;switch(a){case "getfilter":h=g.getFilterValues(c);break;case "setfilter":g.setFilterValues(c,b[1]);break;case "reset":g.doResetFilter(c);break;case "destroy":c.$ele.removeClass("hasSPFilterPanel").empty()}return h}(this):
-void 0:this.each(function(){var b=c.extend({},c.SPWidgets.defaults.filter,d),a={$ele:c(this),$ui:null,opt:b,getListDefinition:function(){return c.Deferred(function(a){c().SPServices({operation:"GetList",listName:b.list,cacheXML:!0,async:!0,webURL:b.webURL,completefunc:function(b,d){var e=c(b.responseXML);"error"===d?a.rejectWith(e,[b,d]):e.SPMsgHasError()?a.rejectWith(e,[b,d]):a.resolveWith(e,[b,d])}})}).promise()},buildWidget:function(){return c.Deferred(function(b){a.getListDefinition().then(function(e,
-l){var p=this,n="",k=g.templates.filter("#filter_column").html();a.$ui=c(g.templates.filter("#filter_main_ui").html()).appendTo(a.$ele.empty().addClass("hasSPFilterPanel"));a.$list=p;c.each(a.opt.columns,function(b,d){var e=p.find("Field[DisplayName='"+d+"']"),f=k,h="",l=null;e.length||(e=p.find("Field[Name='"+d+"']"));if(e.length){l={type:null,otherFilterTypes:"",sp_type:e.attr("Type"),sp_format:e.attr("Format")};l.Name=e.attr("Name");switch(e.attr("Type")){case "Choice":e.find("CHOICES CHOICE").each(function(a,
-b){h+=c.SPWidgets.fillTemplate(g.templates.filter("#filter_choice_field").html(),{DisplayName:e.attr("DisplayName"),Name:e.attr("Name"),value:c(b).text()})});f=f.replace(/__COLUMN__UI__/,h);f=c.SPWidgets.fillTemplate(f,{DisplayName:e.attr("DisplayName"),type:"choice",Name:e.attr("Name")});break;case "Lookup":case "LookupMulti":null===l.type&&(l.type="lookup",l.list=e.attr("List"),"Self"===l.list&&(l.list=p.find("List").attr("Title")));case "DateTime":null===l.type&&(l.type="date",l.otherFilterTypes=
-'<option value="Gt">After</option><option value="Lt">Before</option>');case "User":case "UserMulti":null===l.type&&(l.type="people");case "Counter":null===l.type&&(l.type="text",l.otherFilterTypes='<option value="Gt">Greater Than</option><option value="Lt">Less Than</option>');case "DateTime":null===l.type&&(l.type="text",l.otherFilterTypes='<option value="Gt">After</option><option value="Lt">Before</option>');default:null===l.type&&(l.type="text"),h=g.templates.filter("#filter_text_field").html(),
-f=f.replace(/__COLUMN__UI__/,h).replace(/__OTHER_FILTER_TYPES__/,l.otherFilterTypes),f=c.SPWidgets.fillTemplate(f,c.extend(l,{DisplayName:e.attr("DisplayName"),Name:e.attr("Name"),tooltip:a.opt.textFieldTooltip}))}n+=f}});a.$ele.find("div.spwidget-filter-column-cntr").html(n);a.$ele.find("div.spwidget-type-lookup input").each(function(){var a=c(this);a.SPLookupField({list:a.closest("div.spwidget-column").data("spwidget_list"),template:'<div>{{Title}} <span class="spwidgets-item-remove">[x]</span></div>',
-listTemplate:"{{Title}}",allowMultiples:!0,readOnly:!1,filter:"",showSelector:!0});a.parent().find(".spwidget-tooltip").remove()});a.$ele.find("div.spwidget-type-people input").each(function(){var a=c(this),b="User";"PeopleOnly"!==p.find("Field[Name='"+a.attr("name")+"']").attr("UserSelectionMode")&&(b="All");a.pickSPUser({allowMultiple:!0,type:b});a.parent().find(".spwidget-tooltip").remove()});a.$ele.find("div.spwidget-type-date").each(function(){var a=c(this);a.find("input").SPDateField({allowMultiples:!0,
-showTimepicker:"DateTime"===a.data("spwidget_sp_format")?!0:!1});a.find(".spwidget-tooltip").remove();a.find("select.spwidget-filter-type").val("Eq").find("option[value='Contains']").remove();return this});a.opt.showFilterButton||a.opt.showFilterButtonTop?a.$ui.find("div.spwidget-filter-button-cntr").each(function(){var b=c(this),d=c();a.opt.showFilterButtonTop&&(d=d.add(b.clone(!0)).prependTo(a.$ui));a.opt.showFilterButton?d=d.add(b):b.remove();d.find("button[name='filter']").button({icons:{primary:"ui-icon-search"},
-label:a.opt.filterButtonLabel}).on("click",g.onFilterButtonClick);d.find("button[name='reset']").button({icons:{primary:"ui-icon-arrowreturnthick-1-n"},text:!1}).on("click",function(b){g.doResetFilter(a);return this})}):a.$ui.find("div.spwidget-filter-button-cntr").remove();a.$ui.on("change.SPWigets.SPFilterPanel","select.spwidget-filter-type",g.onFilterTypeChange);if(""!==a.opt.definedClass)a.$ui.on("change.SPWidgets.SPFilterPanel",".spwidget-filter-input",g.onFilterInputChange);a.$ui.data("SPFilterPanelInst",
-a);c.isFunction(a.opt.onReady)&&a.opt.onReady.call(a.$ele,d);a.$ui.fadeIn().promise().then(function(){c(this).css("display","");b.resolve()})}).fail(function(c,d){a.$ele.html('<div class="ui-state-error">Unable to retrieve list information. '+this.SPGetMsgError()+"</div>");b.reject()})}).promise()}};a.opt.ignoreKeywords&&!a.opt.ignoreKeywords instanceof RegExp&&(a.opt.ignoreKeywords=/Inst.opt.ignoreKeywords/i);a.buildWidget();return this})};g.onFilterInputChange=function(d){var b=c(this);d=b.closest("div.spwidget-filter-value-input");
-var e=d.closest("div.spwidget-column"),a=e.find("div.spwidget-filter-type-cntr select.spwidget-filter-type").val(),b=b.val(),g=d.closest("div.spwidget-filter").data("SPFilterPanelInst");e.is(".spwidget-type-choice")&&(d.find(".spwidget-filter-input:checked").length||(b=""));""!==b?e.addClass(g.opt.definedClass):"IsNull"!==a&&"IsNotNull"!==a&&e.removeClass(g.opt.definedClass);return this};g.onFilterTypeChange=function(d){var b=c(this);d=b.closest("div.spwidget-column");var e=d.find("div.spwidget-filter-type-cntr select.spwidget-match-type"),
-a=d.find("div.spwidget-filter-value-cntr"),g=a.find(".spwidget-input"),f="",l=d.data("spwidget_column_type"),m=b.val(),b=b.closest("div.spwidget-filter").data("SPFilterPanelInst");"IsNull"===m||"IsNotNull"===m?(a.addClass("spwidget-disabled"),g.attr("disabled","disabled"),e.attr("disabled","disabled"),d.addClass(b.opt.definedClass)):(a.removeClass("spwidget-disabled"),g.removeAttr("disabled","disabled"),e.removeAttr("disabled"),"choice"===l?g.filter(":checkbox").each(function(){var a=c(this);if(a.is(":checked"))return f+=
-a.val(),!1}):f+=g.val(),f||d.removeClass(b.opt.definedClass));return this};g.onFilterButtonClick=function(d){d=c(this).closest("div.spwidget-filter").data("SPFilterPanelInst");var b=null;c.isFunction(d.opt.onFilterClick)&&(b=g.getFilterValues(d),d.opt.onFilterClick.call(d.$ele,b));return this};g.doResetFilter=function(d){if(c.isFunction(d.onReset)&&!0===d.onReset.call(d.$ele,g.getFilterValues(d)))return d;d.$ui.find("div[data-spwidget_column_type='text'] input").val("").end().find("div[data-spwidget_column_type='choice'] input").prop("checked",
-!1).end().find(".hasPickSPUser").pickSPUser("method","clear").end().find(".hasSPDateField").SPDateField("reset").end().find(".hasLookupSPField").SPLookupField("method","clear");""!==d.opt.definedClass&&d.$ui.find("."+d.opt.definedClass).removeClass(d.opt.definedClass);d.$ui.find("select.spwidget-filter-type").each(function(){var b=c(this),d=b.val();if("IsNull"===d||"IsNotNull"===d)b.val("Eq"),b.change()});d.$ui.find(":input.spwidget-input:first").focus();return d};g.getFilterValues=function(d){function b(a){return c.SPWidgets.getCamlLogical({type:a.logicalType,
-values:a.values,onEachValue:function(b){return"<"+a.matchType+"><FieldRef Name='"+a.columnName+"' /><Value Type='Text'>"+c.SPWidgets.escapeXML(b)+"</Value></"+a.matchType+">"}})}var e={CAMLQuery:"",URLParams:"",filters:{},count:0},a=[];d.$ui.find("div.spwidget-column").each(function(h,f){var l=c(f),p=l.find(".spwidget-input"),n=p.attr("name"),k=new g.ColumnFilter({columnName:n,matchType:l.find("select.spwidget-filter-type").val(),logicalType:l.find("select.spwidget-match-type").val()}),l=l.data("spwidget_column_type"),
-r={};if("IsNull"===k.matchType||"IsNotNull"===k.matchType)k.CAMLQuery="<"+k.matchType+"><FieldRef Name='"+n+"' /></"+k.matchType+">",k.count+=1;else switch(l){case "choice":p.each(function(){var a=c(this),b=a.val();a.is(":checked")&&k.values.push(b)});k.values.length&&(k.count=k.values.length,k.CAMLQuery=b(k));break;case "lookup":case "people":(function(){var a=[];p.each(function(){var b=c(this),b=c.SPWidgets.parseLookupFieldValue(b.val()),d,e;d=0;for(e=b.length;d<e;d++)b[d].id&&(k.values.push(b[d].id+
-";#"+b[d].title),a.push(b[d].id))});k.values.length&&(k.count=k.values.length,k.CAMLQuery=c.SPWidgets.getCamlLogical({type:k.logicalType,values:a,onEachValue:function(a){return"<"+k.matchType+"><FieldRef Name='"+k.columnName+"' LookupId='True'/><Value Type='Lookup'>"+a+"</Value></"+k.matchType+">"}}))})();break;case "date":p.each(function(){var a=p.SPDateField("getDate");a.dates.length&&(k.values=a.dates,k.count=k.values.length,k.CAMLQuery=c.SPWidgets.getCamlLogical({type:k.logicalType,values:k.values,
-onEachValue:function(a){return"<"+k.matchType+"><FieldRef Name='"+k.columnName+"'/><Value Type='DateTime'>"+a+"</Value></"+k.matchType+">"}}));return!1});break;case "text":String(c.trim(p.val())).length&&function(){var a=p.val().split(d.opt.delimeter),e,f,g;e=0;for(f=a.length;e<f;e++)g=c.trim(a[e]),!d.opt.ignoreKeywords.test(g)&&g&&k.values.push(g);k.CAMLQuery=b(k);k.count=k.values.length}()}0<k.count&&(a.push(k.CAMLQuery),e.count+=k.count,e.filters[n]=k,r[n]={matchType:k.matchType,logicalType:k.logicalType,
-values:k.values},k.URLParams=c.param(r,!1),""!==e.URLParams&&(e.URLParams+="&"),e.URLParams+=k.URLParams)});1<e.count?e.CAMLQuery=c.SPWidgets.getCamlLogical({type:"AND",values:a}):1===e.count&&(e.CAMLQuery=a[0]);return e};g.setFilterValues=function(d,b){if("object"!==typeof b||c.isEmptyObject(b))return d;g.doResetFilter(d);c.each(b,function(b,a){var h=d.$ui.find(".spwidget-filter-input[name='"+b+"']"),f=h.closest("div.spwidget-column"),l=f.data("spwidget_column_type"),p=f.find("select[name='"+b+"_type']"),
-n=f.find("div.spwidget-filter-type-cntr select.spwidget-match-type"),k=new g.ColumnFilter;c.extend(k,a);k.matchType&&p.val(k.matchType);k.logicalType&&n.val(k.logicalType);if("IsNull"!==a.matchType&&"IsNotNull"!==a.matchType)switch(l){case "text":k.values instanceof Array?h.val(k.values.join(d.opt.delimeter)):h.val(k.values);break;case "choice":c.each(k.values,function(a,b){h.filter("[value='"+b+"']").prop("checked",!0)});break;case "lookup":h.SPLookupField("method","add",k.values.join(";#"));break;
-case "people":h.pickSPUser("method","add",k.values.join(";#"));break;case "date":"DateTime"===f.data("spwidget_sp_format")?h.SPDateField("setDate",k.values):h.SPDateField("setDate",k.values,"yy-mm-dd")}else p.change();h.change()});return d};g.ColumnFilter=function(c){var b=new function(){};"object"!==typeof c&&(c={});b.columnName=c.columnName||"";b.matchType=c.matchType||"";b.logicalType=c.logicalType||"";b.values=c.values||[];b.CAMLQuery=c.CAMLQuery||"";b.URLParams=c.URLParams||"";b.count=c.count||
-0;return b};g.styleSheet='/** \n * Stylesheet for the Board widget\n * \n * BUILD: September 07, 2013 - 03:52 PM\n */\ndiv.spwidget-filter {\n    width: 100%;\n    position: relative;\n}\ndiv.spwidget-filter .spwidget-date-cntr,\ndiv.spwidget-filter .spwidgets-lookup-cntr {\n    display: block;\n}\n/* Adjust the width of the widget inputs inside the filter panel */\ndiv.spwidget-filter .spwidget-type-text input.spwidget-filter-input,\ndiv.spwidget-filter .spwidget-type-people input.ui-autocomplete-input,\ndiv.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input {\n    width: 95%;\n}\n\ndiv.spwidget-filter .spwidgets-lookup-cntr {\n    width: 96%;\n}\ndiv.spwidget-filter .spwidget-date-cntr div.spwidget-date-input-cntr {\n    width: 97%\n}\n\ndiv.spwidget-filter div.spwidget-column {\n    padding: .5em;\n    margin: .5em;\n    position: relative;\n    border-bottom: 1px solid  darkgray;\n    box-shadow: 1px 1px 1px 0 lightgray inset;\n}\ndiv.spwidget-filter div.spwidget-filter-type-cntr {\n    right: 4%;\n    position: absolute;\n    font-size: .8em;\n    top: .6em;\n    opacity: .6;\n    filter: Alpha(opacity=60);\n}\ndiv.spwidget-filter div.spwidget-filter-type-cntr:hover {\n    opacity: 1;\n}\ndiv.spwidget-filter div.spwidget-filter-value-cntr {\n    width: 100%;\n}\n\ndiv.spwidget-filter div.spwidget-filter-value-cntr > label {\n    display: block;\n    padding: .2em;\n    font-weight: bold;\n}\ndiv.spwidget-filter div.spwidget-column-dirty div.spwidget-filter-value-cntr > label {\n    color: #FF0000;\n}\ndiv.spwidget-filter .spwidget-tooltip {\n    display: block;\n    font-size: .8em;\n    font-style: italic;\n}\n\n/* LOOKUP FIELDS */\ndiv.spwidget-filter div.spwidgets-lookup-cntr div.spwidgets-lookup-selected > div.spwidgets-item {\n    display: block;\n    margin-left: 0px;\n}\n\n/* CHOICE FIELDS */\ndiv.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input {\n    max-height: 6em;\n    overflow: auto;\n    -moz-appearance: textfield;\n    -webkit-appearance: textfield;\n    background-color: white;\n    background-color: -moz-field;\n    border: 1px solid  darkgray;\n    box-shadow: 1px 1px 1px 0 lightgray inset;\n    font: -moz-field;\n    font: -webkit-small-control;\n    padding: 2px 5px;\n}\ndiv.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input label {\n    display: block;\n    padding: .2em;\n}\n\n/** DISABLED COLUMN VALUE CONTAINER */\ndiv.spwidget-filter .spwidget-disabled {\n    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";\n    filter: alpha(opacity=50);\n    opacity: 0.5;\n}\n\n/** Button container */\ndiv.spwidget-filter div.spwidget-filter-button-cntr {\n    padding: .5em 4%;\n    margin-top: .5em;\n    text-align: right;\n}\n\n';
-g.htmlTemplate='<div id="filter_main_ui">\n    <div class="spwidget-filter" style="display: none;">\n        <div class="spwidget-filter-column-cntr"></div>\n        <div class="spwidget-filter-button-cntr">\n            <button type="button" class="spwidget-button" name=\'reset\'>Reset</button>\n            <button type="button" class="spwidget-button" name=\'filter\'>Filter</button>\n        </div>\n    </div>\n</div>\n<div id="filter_column">\n    <div class="spwidget-column spwidget-type-{{type}}" \n            data-spwidget_column_type="{{type}}" \n            data-spwidget_list="{{list}}" \n            data-spwidget_sp_type="{{sp_type}}" \n            data-spwidget_sp_format="{{sp_format}}" >\n        <div class="spwidget-filter-value-cntr">\n            <label>{{DisplayName}}</label>\n            <div class="spwidget-filter-value-input">\n                __COLUMN__UI__\n            </div>\n        </div>\n        <div class="spwidget-filter-type-cntr" title="Match Type">\n            <select name="{{Name}}_type" class="spwidget-filter-type" tabindex="-1">\n                <option value="Contains">Contains</option>\n                <option value="Eq" selected="selected">Equal</option>\n                <option value="Neq">Not Equal</option>\n                <option value="IsNull">Is Blank</option> \n                <option value="IsNotNull">Is Not Blank</option>\n                __OTHER_FILTER_TYPES__\n            </select>\n            <select name="{{Name}}_match" class="spwidget-match-type" tabindex="-1">\n                <option value="Or" selected="selected">Any</option>\n                <option value="And">All</option>\n            </select>\n        </div>\n    </div>\n</div>\n<div id="filter_text_field">\n    <input name="{{Name}}" title="{{DisplayName}}" type="text" value="" class="spwidget-input spwidget-filter-input" />\n    <span class="spwidget-tooltip">{{tooltip}}</span>\n</div>\n<div id="filter_choice_field">\n    <label>\n        <input name="{{Name}}" title="{{DisplayName}}" type="checkbox" value="{{value}}" class="spwidget-input spwidget-filter-input" />\n        {{value}}\n    </label>\n</div>\n'})(r)})(jQuery);
+"")});var e=a._autocompleteCache={};a._cntr.find("div.spwidgets-lookup-input input").autocomplete({minLength:2,appendTo:a._cntr,open:function(b,e){c(this).autocomplete("widget").each(function(){0<a.listHeight&&c(this).css("height",a.listHeight+"px");return!1})},source:function(b,d){b.term=c.trim(b.term);var g=String(c.trim(b.term)).toUpperCase();if(g in e)d(e[g]);else{e[g]=[];var f=[],k=String(b.term);if(null===k.match(/\D/)&&null!==k.match(/\d/))f.push("<Eq><FieldRef Name='ID'/><Value Type='Counter'>"+
+k+"</Value></Eq>");else{k=[b.term];a.exactMatch||(k=String(b.term).split(/ /));for(var h=0,t=a.filterFields.length;h<t;h++){for(var u=[],v=0,y=k.length;v<y;v++)a._ignoreKeywordsRegEx.test(k[v])||u.push("<Contains><FieldRef Name='"+a.filterFields[h]+"'/><Value Type='Text'>"+k[v]+"</Value></Contains>");f.push(c.SPWidgets.getCamlLogical({values:u,type:"AND"}))}}f=c.SPWidgets.getCamlLogical({values:f,type:"OR"});a.filter&&(f=c.SPWidgets.getCamlLogical({values:[f,a.filter],type:"AND"}));c().SPServices({operation:"GetListItems",
+listName:a.list,async:!0,CAMLQuery:"<Query><Where>"+f+"</Where>"+a.filterOrderBy+"</Query>",CAMLRowLimit:a.maxResults,CAMLViewFields:"<ViewFields>"+a._selectFields+"</ViewFields>",completefunc:function(b,f){c(b.responseXML).SPFilterNode("z:row").each(function(){var b=c(this).SPXmlToJson({includeAllAttrs:!0})[0];b.value="";b.label=c.SPWidgets.fillTemplate(a.listTemplate,b);e[g].push(b)});d(e[g])}})}},select:function(b,c){a.showSelectedItems(c.item)}}).on("keyup.SPWidgets",function(b){if(13==b.which){var e=
+c(b.target).val();e&&String(e).length<a.minLength&&c(b.target).autocomplete("search",e+"    ")}});a._ele.val()?a.showCurrentInputSelection().then(function(b,e){c.isFunction(a.onReady)&&a.onReady.call(a._ele,a._cntr)}):c.isFunction(a.onReady)&&a.onReady.call(a._ele,a._cntr);return this});return this};k.removeItem=function(f,b){var d=c(b).closest("div.spwidgets-item"),a=f._selectedItemsCntr,g=[];if(c.isFunction(f.onItemRemove)){d.each(function(){g.push(f.getItemObjectFromCache(c(this).data("spid")))});
+if(!1===f.onItemRemove.call(f._ele,d,g,f._cntr))return k;g=[]}d.fadeOut("fast").promise().then(function(){d.remove();!f.msgNoItems&&(!1===f.allowMultiples||!0===f.allowMultiples&&1>a.find("div.spwidgets-item").length)&&a.css("display","none");!1===f.allowMultiples&&!0===f.hideInput&&f._lookupInputEleCntr.css("display","");1>a.find("div.spwidgets-item").length&&f.msgNoItems&&a.append("<div>"+f.msgNoItems+"</div>");a.find("div.spwidgets-item").each(function(){g.push(c(this).data("spid"))});f._lookupInputEleCntr.find("input").focus();
+f.storeItemIDs(g);f._ele.change()});return k};k.addItem=function(c,b){if(!b||"string"!==typeof b)return c;var d=c._ele.val();""===d&&!0===c.padDelimeter&&(d+=";#");d&&(d+=";#");c._ele.val(d+b);c.showCurrentInputSelection();return c};k.doSelectorDataInit=function(f){var b={$resultsCntr:f._selectorCntr.find("div.spwidget-lookup-selector-item-cntr"),nextPageToken:"",isLoading:!1,hasMorePages:!0,$lastPage:c(),queryXml:f.filter?"<Query><Where>"+f.filter+"</Where>"+f.filterOrderBy+"</Query>":"<Query>"+
+f.filterOrderBy+"</Query>"};k._isLookupbodyEventDone||(k._isLookupbodyEventDone=!0,c("body").on("click",function(b){b=c(b.target);var a=c("div.spwidget-lookup-selector-cntr:visible"),g=null;a.length&&(g=b.closest("div.spwidget-lookup-selector-cntr"),!g.length&&b.is(".spwidget-lookup-selector-showhide")&&(g=b.parent().find("div.spwidget-lookup-selector-cntr")),a.not(g).hide())}));b.getListRows=function(){return c.Deferred(function(d){b.isLoading?d.resolveWith($lastPage,[$lastPage]):(b.isLoading=!0,
+c().SPServices({operation:"GetListItems",listName:f.list,async:!0,CAMLQuery:b.queryXml,CAMLRowLimit:f.maxResults,CAMLViewFields:"<ViewFields>"+f._selectFields+"</ViewFields>",CAMLQueryOptions:function(){if(""!==b.nextPageToken)return"<QueryOptions><Paging ListItemCollectionPositionNext='"+c.SPWidgets.escapeXML(b.nextPageToken)+"'/></QueryOptions>"}(),completefunc:function(a,g){var e=c(a.responseXML),m=e.SPFilterNode("rs:data").eq(0),k=e.SPFilterNode("z:row").SPXmlToJson({includeAllAttrs:!0,removeOws:!0}),
+e=c("<div/>").insertBefore(b.$nextPage),h="";b.nextPageToken=m.attr("ListItemCollectionPositionNext")||"";""===b.nextPageToken&&(b.hasMorePages=!1);c.each(k,function(a,b){f.addToAutocompleteCache(b);b.value="";b.label=c.SPWidgets.fillTemplate(f.listTemplate,b);h+='<div class="spwidget-lookup-item" data-spwidgetsindex="'+a+'">'+b.label+"</div>"});e.html(h).find("div.spwidget-lookup-item").each(function(){var a=c(this);a.hover(function(){a.addClass("ui-state-hover")},function(){a.removeClass("ui-state-hover")})}).end().on("click",
+"div.spwidget-lookup-item",function(a){a=c(this).data("spwidgetsindex");f.showSelectedItems(k[a])});b.isLoading=!1;d.resolveWith(e,[e])}}))})};b.$nextPage=c('<div class="ui-state-highlight spwidget-lookup-selector-next">Next...</div>').appendTo(b.$resultsCntr.empty()).click(function(c){b.hasMorePages&&(b.$nextPage.css("display","none"),b.getListRows().then(function(a){b.hasMorePages?b.$nextPage.css("display",""):a.children().length||a.append("<div class='ui-state-highlight'>No Items Found!</div>");
+b.$resultsCntr.scrollTop(a.position().top)}))});b.$nextPage.click();return f};k.styleSheet='/**\n * Stylesheet for the Lookup Field widget.\n * \n */\n\n.spwidgets-lookup-cntr {\n    position: relative;\n    display: inline-block;\n    zoom: 1; /* IE7 hack */\n    *display: inline; /* IE7 hack */\n}\n\n\n.spwidgets-lookup-cntr .spwidgets-lookup-selected {\n    -moz-appearance: textfield;\n    -webkit-appearance: textfield;\n    background-color: white;\n    background-color: -moz-field;\n    border: 1px solid  darkgray;\n    box-shadow: 1px 1px 1px 0 lightgray inset;  \n    font: -moz-field;\n    font: -webkit-small-control;\n    margin-top: 5px;\n    padding: 2px 5px; \n}\n\n.spwidgets-lookup-cntr  .spwidgets-lookup-selected .spwidgets-item {\n    display: inline-block;\n    margin-left: .5em;\n}\n.spwidgets-lookup-cntr .spwidgets-item:first-child {\n    margin-left: 0px;\n}\n.spwidgets-lookup-cntr .spwidgets-item-remove {\n    color: red;\n    font-size: xx-small;\n    vertical-align: super;\n    cursor: pointer;\n}\n\n.spwidgets-lookup-cntr .spwidgets-lookup-input {\n    margin: .2em 0em;\n    position: relative;\n}\n.spwidgets-lookup-cntr .spwidgets-lookup-input input {\n    width: 99%;\n}\n.spwidgets-lookup-cntr ul.ui-autocomplete {\n    overflow: auto;\n    z-index: 1;\n}\n\n/* Ready only display */\n.spwidgets-lookup-cntr div.spwidget-lookup-readyonly .spwidgets-lookup-selected {\n    -moz-appearance: none;\n    -webkit-appearance: none;\n    background-color: transparent;\n    border: none;\n    box-shadow: none;\n    font: inherit;\n}\n.spwidgets-lookup-cntr div.spwidget-lookup-readyonly .spwidgets-item-remove {\n    display: none;\n}\n\n/** SELECTOR */\n.spwidgets-lookup-cntr .spwidget-lookup-selector-showhide {\n    background-repeat: no-repeat;\n    background-image: url("/_layouts/images/bizdatacontentsource.gif");\n    cursor: pointer;\n    display: block;\n    position: absolute;\n    text-indent: -99999px;\n    z-index: 5;\n    height: 16px;\n    width: 16px;\n    right: 5px;\n    top: .3em;\n}\n.spwidgets-lookup-cntr div.spwidget-lookup-selector-cntr {\n    display: none;\n    position: absolute;\n    left: 0px;\n    z-index: 10;\n    padding: .2em;\n    width: 98%;\n    font-size: .8em;\n}\n.spwidgets-lookup-cntr div.spwidget-lookup-selector-cntr > .ui-state-default {\n    padding: .2em;\n    text-align: right;\n}\n\n.spwidgets-lookup-cntr div.spwidget-lookup-selector-item-cntr {\n    height: 15em;\n    overflow: auto;\n    padding: .2em;\n    font-size: 1em;\n}\n.spwidgets-lookup-cntr div.spwidget-lookup-selector-item-cntr .ui-state-highlight {\n    padding: .5em;\n    margin: 1em .2em;\n    text-align: center;\n    font-size: 1.1em;\n    font-weight: bold;\n}\n.spwidgets-lookup-cntr div.spwidget-lookup-selector-item-cntr .spwidget-lookup-selector-next {\n    cursor: pointer;\n}\n.spwidgets-lookup-cntr div.spwidget-lookup-selector-item-cntr .spwidget-lookup-item {\n    padding: .2em .5em;\n    margin: .2em;\n    cursor: pointer;\n    font-weight: normal;\n}\n\n';
+k.htmlTemplate='<div>\n    <div class="spwidgets-lookup-cntr">\n        <div class="spwidget-lookup">\n            <div class="spwidgets-lookup-selected" style="display:none;">\n            </div>\n            <div class="spwidgets-lookup-input">\n                <label>Add</label>\n                <input type="text" name="spwidgetLookupInput" value="" />\n                <span class="spwidget-lookup-selector-showhide" title="Browse">Browse</span>\n                <div class="spwidget-lookup-selector-cntr ui-widget-content">\n                    <div class="ui-state-default">\n                        <button type="button" name="close" title="Close">Close</button>\n                    </div>\n                    <div class="spwidget-lookup-selector-item-cntr"></div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n\n'})(r);
+(function(){h.pt.pickSPUser={_isPickSPUserCssDone:!1};h.fn.pickSPUser=function(c){h.pt.pickSPUser._isPickSPUserCssDone||(h.pt.pickSPUser._isPickSPUserCssDone=!0,h('<style type="text/css">\n\n'+h.pt.pickSPUser.styleSheet+"\n\n</style>").prependTo("head"));var k=arguments;this.each(function(){var f=h(this);if(!f.is("input")||f.hasClass("hasPickSPUser"))return"string"===typeof c&&f.is("input")?h.pt.pickSPUser.handleAction.apply(this,k):this;var b=h.extend({},{allowMultiples:!0,maxSearchResults:50,webURL:h().SPServices.SPGetCurrentSite(),
+type:"User",onPickUser:null,onCreate:null,onRemoveUser:null,inputPlaceholder:"Type and Pick"},c,{eleUserInput:f.css("display","none").addClass("hasPickSPUser")});b.maxSearchResults=parseInt(b.maxSearchResults)||50;var d=h(h.pt.pickSPUser.htmlTemplate).find(".pt-pickSPUser").clone(1).insertAfter(f);b.eleSelected=d.find("div.pt-pickSPUser-selected").empty().on("click",".tt-delete-icon",function(){h.pt.pickSPUser.removeUser(this)});b.elePickInput=d.find("div.pt-pickSPUser-input");b.addPeopleToList=function(a,
+c){var d=(new String(a)).split(";#"),f=d.length,k,l,x;for(k=0;k<f;k++)l=d[k],k++,x=d[k],l=h.pt.pickSPUser.getUserHtmlElement(b,l,x).appendTo(b.eleSelected),function(a,c){b.getSearchResults(c).done(function(b,e,d){var g=String(c).toLowerCase();h.each(b,function(b,c){if(String(c.displayName).toLowerCase()===g)return a.data("pickspuser_object",c),!1})})}(l,x);h.pt.addHoverEffect(b.eleSelected.find("div.pt-pickSPUser-person-cntr"));!1===b.allowMultiples&&b.elePickInput.css("display","none");h.pt.pickSPUser.storeListOfUsers(b.eleSelected,
+c)};b.getSearchResults=function(a){return h.Deferred(function(c){h().SPServices({operation:"SearchPrincipals",searchText:a,maxResults:b.maxSearchResults,principalType:b.type,async:!0,webURL:b.webURL,completefunc:function(a,b){var d=[];h(a.responseXML).find("PrincipalInfo").each(function(){var a=h(this),a={displayName:a.find("DisplayName").text(),accountId:a.find("UserInfoID").text(),accountName:a.find("AccountName").text(),accountType:a.find("PrincipalType").text(),value:a.find("DisplayName").text(),
+label:""};a.label+=a.displayName;d.push(a)});c.resolveWith(a,[d,a,b])}})}).promise()};!0===b.allowMultiples&&b.eleSelected.addClass("pt-pickSPUser-selected-multiple");var a={};b.elePickInput.find("input[name='pickSPUserInputField']").attr("placeholder",b.inputPlaceholder).autocomplete({minLength:3,appendTo:b.elePickInput,source:function(c,e){c.term in a?e(a[c.term]):(a[c.term]=[],b.getSearchResults(c.term).then(function(b,d,f){a[c.term].push.apply(a[c.term],b);e(a[c.term])}))},select:function(a,c){if(!1===
+b.allowMultiples)b.eleSelected.empty();else if(b.eleSelected.find("div[data-pickspuserid='"+c.item.accountId+"']").length)return;h.pt.pickSPUser.getUserHtmlElement(b,c.item.accountId,c.item.displayName).appendTo(b.eleSelected).data("pickspuser_object",c.item);h.pt.pickSPUser.storeListOfUsers(d);h.pt.addHoverEffect(d.find("div.pt-pickSPUser-person-cntr"));setTimeout(function(){a.target.value=""},50);!1===b.allowMultiples&&b.elePickInput.hide();h.isFunction(b.onPickUser)&&b.onPickUser.call(b.eleUserInput,
+h.extend({},c.item));f.trigger(h.Event("spwidget:peoplePickerAdd"),[b.eleUserInput,h.extend({},c.item)])}});d.data("pickSPUserContainerOpt",b);f.data("pickSPUserContainer",d);f.val()&&b.addPeopleToList(f.val(),!0);h.isFunction(b.onCreate)&&b.onCreate.call(f,f);f.trigger(h.Event("spwidget:peoplePickerCreate"),[b.eleUserInput]);return this});return this};h.pt.pickSPUser.getUserHtmlElement=function(c,k,f){c=h(h.pt.pickSPUser.htmlTemplate).find(".pt-pickSPUser-person").clone(1);c.attr("data-pickSPUserID",
+k);c.find("span.pt-person-name").append(f).end().attr("data-pickSPUserNAME",f);return c};h.pt.pickSPUser.removeUser=function(c){var k=h(c).closest("div.pt-pickSPUser"),f=k.data("pickSPUserContainerOpt");c=h(c).closest("div.pt-pickSPUser-person");var b=c.data("pickspuser_object");h.isFunction(f.onRemoveUser)&&f.onRemoveUser.call(f.ele,f.ele,c,b);c.fadeOut("fast",function(){h(this).remove();h.pt.pickSPUser.storeListOfUsers(k)});!1===f.allowMultiples&&f.elePickInput.show("fast",function(){f.elePickInput.find("input").focus()});
+f.eleUserInput.trigger(h.Event("spwidget:peoplePickerRemove"),[f.eleUserInput,b])};h.pt.pickSPUser.storeListOfUsers=function(c,k){var f=h(c).closest("div.pt-pickSPUser"),b=f.data("pickSPUserContainerOpt"),d="",a={};f.find("div.pt-pickSPUser-selected div.pt-pickSPUser-person").each(function(){a[h(this).attr("data-pickSPUserID")]||(a[h(this).attr("data-pickSPUserID")]=!0,d&&(d+=";#"),d+=h(this).attr("data-pickSPUserID"),d+=";#",d+=h(this).attr("data-pickSPUserNAME"))});b.eleUserInput.val(d);k||b.eleUserInput.change()};
+h.pt.pickSPUser.handleAction=function(c,k,f){c=String(c).toLowerCase();k=String(k).toLowerCase();var b=h(this).data("pickSPUserContainer").data("pickSPUserContainerOpt"),d=this;if("method"===c)switch(k){case "clear":b.eleUserInput.val("");b.eleSelected.empty();!1===b.allowMultiples&&(b.eleSelected.css("display","none"),b.elePickInput.show());break;case "destroy":h(this).hasClass("hasPickSPUser")&&h(this).removeClass("hasPickSPUser").next(".pt-pickSPUser").remove().show().trigger("change");break;case "add":b.addPeopleToList(f);
+break;case "remove":f&&(c=b.eleSelected.find("div[data-pickspuserid='"+f+"']"),c.length||(c=b.eleSelected.find("div[data-pickspusername='"+f+"']")),c.length&&h.pt.pickSPUser.removeUser(c));break;case "getSelected":d=h.SPWidgets.parseLookupFieldValue(b.eleUserInput.val())}return d};h.pt.pickSPUser.styleSheet="/**\n * Styles for the Pick User Widget\n */\n.pt-pickSPUser .pt-pickSPUser-selected-multiple {\n    min-height: 3em;\n}\n\n.pt-pickSPUser .pt-pickSPUser-selected .pt-pickSPUser-person {\n    float: left;\n    margin-left: .2em;\n}\n.pt-pickSPUser .pt-pickSPUser-hint {\n    font-size: .9em;\n}\n\n.pt-pickSPUser div.pt-pickSPUser-input input.ui-autocomplete {\n    width: 99%;\n}\n.pt-pickSPUser div.pt-pickSPUser-input ul.ui-autocomplete {\n    z-index: 1;\n}\n\n.pt-pickSPUser .pt-pickSPUser-person-cntr {\n    margin: .2em 0em;\n    padding: .2em;\n    position: relative;\n}\n\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-person-name {\n    padding-right: 2em;\n}\n\n/* Item action container (delete button) */\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-pickSPUser-person-actions {\n    position: absolute;\n    right: 1px;\n    top: 1px;\n    padding: .2em;\n    display: none;\n}\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-pickSPUser-person-actions .pt-pickSPUser-person-action-links,\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-pickSPUser-person-actions .pt-pickSPUser-person-action-links .tt-confirm-delete {\n    float:right;\n}\n\n/* Make the action visible if we hover or we are trying to confirm a deletion */\n.pt-pickSPUser .pt-pickSPUser-person-cntr.ui-state-hover .pt-pickSPUser-person-actions,\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-pickSPUser-person-actions.tt-confirm,\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-pickSPUser-person-actions a {\n    display:block;\n    float: right;\n}\n\n/* autocomplete busy image */\n.ui-autocomplete-loading {\n    background: white url('/_layouts/images/loading.gif') right center no-repeat;\n}\n\n\n";
+h.pt.pickSPUser.htmlTemplate='\x3c!--\n    Html Templates for the PickSPUser plugin.\n    \n    |\n    |   $Author$\n    | $Revision$\n    |     $Date$\n    |       $Id$\n    |\n--\x3e\n<div>\n    <div class="pt-pickSPUser">\n        <div class="pt-pickSPUser-selected">\n            None Selected!\n        </div>\n        <div style="clear:both"></div>\n        <div class="pt-pickSPUser-input" \n                title="Type user name above to view search results.">\n            <input name="pickSPUserInputField" value="" type="text"/>\n        </div>\n    </div>\n    \n    <div class="pt-pickSPUser-person">\n        <div class="pt-pickSPUser-person-cntr ui-state-default ui-corner-all">\n            <span class="pt-person-name"></span>\n            <div class="pt-pickSPUser-person-actions">\n                <div class="tt-record-item-action-links">\n                    <a class="tt-delete-icon" href="javascript:" onclick="jQuery.pt.pickSPUser.removeUser(this);">\n                        <img style="border: medium none; margin-right: 2px;" alt="Delete" src="/_layouts/images/delitem.gif">\n                    </a>\n                    <div style="clear:both;"></div>\n                </div>\n                <div style="clear:both;"></div>\n            </div>\n        </div>\n    </div>\n</div>\n';
+h.pt.addHoverEffect=function(c){return h(c).each(function(){if(!h(this).hasClass("addHoverEffectDone")){h(this).addClass("addHoverEffectDone");var c=this;h(c).mouseenter(function(){h(c).toggleClass("ui-state-hover")});h(c).mouseleave(function(){h(c).toggleClass("ui-state-hover")})}})}})(r);(function(c){var k={isSPUploadCssDone:!1};c.SPWidgets.defaults.upload={listName:"",folderPath:"",uploadDonePage:"/_layouts/images/STS_ListItem_43216.gif",onPageChange:null,onUploadDone:null,uploadUrlOpt:"",overwrite:!1,
+uploadPage:"",overlayClass:"",overlayBgColor:"white",overlayMessage:"<div>Working on it</div>",selectFileMessage:"Click here to select file...",uploadDoneMessage:"Upload Successful!",fileNameErrorMessage:'A file name cannot contain any of the following characters: \\ / : * ? " &lt; &gt; | # { } % ~ &amp;',noFileErrorMessage:"No file selected!",checkInFormHeight:"25em",webURL:null,debug:!1};c.fn.SPControlUpload=function(f){k.isSPUploadCssDone||(k.isSPUploadCssDone=!0,c('<style type="text/css">\n\n'+
+k.StyleSheet+"\n\n</style>").prependTo("head"),c.SPWidgets.defaults.upload.webURL||(c.SPWidgets.defaults.upload.webURL=c().SPServices.SPGetCurrentSite()));return c(this).each(function(){var b=c.extend({},c.SPWidgets.defaults.upload,f),d;b.log=b.debug?k.log:function(){};b.showHideBusy=function(a){return c.Deferred(function(c){a?b.$busyOverlay.fadeOut("fast").promise().then(function(){c.resolve()}):b.$busyOverlay.fadeIn("slow").promise().then(function(){c.resolve()})}).promise()};b.showHideFullForm=
+function(a){a?(b.$content.removeClass("spwidget-show-full-form"),b.$iframeCntr.css({overflow:"",height:""})):(b.$content.addClass("spwidget-show-full-form"),b.$iframeCntr.css({overflow:"auto",height:"auto"}));return b};b.showHideSuccess=function(a){a?b.$successCntr.stop().fadeOut().promise(function(){b.$successCntr.css("display","none")}):b.$successCntr.stop().show().promise(function(){b.$successCntr.css("display","block")});return b};b.showError=function(a){a=c.extend({},{message:"",autoHide:!0},
+a);b.$errorCntrMsg.html(a.message);b.$errorCntr.stop().css("display","block");a.autoHide&&b.$errorCntr.animate({opacity:1},5E3,function(){b.clearError()});return b};b.clearError=function(){b.$errorCntr.css("display","none");return b};b.resetWidget=function(){b.ev={state:1,action:"uploading",hideOverlay:!0,pageUrl:"",page:null,isUploadDone:!1,file:{}};b.$iframe.attr("src",b.uploadPage);return b};b.getUploadedFileRow=function(){var a={};c().SPServices({operation:"GetListItems",async:!1,webURL:b.webURL,
+listName:b.listName,CAMLQuery:"<Query><Where><Eq><FieldRef Name='Author' LookupId='TRUE'/><Value Type='Integer'><UserID/></Value></Eq></Where><OrderBy><FieldRef Name='Modified' Ascending='FALSE'/></OrderBy></Query>",CAMLViewFields:"<ViewFields><FieldRef Name='ID'/><FieldRef Name='EncodedAbsUrl'/><FieldRef Name='FileLeafRef' /><FieldRef Name='Author' /><FieldRef Name='Editor' /><FieldRef Name='Created' /><FieldRef Name='Modified' /></ViewFields>",CAMLRowLimit:1,CAMLQueryOptions:"<QueryOptions><ViewAttributes Scope='Recursive' /></QueryOptions>",
+completefunc:function(b,e){var d=c(b.responseXML).SPFilterNode("z:row").SPXmlToJson({includeAllAttrs:!0});d.length&&(a=d[0])}});return a};b.isUploadPage=function(a){var c=!1,e=document.createElement("a"),d=null;e.href=String(a).toLowerCase();b.userUploadPage?(d=document.createElement("a"),d.href=String(b.userUploadPage).toLowerCase(),e.pathname===d.pathname&&(c=!0)):c=/upload(ex)?\.aspx$/.test(e.pathname);return c};b.listName&&0!==b.listName.indexOf("{")&&(b.listName=c.pt.getListUID(b.listName));
+if(!b.listName)return c(this).html('<div class="ui-state-error">Input parameter [listName] not valid!</div>'),this;b.spVersion=c.SPWidgets.getSPVersion(!0);b.userUploadPage=b.uploadPage;b.uploadPage=String(b.uploadPage);if(b.uploadPage)-1===b.uploadPage.toLowerCase().indexOf("http")&&(d="/",0==b.uploadPage.indexOf("/")&&(d=""),b.uploadPage=b.webURL+d+b.uploadPage);else switch(b.spVersion){case "2013":b.uploadPage=b.webURL+"/_layouts/15/UploadEx.aspx";break;case "2010":b.uploadPage=b.webURL+"/_layouts/UploadEx.aspx";
+break;default:b.uploadPage=b.webURL+"/_layouts/Upload.aspx"}-1===String(b.uploadDonePage).toLowerCase().indexOf("http")&&(d="/",0==b.uploadDonePage.indexOf("/")&&(d=""),b.uploadDonePage=b.webURL+d+b.uploadDonePage);b._iframeLoadId=1;b._uploadUrlParams="?List="+c.pt.getEscapedUrl(b.listName)+"&RootFolder="+c.pt.getEscapedUrl(b.folderPath)+"&Source="+c.pt.getEscapedUrl(b.uploadDonePage)+"&"+(new Date).getTime()+"=1&"+b.uploadUrlOpt;b.uploadPage+=b._uploadUrlParams;b._lastError="";b._reloadCount=0;b.ev=
+{state:1,action:"uploading",hideOverlay:!0,pageUrl:"",page:null,isUploadDone:!1,file:{}};b.$ele=c(this);d={};b.overlayBgColor&&(d["background-color"]=b.overlayBgColor);b.$cntr=c(c(k.HtmlUI).filter("div.SPControlUploadUI").clone()).appendTo(b.$ele.addClass("hasSPControlUploadUI").empty()).data("SPControlUploadOptions",b);b.$buttonCntr=b.$cntr.find("div.buttonPane").click(function(a){k.onUpload(this)});b.$content=b.$cntr.find("div.mainContainer");b.$iframeCntr=b.$cntr.find("div.iFrameWindow");b.$iframe=
+b.$iframeCntr.children("iframe");b.$busyOverlay=b.$cntr.find("div.loadingOverlay");b.$busyOverlayMsg=b.$busyOverlay.find("div.loadingOverlayMsg");b.$successCntr=b.$cntr.find("div.spwidget-success-cntr");b.$errorCntr=b.$cntr.find("div.spwidget-error-cntr");b.$errorCntrMsg=b.$errorCntr.find(".spwidget-msg");b.reInvalidChr=/[\/:*?"<>|#{}%~&]/;b.$successCntr.on("click",".spwidget-close",function(a){b.showHideSuccess(!0)}).find(".spwidget-msg").html(b.uploadDoneMessage);b.$errorCntr.on("click",".spwidget-close",
+function(a){b.clearError()});b.$busyOverlay.addClass(b.overlayClass).css(d);b.$busyOverlayMsg.html(b.overlayMessage);b.showHideBusy();b.$cntr.find("iframe").css("height",b.checkInFormHeight).load(function(a){k.onIframeChange(b.$ele.find(".SPControlUploadUI"))}).attr("src",b.uploadPage).end();return this})};k.onUpload=function(f){var b=c(f).closest(".SPControlUploadUI"),d=b.find("iframe").contents(),a=d.find("input[type='file']").closest("tr").siblings().find("span"),g=b.data("SPControlUploadOptions"),
+e=g.ev;g.log("Upload.onUpload("+g._iframeLoadId+"): Start....");a.css("display","none");if(d.find("input[type='file']").val())if(g.reInvalidChr.test(d.find("div.SPControlUploadModUIFileSelected").text()))g.showError({message:g.fileNameErrorMessage});else{e.state=2;e.action="preLoad";if(g.onPageChange&&!1===g.onPageChange.call(g.$ele,e))return!1;g.showHideFullForm(!0);g.showHideBusy().then(function(){g.log("Upload.onUpload("+g._iframeLoadId+"): Clicking the OK button on upload form.");d.find("input[type='button'][id$='btnOK']").click();
+e.action="postLoad";if(a.is(":visible"))return b.find(".loadingOverlay").css("display","none").end(),!1})}else g.showError({message:g.noFileErrorMessage})};k.onIframeChange=function(f){var b=c(f).closest(".SPControlUploadUI"),d=b.data("SPControlUploadOptions"),a=0;2===d.ev.state&&"preLoad"===d.ev.action?(d.log("Upload.onIframeChange("+d._iframeLoadId+"): ev.action=["+d.ev.action+"] and ev.state=["+d.ev.state+"] - handled by onUpload(). Setting action to postLoad"),d.ev.action="postLoad"):(d._iframeLoadId++,
+a=d._iframeLoadId,d.log("Upload.onIframeChange("+a+"): State=["+d.ev.state+"] Action=["+d.ev.action+"] iframe.url: "+b.find("iframe").contents()[0].location.href),setTimeout(function(){if(a!==d._iframeLoadId)d.log("Upload.onIframeChange("+a+"): not latest invokation! Existing.");else{d.log("Upload.onIframeChange("+a+"): START... Executing setTimeout() for iframe ID: "+a);var g=c(b.find("iframe").contents()),e=d.ev,f=g.find("form").eq(0);e.pageUrl=g[0].location.href;e.page=g;d.$iframeCntr.scrollTop(0);
+g.scrollTop(0);if(d.isUploadPage(e.pageUrl)){d.log("Upload.onIframeChange("+a+"): URL is the upload page!");g.find("body").css({overflow:"hidden"});f.children(":visible").hide().end().append(c(k.HtmlUI).filter("div#SPControlUploadModUI").clone()).find("div.SPControlUploadModUIFileSelected").html(d.selectFileMessage);if(RegExp(/error/i).test(c.trim(g.find(".ms-pagetitle").text()))||RegExp(/error/i).test(c.trim(g.find("title").text()))||RegExp(/error\.aspx/i).test(c.trim(g.find("form").attr("action")))){d.log("Upload.onIframeChange("+
+a+"): page displaying an error... Storing it and reloading upload form.");d._lastError=g.find("[id$='LabelMessage']").text();if(1<d._reloadCount){alert("Error encountered during upload which is causing program to loop. Last upload error was: "+d._lastError);b.find(".loadingOverlay").fadeOut();return}d._reloadCount+=1;b.find("iframe").attr("src",d.uploadPage);return}if(g.find("#GearPage")&&!g.find("input[type='file']").length){d.log("Upload.onIframeChange("+a+"): SP processing page (GearPage)... Exiting and waiting for next page...");
+return}g.find("input[type='file']").closest("table").appendTo(g.find("#SPControlUploadModUI")).removeClass("ms-authoringcontrols");var h=g.find("#SPControlUploadModUI").find("input[type='file']").closest("tr").siblings().css("display","none").end().end().siblings("tr .ms-error").css("display","").end().on("change focus click",function(a){a=c(this).val();var b="",e="/_layouts/images/urn-content-classes-smartfolder16.gif";if(a){try{b=a.substr(a.lastIndexOf(".")+1)}catch(f){b="GEN"}e="/_layouts/images/IC"+
+b.toUpperCase()+".GIF";a=a.replace(/\\/g,"/").split("/").pop()||a}else a=d.selectFileMessage;g.find("#SPControlUploadModUI > div").html(a).css("background-image","url('"+e+"')")}).css({cursor:"pointer",height:"100px",position:"absolute",left:"0px",top:"0px",filter:"alpha(opacity=1)",opacity:"0.01",outline:"none","-moz-opacity":"0.01","font-size":"100px","z-index":"5"});f.on("mousemove",function(a){h.css({left:a.pageX-(h.width()-50),top:a.pageY-30}).blur()});d._lastError&&(d.showError({message:d._lastError}),
+d._lastError="");d._reloadCount=0;d.overwrite?g.find("input[type='checkbox'][name$='OverwriteSingle']").prop("checked","checked"):g.find("input[type='checkbox'][name$='OverwriteSingle']").prop("checked","");e.state=1;e.action="postLoad";e.hideOverlay=!0}else{d.log("Upload.onIframeChange("+d._iframeLoadId+"): File was uploaded to server!");e.state=3;e.action="postLoad";e.hideOverlay=!0;e.file=d.getUploadedFileRow();if(k.isSameUrlPage(e.pageUrl,d.uploadDonePage))d.log("Upload.onIframeChange("+d._iframeLoadId+
+"): Upload widget process DONE!"),e.isUploadDone=!0,e.hideOverlay=!1,d.showHideBusy(),d.showHideSuccess();else if(d.log("Upload.onIframeChange("+d._iframeLoadId+"): Post Upload Form being displayed! Hooking into form.onsubmit!"),f.length){var q=f.prop("onsubmit");f.children(":visible").css("display","none").addClass("ptWasVisible").end().find("input[title='Name']").closest("div[id^='WebPart']").appendTo(g.find("form")).css("display","").removeClass("ptWasVisible");f[0].onsubmit=function(){d.log("Upload.onIframeChange("+
+a+"): iframe form.onsubmit triggered!");d.showHideBusy();var b=!0;c.isFunction(d.onPageChange)&&(b=d.onPageChange.call(d.$ele,c.extend({},e,{state:3,action:"preLoad"})));if(!1===b)return d.showHideBusy(!0),b;c.isFunction(q)&&(b=q());if(!1===b)return d.showHideBusy(!0),b;d.showHideFullForm(!0);return b}}c(b.find("iframe")[0].contentWindow).unload(function(a){d.log("Upload.onIframeChange("+d._iframeLoadId+"): iframe.unload() triggered!");d.showHideBusy();d.showHideFullForm(!0);if(c.isFunction(d.onPageChange))return d.onPageChange.call(d.$ele,
+c.extend({},e,{state:3,action:"preLoad"}))})}d.log("Upload.onIframeChange("+d._iframeLoadId+"): iframe page setup done!");d.onPageChange&&d.onPageChange.call(d.$ele,e);if("postload"!==e.action.toLowerCase()||!0===e.hideOverlay)d.showHideBusy(!0),!1===e.isUploadDone&&3===e.state&&d.showHideFullForm();e.isUploadDone&&(d.resetWidget(),d.$successCntr.animate({opacity:1},3E3,function(){d.showHideSuccess(!0)}),c.isFunction(d.onUploadDone)&&d.onUploadDone.call(d.$ele,e.file))}},500))};k.isSameUrlPage=function(c,
+b){if(!c||!b)return!1;var d=function(a){var b=document.createElement("a");b.href=a;return b.protocol+"//"+b.hostname+(b.port?":"+b.port:"")+b.pathname},a=String(d(c)).toLowerCase(),d=String(d(b)).toLowerCase();return a===d};c.pt.getEscapedUrl=escapeProperly;c.pt.getUnEscapedUrl=unescapeProperly;c.pt.getListUID=function(f){if(!f)return"";var b="";if(c.pt._cache["getListUID:"+f])return b=c.pt._cache["getListUID:"+f];c().SPServices({operation:"GetList",listName:f,async:!1,completefunc:function(d,a){b=
+c(d.responseXML).find("List").attr("ID")}});b&&(c.pt._cache["getListUID:"+f]=b);return b};k.log=function(){var f,b,d=1,a=0,g=!1,e=!1,k=["#FFFFFF","#F5F5F2"];"undefined"===typeof console||"undefined"===typeof console.debug?f=function(){var c,e,g="";c=0;for(e=arguments.length;c<e;c++)g+='<div style="padding: .1em .1em;background-color:'+k[a]+'"><span>['+d+"] </span>"+arguments[c]+"</div>",d++,a=1===a?0:1;g&&(b.append(g),b.dialog("isOpen")||b.dialog("open"))}:g=!0;return function(){e||(e=!0,g||(b=c("<div><h2>SPWidgets Debug Output</h2></div>").appendTo("body").dialog({title:"Debug output",
+height:300})));if(g){var a,d;a=0;for(d=arguments.length;a<d;a++)console.debug(arguments[a])}else f.apply(this,arguments)}}();k.StyleSheet="/**\n * FILE: jquery.SPControlUpload.css\n * \n * \n */\n.spcontrolupload .mainContainer {\n\tposition: relative;\n\tdisplay:block;\n\theight: 4em;\n}\n\n.spcontrolupload .iFrameWindow,\n.spcontrolupload .buttonPane,\n.spcontrolupload .spwidget-success-cntr,\n.spcontrolupload .loadingOverlay {\n    position: absolute;\n    top: 0px;\n    height: 3em;\n    width: 100%;\n}\n.spcontrolupload .buttonPane {\n    left: 0px;\n    width: 10%;\n    overflow: hidden;\n    cursor: pointer;\n}\n.spcontrolupload .buttonPane .upload_button {\n    font-weight: bold;\n    font-size: 1.1em;\n    text-align: center;\n    margin-top: .8em;\n}\n\n.spcontrolupload .iFrameWindow {\n    width: 90%;\n    left: 10%;\n    overflow: hidden;\n}\n.spcontrolupload .iFrameWindow iframe {\n\toverflow: auto;\n\twidth: 100%;\n\theight: 99%;\n}\n\n.spcontrolupload .spwidget-show-full-form .iFrameWindow {\n    overflow: auto;\n    width: 100%;\n    margin: 0em;\n    left: 0px;\n    right: auto;\n    z-index: 5;\n}\n\n.spcontrolupload .loadingOverlayMsg {\n\tfont-size: 1em;\n\tbackground-position: left top;\n    background-repeat: no-repeat;\n    background-image: url('/_layouts/images/loadingcirclests16.gif');\n    margin: 0.5em;\n    padding-left: 25px;\n}\n\n.spcontrolupload .spwidget-success-cntr,\n.spcontrolupload .spwidget-error-cntr {\n    display: none;\n}\n.spcontrolupload div.spwidget-msg-cntr {\n    margin: 0.5em .5em .5em 3em;\n\tfont-size: 1em;\n\tbackground-position: left top;\n    background-repeat: no-repeat;    \n}\n.spcontrolupload .spwidget-close {\n    color: red;\n    font-size: xx-small;\n    font-weight: bold;\n    vertical-align: super;\n    cursor: pointer;\n}\n\n.spcontrolupload .spwidget-success-cntr div.spwidget-msg-cntr {\n    background-image: url('/_layouts/images/STS_ListItem_43216.gif');\n    padding-left: 30px;\n}\n\n.spcontrolupload .spwidget-error-cntr {\n    bottom: -1.5em;\n    left: 0px;\n    width: 100%;\n    position: absolute;\n}\n\n.spcontrolupload-dev-mode .iFrameWindow {\n    overflow: auto !important;\n    height: auto !important;\n}\n\n\n";
+k.HtmlUI='<div class="SPControlUploadUI spcontrolupload">\n    <div class="mainContainer">\n        <div class="buttonPane ui-state-default">\n            <div class="upload_button">\n                Upload\n            </div>\n        </div>\n        <div class="iFrameWindow ui-state-default">\n            <iframe name="SPControlUploadUI" frameborder="0" scrollbars="yes" scrolling="yes"></iframe>\n        </div>\n        <div class="loadingOverlay ui-widget-content">\n            <div class="loadingOverlayMsg"></div>\n        </div>\n        <div class="spwidget-success-cntr ui-widget-content">\n            <div class="spwidget-msg-cntr">\n                <span class="spwidget-msg">Upload Successful!</span> \n                <span class="spwidget-close">x</span> \n            </div>\n        </div>\n        <div class="spwidget-error-cntr ui-state-error">\n            <div class="spwidget-msg-cntr">\n                <span class="spwidget-msg">Error</span> \n                <span class="spwidget-close">x</span> \n            </div>\n        </div>\n    </div>\n</div>\n\n<div id="SPControlUploadModUI" \n    style="\n        position:   absolute;\n        width:      99.9%;\n        height:     99.9%;\n        left:       0px;\n        top:        0px;\n        padding-left:       .5em;\n        background-color:   white;">\n    <div class="SPControlUploadModUIFileSelected"\n        style="\n        background-position: left center;\n        background-repeat: no-repeat;\n        background-image: url(\'/_layouts/images/urn-content-classes-smartfolder16.gif\');\n        padding: 0.5em 2em;">Select...</div>\n</div>\n'})(r);
+(function(c){var k={isInitDone:!1,evNamespace:".spwidgets.spdatefield"};c.SPWidgets.defaults.date={allowMultiples:!1,delimeter:";",remainOpen:!0,datepicker:{dateFormat:"mm/dd/yy",buttonImage:"/_layouts/images/CALENDAR.GIF",showOn:"both",buttonImageOnly:!0},dateTemplate:'{{date}} <span class="spwidgets-item-remove">[x]</span>',showTimepicker:!1,timeFormat:" {{hour}}:{{minutes}} {{ampm}}",timeUTC:!0,labelHour:"Hour",labelMinutes:"Minutes",labelAMPM:"AM|PM",labelTime:"Time",labelSet:"Set",onSelect:null};
+c.fn.SPDateField=function(f){var b=arguments,d=this;k.isInitDone||(k.isInitDone=!0,""!==k.styleSheet&&c('<style type="text/css">\n\n'+k.styleSheet+"\n\n</style>").prependTo("head"),c("body").on("click"+k.evNamespace,k.onPageClick));return"string"===typeof f?function(){var a=String(b[0]).toLowerCase(),g=d;c(d).each(function(e,f){if(c(d).hasClass("hasSPDateField")){var k=c(f),h=k.data("SPDateFieldInstance");if(h&&0<k.length)switch(a){case "getdate":g=h.getDate();break;case "setdate":b[1]&&h.setDate({date:b[1],
+format:b[2]||h.opt.datepicker.dateFormat});break;case "removedate":b[1]&&h.removeDate({date:b[1],format:b[2]||h.opt.datepicker.dateFormat});break;case "reset":h.reset();break;case "destroy":h.destroy()}}});return g}():this.each(function(){var a={$ele:c(this).addClass("hasSPDateField"),isInline:!1,inlineCntr:null};if(!a.$ele.is("input[type='text']")){if(a.$ele.is(":input"))return;a.isInline=!0;a.inlineCntr=c(this);a.$ele=c('<input name="spdatefieldinline" value="" type="text" style="display:none" />')}a.opt=
+c.extend(!0,{},c.SPWidgets.defaults.date,f);a.$ui=c(k.htmlTemplate).filter("div.spwidget-date-cntr").clone();a.isInline?(a.$ui.appendTo(a.inlineCntr).addClass("spwidget-inline").css("display","none"),a.$ele.appendTo(a.$ui)):a.$ui.insertAfter(a.$ele).css("display","none");a.eleOrigVal=a.$ele.val();a.$ele.val("");a.$input=a.$ui.find("input[name='SPDateFieldInput']").val(a.$ele.val());a.$inputCntr=a.$input.closest(".spwidget-date-input-cntr");a.$dtCntr=a.$ui.find("div.spwidget-date-selected-cntr");a.getDate=
+function(){var b={input:a.$ele.val(),dates:[]};b.input&&(a.opt.allowMultiples?b.dates=b.input.split(a.opt.delimeter):b.dates.push(b.input));return b};a.reset=function(){a.$input.val("").datepicker("hide");a.$ele.val("").change();a.$dtCntr.empty();return a};a.setDate=function(b){var e=c.extend({},{date:"",time:"",format:a.opt.datepicker.dateFormat,setDatepicker:!0,triggerEvent:!0},b),d=a.$ele.val(),f="",k;if(!e.date)return a;c.isArray(e.date)||(e.date=[e.date]);c.each(e.date,function(b,g){var h=g,
+t="",u="";if(!(h instanceof Date))if(h=String(h),-1<h.indexOf("T"))h=c.SPWidgets.parseDateString(h);else try{h=c.datepicker.parseDate(e.format,g)}catch(v){return a}k=h;t=c.datepicker.formatDate("yy-mm-dd",h);u=c.datepicker.formatDate(a.opt.datepicker.dateFormat,h);a.opt.showTimepicker&&(t=c.SPWidgets.SPGetDateString(h,a.opt._timeFmt),u+=a.$timepicker.formatTime(h));a.opt.allowMultiples?0>d.indexOf(t)&&(d&&(d+=a.opt.delimeter),d+=t,f+='<span class="spwidgets-item" data-spwidget_dt1="'+t+'" data-spwidget_dt2="'+
+u+'">'+c.SPWidgets.fillTemplate({tmplt:a.opt.dateTemplate,data:{date:u}})+" </span>"):(d=t,f=u)});a.opt.allowMultiples?a.$dtCntr.append(f):e.setDatepicker&&(a.$input.val(f),a.isInline&&!a.opt.showTimepicker?a.$inputCntr.datepicker("setDate",k):a.isInline&&a.$timepicker.updateDateTimeWidgets(k));a.$ele.val(d);e.triggerEvent&&(a.isInline||a.$ele.change(),c.isFunction(a.opt.onSelect)&&a.opt.onSelect.call(a.isInline?a.inlineCntr:a.$ele));return a};a.removeDate=function(b){var e=c.extend({},{date:"",format:a.opt.datepicker.dateFormat},
+b),d=a.getDate();if(!e.date)return a;c.isArray(e.date)||(e.date=[e.date]);c.each(e.date,function(b,f){var g=f,h="",k="";if(!(g instanceof Date))try{g=c.datepicker.parseDate(e.format,f)}catch(t){return a}h=a.opt.showTimepicker?c.SPWidgets.SPGetDateString(g,a.opt._timeFmt):c.datepicker.formatDate("yy-mm-dd",g);k=RegExp("("+a.opt.delimeter+")?"+h,"g");d.input=d.input.replace(k,"");a.opt.allowMultiples&&a.$dtCntr.find("span[data-spwidget_dt1='"+h+"']").remove()});d.input=d.input.replace(RegExp("^"+a.opt.delimeter),
+"").replace(RegExp(a.opt.delimeter+"$"),"");a.$ele.val(d.input).change();return a};a.destroy=function(){a.$ele.removeData("SPDateFieldInstance");a.$ele.removeClass("hasSPDateField").css("display","");a.$ui.css("display","none");a.$input.datepicker("hide");a.$input.datepicker("destroy");a.$timepicker&&(a.$timepicker.$timePicker.off(".spdatefield"),a.$input.off(".spdatefield"));a.isInline&&a.inlineCntr.removeClass("hasSPDateField").removeData("SPDateFieldInstance");a.$ui.remove()};a.createDatePicker=
+function(){var b={};if(a.opt.showTimepicker){b.$selectorCntr=c(k.htmlTemplate).filter("div.spwidget-datetime-selector").clone().appendTo(a.$inputCntr).css("display","none");b.$datePicker=b.$selectorCntr.find("div.spwidget-date-selector");b.$timePicker=b.$selectorCntr.find("div.spwidget-time-selector");b.$setButton=b.$selectorCntr.find("div.spwidget-btn-set");b.$hourSelect=b.$timePicker.find("select.spwidget-hour");b.$minSelect=b.$timePicker.find("select.spwidget-min");b.$ampmSelect=b.$timePicker.find("select.spwidget-ampm");
+b.heightDone=!1;b.firstShowDone=!1;b.getTime=function(){var a={hour:b.$hourSelect.val(),minutes:b.$minSelect.val(),ampm:b.$ampmSelect.val()};a.hour24=a.hour;"PM"===a.ampm&&"12"!==a.hour?a.hour24=String(parseInt(a.hour)+12):"AM"===a.ampm&&"12"===a.hour&&(a.hour24="0");return a};b.formatTime=function(e){var d=e,f="";e instanceof Date?(d={hour:e.getHours(),hour24:String(e.getHours()),minutes:String(e.getMinutes()),ampm:"AM"},12<d.hour?(d.hour=String(d.hour-12),d.ampm="PM"):12===d.hour&&(d.ampm="PM"),
+d.hour=String(d.hour),"0"===d.hour&&(d.hour="12"),2>String(d.minutes).length&&(d.minutes="0"+d.minutes)):e||(d=b.getTime());return f=c.SPWidgets.fillTemplate(a.opt.timeFormat,d)};b.setDateTime=function(c){var d=b.getTime();c instanceof Date||(c=b.$datePicker.datepicker("getDate"),null===c&&(c=new Date));c.setHours(d.hour24);c.setMinutes(d.minutes);a.setDate({date:c,format:a.opt.datepicker.dateFormat,setDatepicker:!0});b.execUsersCallback(a.$input.val())};b.updateDateTimeWidgets=function(a){var c;
+a instanceof Date||(a=new Date);c=a.getHours();0===c?c="12":12<c&&(c-=12);b.$hourSelect.val(c);for(c=a.getMinutes();c%5;)--c;10>c&&(c="0"+c);b.$minSelect.val(c);11<a.getHours()?b.$ampmSelect.val("PM"):b.$ampmSelect.val("AM");b.$datePicker.datepicker("setDate",a)};b.showPicker=function(){b.$selectorCntr.show(function(){var d;b.heightDone||(b.heightDone=!0,c.SPWidgets.makeSameHeight(b.$datePicker.find("div.ui-datepicker-inline").add(b.$timePicker)));b.firstShowDone||(b.firstShowDone=!0,d=a.getDate(),
+d=d.dates.length?c.SPWidgets.parseDateString(d.dates[d.dates.length-1]):new Date,b.updateDateTimeWidgets(d))}).position({my:"left top",at:"left bottom",of:a.$input})};b.execUsersCallback=function(d,f){c.isFunction(a.opt.datepicker._onSelect)&&a.opt.datepicker._onSelect.call(b.$datePicker,d,f)};a.opt.datepicker.altFormat="";a.opt.datepicker.altField="";if(a.opt.datepicker.buttonImage&&!a.isInline)c('<img class="ui-datepicker-trigger" src="'+a.opt.datepicker.buttonImage+'" alt="..." title="...">').appendTo(a.$inputCntr).on("click"+
+k.evNamespace,function(){b.showPicker()});if(a.opt.allowMultiples||a.isInline)b.$selectorCntr.addClass("spwidget-date-multiples-cntr"),b.$setButton.find("div.spwidget-btn").button({label:a.opt.labelSet}).on("click"+k.evNamespace,function(a){b.setDateTime();return this});b.$timePicker.find("div.ui-widget-header").html(a.opt.labelTime).end().find("div.spwidget-time-hour > label").html(a.opt.labelHour).end().find("div.spwidget-time-min > label").html(a.opt.labelMinutes).end().find("div.spwidget-time-ampm > label").html(a.opt.labelAMPM).end();
+c.isFunction(a.opt.datepicker.onSelect)&&(a.opt.datepicker._onSelect=a.opt.datepicker.onSelect);a.opt.datepicker.numberOfMonths=1;a.opt.datepicker.onSelect=function(c,d){if(a.opt.allowMultiples||a.isInline)return this;b.setDateTime(new Date(d.currentYear,d.currentMonth,d.currentDay))};b.$datePicker.datepicker(a.opt.datepicker);b.$timePicker.on("change"+k.evNamespace+" keyup"+k.evNamespace,"select",function(c){c.stopPropagation();c.preventDefault();if(a.opt.allowMultiples||a.isInline)return this;b.setDateTime();
+return this});a.isInline&&(a.$input.css("display","none"),b.$selectorCntr.addClass("spwidget-inline").css("display",""));if(!a.isInline)a.$input.on("focus"+k.evNamespace,function(){b.showPicker()})}else a.opt.allowMultiples&&a.opt.remainOpen&&(a.opt.datepicker.showAnim=""),c.isFunction(a.opt.datepicker.onSelect)&&(a.opt.datepicker._onSelect=a.opt.datepicker.onSelect),a.opt.datepicker.onSelect=function(b,d){a.setDate({date:b,format:d.settings.dateFormat,setDatepicker:!1});c.isFunction(a.opt.datepicker._onSelect)&&
+a.opt.datepicker._onSelect.call(this,b,d);a.opt.allowMultiples&&a.$input.val("");a.opt.allowMultiples&&(a.opt.remainOpen&&!a.isInline)&&setTimeout(function(){a.$input.datepicker("show")},5)},a.isInline?(a.$inputCntr.datepicker(a.opt.datepicker),a.$input.css("display","none")):a.$input.datepicker(a.opt.datepicker);return b};a.opt._timeFmt=a.opt.timeUTC?"utc":"local";a.opt.datepicker.altFormat="yy-mm-dd";a.opt.datepicker.altField=a.$ele;a.opt.allowMultiples&&(a.opt.datepicker.altFormat="",a.opt.datepicker.altField=
+"",a.$dtCntr.css("display","").on("click",".spwidgets-item-remove",function(b){b=c(b.target).closest(".spwidgets-item").data("spwidget_dt1");a.opt.allowMultiples&&(b=c.SPWidgets.parseDateString(b));a.removeDate({date:b,format:"yy-mm-dd"})}));a.$ele.css("display","none").data("SPDateFieldInstance",a);a.isInline&&a.inlineCntr.data("SPDateFieldInstance",a);a.$timepicker=a.createDatePicker();a.eleOrigVal&&a.setDate({date:a.eleOrigVal.split(a.opt.delimeter),format:"yy-mm-dd",triggerEvent:!1});a.$input.on("change",
+function(b){b.stopPropagation();a.$ele.change()});a.$ui.css("display","")})};k.onPageClick=function(f){f=c(f.target);var b=c("div.spwidget-datetime-selector:visible:not('.spwidget-inline')"),d=null;if(!c.contains(document.documentElement,f[0]))return this;b.length&&(d=f.closest("div.spwidget-datetime-selector"),!d.length&&f.is("input.spwidget-date-datepicker,.ui-datepicker-trigger")&&(d=f.parent().find("div.spwidget-datetime-selector")),b.not(d).hide());return this};k.styleSheet='.spwidget-date-cntr {\n    display: inline-block;   \n    position: relative;\n}\n.spwidget-date-cntr div.spwidget-date-input-cntr {\n    position: relative;\n}\n.spwidget-date-cntr input {\n    width: 99%;\n}\n.spwidget-date-cntr img.ui-datepicker-trigger {\n    display: block;\n    position: absolute;\n    right: 2%;\n    top: .3em;\n}\n\n.spwidget-date-cntr .spwidgets-item-remove {\n    color: red;\n    font-size: xx-small;\n    vertical-align: super;\n    cursor: pointer;\n}\n/** --------------------------- Date and Time picker -- */\n.spwidget-date-cntr div.spwidget-datetime-selector {\n    padding: .5em;\n    position: absolute;\n    width: 28em;\n    z-index: 1;\n}\n.spwidget-date-cntr div.spwidget-datetime-selector div.ui-datepicker-inline {\n    width: 14em;\n}\n\n.spwidget-date-cntr div.spwidget-datetime-selector div.spwidget-date-selector,\n.spwidget-date-cntr div.spwidget-datetime-selector div.spwidget-time-selector {\n    float: left;\n}\n.spwidget-date-cntr div.spwidget-selectors:before,\n.spwidget-date-cntr div.spwidget-selectors:after {\n    content: "";\n    display: table;\n    line-height: 0;\n}\n.spwidget-date-cntr div.spwidget-selectors:after {\n    clear: both;    \n}\n.spwidget-date-cntr div.spwidget-datetime-selector select.spwidget-hour,\n.spwidget-date-cntr div.spwidget-datetime-selector select.spwidget-min,\n.spwidget-date-cntr div.spwidget-datetime-selector select.spwidget-ampm {\n    font-size: 1.2em;\n}\n/* Time selector */\n.spwidget-date-cntr div.spwidget-time-selector {\n    margin-left: .2em;\n    width: 11em;\n}\n.spwidget-date-cntr div.spwidget-time-selector-cntr {\n    padding: .2em;\n}\n.spwidget-date-cntr div.spwidget-time-selector div.ui-widget-header {\n    text-align: center;\n    line-height: 2em;\n    margin-bottom: .5em;\n}\n.spwidget-date-cntr .spwidget-time-hour,\n.spwidget-date-cntr .spwidget-time-min,\n.spwidget-date-cntr .spwidget-time-ampm {\n    margin-top: .2em;\n    padding: .2em;\n}\n.spwidget-date-cntr .spwidget-time-selector-cntr select,\n.spwidget-date-cntr .spwidget-time-selector-cntr label {\n    overflow: hidden;\n    display: inline-block;\n    font-weight: bold;\n}\n.spwidget-date-cntr .spwidget-time-selector-cntr select {\n    width: 4em;\n}\n.spwidget-date-cntr .spwidget-time-selector-cntr label {\n    width: 5em;\n    font-size: .9em;\n}\n\n/* inline mode */\n.spwidget-date-cntr .spwidget-inline div.spwidget-datetime-selector {\n    position: relative;\n    width: 26em;\n}\n\n.spwidget-btn-set {\n    display: none;\n    position: absolute;\n    right: .2em;\n    bottom: .2em;\n}\n.spwidget-date-multiples-cntr .spwidget-btn-set {\n    display: block;\n}\n';
+k.htmlTemplate='<div class="spwidget-date-cntr">\n    <div class="spwidget-date-selected-cntr" style="display:none;"></div>\n    <div class="spwidget-date-input-cntr">\n        <input class="spwidget-date-datepicker" name="SPDateFieldInput" value="" />\n    </div>\n</div>\n<div class="spwidget-datetime-selector ui-widget-content ui-corner-all">\n    <div class="spwidget-selectors">\n        <div class="spwidget-date-selector"></div>\n        <div class="spwidget-time-selector ui-widget-content ui-corner-all">\n            <div class="spwidget-time-selector-cntr">\n                <div class="ui-widget-header ui-helper-clearfix ui-corner-all">\n                    Time\n                </div>\n                <div class="spwidget-time-hour">\n                    <label>Hour</label>\n                    <select name="spwidget_hour" class="spwidget-hour">\n                        <option value="1"> 1</option>\n                        <option value="2"> 2</option>\n                        <option value="3"> 3</option>\n                        <option value="4"> 4</option>\n                        <option value="5"> 5</option>\n                        <option value="6"> 6</option>\n                        <option value="7"> 7</option>\n                        <option value="8"> 8</option>\n                        <option value="9"> 9</option>\n                        <option value="10">10</option>\n                        <option value="11">11</option>\n                        <option value="12">12</option>\n                    </select>\n                </div>\n                <div class="spwidget-time-min">   \n                    <label>Minutes</label>\n                    <select name="spwidget_min" class="spwidget-min">\n                        <option value="00">00</option>\n                        <option value="05">05</option>\n                        <option value="10">10</option>\n                        <option value="15">15</option>\n                        <option value="20">20</option>\n                        <option value="25">25</option>\n                        <option value="30">30</option>\n                        <option value="35">35</option>\n                        <option value="40">40</option>\n                        <option value="45">45</option>\n                        <option value="50">50</option>\n                        <option value="55">55</option>\n                    </select>\n                </div>\n                <div class="spwidget-time-ampm">\n                    <label>AM|PM</label>\n                    <select name="spwidget_ampm" class="spwidget-ampm">\n                        <option value="AM">AM</option>\n                        <option value="PM">PM</option>\n                    </select>\n                </div>\n            </div>\n        </div>\n    </div>\n    <div class="spwidget-btn-set">\n        <div class="spwidget-btn">\n            Set\n        </div>\n    </div>\n</div>\n'})(r);
+(function(c){var h={isInitDone:!1,templates:null};c.SPWidgets.defaults.filter={list:"",webURL:c().SPServices.SPGetCurrentSite(),columns:["Title"],textFieldTooltip:"Use a semicolon to delimiter multiple keywords.",definedClass:"spwidget-column-dirty",showFilterButton:!0,showFilterButtonTop:!0,filterButtonLabel:"Filter",onFilterClick:null,onReady:null,onReset:null,ignoreKeywords:/^(of|and|a|an|to|by|the|or|from)$/i,delimeter:";"};c.fn.SPFilterPanel=function(f){var b=arguments;h.isInitDone||(h.isInitDone=
+!0,""!==h.styleSheet&&c('<style type="text/css">\n\n'+h.styleSheet+"\n\n</style>").prependTo("head"),h.templates=c(h.htmlTemplate));return"string"===typeof f?this.eq(0).hasClass("hasSPFilterPanel")?function(c){c=c.eq(0).find("div.spwidget-filter").data("SPFilterPanelInst");var a=f.toLowerCase(),g=c.$ele;switch(a){case "getfilter":g=h.getFilterValues(c);break;case "setfilter":h.setFilterValues(c,b[1]);break;case "reset":h.doResetFilter(c);break;case "destroy":c.$ele.removeClass("hasSPFilterPanel").empty()}return g}(this):
+void 0:this.each(function(){var b=c.extend({},c.SPWidgets.defaults.filter,f),a={$ele:c(this),$ui:null,opt:b,getListDefinition:function(){return c.Deferred(function(a){c().SPServices({operation:"GetList",listName:b.list,cacheXML:!0,async:!0,webURL:b.webURL,completefunc:function(b,d){var f=c(b.responseXML);"error"===d?a.rejectWith(f,[b,d]):f.SPMsgHasError()?a.rejectWith(f,[b,d]):a.resolveWith(f,[b,d])}})}).promise()},buildWidget:function(){return c.Deferred(function(b){a.getListDefinition().then(function(d,
+m){var n=this,q="",l=h.templates.filter("#filter_column").html();a.$ui=c(h.templates.filter("#filter_main_ui").html()).appendTo(a.$ele.empty().addClass("hasSPFilterPanel"));a.$list=n;c.each(a.opt.columns,function(b,d){var e=n.find("Field[DisplayName='"+d+"']"),f=l,g="",m=null;e.length||(e=n.find("Field[Name='"+d+"']"));if(e.length){m={type:null,otherFilterTypes:"",sp_type:e.attr("Type"),sp_format:e.attr("Format")};m.Name=e.attr("Name");switch(e.attr("Type")){case "Choice":case "MultiChoice":e.find("CHOICES CHOICE").each(function(a,
+b){g+=c.SPWidgets.fillTemplate(h.templates.filter("#filter_choice_field").html(),{DisplayName:e.attr("DisplayName"),Name:e.attr("Name"),value:c(b).text()})});f=f.replace(/__COLUMN__UI__/,g);f=c.SPWidgets.fillTemplate(f,{DisplayName:e.attr("DisplayName"),type:"choice",Name:e.attr("Name")});break;case "Lookup":case "LookupMulti":null===m.type&&(m.type="lookup",m.list=e.attr("List"),"Self"===m.list&&(m.list=n.find("List").attr("Title")));case "User":case "UserMulti":null===m.type&&(m.type="people");
+case "Counter":null===m.type&&(m.type="text",m.otherFilterTypes='<option value="Gt">Greater Than</option><option value="Lt">Less Than</option>');case "DateTime":null===m.type&&(m.type="date",m.otherFilterTypes='<option value="Gt">After</option><option value="Lt">Before</option>',m.sp_format="DateOnly"!==e.attr("Format")?"DateTime":"DateOnly");default:null===m.type&&(m.type="text"),g=h.templates.filter("#filter_text_field").html(),f=f.replace(/__COLUMN__UI__/,g).replace(/__OTHER_FILTER_TYPES__/,m.otherFilterTypes),
+f=c.SPWidgets.fillTemplate(f,c.extend(m,{DisplayName:e.attr("DisplayName"),Name:e.attr("Name"),tooltip:a.opt.textFieldTooltip}))}q+=f}});a.$ele.find("div.spwidget-filter-column-cntr").html(q);a.$ele.find("div.spwidget-type-lookup input").each(function(){var a=c(this);a.SPLookupField({list:a.closest("div.spwidget-column").data("spwidget_list"),template:'<div>{{Title}} <span class="spwidgets-item-remove">[x]</span></div>',listTemplate:"{{Title}}",allowMultiples:!0,readOnly:!1,filter:"",showSelector:!0});
+a.parent().find(".spwidget-tooltip").remove()});a.$ele.find("div.spwidget-type-people input").each(function(){var a=c(this),b="User";"PeopleOnly"!==n.find("Field[Name='"+a.attr("name")+"']").attr("UserSelectionMode")&&(b="All");a.pickSPUser({allowMultiple:!0,type:b});a.parent().find(".spwidget-tooltip").remove()});a.$ele.find("div.spwidget-type-date").each(function(){var a=c(this);a.find("input").SPDateField({allowMultiples:!0,showTimepicker:"DateTime"===a.data("spwidget_sp_format")?!0:!1});a.find(".spwidget-tooltip").remove();
+a.find("select.spwidget-filter-type").val("Eq").find("option[value='Contains']").remove();return this});a.opt.showFilterButton||a.opt.showFilterButtonTop?a.$ui.find("div.spwidget-filter-button-cntr").each(function(){var b=c(this),d=c();a.opt.showFilterButtonTop&&(d=d.add(b.clone(!0)).prependTo(a.$ui));a.opt.showFilterButton?d=d.add(b):b.remove();d.find("button[name='filter']").button({icons:{primary:"ui-icon-search"},label:a.opt.filterButtonLabel}).on("click",h.onFilterButtonClick);d.find("button[name='reset']").button({icons:{primary:"ui-icon-arrowreturnthick-1-n"},
+text:!1}).on("click",function(b){h.doResetFilter(a);return this})}):a.$ui.find("div.spwidget-filter-button-cntr").remove();a.$ui.on("change.SPWigets.SPFilterPanel","select.spwidget-filter-type",h.onFilterTypeChange);if(""!==a.opt.definedClass)a.$ui.on("change.SPWidgets.SPFilterPanel",".spwidget-filter-input",h.onFilterInputChange);a.$ui.data("SPFilterPanelInst",a);c.isFunction(a.opt.onReady)&&a.opt.onReady.call(a.$ele,f);a.$ui.fadeIn().promise().then(function(){c(this).css("display","");b.resolve()})}).fail(function(c,
+d){a.$ele.html('<div class="ui-state-error">Unable to retrieve list information. '+this.SPGetMsgError()+"</div>");b.reject()})}).promise()}};a.opt.ignoreKeywords&&!a.opt.ignoreKeywords instanceof RegExp&&(a.opt.ignoreKeywords=/Inst.opt.ignoreKeywords/i);a.buildWidget();return this})};h.onFilterInputChange=function(f){var b=c(this);f=b.closest("div.spwidget-filter-value-input");var d=f.closest("div.spwidget-column"),a=d.find("div.spwidget-filter-type-cntr select.spwidget-filter-type").val(),b=b.val(),
+g=f.closest("div.spwidget-filter").data("SPFilterPanelInst");d.is(".spwidget-type-choice")&&(f.find(".spwidget-filter-input:checked").length||(b=""));""!==b?d.addClass(g.opt.definedClass):"IsNull"!==a&&"IsNotNull"!==a&&d.removeClass(g.opt.definedClass);return this};h.onFilterTypeChange=function(f){var b=c(this);f=b.closest("div.spwidget-column");var d=f.find("div.spwidget-filter-type-cntr select.spwidget-match-type"),a=f.find("div.spwidget-filter-value-cntr"),g=a.find(".spwidget-input"),e="",h=f.data("spwidget_column_type"),
+k=b.val(),b=b.closest("div.spwidget-filter").data("SPFilterPanelInst");"IsNull"===k||"IsNotNull"===k?(a.addClass("spwidget-disabled"),g.attr("disabled","disabled"),d.attr("disabled","disabled"),f.addClass(b.opt.definedClass)):(a.removeClass("spwidget-disabled"),g.removeAttr("disabled","disabled"),d.removeAttr("disabled"),"choice"===h||"multichoice"===h?g.filter(":checkbox").each(function(){var a=c(this);if(a.is(":checked"))return e+=a.val(),!1}):e+=g.val(),e||f.removeClass(b.opt.definedClass));return this};
+h.onFilterButtonClick=function(f){f=c(this).closest("div.spwidget-filter").data("SPFilterPanelInst");var b=null;c.isFunction(f.opt.onFilterClick)&&(b=h.getFilterValues(f),f.opt.onFilterClick.call(f.$ele,b));return this};h.doResetFilter=function(f){if(c.isFunction(f.onReset)&&!0===f.onReset.call(f.$ele,h.getFilterValues(f)))return f;f.$ui.find("div[data-spwidget_column_type='text'] input").val("").end().find("div[data-spwidget_column_type='choice'] input").prop("checked",!1).end().find(".hasPickSPUser").pickSPUser("method",
+"clear").end().find(".hasSPDateField").SPDateField("reset").end().find(".hasLookupSPField").SPLookupField("method","clear");""!==f.opt.definedClass&&f.$ui.find("."+f.opt.definedClass).removeClass(f.opt.definedClass);f.$ui.find("select.spwidget-filter-type").each(function(){var b=c(this),d=b.val();if("IsNull"===d||"IsNotNull"===d)b.val("Eq"),b.change()});f.$ui.find(":input.spwidget-input:first").focus();return f};h.getFilterValues=function(f){function b(a){return c.SPWidgets.getCamlLogical({type:a.logicalType,
+values:a.values,onEachValue:function(b){return"<"+a.matchType+"><FieldRef Name='"+a.columnName+"' /><Value Type='Text'>"+c.SPWidgets.escapeXML(b)+"</Value></"+a.matchType+">"}})}var d={CAMLQuery:"",URLParams:"",filters:{},count:0},a=[];f.$ui.find("div.spwidget-column").each(function(g,e){var m=c(e),n=m.find(".spwidget-input"),q=n.attr("name"),l=new h.ColumnFilter({columnName:q,matchType:m.find("select.spwidget-filter-type").val(),logicalType:m.find("select.spwidget-match-type").val()}),m=m.data("spwidget_column_type"),
+r={};if("IsNull"===l.matchType||"IsNotNull"===l.matchType)l.CAMLQuery="<"+l.matchType+"><FieldRef Name='"+q+"' /></"+l.matchType+">",l.count+=1;else switch(m){case "choice":case "multichoice":n.each(function(){var a=c(this),b=a.val();a.is(":checked")&&l.values.push(b)});l.values.length&&(l.count=l.values.length,l.CAMLQuery=b(l));break;case "lookup":case "people":(function(){var a=[];n.each(function(){var b=c(this),b=c.SPWidgets.parseLookupFieldValue(b.val()),d,e;d=0;for(e=b.length;d<e;d++)b[d].id&&
+(l.values.push(b[d].id+";#"+b[d].title),a.push(b[d].id))});l.values.length&&(l.count=l.values.length,l.CAMLQuery=c.SPWidgets.getCamlLogical({type:l.logicalType,values:a,onEachValue:function(a){return"<"+l.matchType+"><FieldRef Name='"+l.columnName+"' LookupId='True'/><Value Type='Lookup'>"+a+"</Value></"+l.matchType+">"}}))})();break;case "date":n.each(function(){var a=n.SPDateField("getDate");a.dates.length&&(l.values=a.dates,l.count=l.values.length,l.CAMLQuery=c.SPWidgets.getCamlLogical({type:l.logicalType,
+values:l.values,onEachValue:function(a){return"<"+l.matchType+"><FieldRef Name='"+l.columnName+"'/><Value Type='DateTime'>"+a+"</Value></"+l.matchType+">"}}));return!1});break;case "text":String(c.trim(n.val())).length&&function(){var a=n.val().split(f.opt.delimeter),d,e,g;d=0;for(e=a.length;d<e;d++)g=c.trim(a[d]),!f.opt.ignoreKeywords.test(g)&&g&&l.values.push(g);l.CAMLQuery=b(l);l.count=l.values.length}()}0<l.count&&(a.push(l.CAMLQuery),d.count+=l.count,d.filters[q]=l,r[q]={matchType:l.matchType,
+logicalType:l.logicalType,values:l.values},l.URLParams=c.param(r,!1),""!==d.URLParams&&(d.URLParams+="&"),d.URLParams+=l.URLParams)});1<d.count?d.CAMLQuery=c.SPWidgets.getCamlLogical({type:"AND",values:a}):1===d.count&&(d.CAMLQuery=a[0]);return d};h.setFilterValues=function(f,b){if("object"!==typeof b||c.isEmptyObject(b))return f;h.doResetFilter(f);c.each(b,function(b,a){var g=f.$ui.find(".spwidget-filter-input[name='"+b+"']"),e=g.closest("div.spwidget-column"),m=e.data("spwidget_column_type"),n=
+e.find("select[name='"+b+"_type']"),q=e.find("div.spwidget-filter-type-cntr select.spwidget-match-type"),l=new h.ColumnFilter;c.extend(l,a);l.matchType&&n.val(l.matchType);l.logicalType&&q.val(l.logicalType);if("IsNull"!==a.matchType&&"IsNotNull"!==a.matchType)switch(m){case "text":l.values instanceof Array?g.val(l.values.join(f.opt.delimeter)):g.val(l.values);break;case "choice":case "multichoice":c.each(l.values,function(a,b){g.filter("[value='"+b+"']").prop("checked",!0)});break;case "lookup":g.SPLookupField("method",
+"add",l.values.join(";#"));break;case "people":g.pickSPUser("method","add",l.values.join(";#"));break;case "date":"DateTime"===e.data("spwidget_sp_format")?g.SPDateField("setDate",l.values):g.SPDateField("setDate",l.values,"yy-mm-dd")}else n.change();g.change()});return f};h.ColumnFilter=function(c){var b=new function(){};"object"!==typeof c&&(c={});b.columnName=c.columnName||"";b.matchType=c.matchType||"";b.logicalType=c.logicalType||"";b.values=c.values||[];b.CAMLQuery=c.CAMLQuery||"";b.URLParams=
+c.URLParams||"";b.count=c.count||0;return b};h.styleSheet='/** \n * Stylesheet for the Board widget\n * \n * BUILD: September 07, 2013 - 03:52 PM\n */\ndiv.spwidget-filter {\n    width: 100%;\n    position: relative;\n}\ndiv.spwidget-filter .spwidget-date-cntr,\ndiv.spwidget-filter .spwidgets-lookup-cntr {\n    display: block;\n}\n/* Adjust the width of the widget inputs inside the filter panel */\ndiv.spwidget-filter .spwidget-type-text input.spwidget-filter-input,\ndiv.spwidget-filter .spwidget-type-people input.ui-autocomplete-input,\ndiv.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input {\n    width: 95%;\n}\n\ndiv.spwidget-filter .spwidgets-lookup-cntr {\n    width: 96%;\n}\ndiv.spwidget-filter .spwidget-date-cntr div.spwidget-date-input-cntr {\n    width: 97%\n}\n\ndiv.spwidget-filter div.spwidget-column {\n    padding: .5em;\n    margin: .5em;\n    position: relative;\n    border-bottom: 1px solid  darkgray;\n    box-shadow: 1px 1px 1px 0 lightgray inset;\n}\ndiv.spwidget-filter div.spwidget-filter-type-cntr {\n    right: 4%;\n    position: absolute;\n    font-size: .8em;\n    top: .6em;\n    opacity: .6;\n    filter: Alpha(opacity=60);\n}\ndiv.spwidget-filter div.spwidget-filter-type-cntr:hover {\n    opacity: 1;\n}\ndiv.spwidget-filter div.spwidget-filter-value-cntr {\n    width: 100%;\n}\n\ndiv.spwidget-filter div.spwidget-filter-value-cntr > label {\n    display: block;\n    padding: .2em;\n    font-weight: bold;\n}\ndiv.spwidget-filter div.spwidget-column-dirty div.spwidget-filter-value-cntr > label {\n    color: #FF0000;\n}\ndiv.spwidget-filter .spwidget-tooltip {\n    display: block;\n    font-size: .8em;\n    font-style: italic;\n}\n\n/* LOOKUP FIELDS */\ndiv.spwidget-filter div.spwidgets-lookup-cntr div.spwidgets-lookup-selected > div.spwidgets-item {\n    display: block;\n    margin-left: 0px;\n}\n\n/* CHOICE FIELDS */\ndiv.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input {\n    max-height: 6em;\n    overflow: auto;\n    -moz-appearance: textfield;\n    -webkit-appearance: textfield;\n    background-color: white;\n    background-color: -moz-field;\n    border: 1px solid  darkgray;\n    box-shadow: 1px 1px 1px 0 lightgray inset;\n    font: -moz-field;\n    font: -webkit-small-control;\n    padding: 2px 5px;\n}\ndiv.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input label {\n    display: block;\n    padding: .2em;\n}\n\n/** DISABLED COLUMN VALUE CONTAINER */\ndiv.spwidget-filter .spwidget-disabled {\n    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";\n    filter: alpha(opacity=50);\n    opacity: 0.5;\n}\n\n/** Button container */\ndiv.spwidget-filter div.spwidget-filter-button-cntr {\n    padding: .5em 4%;\n    margin-top: .5em;\n    text-align: right;\n}\n\n';
+h.htmlTemplate='<div id="filter_main_ui">\n    <div class="spwidget-filter" style="display: none;">\n        <div class="spwidget-filter-column-cntr"></div>\n        <div class="spwidget-filter-button-cntr">\n            <button type="button" class="spwidget-button" name=\'reset\'>Reset</button>\n            <button type="button" class="spwidget-button" name=\'filter\'>Filter</button>\n        </div>\n    </div>\n</div>\n<div id="filter_column">\n    <div class="spwidget-column spwidget-type-{{type}}" \n            data-spwidget_column_type="{{type}}" \n            data-spwidget_list="{{list}}" \n            data-spwidget_sp_type="{{sp_type}}" \n            data-spwidget_sp_format="{{sp_format}}" >\n        <div class="spwidget-filter-value-cntr">\n            <label>{{DisplayName}}</label>\n            <div class="spwidget-filter-value-input">\n                __COLUMN__UI__\n            </div>\n        </div>\n        <div class="spwidget-filter-type-cntr" title="Match Type">\n            <select name="{{Name}}_type" class="spwidget-filter-type" tabindex="-1">\n                <option value="Contains">Contains</option>\n                <option value="Eq" selected="selected">Equal</option>\n                <option value="Neq">Not Equal</option>\n                <option value="IsNull">Is Blank</option> \n                <option value="IsNotNull">Is Not Blank</option>\n                __OTHER_FILTER_TYPES__\n            </select>\n            <select name="{{Name}}_match" class="spwidget-match-type" tabindex="-1">\n                <option value="Or" selected="selected">Any</option>\n                <option value="And">All</option>\n            </select>\n        </div>\n    </div>\n</div>\n<div id="filter_text_field">\n    <input name="{{Name}}" title="{{DisplayName}}" type="text" value="" class="spwidget-input spwidget-filter-input" />\n    <span class="spwidget-tooltip">{{tooltip}}</span>\n</div>\n<div id="filter_choice_field">\n    <label>\n        <input name="{{Name}}" title="{{DisplayName}}" type="checkbox" value="{{value}}" class="spwidget-input spwidget-filter-input" />\n        {{value}}\n    </label>\n</div>\n'})(r)})(jQuery);
 
 
 //-------- END of SPWidgets plugin: inserted by build script ----------------- 
