@@ -69,7 +69,8 @@
         fileNameErrorMessage:   "A file name cannot contain any of the following characters: \\ / : * ? \" &lt; &gt; | # { } % ~ &amp;",
         noFileErrorMessage:     "No file selected!",
         checkInFormHeight:      '25em',
-        webURL:                 $().SPServices.SPGetCurrentSite()
+        webURL:                 null, // set later
+        debug:                  false
     }; 
     
     
@@ -154,6 +155,8 @@
      * @param {String} [options.webURL=Current site]
      *              The URL of the web site/sub site.
      * 
+     * @param {String} [options.debug=false]
+     *              Turns debug on for this widget.
      * 
      * @return {jQuery}
      * 
@@ -168,22 +171,32 @@
      */
     $.fn.SPControlUpload = function (options) {
         
+        // if the global styles have not yet been inserted into the page, do it now
+        if (!Upload.isSPUploadCssDone) {
+            
+            Upload.isSPUploadCssDone = true;
+            
+            $('<style type="text/css">' + "\n\n" +
+                Upload.StyleSheet + "\n\n</style>"
+            )
+            .prependTo("head");
+            
+            if (!$.SPWidgets.defaults.upload.webURL) {
+                
+                $.SPWidgets.defaults.upload.webURL = $().SPServices.SPGetCurrentSite();
+                
+            }
+            
+        }
+        
         return $(this).each(function(){
         
             var opt = $.extend({}, $.SPWidgets.defaults.upload, options),
                 overlayCss;
-            
-            // if the global styles have not yet been inserted into the page, do it now
-            if (!Upload.isSPUploadCssDone) {
-                
-                Upload.isSPUploadCssDone = true;
-                
-                $('<style type="text/css">' + "\n\n" +
-                    Upload.StyleSheet + "\n\n</style>"
-                )
-                .prependTo("head");
-                
-            }
+            /**
+             * Define the log method for this instance.  
+             */
+            opt.log = ( opt.debug ? Upload.log : function(){} );
             
             /**
              * Shows or hides the Busy loading animation.
@@ -397,7 +410,7 @@
                     CAMLQuery:      "<Query><Where>" +
                             "<Eq><FieldRef Name='Author' LookupId='TRUE'/>" +
                             "<Value Type='Integer'><UserID/></Value></Eq>" +
-                            "</Where><OrderBy><FieldRef Name='Created' Ascending='FALSE'/>" +
+                            "</Where><OrderBy><FieldRef Name='Modified' Ascending='FALSE'/>" +
                             "</OrderBy></Query>",
                     CAMLViewFields: "<ViewFields>" +
                             "<FieldRef Name='ID'/>" +
@@ -566,7 +579,8 @@
             opt._uploadUrlParams    = "?List=" + 
                                       $.pt.getEscapedUrl(opt.listName) + "&RootFolder=" +
                                       $.pt.getEscapedUrl(opt.folderPath) + "&Source=" +
-                                      $.pt.getEscapedUrl(opt.uploadDonePage) + "&" + opt.uploadUrlOpt;
+                                      $.pt.getEscapedUrl(opt.uploadDonePage) + 
+                                      "&" + (new Date()).getTime() + "=1&" + opt.uploadUrlOpt;
             opt.uploadPage          = opt.uploadPage + opt._uploadUrlParams;
             opt._lastError          = "";
             opt._reloadCount        = 0;
@@ -736,6 +750,8 @@
             opt     = e.data("SPControlUploadOptions"),
             ev      = opt.ev;
         
+        opt.log("Upload.onUpload(" + opt._iframeLoadId + "): Start....");
+        
         // Insure all messages are initially hidden (these might have been
         // visible from any prior call to upload the document where it failed.)
         msgs.css("display", "none");
@@ -774,14 +790,18 @@
             }
             
         }
+
         
         opt.showHideFullForm(true);
         
         // Hide the upload button, and Submit the form after showing the busy animation
         opt.showHideBusy().then(function(){
             
+            opt.log("Upload.onUpload(" + opt._iframeLoadId + "): Clicking the OK button on upload form.");
+
             page.find("input[type='button'][id$='btnOK']").click();
-    
+            ev.action = "postLoad";
+            
             // If error message are displayed (after we click upload button), 
             // then just return control back to the user.
             if (msgs.is(":visible")) {
@@ -822,15 +842,27 @@
             opt = e.data("SPControlUploadOptions"),
             id  = 0;
         
+        
+        // TODO: Need to capture the SP2013 page that says somethign like "wait"... Is this neede?
+        // window[opt.ev.state + "-" + opt.ev.action + "-html"] = $(e.find("iframe").contents()).find("html").html(); 
+        
+        
+        
+        
         // If the upload event state is 2, then {Upload.onUpload} has already
         // taken care of the form and user call back... There is nothing to do
         // here and form is arleady being submitted... Set the ev. to
         // postLoad and Exit. 
-        if (opt.ev.action === "preLoad") {
+        if (opt.ev.state === 2 && opt.ev.action === "preLoad") {
             
-    // console.log("Upload.onIframeChange(): exit. ev.action is 'preLoad' - handled by onUpload()...");
+            opt.log("Upload.onIframeChange(" + opt._iframeLoadId + 
+                "): ev.action=[" + opt.ev.action + "] and ev.state=[" + 
+                opt.ev.state+ "] - handled by onUpload(). Setting action to postLoad"
+            );
             
             opt.ev.action = "postLoad";
+            
+            // FIXME: needed to comment this out for SP2007
             return;
             
         } 
@@ -838,7 +870,10 @@
         opt._iframeLoadId++;
         id = opt._iframeLoadId;
         
-    // console.log("Upload.onIframeChange(" + id + " - " + opt.ev.state + ":" + opt.ev.action + "): In = " + e.find("iframe").contents()[0].location.href);
+        opt.log("Upload.onIframeChange(" + id + "): State=[" + opt.ev.state + 
+            "] Action=[" + opt.ev.action + "] iframe.url: " + 
+            e.find("iframe").contents()[0].location.href
+        );
         
         // Because just about every browser differs on how the load() event
         // is triggered, we do all our work in a function that is triggered
@@ -851,13 +886,13 @@
                 // then exit... there is another fucntion queued up...
                 if (id !== opt._iframeLoadId) {
                     
-    // console.log("Upload.onIframeChange(): not latest invokation! Existing.");
+                    opt.log("Upload.onIframeChange(" + id + "): not latest invokation! Existing.");
                     
                     return;
                     
                 } 
                 
-    // console.log("Upload.onIframeChange(): Executing iframe ID: " + id);
+                opt.log("Upload.onIframeChange(" + id + "): START... Executing setTimeout() for iframe ID: " + id);
                 
                 var page    = $(e.find("iframe").contents()),
                     ev      = opt.ev,
@@ -876,7 +911,7 @@
                 // Hide the page and show only the upload form element.
                 if (opt.isUploadPage(ev.pageUrl)) {
                     
-    // console.log("_onIFramePageChange() URL is the same as the one originally requested.");
+                    opt.log("Upload.onIframeChange(" + id + "): URL is the upload page!");
                     
                     page.find("body").css({
                         overflow: "hidden"
@@ -899,7 +934,8 @@
                         ||  new RegExp(/error/i).test($.trim(page.find("title").text()))
                         ||  new RegExp(/error\.aspx/i).test($.trim(page.find("form").attr("action")))
                     ) {
-    // console.log("_onIFramePageChange() page displaying an error... Storing it and reloading upload form.");
+                        
+                        opt.log("Upload.onIframeChange(" + id + "): page displaying an error... Storing it and reloading upload form.");
                         
                         opt._lastError = page.find("[id$='LabelMessage']").text();
                         
@@ -912,153 +948,168 @@
                         
                         opt._reloadCount += 1;
                         e.find("iframe").attr("src", opt.uploadPage);
+                        
                         return;
-                        
-                    // Not an error page.... 
-                    // Prepare the page for display to the user
-                    } else {
-                        
-                        // SP2010 Code
-                        // If this is the new SP2010 "Processing..." page, then
-                        // the just exit... there is nothing for us to do yet...
-                        if (page.find("#GearPage") && !page.find("input[type='file']").length) {
-    // console.log("_onIFramePageChange() SP2010 processing page... Exiting and waiting for next page...");
-                            return;
-                        }
-                        
-                        page.find("input[type='file']").closest("table")
-                                .appendTo(page.find("#SPControlUploadModUI"))
-                                .removeClass("ms-authoringcontrols");
-                                
-                        // setup upload input field on the iframe page, including
-                        // setting up the change, focus and click event to update
-                        // the input div that shows the file name selected to the
-                        // user.
-                        var $fileInput = page.find("#SPControlUploadModUI")
-                            .find("input[type='file']")
-                                .closest('tr')
-                                    .siblings()
-                                        .css("display", "none")
-                                        .end()
-                                    .end()
-                                    .siblings("tr .ms-error")
-                                        .css("display", "")
-                                        .end()
-                                .on("change focus click", function(ev){
-                                        
-                                        var $this       = $(this),
-                                            filePath    = $this.val(),
-                                            fileExt     = '',
-                                            icon        = '/_layouts/images/urn-content-classes-smartfolder16.gif';
-                                        
-                                        if (filePath) {
-                                            
-                                            try {
-                                                
-                                                fileExt = filePath.substr(filePath.lastIndexOf(".") + 1);
-                                                
-                                            } catch(e) {
-                                                
-                                                fileExt = 'GEN';
-                                                
-                                            }
-                                            
-                                            icon = "/_layouts/images/IC" + 
-                                                    fileExt.toUpperCase() + ".GIF";
-                                            
-                                            // Get only the file name
-                                            filePath =  (filePath.replace(/\\/g, '/').split('/').pop())
-                                                        || filePath;
-                                            
-                                        } else {
-                                            
-                                            filePath = opt.selectFileMessage;
-                                            
-                                        }
-                                        
-                                        page.find("#SPControlUploadModUI > div")
-                                            .html(filePath)
-                                            .css("background-image",
-                                                "url('" + icon + "')");
-                                        
-                                        
-                                }) //end: .on()
-                                .css({
-                                    cursor:         "pointer",
-                                    height:         "100px",
-                                    position:       "absolute",
-                                    left:           "0px",
-                                    top:            "0px",
-                                    filter:         "alpha(opacity=1)",
-                                    opacity:        "0.01",
-                                    outline:        "none",
-                                    "-moz-opacity": "0.01",
-                                    "font-size":    "100px",
-                                    'z-index':      "5"
-                                });
-                        
-                        
-                        // Setup the mouseover event so that the input file field 
-                        // follows the mouse around while user hovers over
-                        // the iframe.
-                        form.on("mousemove", function(ev){
-                            
-                            $fileInput
-                                .css({
-                                    left:   (ev.pageX - ($fileInput.width() - 50)),
-                                    top:    (ev.pageY - 30)
-                                })
-                                .blur();
-                            
-                        });
-                        
-                                
-                        // If there were any errors found during a previous call, then 
-                        // display them now
-                        if (opt._lastError) {
-                            
-                            opt.showError({message: opt._lastError});
-                            opt._lastError = "";
-                            
-                        }
-                        
-                        opt._reloadCount = 0;
-                        
-                        // Set the override checkbox
-                        if (opt.overwrite) {
-                            
-                            page.find("input[type='checkbox'][name$='OverwriteSingle']")
-                                .prop("checked", "checked");
-                                
-                        } else {
-                            
-                            page.find("input[type='checkbox'][name$='OverwriteSingle']")
-                                .prop("checked", "");
-                                
-                        }
-                        
-                        // Set proper event values for user's callback
-                        ev.state        = 1;
-                        ev.action        = "postLoad";
-                        ev.hideOverlay    = true;
                         
                     }/* if: error page or upload UI? */
                     
+                    // SP2010 Code
+                    // If this is the new SP2010 "Processing..." page, then
+                    // the just exit... there is nothing for us to do yet...
+                    if (    page.find("#GearPage") 
+                        &&  !page.find("input[type='file']").length
+                    ) {
+                        
+                        opt.log("Upload.onIframeChange(" + id + 
+                            "): SP processing page (GearPage)... Exiting and waiting for next page..."
+                        );
+                        
+                        return;
+                        
+                    }
+                    
+                    page.find("input[type='file']").closest("table")
+                            .appendTo(page.find("#SPControlUploadModUI"))
+                            .removeClass("ms-authoringcontrols");
+                            
+                    // setup upload input field on the iframe page, including
+                    // setting up the change, focus and click event to update
+                    // the input div that shows the file name selected to the
+                    // user.
+                    var $fileInput = page.find("#SPControlUploadModUI")
+                        .find("input[type='file']")
+                            .closest('tr')
+                                .siblings()
+                                    .css("display", "none")
+                                    .end()
+                                .end()
+                                .siblings("tr .ms-error")
+                                    .css("display", "")
+                                    .end()
+                            .on("change focus click", function(ev){
+                                    
+                                    var $this       = $(this),
+                                        filePath    = $this.val(),
+                                        fileExt     = '',
+                                        icon        = '/_layouts/images/urn-content-classes-smartfolder16.gif';
+                                    
+                                    if (filePath) {
+                                        
+                                        try {
+                                            
+                                            fileExt = filePath.substr(filePath.lastIndexOf(".") + 1);
+                                            
+                                        } catch(e) {
+                                            
+                                            fileExt = 'GEN';
+                                            
+                                        }
+                                        
+                                        icon = "/_layouts/images/IC" + 
+                                                fileExt.toUpperCase() + ".GIF";
+                                        
+                                        // Get only the file name
+                                        filePath =  (filePath.replace(/\\/g, '/').split('/').pop())
+                                                    || filePath;
+                                        
+                                    } else {
+                                        
+                                        filePath = opt.selectFileMessage;
+                                        
+                                    }
+                                    
+                                    page.find("#SPControlUploadModUI > div")
+                                        .html(filePath)
+                                        .css("background-image",
+                                            "url('" + icon + "')");
+                                    
+                                    
+                            }) //end: .on()
+                            .css({
+                                cursor:         "pointer",
+                                height:         "100px",
+                                position:       "absolute",
+                                left:           "0px",
+                                top:            "0px",
+                                filter:         "alpha(opacity=1)",
+                                opacity:        "0.01",
+                                outline:        "none",
+                                "-moz-opacity": "0.01",
+                                "font-size":    "100px",
+                                'z-index':      "5"
+                            });
+                    
+                    
+                    // Setup the mouseover event so that the input file field 
+                    // follows the mouse around while user hovers over
+                    // the iframe.
+                    form.on("mousemove", function(ev){
+                        
+                        $fileInput
+                            .css({
+                                left:   (ev.pageX - ($fileInput.width() - 50)),
+                                top:    (ev.pageY - 30)
+                            })
+                            .blur();
+                        
+                    });
+                    
+                            
+                    // If there were any errors found during a previous call, then 
+                    // display them now
+                    if (opt._lastError) {
+                        
+                        opt.showError({message: opt._lastError});
+                        opt._lastError = "";
+                        
+                    }
+                    
+                    opt._reloadCount = 0;
+                    
+                    // Set the override checkbox
+                    if (opt.overwrite) {
+                        
+                        page.find("input[type='checkbox'][name$='OverwriteSingle']")
+                            .prop("checked", "checked");
+                            
+                    } else {
+                        
+                        page.find("input[type='checkbox'][name$='OverwriteSingle']")
+                            .prop("checked", "");
+                            
+                    }
+                    
+                    // Set proper event values for user's callback
+                    ev.state        = 1;
+                    ev.action       = "postLoad";
+                    ev.hideOverlay  = true;
+                
+                
+                //------------------------------------------------------------------------
+                //------------------------------------------------------------------------
                 // Else, we must be passed the upload page... 
                 // set the state to 3 (passed upload) and bind a function to the
                 // iframe document's form element (which in turn calls the user defined 
                 // onPageChange event prior to sending the form on.
                 } else {
                     
+                    opt.log(
+                        "Upload.onIframeChange(" + opt._iframeLoadId + 
+                        "): File was uploaded to server!" 
+                    );
+                    
                     ev.state            = 3;
                     ev.action           = "postLoad";
                     ev.hideOverlay      = true;
-                    // ev.file             = opt.getUploadedFileRow();
+                    ev.file             = opt.getUploadedFileRow();
                     
                     // If the current page is the 'uploadDonePage', then set
                     // flag in the event, set flag to not hide the overlay
                     // and insert message indicating upload is done.
                     if (Upload.isSameUrlPage(ev.pageUrl, opt.uploadDonePage)) {
+                        
+                        opt.log("Upload.onIframeChange(" + opt._iframeLoadId + 
+                            "): Upload widget process DONE!"); 
                         
                         ev.isUploadDone = true;
                         ev.hideOverlay  = false;
@@ -1071,73 +1122,82 @@
                     // onsubmit event.
                     } else {
                         
-                        var formOnSubmit    = form.prop("onsubmit");
+                        opt.log("Upload.onIframeChange(" + opt._iframeLoadId + 
+                            "): Post Upload Form being displayed! Hooking into form.onsubmit!");
                         
-                        // Show only the form in the page
-                        form
-                            .children(":visible")
-                                .css("display", "none")
-                                .addClass("ptWasVisible")
-                                .end()
-                            .find("input[title='Name']")
-                                .closest("div[id^='WebPart']")
-                                    .appendTo(page.find("form"))
-                                    // 8/30/2013: ensure the UI is visible.
-                                    // Just in case it was at root of form
-                                    .css("display", "")
-                                    .removeClass("ptWasVisible");
-                        
-                        // SP seems to have a good hold of the Form, because
-                        // we are unable o bind an event via $. Thus:
-                        // The form's onsubmit has to be overriden with our
-                        // own function... The original function was captured
-                        // above, thus it will triggered... but we now control
-                        // when we trigger it.
-                        // FIXME: this does not seem to do anything (at least in FF)
-                        form[0].onsubmit = function(){
-        
-                            // Show the overlay without animation.
-                            opt.showHideBusy();
+                        if (form.length) {
                             
-                            var allowFormToContinue = true;
+                            var formOnSubmit = form.prop("onsubmit");
                             
-                            // if the user defined a function, then run it now and
-                            // exit if the resposne is false (stop submition)
-                            if ($.isFunction(opt.onPageChange)) {
-                                allowFormToContinue = opt.onPageChange.call(
-                                            opt.$ele,
-                                            $.extend({}, ev, {state: 3, action: "preLoad"}));
-                            }
+                            // Show only the form in the page
+                            form
+                                .children(":visible")
+                                    .css("display", "none")
+                                    .addClass("ptWasVisible")
+                                    .end()
+                                .find("input[title='Name']")
+                                    .closest("div[id^='WebPart']")
+                                        .appendTo(page.find("form"))
+                                        // 8/30/2013: ensure the UI is visible.
+                                        // Just in case it was at root of form
+                                        .css("display", "")
+                                        .removeClass("ptWasVisible");
                             
-                            if (allowFormToContinue === false) {
+                            // SP seems to have a good hold of the Form, because
+                            // we are unable o bind an event via $. Thus:
+                            // The form's onsubmit has to be overriden with our
+                            // own function... The original function was captured
+                            // above, thus it will triggered... but we now control
+                            // when we trigger it.
+                            // FIXME: this does not seem to do anything (at least in FF)
+                            form[0].onsubmit = function(){
                                 
-                                opt.showHideBusy(true);
+                                opt.log("Upload.onIframeChange(" + id + "): iframe form.onsubmit triggered!");
+                                
+                                // Show the overlay without animation.
+                                opt.showHideBusy();
+                                
+                                var allowFormToContinue = true;
+                                
+                                // if the user defined a function, then run it now and
+                                // exit if the resposne is false (stop submition)
+                                if ($.isFunction(opt.onPageChange)) {
+                                    allowFormToContinue = opt.onPageChange.call(
+                                                opt.$ele,
+                                                $.extend({}, ev, {state: 3, action: "preLoad"}));
+                                }
+                                
+                                if (allowFormToContinue === false) {
+                                    
+                                    opt.showHideBusy(true);
+                                    return allowFormToContinue;
+                                    
+                                }
+                                
+                                // if SP had a onSubmit defined, then execute it now and 
+                                // exit if the resposne is false (stop submition)
+                                if ($.isFunction(formOnSubmit)) {
+                                    
+                                    allowFormToContinue = formOnSubmit();
+                                    
+                                }
+                                
+                                if (allowFormToContinue === false) {
+                                    
+                                    opt.showHideBusy(true);
+                                    return allowFormToContinue;
+                                    
+                                }
+                                
+                                // hide the form before continuing
+                                opt.showHideFullForm(true);
+                                
+                                // Return true, allowing the form to be submitted.
                                 return allowFormToContinue;
                                 
-                            }
+                            };
                             
-                            // if SP had a onSubmit defined, then execute it now and 
-                            // exit if the resposne is false (stop submition)
-                            if ($.isFunction(formOnSubmit)) {
-                                
-                                allowFormToContinue = formOnSubmit();
-                                
-                            }
-                            
-                            if (allowFormToContinue === false) {
-                                
-                                opt.showHideBusy(true);
-                                return allowFormToContinue;
-                                
-                            }
-                            
-                            // hide the form before continuing
-                            opt.showHideFullForm(true);
-                            
-                            // Return true, allowing the form to be submitted.
-                            return allowFormToContinue;
-                            
-                        };
+                        } //end: if() - do we have a form?
                         
                     } //end: if(): onUpdateDonePage? or not?
                                   
@@ -1146,6 +1206,9 @@
                     // the page from being submitted, but we can still execute
                     // the caller's function. 
                     $(e.find("iframe")[0].contentWindow).unload(function(evv){
+                        
+                        opt.log("Upload.onIframeChange(" + opt._iframeLoadId + 
+                            "): iframe.unload() triggered!");
                         
                         // Make the busy panel visible without animation
                         // opt.$buttonCntr.css("display", "");
@@ -1162,7 +1225,10 @@
                         
                     });
                     
-                }//end:if
+                }//end:if: is uploadPage? or past the file uploaded?
+                
+                opt.log("Upload.onIframeChange(" + opt._iframeLoadId + 
+                    "): iframe page setup done!");
                 
                 // Call user event function
                 if (opt.onPageChange) {
@@ -1219,25 +1285,36 @@
     /**
      * Determines whether two URLs are the same page. URLs could be the same page, but
      * have difference url params. This function will look only at the page (eveything
-     * up to the "?") and will then compare them.
+     * up to the "?") and will then compare them. It will also work if the server portion
+     * of a URL is not provided.
      * 
      * @param {String} u1   First URL
      * @param {String} u2   Second URL
+     * 
      * @return {Boolean}
+     * 
      * @memberOf jQuery.pt
      *
      */
     Upload.isSameUrlPage = function(u1, u2) {
+        
         if (!u1 || !u2) { return false; }
-        var matchString = u1;
-        if (u1.indexOf("?") > -1) {
-            matchString = u1.substring(0, u1.indexOf("?"));
-        }
-        if (u2.indexOf(matchString) == 0) {
-            return true;
-        } else {
-            return false;
-        }
+        
+        var normalize   = function(urlString){
+                            
+                            var parser = document.createElement('a');
+                            parser.href = urlString;
+                            
+                            return parser.protocol + "//" + parser.hostname + 
+                                    ( parser.port ? ":" + parser.port : "" ) +
+                                    parser.pathname;
+                   
+                        },
+            url1        = String( normalize(u1) ).toLowerCase(),
+            url2        = String( normalize(u2) ).toLowerCase();
+        
+        return (url1 === url2);
+
     };// Upload.isSameUrlPage()
     
     
@@ -1289,6 +1366,113 @@
         return id;
         
     };// $.pt.getListUID()
+    
+    
+    /**
+     * Logs information to the output console.
+     * 
+     * @param {String} msg
+     */
+    Upload.log = (function(){
+        
+        var logit, $output,
+            n           = 1,
+            c           = 0,
+            isNative    = false,
+            initDone    = false,
+            bgColor     = [
+                '#FFFFFF',
+                '#F5F5F2'
+            ];
+        
+        if (    typeof console === "undefined"
+            ||  typeof console.debug === "undefined"
+        ) {
+            
+            logit = function(){
+                
+                var i,j,
+                    data = "";
+                
+                for(i=0,j=arguments.length; i<j; i++){
+                    
+                    data += '<div style="padding: .1em .1em;background-color:' + 
+                            bgColor[c] + '"><span>[' + n + '] </span>' +  
+                            arguments[i] + '</div>';
+                    
+                    n++;
+                    
+                    if (c === 1) {
+                        
+                        c = 0;
+                        
+                    } else {
+                        
+                        c = 1;
+                        
+                    }
+                    
+                }
+                
+                if (data) {
+                    
+                    $output.append(data);
+                    
+                    if (!$output.dialog("isOpen")) {
+                        
+                        $output.dialog("open");
+                        
+                    }
+                    
+                }
+                
+            };
+            
+        } else {
+            
+            isNative    = true;
+            
+        }
+        
+        return function(){
+            
+            if (!initDone) {
+                
+                initDone = true;
+                
+                if (!isNative) {
+                    
+                    $output = $("<div><h2>SPWidgets Debug Output</h2></div>")
+                            .appendTo("body")
+                            .dialog({
+                                title: "Debug output",
+                                height: 300
+                            });
+                    
+                }
+                
+            }
+            
+            if (isNative) {
+                
+                var i,j;
+                
+                for(i=0,j=arguments.length; i<j; i++){
+                    
+                    console.debug(arguments[i]);
+                    
+                };
+                
+            } else {
+                
+                logit.apply(this, arguments);
+                
+            }
+            
+        };
+        
+    })(); // end: Upload.log();
+    
     
     /**
      * @property

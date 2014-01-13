@@ -48,6 +48,7 @@
     margin: 0em;
     left: 0px;
     right: auto;
+    z-index: 5;
 }
 
 .spcontrolupload .loadingOverlayMsg {
@@ -89,5 +90,9 @@
     position: absolute;
 }
 
+.spcontrolupload-dev-mode .iFrameWindow {
+    overflow: auto !important;
+    height: auto !important;
+}
 
 
