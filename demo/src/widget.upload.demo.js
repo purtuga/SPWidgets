@@ -12,7 +12,8 @@
         $ui         = Main.$ui.find("#SPControlUploadDemo"),
         $demoCntr   = $ui.find("div.spwidget-demo-upload-cntr"),
         $widgetCntr = $demoCntr.find("div.spwidget-demo-upload-widget"),
-        $libFiles   = $demoCntr.find("div.spwidget-demo-library-files > table tbody");
+        $libFiles   = $demoCntr.find("div.spwidget-demo-library-files > table tbody"),
+        $lastFile   = $demoCntr.find(".spwidget-demo-upload-last-file");
     
     
     /**
@@ -119,17 +120,41 @@
             
             $demoCntr.show();
             
+            $widgetCntr
+                .empty()
+                .append("<h3>Upload with Overwrite = False</h3>");
+            
             $("<div/>")
-                .appendTo($widgetCntr.empty())
+                .appendTo($widgetCntr)
                 .SPControlUpload({
                     listName:       libraryName,
+                    debug:          Main.debug,
                     onUploadDone:   function(file){
                         
                         refreshFileList(libraryName);
                         
+                        $lastFile.html(decodeURIComponent(file.EncodedAbsUrl));
+                        
                     }
                 });
             
+            $widgetCntr
+                .append("<h3>Upload with Overwrite = True</h3>");
+                
+            $("<div/>")
+                .appendTo($widgetCntr)
+                .SPControlUpload({
+                    listName:       libraryName,
+                    debug:          Main.debug,
+                    overwrite:      true,
+                    onUploadDone:   function(file){
+                        
+                        refreshFileList(libraryName);
+                        
+                        $lastFile.html(decodeURIComponent(file.EncodedAbsUrl));
+                        
+                    }
+                });
             
         }//end: onListSelect()
     });
