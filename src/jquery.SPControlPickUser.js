@@ -155,7 +155,28 @@
         
         // Store the arguments given to this function. Used later if the
         // user is trying to execute a method of this plugin.
-        var arg = arguments;
+        var arg     = arguments,
+            $this   = this;
+        
+        // If input is a string, then it must be an action (method).
+        // Process only the first element in the selection.
+        if (typeof options === "string") {
+            
+            // TODO: should methods support actions on all items in selection?
+            
+            return (function(ele){
+                
+                if (ele.is("input") && ele.hasClass("hasPickSPUser")){
+                    
+                    return $.pt.pickSPUser.handleAction.apply(ele, arg);
+                    
+                }
+                
+                return $this;
+                
+            })( $this.eq(0) );
+            
+        }
         
         // Define options with globals
         // var options = $.extend({}, options2);
@@ -164,18 +185,6 @@
         this.each(function(){
             
             var ele = $(this);
-            
-            if (!ele.is("input") || ele.hasClass("hasPickSPUser")){
-                // if the first argument is a string, and this is an input
-                // fild, then process methods
-                if (typeof options === "string" && ele.is("input")) {
-                    return $.pt.pickSPUser.handleAction.apply(this, arg);
-                    
-                // ELse, exit
-                } else {
-                    return this;
-                }
-            }
             
             // Options for this element
             var o   = $.extend({},
@@ -702,7 +711,7 @@
                     
                     break;
                 
-                case "getSelected":
+                case "getselected":
                     
                     ret = $.SPWidgets.parseLookupFieldValue(o.eleUserInput.val());
                     
