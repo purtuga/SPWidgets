@@ -3,7 +3,7 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *  
- * @version 20140112083148
+ * @version 20140208114357
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  * 
@@ -11,8 +11,8 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date:  Paul:January 12, 2014 08:31 PM
- * Version:     20140112083148
+ * Build Date:  Paul:February 08, 2014 11:43 AM
+ * Version:     20140208114357
  * 
  */
 ;(function($){
@@ -53,7 +53,7 @@
         }
         
         $.SPWidgets             = {};
-        $.SPWidgets.version     = "20140112083148";
+        $.SPWidgets.version     = "20140208114357";
         $.SPWidgets.defaults    = {};
         
         /**
@@ -812,7 +812,7 @@
                 
             }
             
-            return version
+            return version;
             
         }; //end: $.SPWidgets.getSPVersion();
         
@@ -828,7 +828,7 @@
  *  -   jQuery-UI Draggable
  * 
  * 
- * BUILD: Paul:January 12, 2014 06:49 PM
+ * BUILD: Paul:January 12, 2014 09:47 PM
  */
 
 ;(function($){
@@ -952,9 +952,6 @@
      *                  If true, the column picker option will be displayed
      *                  on the page. Allows user to pick which column are
      *                  visible/hidden.
-     *                  Note: This option is automatically turned to True
-     *                  if the number of columns available is greater than
-     *                  10. 
      * 
      * @param {Array} [options.colPickerVisible=[]]
      *                  The list of board columns that should be visible. Used
@@ -1203,13 +1200,7 @@
                 //*** SETVISIBLE ***
                 } else if (method === "setvisible") {
                     
-                    if (board.showColPicker) {
-                        
-                        board.setUserDefinedVisibleCol(
-                            args[1]
-                       );
-                        
-                    }
+                    board.setUserDefinedVisibleCol( args[1] );
                     
                 }//end: if(): methods
                 
@@ -2748,11 +2739,6 @@
                     
                     opt.showNumberOfColumns = opt.states.length;
                     
-                // ELSE, must be higher than 10... Force columnsPicker. 
-                } else {
-                    
-                    opt.showColPicker = true;
-                    
                 }
                 
                 // Get pointers to the containers in the UI
@@ -2778,14 +2764,14 @@
                     v.headerEle = $(opt.tmpltHeader).appendTo(opt.headersCntr)
                                     .attr("data-boardstate", v.name)
                                     .attr("data-boardindex", i)
-                                    .html(v.title);
+                                    .html("<span>" + v.title + "</span>");
                                     
                     v.dataEle = $(opt.tmpltState).appendTo(opt.statesCntr)
                                     .attr("data-boardindex", i)
                                     .attr("data-boardstate", v.name);
                     
                     // Create the header element that holds the total
-                    v.headerTotalEle = $('<span>&nbsp;[<span class="spwidget-state-item-total">0</span>]</span>')
+                    v.headerTotalEle = $('<span class="spwidget-stat-item-stat-cntr">&nbsp;<span class="spwidget-stat-item-stat ui-widget-content ui-corner-all spwidget-state-item-total">0</span></span>')
                                         .appendTo(v.headerEle)
                                         .find("span.spwidget-state-item-total");
                     
@@ -3039,7 +3025,7 @@
     Board.styleSheet = "/** \n"
 + " * Stylesheet for the Board widget\n"
 + " * \n"
-+ " * BUILD: Paul:December 27, 2013 10:12 AM\n"
++ " * BUILD: Paul:January 12, 2014 09:41 PM\n"
 + " */\n"
 + "div.spwidget-board {\n"
 + "    width: 100%;\n"
@@ -3067,6 +3053,10 @@
 + "    font-size: 1.1em;\n"
 + "    overflow: hidden;\n"
 + "    word-wrap: break-word;\n"
++ "}\n"
++ "div.spwidget-board div.spwidget-board-headers-cntr div.spwidget-board-state .spwidget-stat-item-stat {\n"
++ "    padding: 0em .2em;\n"
++ "    display: inline-block;\n"
 + "}\n"
 + "div.spwidget-board div.spwidget-board-states div.spwidget-board-state {\n"
 + "    margin-bottom: 1em;\n"
@@ -3218,7 +3208,7 @@
  * THe user, however, is presented with the existing items
  * and has the ability to Remove them and add new ones.
  * 
- * BUILD: Paul:January 12, 2014 06:49 PM
+ * BUILD: Paul:January 12, 2014 09:41 PM
  * 
  */
 
@@ -4782,7 +4772,7 @@
  * on jQuery UI's Autocomplete and SPServices library.
  *      
  *  
- * @version 20140112064904NUMBER_
+ * @version 20140208114357NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
@@ -4790,7 +4780,7 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date Paul:January 12, 2014 06:49 PM
+ * Build Date Paul:February 08, 2014 11:43 AM
  * 
  */
 (function(){
@@ -4932,7 +4922,26 @@
         
         // Store the arguments given to this function. Used later if the
         // user is trying to execute a method of this plugin.
-        var arg = arguments;
+        var arg     = arguments,
+            $this   = this;
+        
+        // If input is a string, then it must be an action (method).
+        // Process only the first element in the selection.
+        if (typeof options === "string") {
+            
+            return (function(ele){
+                
+                if (ele.is("input") && ele.hasClass("hasPickSPUser")){
+                    
+                    return $.pt.pickSPUser.handleAction.apply(ele, arg);
+                    
+                }
+                
+                return $this;
+                
+            })( $this.eq(0) );
+            
+        }
         
         // Define options with globals
         // var options = $.extend({}, options2);
@@ -4941,18 +4950,6 @@
         this.each(function(){
             
             var ele = $(this);
-            
-            if (!ele.is("input") || ele.hasClass("hasPickSPUser")){
-                // if the first argument is a string, and this is an input
-                // fild, then process methods
-                if (typeof options === "string" && ele.is("input")) {
-                    return $.pt.pickSPUser.handleAction.apply(this, arg);
-                    
-                // ELse, exit
-                } else {
-                    return this;
-                }
-            }
             
             // Options for this element
             var o   = $.extend({},
@@ -5479,7 +5476,7 @@
                     
                     break;
                 
-                case "getSelected":
+                case "getselected":
                     
                     ret = $.SPWidgets.parseLookupFieldValue(o.eleUserInput.val());
                     
@@ -5649,14 +5646,14 @@
  * through the many SP pages and without having to leave the user's current page.
  *      
  *  
- * @version 20140112071747NUMBER_
+ * @version 20140112094123NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * 
  * @requires jQuery.js {@link http://jquery.com}
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date Paul:January 12, 2014 07:17 PM
+ * Build Date Paul:January 12, 2014 09:41 PM
  * 
  */
 ;(function($){
@@ -7280,7 +7277,7 @@
  * jquery.SPDateField.js
  * The SPDateField widget. Introduced with v2.2, August 2013
  * 
- * BUILD: Paul:January 12, 2014 06:49 PM
+ * BUILD: Paul:January 12, 2014 09:41 PM
  * 
  */
 ;(function($){
@@ -8821,7 +8818,7 @@
 /**
  * @fileOverview - List filter panel widget
  * 
- * BUILD: Paul:January 12, 2014 06:49 PM
+ * BUILD: Paul:January 12, 2014 09:41 PM
  * 
  */
 (function($){
@@ -9681,9 +9678,6 @@
             }
             
         });
-
-        // Focus the on the first input
-        Inst.$ui.find(":input.spwidget-input:first").focus();
         
         return Inst;
         
