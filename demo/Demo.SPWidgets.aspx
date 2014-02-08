@@ -1,5 +1,5 @@
 <%-- SPWIDGETS DEMO PAGE --%>
-<%-- BUILD 20140112083148 --%>
+<%-- BUILD 20140208114357 --%>
 <%@ Page language="C#" MasterPageFile="~masterurl/default.master"    Inherits="Microsoft.SharePoint.WebPartPages.WebPartPage,Microsoft.SharePoint,Version=12.0.0.0,Culture=neutral,PublicKeyToken=71e9bce111e9429c" %> 
 <%@ Register Tagprefix="SharePoint" Namespace="Microsoft.SharePoint.WebControls" Assembly="Microsoft.SharePoint, Version=12.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %>
 <%@ Register Tagprefix="Utilities" Namespace="Microsoft.SharePoint.Utilities" Assembly="Microsoft.SharePoint, Version=12.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %>
@@ -44,8 +44,8 @@ SPWidgets - Widgets for building custom UIs
 /** 
  * SPWidgets Demo
  * 
- * Build Date:  Paul:January 12, 2014 08:31 PM
- * Version:     20140112083148 
+ * Build Date:  Paul:February 08, 2014 11:43 AM
+ * Version:     20140208114357 
  * 
  */
 </script>
@@ -551,7 +551,7 @@ SPWidgets - Widgets for building custom UIs
         
     </div>
     <div>
-        <span>Build: </span><span>20140112083148</span>
+        <span>Build: </span><span>20140208114357</span>
     </div>
     <div>
         <div id="themeSwitchWidget"></div>
@@ -584,7 +584,7 @@ setTimeout(function(){
  * @fileOverview demo.common.js
  * Common file for all demos. Initiates the UI on the page.
  * 
- * @version 20140112083148
+ * @version 20140208114357
  * 
  */
 (function($){
@@ -2263,7 +2263,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
 
 /*
  * SPServices - Work with SharePoint's Web Services using jQuery
- * Version 2013.02a.1 (includes fix for current site url)
+ * Version 2014.01
  * @requires jQuery v1.8 or greater - jQuery 1.10.x recommended
  *
  * Copyright (c) 2009-2013 Sympraxis Consulting LLC
@@ -2282,52 +2282,81 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
 /* jshint undef: true */
 /* global L_Menu_BaseUrl, _spUserId, _spPageContextInfo, GipAddSelectedItems, GipRemoveSelectedItems, GipGetGroupData */
 
-(function ($) {
+(function($) {
 
     "use strict";
-  
+
     // Version info
-    var VERSION                 = "2012.02a";           // TODO: Update version
+    var VERSION = "2014.01ALFHA2"; // TODO: Update version
 
     // String constants
     //   General
-    var SLASH                   = "/";
-    var TXTColumnNotFound       = "Column not found on page";
-    var SCHEMASharePoint        = "http://schemas.microsoft.com/sharepoint";
-    var multiLookupPrefix       = "MultiLookupPicker";
-    var multiLookupPrefix2013   = "MultiLookup";
+    var SLASH = "/";
+    var TXTColumnNotFound = "Column not found on page";
+    var SCHEMASharePoint = "http://schemas.microsoft.com/sharepoint";
+    var multiLookupPrefix = "MultiLookupPicker";
+    var multiLookupPrefix2013 = "MultiLookup";
+
+    // Known list field types
+    var spListFieldTypes = [
+        "Text",
+        "DateTime",
+        "datetime",
+        "User",
+        "UserMulti",
+        "Lookup",
+        "LookupMulti",
+        "Boolean",
+        "Integer",
+        "Counter",
+        "MultiChoice",
+        "Currency",
+        "float",
+        "Calc",
+        "Attachments",
+        "Calculated",
+        "ContentTypeId",
+        "Note",
+        //          "Computed",
+        "URL",
+        "Number",
+        "Choice",
+        "ModStat",
+        "Guid",
+        "File"
+    ];
 
     // Caching
     var promisesCache = {};
 
     //   Web Service names
-    var ALERTS                  = "Alerts";
-    var AUTHENTICATION          = "Authentication";
-    var COPY                    = "Copy";
-    var FORMS                   = "Forms";
-    var LISTS                   = "Lists";
-    var MEETINGS                = "Meetings";
-    var PEOPLE                  = "People";
-    var PERMISSIONS             = "Permissions";
-    var PUBLISHEDLINKSSERVICE   = "PublishedLinksService";
-    var SEARCH                  = "Search";
-    var SHAREPOINTDIAGNOSTICS   = "SharePointDiagnostics";
-    var SITEDATA                = "SiteData";
-    var SITES                   = "Sites";
-    var SOCIALDATASERVICE       = "SocialDataService";
-    var SPELLCHECK              = "SpellCheck";
-    var TAXONOMYSERVICE         = "TaxonomyClientService";
-    var USERGROUP               = "usergroup";
-    var USERPROFILESERVICE      = "UserProfileService";
-    var VERSIONS                = "Versions";
-    var VIEWS                   = "Views";
-    var WEBPARTPAGES            = "WebPartPages";
-    var WEBS                    = "Webs";
-    var WORKFLOW                = "Workflow";
+    var ALERTS = "Alerts";
+    var AUTHENTICATION = "Authentication";
+    var COPY = "Copy";
+    var FORMS = "Forms";
+    var LISTS = "Lists";
+    var MEETINGS = "Meetings";
+    var PEOPLE = "People";
+    var PERMISSIONS = "Permissions";
+    var PUBLISHEDLINKSSERVICE = "PublishedLinksService";
+    var SEARCH = "Search";
+    var SHAREPOINTDIAGNOSTICS = "SharePointDiagnostics";
+    var SITEDATA = "SiteData";
+    var SITES = "Sites";
+    var SOCIALDATASERVICE = "SocialDataService";
+    var SPELLCHECK = "SpellCheck";
+    var TAXONOMYSERVICE = "TaxonomyClientService";
+    var USERGROUP = "usergroup";
+    var USERPROFILESERVICE = "UserProfileService";
+    var VERSIONS = "Versions";
+    var VIEWS = "Views";
+    var WEBPARTPAGES = "WebPartPages";
+    var WEBS = "Webs";
+    var WORKFLOW = "Workflow";
 
     // Global variables
-    var currentContext = new SPServicesContext();       // Variable to hold the current context as we figure it out
-    var i = 0;                                          // Generic loop counter
+    var currentContext = new SPServicesContext(); // Variable to hold the current context as we figure it out
+    var i = 0; // Generic loop counter
     var encodeOptionList = ["listName", "description"]; // Used to encode options which may contain special characters
 
 
@@ -2340,255 +2369,256 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
 
     var WSops = [];
 
-    WSops.GetAlerts                                 = [ALERTS, false];
-    WSops.DeleteAlerts                              = [ALERTS, true];
+    WSops.GetAlerts = [ALERTS, false];
+    WSops.DeleteAlerts = [ALERTS, true];
 
-    WSops.Mode                                      = [AUTHENTICATION, false];
-    WSops.Login                                     = [AUTHENTICATION, false];
+    WSops.Mode = [AUTHENTICATION, false];
+    WSops.Login = [AUTHENTICATION, false];
 
-    WSops.CopyIntoItems                             = [COPY, true];
-    WSops.CopyIntoItemsLocal                        = [COPY, true];
-    WSops.GetItem                                   = [COPY, false];
+    WSops.CopyIntoItems = [COPY, true];
+    WSops.CopyIntoItemsLocal = [COPY, true];
+    WSops.GetItem = [COPY, false];
 
-    WSops.GetForm                                   = [FORMS, false];
-    WSops.GetFormCollection                         = [FORMS, false];
+    WSops.GetForm = [FORMS, false];
+    WSops.GetFormCollection = [FORMS, false];
 
-    WSops.AddAttachment                             = [LISTS, true];
-    WSops.AddDiscussionBoardItem                    = [LISTS, true];
-    WSops.AddList                                   = [LISTS, true];
-    WSops.AddListFromFeature                        = [LISTS, true];
-    WSops.ApplyContentTypeToList                    = [LISTS, true];
-    WSops.CheckInFile                               = [LISTS, true];
-    WSops.CheckOutFile                              = [LISTS, true];
-    WSops.CreateContentType                         = [LISTS, true];
-    WSops.DeleteAttachment                          = [LISTS, true];
-    WSops.DeleteContentType                         = [LISTS, true];
-    WSops.DeleteContentTypeXmlDocument              = [LISTS, true];
-    WSops.DeleteList                                = [LISTS, true];
-    WSops.GetAttachmentCollection                   = [LISTS, false];
-    WSops.GetList                                   = [LISTS, false];
-    WSops.GetListAndView                            = [LISTS, false];
-    WSops.GetListCollection                         = [LISTS, false];
-    WSops.GetListContentType                        = [LISTS, false];
-    WSops.GetListContentTypes                       = [LISTS, false];
-    WSops.GetListItemChanges                        = [LISTS, false];
-    WSops.GetListItemChangesSinceToken              = [LISTS, false];
-    WSops.GetListItems                              = [LISTS, false];
-    WSops.GetVersionCollection                      = [LISTS, false];
-    WSops.UndoCheckOut                              = [LISTS, true];
-    WSops.UpdateContentType                         = [LISTS, true];
-    WSops.UpdateContentTypesXmlDocument             = [LISTS, true];
-    WSops.UpdateContentTypeXmlDocument              = [LISTS, true];
-    WSops.UpdateList                                = [LISTS, true];
-    WSops.UpdateListItems                           = [LISTS, true];
+    WSops.AddAttachment = [LISTS, true];
+    WSops.AddDiscussionBoardItem = [LISTS, true];
+    WSops.AddList = [LISTS, true];
+    WSops.AddListFromFeature = [LISTS, true];
+    WSops.ApplyContentTypeToList = [LISTS, true];
+    WSops.CheckInFile = [LISTS, true];
+    WSops.CheckOutFile = [LISTS, true];
+    WSops.CreateContentType = [LISTS, true];
+    WSops.DeleteAttachment = [LISTS, true];
+    WSops.DeleteContentType = [LISTS, true];
+    WSops.DeleteContentTypeXmlDocument = [LISTS, true];
+    WSops.DeleteList = [LISTS, true];
+    WSops.GetAttachmentCollection = [LISTS, false];
+    WSops.GetList = [LISTS, false];
+    WSops.GetListAndView = [LISTS, false];
+    WSops.GetListCollection = [LISTS, false];
+    WSops.GetListContentType = [LISTS, false];
+    WSops.GetListContentTypes = [LISTS, false];
+    WSops.GetListItemChanges = [LISTS, false];
+    WSops.GetListItemChangesSinceToken = [LISTS, false];
+    WSops.GetListItems = [LISTS, false];
+    WSops.GetVersionCollection = [LISTS, false];
+    WSops.UndoCheckOut = [LISTS, true];
+    WSops.UpdateContentType = [LISTS, true];
+    WSops.UpdateContentTypesXmlDocument = [LISTS, true];
+    WSops.UpdateContentTypeXmlDocument = [LISTS, true];
+    WSops.UpdateList = [LISTS, true];
+    WSops.UpdateListItems = [LISTS, true];
 
-    WSops.AddMeeting                                = [MEETINGS, true];
-    WSops.CreateWorkspace                           = [MEETINGS, true];
-    WSops.RemoveMeeting                             = [MEETINGS, true];
-    WSops.SetWorkSpaceTitle                         = [MEETINGS, true];
+    WSops.AddMeeting = [MEETINGS, true];
+    WSops.CreateWorkspace = [MEETINGS, true];
+    WSops.RemoveMeeting = [MEETINGS, true];
+    WSops.SetWorkSpaceTitle = [MEETINGS, true];
 
-    WSops.ResolvePrincipals                         = [PEOPLE, false];
-    WSops.SearchPrincipals                          = [PEOPLE, false];
+    WSops.ResolvePrincipals = [PEOPLE, false];
+    WSops.SearchPrincipals = [PEOPLE, false];
 
-    WSops.AddPermission                             = [PERMISSIONS, true];
-    WSops.AddPermissionCollection                   = [PERMISSIONS, true];
-    WSops.GetPermissionCollection                   = [PERMISSIONS, true];
-    WSops.RemovePermission                          = [PERMISSIONS, true];
-    WSops.RemovePermissionCollection                = [PERMISSIONS, true];
-    WSops.UpdatePermission                          = [PERMISSIONS, true];
+    WSops.AddPermission = [PERMISSIONS, true];
+    WSops.AddPermissionCollection = [PERMISSIONS, true];
+    WSops.GetPermissionCollection = [PERMISSIONS, true];
+    WSops.RemovePermission = [PERMISSIONS, true];
+    WSops.RemovePermissionCollection = [PERMISSIONS, true];
+    WSops.UpdatePermission = [PERMISSIONS, true];
 
-    WSops.GetLinks                                  = [PUBLISHEDLINKSSERVICE, true];
+    WSops.GetLinks = [PUBLISHEDLINKSSERVICE, true];
 
-    WSops.GetPortalSearchInfo                       = [SEARCH, false];
-    WSops.GetQuerySuggestions                       = [SEARCH, false];
-    WSops.GetSearchMetadata                         = [SEARCH, false];
-    WSops.Query                                     = [SEARCH, false];
-    WSops.QueryEx                                   = [SEARCH, false];
-    WSops.Registration                              = [SEARCH, false];
-    WSops.Status                                    = [SEARCH, false];
+    WSops.GetPortalSearchInfo = [SEARCH, false];
+    WSops.GetQuerySuggestions = [SEARCH, false];
+    WSops.GetSearchMetadata = [SEARCH, false];
+    WSops.Query = [SEARCH, false];
+    WSops.QueryEx = [SEARCH, false];
+    WSops.Registration = [SEARCH, false];
+    WSops.Status = [SEARCH, false];
 
-    WSops.SendClientScriptErrorReport               = [SHAREPOINTDIAGNOSTICS,true];
+    WSops.SendClientScriptErrorReport = [SHAREPOINTDIAGNOSTICS, true];
 
-    WSops.GetAttachments                            = [SITEDATA, false];
-    WSops.EnumerateFolder                           = [SITEDATA, false];
-    WSops.SiteDataGetList                           = [SITEDATA, false];
-    WSops.SiteDataGetListCollection                 = [SITEDATA, false];
-    WSops.SiteDataGetSite                           = [SITEDATA, false];
-    WSops.SiteDataGetSiteUrl                        = [SITEDATA, false];
-    WSops.SiteDataGetWeb                            = [SITEDATA, false];
+    WSops.GetAttachments = [SITEDATA, false];
+    WSops.EnumerateFolder = [SITEDATA, false];
+    WSops.SiteDataGetList = [SITEDATA, false];
+    WSops.SiteDataGetListCollection = [SITEDATA, false];
+    WSops.SiteDataGetSite = [SITEDATA, false];
+    WSops.SiteDataGetSiteUrl = [SITEDATA, false];
+    WSops.SiteDataGetWeb = [SITEDATA, false];
 
-    WSops.CreateWeb                                 = [SITES, true];
-    WSops.DeleteWeb                                 = [SITES, false];
-    WSops.GetSite                                   = [SITES, false];
-    WSops.GetSiteTemplates                          = [SITES, false];
+    WSops.CreateWeb = [SITES, true];
+    WSops.DeleteWeb = [SITES, true];
+    WSops.GetSite = [SITES, false];
+    WSops.GetSiteTemplates = [SITES, false];
 
-    WSops.AddComment                                = [SOCIALDATASERVICE, true];
-    WSops.AddTag                                    = [SOCIALDATASERVICE, true];
-    WSops.AddTagByKeyword                           = [SOCIALDATASERVICE, true];
-    WSops.CountCommentsOfUser                       = [SOCIALDATASERVICE, false];
-    WSops.CountCommentsOfUserOnUrl                  = [SOCIALDATASERVICE, false];
-    WSops.CountCommentsOnUrl                        = [SOCIALDATASERVICE, false];
-    WSops.CountRatingsOnUrl                         = [SOCIALDATASERVICE, false];
-    WSops.CountTagsOfUser                           = [SOCIALDATASERVICE, false];
-    WSops.DeleteComment                             = [SOCIALDATASERVICE, true];
-    WSops.DeleteRating                              = [SOCIALDATASERVICE, true];
-    WSops.DeleteTag                                 = [SOCIALDATASERVICE, true];
-    WSops.DeleteTagByKeyword                        = [SOCIALDATASERVICE, true];
-    WSops.DeleteTags                                = [SOCIALDATASERVICE, true];
-    WSops.GetAllTagTerms                            = [SOCIALDATASERVICE, false];
-    WSops.GetAllTagTermsForUrlFolder                = [SOCIALDATASERVICE, false];
-    WSops.GetAllTagUrls                             = [SOCIALDATASERVICE, false];
-    WSops.GetAllTagUrlsByKeyword                    = [SOCIALDATASERVICE, false];
-    WSops.GetCommentsOfUser                         = [SOCIALDATASERVICE, false];
-    WSops.GetCommentsOfUserOnUrl                    = [SOCIALDATASERVICE, false];
-    WSops.GetCommentsOnUrl                          = [SOCIALDATASERVICE, false];
-    WSops.GetRatingAverageOnUrl                     = [SOCIALDATASERVICE, false];
-    WSops.GetRatingOfUserOnUrl                      = [SOCIALDATASERVICE, false];
-    WSops.GetRatingOnUrl                            = [SOCIALDATASERVICE, false];
-    WSops.GetRatingsOfUser                          = [SOCIALDATASERVICE, false];
-    WSops.GetRatingsOnUrl                           = [SOCIALDATASERVICE, false];
-    WSops.GetSocialDataForFullReplication           = [SOCIALDATASERVICE, false];
-    WSops.GetTags                                   = [SOCIALDATASERVICE, true];
-    WSops.GetTagsOfUser                             = [SOCIALDATASERVICE, true];
-    WSops.GetTagTerms                               = [SOCIALDATASERVICE, true];
-    WSops.GetTagTermsOfUser                         = [SOCIALDATASERVICE, true];
-    WSops.GetTagTermsOnUrl                          = [SOCIALDATASERVICE, true];
-    WSops.GetTagUrlsOfUser                          = [SOCIALDATASERVICE, true];
-    WSops.GetTagUrlsOfUserByKeyword                 = [SOCIALDATASERVICE, true];
-    WSops.GetTagUrls                                = [SOCIALDATASERVICE, true];
-    WSops.GetTagUrlsByKeyword                       = [SOCIALDATASERVICE, true];
-    WSops.SetRating                                 = [SOCIALDATASERVICE, true];
-    WSops.UpdateComment                             = [SOCIALDATASERVICE, true];
+    WSops.AddComment = [SOCIALDATASERVICE, true];
+    WSops.AddTag = [SOCIALDATASERVICE, true];
+    WSops.AddTagByKeyword = [SOCIALDATASERVICE, true];
+    WSops.CountCommentsOfUser = [SOCIALDATASERVICE, false];
+    WSops.CountCommentsOfUserOnUrl = [SOCIALDATASERVICE, false];
+    WSops.CountCommentsOnUrl = [SOCIALDATASERVICE, false];
+    WSops.CountRatingsOnUrl = [SOCIALDATASERVICE, false];
+    WSops.CountTagsOfUser = [SOCIALDATASERVICE, false];
+    WSops.DeleteComment = [SOCIALDATASERVICE, true];
+    WSops.DeleteRating = [SOCIALDATASERVICE, true];
+    WSops.DeleteTag = [SOCIALDATASERVICE, true];
+    WSops.DeleteTagByKeyword = [SOCIALDATASERVICE, true];
+    WSops.DeleteTags = [SOCIALDATASERVICE, true];
+    WSops.GetAllTagTerms = [SOCIALDATASERVICE, false];
+    WSops.GetAllTagTermsForUrlFolder = [SOCIALDATASERVICE, false];
+    WSops.GetAllTagUrls = [SOCIALDATASERVICE, false];
+    WSops.GetAllTagUrlsByKeyword = [SOCIALDATASERVICE, false];
+    WSops.GetCommentsOfUser = [SOCIALDATASERVICE, false];
+    WSops.GetCommentsOfUserOnUrl = [SOCIALDATASERVICE, false];
+    WSops.GetCommentsOnUrl = [SOCIALDATASERVICE, false];
+    WSops.GetRatingAverageOnUrl = [SOCIALDATASERVICE, false];
+    WSops.GetRatingOfUserOnUrl = [SOCIALDATASERVICE, false];
+    WSops.GetRatingOnUrl = [SOCIALDATASERVICE, false];
+    WSops.GetRatingsOfUser = [SOCIALDATASERVICE, false];
+    WSops.GetRatingsOnUrl = [SOCIALDATASERVICE, false];
+    WSops.GetSocialDataForFullReplication = [SOCIALDATASERVICE, false];
+    WSops.GetTags = [SOCIALDATASERVICE, true];
+    WSops.GetTagsOfUser = [SOCIALDATASERVICE, true];
+    WSops.GetTagTerms = [SOCIALDATASERVICE, true];
+    WSops.GetTagTermsOfUser = [SOCIALDATASERVICE, true];
+    WSops.GetTagTermsOnUrl = [SOCIALDATASERVICE, true];
+    WSops.GetTagUrlsOfUser = [SOCIALDATASERVICE, true];
+    WSops.GetTagUrlsOfUserByKeyword = [SOCIALDATASERVICE, true];
+    WSops.GetTagUrls = [SOCIALDATASERVICE, true];
+    WSops.GetTagUrlsByKeyword = [SOCIALDATASERVICE, true];
+    WSops.SetRating = [SOCIALDATASERVICE, true];
+    WSops.UpdateComment = [SOCIALDATASERVICE, true];
 
-    WSops.SpellCheck                                = [SPELLCHECK, false];
+    WSops.SpellCheck = [SPELLCHECK, false];
 
     // Taxonomy Service Calls
     // Updated 2011.01.27 by Thomas McMillan
-    WSops.AddTerms                                  = [TAXONOMYSERVICE, true];
-    WSops.GetChildTermsInTerm                       = [TAXONOMYSERVICE, false];
-    WSops.GetChildTermsInTermSet                    = [TAXONOMYSERVICE, false];
-    WSops.GetKeywordTermsByGuids                    = [TAXONOMYSERVICE, false];
-    WSops.GetTermsByLabel                           = [TAXONOMYSERVICE, false];
-    WSops.GetTermSets                               = [TAXONOMYSERVICE, false];
+    WSops.AddTerms = [TAXONOMYSERVICE, true];
+    WSops.GetChildTermsInTerm = [TAXONOMYSERVICE, false];
+    WSops.GetChildTermsInTermSet = [TAXONOMYSERVICE, false];
+    WSops.GetKeywordTermsByGuids = [TAXONOMYSERVICE, false];
+    WSops.GetTermsByLabel = [TAXONOMYSERVICE, false];
+    WSops.GetTermSets = [TAXONOMYSERVICE, false];
 
-    WSops.AddGroup                                  = [USERGROUP, true];
-    WSops.AddGroupToRole                            = [USERGROUP, true];
-    WSops.AddRole                                   = [USERGROUP, true];
-    WSops.AddRoleDef                                = [USERGROUP, true];
-    WSops.AddUserCollectionToGroup                  = [USERGROUP, true];
-    WSops.AddUserCollectionToRole                   = [USERGROUP, true];
-    WSops.AddUserToGroup                            = [USERGROUP, true];
-    WSops.AddUserToRole                             = [USERGROUP, true];
-    WSops.GetAllUserCollectionFromWeb               = [USERGROUP, false];
-    WSops.GetGroupCollection                        = [USERGROUP, false];
-    WSops.GetGroupCollectionFromRole                = [USERGROUP, false];
-    WSops.GetGroupCollectionFromSite                = [USERGROUP, false];
-    WSops.GetGroupCollectionFromUser                = [USERGROUP, false];
-    WSops.GetGroupCollectionFromWeb                 = [USERGROUP, false];
-    WSops.GetGroupInfo                              = [USERGROUP, false];
-    WSops.GetRoleCollection                         = [USERGROUP, false];
-    WSops.GetRoleCollectionFromGroup                = [USERGROUP, false];
-    WSops.GetRoleCollectionFromUser                 = [USERGROUP, false];
-    WSops.GetRoleCollectionFromWeb                  = [USERGROUP, false];
-    WSops.GetRoleInfo                               = [USERGROUP, false];
-    WSops.GetRolesAndPermissionsForCurrentUser      = [USERGROUP, false];
-    WSops.GetRolesAndPermissionsForSite             = [USERGROUP, false];
-    WSops.GetUserCollection                         = [USERGROUP, false];
-    WSops.GetUserCollectionFromGroup                = [USERGROUP, false];
-    WSops.GetUserCollectionFromRole                 = [USERGROUP, false];
-    WSops.GetUserCollectionFromSite                 = [USERGROUP, false];
-    WSops.GetUserCollectionFromWeb                  = [USERGROUP, false];
-    WSops.GetUserInfo                               = [USERGROUP, false];
-    WSops.GetUserLoginFromEmail                     = [USERGROUP, false];
-    WSops.RemoveGroup                               = [USERGROUP, true];
-    WSops.RemoveGroupFromRole                       = [USERGROUP, true];
-    WSops.RemoveRole                                = [USERGROUP, true];
-    WSops.RemoveUserCollectionFromGroup             = [USERGROUP, true];
-    WSops.RemoveUserCollectionFromRole              = [USERGROUP, true];
-    WSops.RemoveUserCollectionFromSite              = [USERGROUP, true];
-    WSops.RemoveUserFromGroup                       = [USERGROUP, true];
-    WSops.RemoveUserFromRole                        = [USERGROUP, true];
-    WSops.RemoveUserFromSite                        = [USERGROUP, true];
-    WSops.RemoveUserFromWeb                         = [USERGROUP, true];
-    WSops.UpdateGroupInfo                           = [USERGROUP, true];
-    WSops.UpdateRoleDefInfo                         = [USERGROUP, true];
-    WSops.UpdateRoleInfo                            = [USERGROUP, true];
-    WSops.UpdateUserInfo                            = [USERGROUP, true];
+    WSops.AddGroup = [USERGROUP, true];
+    WSops.AddGroupToRole = [USERGROUP, true];
+    WSops.AddRole = [USERGROUP, true];
+    WSops.AddRoleDef = [USERGROUP, true];
+    WSops.AddUserCollectionToGroup = [USERGROUP, true];
+    WSops.AddUserCollectionToRole = [USERGROUP, true];
+    WSops.AddUserToGroup = [USERGROUP, true];
+    WSops.AddUserToRole = [USERGROUP, true];
+    WSops.GetAllUserCollectionFromWeb = [USERGROUP, false];
+    WSops.GetGroupCollection = [USERGROUP, false];
+    WSops.GetGroupCollectionFromRole = [USERGROUP, false];
+    WSops.GetGroupCollectionFromSite = [USERGROUP, false];
+    WSops.GetGroupCollectionFromUser = [USERGROUP, false];
+    WSops.GetGroupCollectionFromWeb = [USERGROUP, false];
+    WSops.GetGroupInfo = [USERGROUP, false];
+    WSops.GetRoleCollection = [USERGROUP, false];
+    WSops.GetRoleCollectionFromGroup = [USERGROUP, false];
+    WSops.GetRoleCollectionFromUser = [USERGROUP, false];
+    WSops.GetRoleCollectionFromWeb = [USERGROUP, false];
+    WSops.GetRoleInfo = [USERGROUP, false];
+    WSops.GetRolesAndPermissionsForCurrentUser = [USERGROUP, false];
+    WSops.GetRolesAndPermissionsForSite = [USERGROUP, false];
+    WSops.GetUserCollection = [USERGROUP, false];
+    WSops.GetUserCollectionFromGroup = [USERGROUP, false];
+    WSops.GetUserCollectionFromRole = [USERGROUP, false];
+    WSops.GetUserCollectionFromSite = [USERGROUP, false];
+    WSops.GetUserCollectionFromWeb = [USERGROUP, false];
+    WSops.GetUserInfo = [USERGROUP, false];
+    WSops.GetUserLoginFromEmail = [USERGROUP, false];
+    WSops.RemoveGroup = [USERGROUP, true];
+    WSops.RemoveGroupFromRole = [USERGROUP, true];
+    WSops.RemoveRole = [USERGROUP, true];
+    WSops.RemoveUserCollectionFromGroup = [USERGROUP, true];
+    WSops.RemoveUserCollectionFromRole = [USERGROUP, true];
+    WSops.RemoveUserCollectionFromSite = [USERGROUP, true];
+    WSops.RemoveUserFromGroup = [USERGROUP, true];
+    WSops.RemoveUserFromRole = [USERGROUP, true];
+    WSops.RemoveUserFromSite = [USERGROUP, true];
+    WSops.RemoveUserFromWeb = [USERGROUP, true];
+    WSops.UpdateGroupInfo = [USERGROUP, true];
+    WSops.UpdateRoleDefInfo = [USERGROUP, true];
+    WSops.UpdateRoleInfo = [USERGROUP, true];
+    WSops.UpdateUserInfo = [USERGROUP, true];
 
-    WSops.AddColleague                              = [USERPROFILESERVICE, true]; 
-    WSops.AddLink                                   = [USERPROFILESERVICE, true];
-    WSops.AddMembership                             = [USERPROFILESERVICE, true]; 
-    WSops.AddPinnedLink                             = [USERPROFILESERVICE, true];
-    WSops.CreateMemberGroup                         = [USERPROFILESERVICE, true]; 
-    WSops.CreateUserProfileByAccountName            = [USERPROFILESERVICE, true];
-    WSops.GetCommonColleagues                       = [USERPROFILESERVICE, false];
-    WSops.GetCommonManager                          = [USERPROFILESERVICE, false];
-    WSops.GetCommonMemberships                      = [USERPROFILESERVICE, false];
-    WSops.GetInCommon                               = [USERPROFILESERVICE, false];
-    WSops.GetPropertyChoiceList                     = [USERPROFILESERVICE, false];
-    WSops.GetUserColleagues                         = [USERPROFILESERVICE, false];
-    WSops.GetUserLinks                              = [USERPROFILESERVICE, false];
-    WSops.GetUserMemberships                        = [USERPROFILESERVICE, false];
-    WSops.GetUserPinnedLinks                        = [USERPROFILESERVICE, false];
-    WSops.GetUserProfileByGuid                      = [USERPROFILESERVICE, false];
-    WSops.GetUserProfileByIndex                     = [USERPROFILESERVICE, false];
-    WSops.GetUserProfileByName                      = [USERPROFILESERVICE, false];
-    WSops.GetUserProfileCount                       = [USERPROFILESERVICE, false];
-    WSops.GetUserProfileSchema                      = [USERPROFILESERVICE, false];
-    WSops.ModifyUserPropertyByAccountName           = [USERPROFILESERVICE, true];
-    WSops.RemoveAllColleagues                       = [USERPROFILESERVICE, true];
-    WSops.RemoveAllLinks                            = [USERPROFILESERVICE, true];
-    WSops.RemoveAllMemberships                      = [USERPROFILESERVICE, true];
-    WSops.RemoveAllPinnedLinks                      = [USERPROFILESERVICE, true];
-    WSops.RemoveColleague                           = [USERPROFILESERVICE, true];
-    WSops.RemoveLink                                = [USERPROFILESERVICE, true];
-    WSops.RemoveMembership                          = [USERPROFILESERVICE, true];
-    WSops.RemovePinnedLink                          = [USERPROFILESERVICE, true]; 
-    WSops.UpdateColleaguePrivacy                    = [USERPROFILESERVICE, true];
-    WSops.UpdateLink                                = [USERPROFILESERVICE, true];
-    WSops.UpdateMembershipPrivacy                   = [USERPROFILESERVICE, true];
-    WSops.UpdatePinnedLink                          = [USERPROFILESERVICE, true];
+    WSops.AddColleague = [USERPROFILESERVICE, true];
+    WSops.AddLink = [USERPROFILESERVICE, true];
+    WSops.AddMembership = [USERPROFILESERVICE, true];
+    WSops.AddPinnedLink = [USERPROFILESERVICE, true];
+    WSops.CreateMemberGroup = [USERPROFILESERVICE, true];
+    WSops.CreateUserProfileByAccountName = [USERPROFILESERVICE, true];
+    WSops.GetCommonColleagues = [USERPROFILESERVICE, false];
+    WSops.GetCommonManager = [USERPROFILESERVICE, false];
+    WSops.GetCommonMemberships = [USERPROFILESERVICE, false];
+    WSops.GetInCommon = [USERPROFILESERVICE, false];
+    WSops.GetPropertyChoiceList = [USERPROFILESERVICE, false];
+    WSops.GetUserColleagues = [USERPROFILESERVICE, false];
+    WSops.GetUserLinks = [USERPROFILESERVICE, false];
+    WSops.GetUserMemberships = [USERPROFILESERVICE, false];
+    WSops.GetUserPinnedLinks = [USERPROFILESERVICE, false];
+    WSops.GetUserProfileByGuid = [USERPROFILESERVICE, false];
+    WSops.GetUserProfileByIndex = [USERPROFILESERVICE, false];
+    WSops.GetUserProfileByName = [USERPROFILESERVICE, false];
+    WSops.GetUserProfileCount = [USERPROFILESERVICE, false];
+    WSops.GetUserProfileSchema = [USERPROFILESERVICE, false];
+    WSops.ModifyUserPropertyByAccountName = [USERPROFILESERVICE, true];
+    WSops.RemoveAllColleagues = [USERPROFILESERVICE, true];
+    WSops.RemoveAllLinks = [USERPROFILESERVICE, true];
+    WSops.RemoveAllMemberships = [USERPROFILESERVICE, true];
+    WSops.RemoveAllPinnedLinks = [USERPROFILESERVICE, true];
+    WSops.RemoveColleague = [USERPROFILESERVICE, true];
+    WSops.RemoveLink = [USERPROFILESERVICE, true];
+    WSops.RemoveMembership = [USERPROFILESERVICE, true];
+    WSops.RemovePinnedLink = [USERPROFILESERVICE, true];
+    WSops.UpdateColleaguePrivacy = [USERPROFILESERVICE, true];
+    WSops.UpdateLink = [USERPROFILESERVICE, true];
+    WSops.UpdateMembershipPrivacy = [USERPROFILESERVICE, true];
+    WSops.UpdatePinnedLink = [USERPROFILESERVICE, true];
 
-    WSops.DeleteAllVersions                         = [VERSIONS, true];
-    WSops.DeleteVersion                             = [VERSIONS, true];
-    WSops.GetVersions                               = [VERSIONS, false];
-    WSops.RestoreVersion                            = [VERSIONS, true];
+    WSops.DeleteAllVersions = [VERSIONS, true];
+    WSops.DeleteVersion = [VERSIONS, true];
+    WSops.GetVersions = [VERSIONS, false];
+    WSops.RestoreVersion = [VERSIONS, true];
 
-    WSops.AddView                                   = [VIEWS, true];
-    WSops.DeleteView                                = [VIEWS, true];
-    WSops.GetView                                   = [VIEWS, false];
-    WSops.GetViewHtml                               = [VIEWS, false];
-    WSops.GetViewCollection                         = [VIEWS, false];
-    WSops.UpdateView                                = [VIEWS, true];
-    WSops.UpdateViewHtml                            = [VIEWS, true];
+    WSops.AddView = [VIEWS, true];
+    WSops.DeleteView = [VIEWS, true];
+    WSops.GetView = [VIEWS, false];
+    WSops.GetViewHtml = [VIEWS, false];
+    WSops.GetViewCollection = [VIEWS, false];
+    WSops.UpdateView = [VIEWS, true];
+    WSops.UpdateViewHtml = [VIEWS, true];
 
-    WSops.AddWebPart                                = [WEBPARTPAGES, true];
-    WSops.AddWebPartToZone                          = [WEBPARTPAGES, true];
-    WSops.GetWebPart2                               = [WEBPARTPAGES, false];
-    WSops.GetWebPartPage                            = [WEBPARTPAGES, false];
-    WSops.GetWebPartProperties                      = [WEBPARTPAGES, false];
-    WSops.GetWebPartProperties2                     = [WEBPARTPAGES, false];
+    WSops.AddWebPart = [WEBPARTPAGES, true];
+    WSops.AddWebPartToZone = [WEBPARTPAGES, true];
+    WSops.GetWebPart2 = [WEBPARTPAGES, false];
+    WSops.GetWebPartPage = [WEBPARTPAGES, false];
+    WSops.GetWebPartProperties = [WEBPARTPAGES, false];
+    WSops.GetWebPartProperties2 = [WEBPARTPAGES, false];
 
-    WSops.CreateContentType                         = [WEBS, true];
-    WSops.GetColumns                                = [WEBS, false];
-    WSops.GetContentType                            = [WEBS, false];
-    WSops.GetContentTypes                           = [WEBS, false];
-    WSops.GetCustomizedPageStatus                   = [WEBS, false];
-    WSops.GetListTemplates                          = [WEBS, false];
-    WSops.GetObjectIdFromUrl                        = [WEBS, false]; // 2010
-    WSops.GetWeb                                    = [WEBS, false];
-    WSops.GetWebCollection                          = [WEBS, false];
-    WSops.GetAllSubWebCollection                    = [WEBS, false];
-    WSops.UpdateColumns                             = [WEBS, true];
-    WSops.UpdateContentType                         = [WEBS, true];
-    WSops.WebUrlFromPageUrl                         = [WEBS, false];
+    WSops.CreateContentType = [WEBS, true];
+    WSops.GetColumns = [WEBS, false];
+    WSops.GetContentType = [WEBS, false];
+    WSops.GetContentTypes = [WEBS, false];
+    WSops.GetCustomizedPageStatus = [WEBS, false];
+    WSops.GetListTemplates = [WEBS, false];
+    WSops.GetObjectIdFromUrl = [WEBS, false]; // 2010
+    WSops.GetWeb = [WEBS, false];
+    WSops.GetWebCollection = [WEBS, false];
+    WSops.GetAllSubWebCollection = [WEBS, false];
+    WSops.UpdateColumns = [WEBS, true];
+    WSops.UpdateContentType = [WEBS, true];
+    WSops.WebUrlFromPageUrl = [WEBS, false];
 
-    WSops.AlterToDo                                 = [WORKFLOW, true];
-    WSops.GetTemplatesForItem                       = [WORKFLOW, false];
-    WSops.GetToDosForItem                           = [WORKFLOW, false];
-    WSops.GetWorkflowDataForItem                    = [WORKFLOW, false];
-    WSops.GetWorkflowTaskData                       = [WORKFLOW, false];
-    WSops.StartWorkflow                             = [WORKFLOW, true];
+    WSops.AlterToDo = [WORKFLOW, true];
+    WSops.ClaimReleaseTask = [WORKFLOW, true];
+    WSops.GetTemplatesForItem = [WORKFLOW, false];
+    WSops.GetToDosForItem = [WORKFLOW, false];
+    WSops.GetWorkflowDataForItem = [WORKFLOW, false];
+    WSops.GetWorkflowTaskData = [WORKFLOW, false];
+    WSops.StartWorkflow = [WORKFLOW, true];
 
     // Set up SOAP envelope
     var SOAPEnvelope = {};
@@ -2597,23 +2627,22 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
     SOAPEnvelope.payload = "";
     var SOAPAction;
 
-
     // Main function, which calls SharePoint's Web Services directly.
     $.fn.SPServices = function(options) {
 
         // If there are no options passed in, use the defaults.  Extend replaces each default with the passed option.
         var opt = $.extend({}, $.fn.SPServices.defaults, options);
-        
+
         // Encode options which may contain special character, esp. ampersand
-        for(var i=0; i < encodeOptionList.length; i++) {
-            if(typeof opt[encodeOptionList[i]] === "string") {
+        for (var i = 0; i < encodeOptionList.length; i++) {
+            if (typeof opt[encodeOptionList[i]] === "string") {
                 opt[encodeOptionList[i]] = encodeXml(opt[encodeOptionList[i]]);
             }
         }
 
         // Put together operation header and SOAPAction for the SOAP call based on which Web Service we're calling
         SOAPEnvelope.opheader = "<" + opt.operation + " ";
-        switch(WSops[opt.operation][0]) {
+        switch (WSops[opt.operation][0]) {
             case ALERTS:
                 SOAPEnvelope.opheader += "xmlns='" + SCHEMASharePoint + "/soap/2002/1/alerts/' >";
                 SOAPAction = SCHEMASharePoint + "/soap/2002/1/alerts/";
@@ -2671,7 +2700,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 SOAPAction = SCHEMASharePoint + "/soap/";
                 break;
         }
-        
+
         // Add the operation to the SOAPAction and opfooter
         SOAPAction += opt.operation;
         SOAPEnvelope.opfooter = "</" + opt.operation + ">";
@@ -2680,9 +2709,9 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
         // If the webURL has been provided, then use it, else use the current site
         var ajaxURL = "_vti_bin/" + WSops[opt.operation][0] + ".asmx";
         var thisSite = $().SPServices.SPGetCurrentSite();
-        if(opt.webURL.charAt(opt.webURL.length - 1) === SLASH) {
+        if (opt.webURL.charAt(opt.webURL.length - 1) === SLASH) {
             ajaxURL = opt.webURL + ajaxURL;
-        } else if(opt.webURL.length > 0) {
+        } else if (opt.webURL.length > 0) {
             ajaxURL = opt.webURL + SLASH + ajaxURL;
         } else {
             ajaxURL = thisSite + ((thisSite.charAt(thisSite.length - 1) === SLASH) ? ajaxURL : (SLASH + ajaxURL));
@@ -2690,30 +2719,30 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
 
         SOAPEnvelope.payload = "";
         // Each operation requires a different set of values.  This switch statement sets them up in the SOAPEnvelope.payload.
-        switch(opt.operation) {
+        switch (opt.operation) {
             // ALERT OPERATIONS
             case "GetAlerts":
                 break;
             case "DeleteAlerts":
                 SOAPEnvelope.payload += "<IDs>";
-                for (i=0; i < opt.IDs.length; i++) {
+                for (i = 0; i < opt.IDs.length; i++) {
                     SOAPEnvelope.payload += wrapNode("string", opt.IDs[i]);
                 }
                 SOAPEnvelope.payload += "</IDs>";
                 break;
 
-            // AUTHENTICATION OPERATIONS
+                // AUTHENTICATION OPERATIONS
             case "Mode":
                 break;
             case "Login":
                 addToPayload(opt, ["username", "password"]);
                 break;
 
-            // COPY OPERATIONS
+                // COPY OPERATIONS
             case "CopyIntoItems":
                 addToPayload(opt, ["SourceUrl"]);
                 SOAPEnvelope.payload += "<DestinationUrls>";
-                for (i=0; i < opt.DestinationUrls.length; i++) {
+                for (i = 0; i < opt.DestinationUrls.length; i++) {
                     SOAPEnvelope.payload += wrapNode("string", opt.DestinationUrls[i]);
                 }
                 SOAPEnvelope.payload += "</DestinationUrls>";
@@ -2722,7 +2751,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
             case "CopyIntoItemsLocal":
                 addToPayload(opt, ["SourceUrl"]);
                 SOAPEnvelope.payload += "<DestinationUrls>";
-                for (i=0; i < opt.DestinationUrls.length; i++) {
+                for (i = 0; i < opt.DestinationUrls.length; i++) {
                     SOAPEnvelope.payload += wrapNode("string", opt.DestinationUrls[i]);
                 }
                 SOAPEnvelope.payload += "</DestinationUrls>";
@@ -2731,7 +2760,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 addToPayload(opt, ["Url", "Fields", "Stream"]);
                 break;
 
-            // FORM OPERATIONS
+                // FORM OPERATIONS
             case "GetForm":
                 addToPayload(opt, ["listName", "formUrl"]);
                 break;
@@ -2739,7 +2768,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 addToPayload(opt, ["listName"]);
                 break;
 
-            // LIST OPERATIONS
+                // LIST OPERATIONS
             case "AddAttachment":
                 addToPayload(opt, ["listName", "listItemID", "fileName", "attachment"]);
                 break;
@@ -2794,13 +2823,27 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 addToPayload(opt, ["listName"]);
                 break;
             case "GetListItems":
-                addToPayload(opt, ["listName", "viewName", ["query", "CAMLQuery"], ["viewFields", "CAMLViewFields"], ["rowLimit", "CAMLRowLimit"], ["queryOptions", "CAMLQueryOptions"]]);
+                addToPayload(opt, ["listName", "viewName", ["query", "CAMLQuery"],
+                    ["viewFields", "CAMLViewFields"],
+                    ["rowLimit", "CAMLRowLimit"],
+                    ["queryOptions", "CAMLQueryOptions"]
+                ]);
                 break;
             case "GetListItemChanges":
                 addToPayload(opt, ["listName", "viewFields", "since", "contains"]);
                 break;
             case "GetListItemChangesSinceToken":
-                addToPayload(opt, ["listName", "viewName", ["query", "CAMLQuery"], ["viewFields", "CAMLViewFields"], ["rowLimit", "CAMLRowLimit"], ["queryOptions", "CAMLQueryOptions"], {name: "changeToken", sendNull: false}, {name: "contains", sendNull: false}]);
+                addToPayload(opt, ["listName", "viewName", ["query", "CAMLQuery"],
+                    ["viewFields", "CAMLViewFields"],
+                    ["rowLimit", "CAMLRowLimit"],
+                    ["queryOptions", "CAMLQueryOptions"], {
+                        name: "changeToken",
+                        sendNull: false
+                    }, {
+                        name: "contains",
+                        sendNull: false
+                    }
+                ]);
                 break;
             case "GetVersionCollection":
                 addToPayload(opt, ["strlistID", "strlistItemID", "strFieldName"]);
@@ -2822,21 +2865,21 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 break;
             case "UpdateListItems":
                 addToPayload(opt, ["listName"]);
-                if(typeof opt.updates !== "undefined" && opt.updates.length > 0) {
+                if (typeof opt.updates !== "undefined" && opt.updates.length > 0) {
                     addToPayload(opt, ["updates"]);
                 } else {
                     SOAPEnvelope.payload += "<updates><Batch OnError='Continue'><Method ID='1' Cmd='" + opt.batchCmd + "'>";
-                    for (i=0; i < opt.valuepairs.length; i++) { 
+                    for (i = 0; i < opt.valuepairs.length; i++) {
                         SOAPEnvelope.payload += "<Field Name='" + opt.valuepairs[i][0] + "'>" + escapeColumnValue(opt.valuepairs[i][1]) + "</Field>";
                     }
-                    if(opt.batchCmd !== "New") {
+                    if (opt.batchCmd !== "New") {
                         SOAPEnvelope.payload += "<Field Name='ID'>" + opt.ID + "</Field>";
                     }
                     SOAPEnvelope.payload += "</Method></Batch></updates>";
                 }
                 break;
 
-            // MEETINGS OPERATIONS
+                // MEETINGS OPERATIONS
             case "AddMeeting":
                 addToPayload(opt, ["organizerEmail", "uid", "sequence", "utcDateStamp", "title", "location", "utcDateStart", "utcDateEnd", "nonGregorian"]);
                 break;
@@ -2850,7 +2893,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 addToPayload(opt, ["title"]);
                 break;
 
-            // PEOPLE OPERATIONS
+                // PEOPLE OPERATIONS
             case "ResolvePrincipals":
                 addToPayload(opt, ["principalKeys", "principalType", "addToUserInfoList"]);
                 break;
@@ -2858,7 +2901,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 addToPayload(opt, ["searchText", "maxResults", "principalType"]);
                 break;
 
-            // PERMISSION OPERATIONS
+                // PERMISSION OPERATIONS
             case "AddPermission":
                 addToPayload(opt, ["objectName", "objectType", "permissionIdentifier", "permissionType", "permissionMask"]);
                 break;
@@ -2878,11 +2921,11 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 addToPayload(opt, ["objectName", "objectType", "permissionIdentifier", "permissionType", "permissionMask"]);
                 break;
 
-            // PUBLISHEDLINKSSERVICE OPERATIONS
+                // PUBLISHEDLINKSSERVICE OPERATIONS
             case "GetLinks":
                 break;
 
-            // SEARCH OPERATIONS
+                // SEARCH OPERATIONS
             case "GetPortalSearchInfo":
                 SOAPEnvelope.opheader = "<" + opt.operation + " xmlns='http://microsoft.com/webservices/OfficeServer/QueryService'>";
                 SOAPAction = "http://microsoft.com/webservices/OfficeServer/QueryService/" + opt.operation;
@@ -2910,12 +2953,12 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
             case "Status":
                 break;
 
-            // SHAREPOINTDIAGNOSTICS OPERATIONS
+                // SHAREPOINTDIAGNOSTICS OPERATIONS
             case "SendClientScriptErrorReport":
                 addToPayload(opt, ["message", "file", "line", "client", "stack", "team", "originalFile"]);
                 break;
 
-            // SITEDATA OPERATIONS
+                // SITEDATA OPERATIONS
             case "EnumerateFolder":
                 addToPayload(opt, ["strFolderUrl"]);
                 break;
@@ -2945,11 +2988,12 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 SOAPEnvelope = siteDataFixSOAPEnvelope(SOAPEnvelope, opt.operation);
                 break;
 
-            // SITES OPERATIONS
+                // SITES OPERATIONS
             case "CreateWeb":
                 addToPayload(opt, ["url", "title", "description", "templateName", "language", "languageSpecified",
                     "locale", "localeSpecified", "collationLocale", "collationLocaleSpecified", "uniquePermissions",
-                    "uniquePermissionsSpecified", "anonymous", "anonymousSpecified", "presence", "presenceSpecified"]);
+                    "uniquePermissionsSpecified", "anonymous", "anonymousSpecified", "presence", "presenceSpecified"
+                ]);
                 break;
             case "DeleteWeb":
                 addToPayload(opt, ["url"]);
@@ -2961,7 +3005,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 addToPayload(opt, ["LCID", "TemplateList"]);
                 break;
 
-            // SOCIALDATASERVICE OPERATIONS
+                // SOCIALDATASERVICE OPERATIONS
             case "AddComment":
                 addToPayload(opt, ["url", "comment", "isHighPriority", "title"]);
                 break;
@@ -3021,7 +3065,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 break;
             case "GetCommentsOnUrl":
                 addToPayload(opt, ["url", "maximumItemsToReturn", "startIndex"]);
-                if(typeof opt.excludeItemsTime !== "undefined" && opt.excludeItemsTime.length > 0) {
+                if (typeof opt.excludeItemsTime !== "undefined" && opt.excludeItemsTime.length > 0) {
                     SOAPEnvelope.payload += wrapNode("excludeItemsTime", opt.excludeItemsTime);
                 }
                 break;
@@ -3077,12 +3121,12 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 addToPayload(opt, ["url", "lastModifiedTime", "comment", "isHighPriority"]);
                 break;
 
-            // SPELLCHECK OPERATIONS 
+                // SPELLCHECK OPERATIONS 
             case "SpellCheck":
                 addToPayload(opt, ["chunksToSpell", "declaredLanguage", "useLad"]);
                 break;
 
-           // TAXONOMY OPERATIONS 
+                // TAXONOMY OPERATIONS 
             case "AddTerms":
                 addToPayload(opt, ["sharedServiceId", "termSetId", "lcid", "newTerms"]);
                 break;
@@ -3102,7 +3146,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 addToPayload(opt, ["sharedServiceId", "termSetId", "lcid", "clientTimeStamps", "clientVersions"]);
                 break;
 
-            // USERS AND GROUPS OPERATIONS
+                // USERS AND GROUPS OPERATIONS
             case "AddGroup":
                 addToPayload(opt, ["groupName", "ownerIdentifier", "ownerType", "defaultUserLoginName", "description"]);
                 break;
@@ -3225,16 +3269,16 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 addToPayload(opt, ["userLoginName", "userName", "userEmail", "userNotes"]);
                 break;
 
-            // USERPROFILESERVICE OPERATIONS
+                // USERPROFILESERVICE OPERATIONS
             case "AddColleague":
                 addToPayload(opt, ["accountName", "colleagueAccountName", "group", "privacy", "isInWorkGroup"]);
-                break;                                                                          
+                break;
             case "AddLink":
                 addToPayload(opt, ["accountName", "name", "url", "group", "privacy"]);
-                break;                                                                                      
+                break;
             case "AddMembership":
                 addToPayload(opt, ["accountName", "membershipInfo", "group", "privacy"]);
-                break;                                                          
+                break;
             case "AddPinnedLink":
                 addToPayload(opt, ["accountName", "name", "url"]);
                 break;
@@ -3279,8 +3323,10 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 break;
             case "GetUserProfileByName":
                 // Note that this operation is inconsistent with the others, using AccountName rather than accountName
-                if(typeof opt.accountName !== "undefined" && opt.accountName.length > 0) {
-                    addToPayload(opt, [["AccountName", "accountName"]]);
+                if (typeof opt.accountName !== "undefined" && opt.accountName.length > 0) {
+                    addToPayload(opt, [
+                        ["AccountName", "accountName"]
+                    ]);
                 } else {
                     addToPayload(opt, ["AccountName"]);
                 }
@@ -3303,10 +3349,10 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 break;
             case "RemoveAllPinnedLinks":
                 addToPayload(opt, ["accountName"]);
-                break;  
+                break;
             case "RemoveColleague":
                 addToPayload(opt, ["accountName", "colleagueAccountName"]);
-                break;  
+                break;
             case "RemoveLink":
                 addToPayload(opt, ["accountName", "id"]);
                 break;
@@ -3315,21 +3361,21 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 break;
             case "RemovePinnedLink":
                 addToPayload(opt, ["accountName", "id"]);
-                break;                                                                                          
+                break;
             case "UpdateColleaguePrivacy":
                 addToPayload(opt, ["accountName", "colleagueAccountName", "newPrivacy"]);
                 break;
             case "UpdateLink":
                 addToPayload(opt, ["accountName", "data"]);
-                break;          
-            case "UpdateMembershipPrivacy":  
+                break;
+            case "UpdateMembershipPrivacy":
                 addToPayload(opt, ["accountName", "sourceInternal", "sourceReference", "newPrivacy"]);
                 break;
             case "UpdatePinnedLink ":
                 addToPayload(opt, ["accountName", "data"]);
                 break;
 
-            // VERSIONS OPERATIONS
+                // VERSIONS OPERATIONS
             case "DeleteAllVersions":
                 addToPayload(opt, ["fileName"]);
                 break;
@@ -3343,7 +3389,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 addToPayload(opt, ["fileName", "fileVersion"]);
                 break;
 
-            // VIEW OPERATIONS
+                // VIEW OPERATIONS
             case "AddView":
                 addToPayload(opt, ["listName", "viewName", "viewFields", "query", "rowLimit", "rowLimit", "type", "makeViewDefault"]);
                 break;
@@ -3364,10 +3410,11 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 break;
             case "UpdateViewHtml":
                 addToPayload(opt, ["listName", "viewName", "viewProperties", "toolbar", "viewHeader", "viewBody", "viewFooter", "viewEmpty", "rowLimitExceeded",
-                    "query", "viewFields", "aggregations", "formats", "rowLimit"]);
+                    "query", "viewFields", "aggregations", "formats", "rowLimit"
+                ]);
                 break;
 
-            // WEBPARTPAGES OPERATIONS
+                // WEBPARTPAGES OPERATIONS
             case "AddWebPart":
                 addToPayload(opt, ["pageUrl", "webPartXml", "storage"]);
                 break;
@@ -3387,7 +3434,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 addToPayload(opt, ["pageUrl", "storage", "behavior"]);
                 break;
 
-            // WEBS OPERATIONS
+                // WEBS OPERATIONS
             case "Webs.CreateContentType":
                 addToPayload(opt, ["displayName", "parentType", "newFields", "contentTypeProperties"]);
                 break;
@@ -3408,7 +3455,9 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 addToPayload(opt, ["objectUrl"]);
                 break;
             case "GetWeb":
-                addToPayload(opt, [["webUrl", "webURL"]]);
+                addToPayload(opt, [
+                    ["webUrl", "webURL"]
+                ]);
                 break;
             case "GetWebCollection":
                 break;
@@ -3416,17 +3465,22 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 break;
             case "UpdateColumns":
                 addToPayload(opt, ["newFields", "updateFields", "deleteFields"]);
-                break;              
+                break;
             case "Webs.UpdateContentType":
                 addToPayload(opt, ["contentTypeId", "contentTypeProperties", "newFields", "updateFields", "deleteFields"]);
-                break;              
+                break;
             case "WebUrlFromPageUrl":
-                addToPayload(opt, [["pageUrl", "pageURL"]]);
+                addToPayload(opt, [
+                    ["pageUrl", "pageURL"]
+                ]);
                 break;
 
-            // WORKFLOW OPERATIONS
+                // WORKFLOW OPERATIONS
             case "AlterToDo":
                 addToPayload(opt, ["item", "todoId", "todoListId", "taskData"]);
+                break;
+            case "ClaimReleaseTask":
+                addToPayload(opt, ["item", "taskId", "listId", "fClaim"]);
                 break;
             case "GetTemplatesForItem":
                 addToPayload(opt, ["item"]);
@@ -3453,12 +3507,12 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
 
         // Check to see if we've already cached the results
         var cachedPromise;
-        if(opt.cacheXML) {
+        if (opt.cacheXML) {
             cachedPromise = promisesCache[msg];
         }
 
-        if(typeof cachedPromise === "undefined") {
-        
+        if (typeof cachedPromise === "undefined") {
+
             // Finally, make the Ajax call
             promisesCache[msg] = $.ajax({
                 // The relative URL for the AJAX call
@@ -3466,9 +3520,9 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 // By default, the AJAX calls are asynchronous.  You can specify false to require a synchronous call.
                 async: opt.async,
                 // Before sending the msg, need to send the request header
-                beforeSend: function (xhr) {
+                beforeSend: function(xhr) {
                     // If we need to pass the SOAPAction, do so
-                    if(WSops[opt.operation][1]) {
+                    if (WSops[opt.operation][1]) {
                         xhr.setRequestHeader("SOAPAction", SOAPAction);
                     }
                 },
@@ -3482,32 +3536,19 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 contentType: "text/xml;charset='utf-8'",
                 complete: function(xData, Status) {
                     // When the call is complete, call the completefunc if there is one
-                    if($.isFunction(opt.completefunc)) {
+                    if ($.isFunction(opt.completefunc)) {
                         opt.completefunc(xData, Status);
 
                     }
                 }
             });
-            
-/*          spservicesPromise.then(
-                function() {
-                    // Cache the promise if requested
-                    if(opt.cacheXML) {
-                        promisesCache[msg] = spservicesPromise;
-                    }
-                },
-                function() {
-                                                                        // TODO: Allow for fail function
-                }
-            );
-*/
+
             // Return the promise
-//          return spservicesPromise;
             return promisesCache[msg];
 
         } else {
             // Call the completefunc if there is one
-            if($.isFunction(opt.completefunc)) {
+            if ($.isFunction(opt.completefunc)) {
                 opt.completefunc(cachedPromise, null);
             }
             // Return the cached promise
@@ -3521,42 +3562,42 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
     // we allow for all in a standardized way.
     $.fn.SPServices.defaults = {
 
-        cacheXML: false,            // If true, we'll cache the XML results with jQuery's .data() function
-        operation: "",              // The Web Service operation
-        webURL: "",                 // URL of the target Web
-        makeViewDefault: false,     // true to make the view the default view for the list
+        cacheXML: false, // If true, we'll cache the XML results with jQuery's .data() function
+        operation: "", // The Web Service operation
+        webURL: "", // URL of the target Web
+        makeViewDefault: false, // true to make the view the default view for the list
 
         // For operations requiring CAML, these options will override any abstractions
-        CAMLViewName: "",           // View name in CAML format.
-        CAMLQuery: "",              // Query in CAML format
-        CAMLViewFields: "",         // View fields in CAML format
-        CAMLRowLimit: 0,            // Row limit as a string representation of an integer
-        CAMLQueryOptions: "<QueryOptions></QueryOptions>",      // Query options in CAML format
+        CAMLViewName: "", // View name in CAML format.
+        CAMLQuery: "", // Query in CAML format
+        CAMLViewFields: "", // View fields in CAML format
+        CAMLRowLimit: 0, // Row limit as a string representation of an integer
+        CAMLQueryOptions: "<QueryOptions></QueryOptions>", // Query options in CAML format
 
         // Abstractions for CAML syntax
-        batchCmd: "Update",         // Method Cmd for UpdateListItems
-        valuepairs: [],             // Fieldname / Fieldvalue pairs for UpdateListItems
+        batchCmd: "Update", // Method Cmd for UpdateListItems
+        valuepairs: [], // Fieldname / Fieldvalue pairs for UpdateListItems
 
         // As of v0.7.1, removed all options which were assigned an empty string ("")
-        DestinationUrls: [],        // Array of destination URLs for copy operations
-        behavior: "Version3",       // An SPWebServiceBehavior indicating whether the client supports Windows SharePoint Services 2.0 or Windows SharePoint Services 3.0: {Version2 | Version3 }
-        storage: "Shared",          // A Storage value indicating how the Web Part is stored: {None | Personal | Shared}
-        objectType: "List",         // objectType for operations which require it
-        cancelMeeting: true,        // true to delete a meeting;false to remove its association with a Meeting Workspace site
-        nonGregorian: false,        // true if the calendar is set to a format other than Gregorian;otherwise, false.
-        fClaim: false,              // Specifies if the action is a claim or a release. Specifies true for a claim and false for a release.
-        recurrenceId: 0,            // The recurrence ID for the meeting that needs its association removed. This parameter can be set to 0 for single-instance meetings.
-        sequence: 0,                // An integer that is used to determine the ordering of updates in case they arrive out of sequence. Updates with a lower-than-current sequence are discarded. If the sequence is equal to the current sequence, the latest update are applied.
-        maximumItemsToReturn: 0,    // SocialDataService maximumItemsToReturn
-        startIndex: 0,              // SocialDataService startIndex
-        isHighPriority: false,      // SocialDataService isHighPriority
-        isPrivate: false,           // SocialDataService isPrivate
-        rating: 1,                  // SocialDataService rating
-        maxResults: 10,             // Unless otherwise specified, the maximum number of principals that can be returned from a provider is 10.
-        principalType: "User",      // Specifies user scope and other information: [None | User | DistributionList | SecurityGroup | SharePointGroup | All]
+        DestinationUrls: [], // Array of destination URLs for copy operations
+        behavior: "Version3", // An SPWebServiceBehavior indicating whether the client supports Windows SharePoint Services 2.0 or Windows SharePoint Services 3.0: {Version2 | Version3 }
+        storage: "Shared", // A Storage value indicating how the Web Part is stored: {None | Personal | Shared}
+        objectType: "List", // objectType for operations which require it
+        cancelMeeting: true, // true to delete a meeting;false to remove its association with a Meeting Workspace site
+        nonGregorian: false, // true if the calendar is set to a format other than Gregorian;otherwise, false.
+        fClaim: false, // Specifies if the action is a claim or a release. Specifies true for a claim and false for a release.
+        recurrenceId: 0, // The recurrence ID for the meeting that needs its association removed. This parameter can be set to 0 for single-instance meetings.
+        sequence: 0, // An integer that is used to determine the ordering of updates in case they arrive out of sequence. Updates with a lower-than-current sequence are discarded. If the sequence is equal to the current sequence, the latest update are applied.
+        maximumItemsToReturn: 0, // SocialDataService maximumItemsToReturn
+        startIndex: 0, // SocialDataService startIndex
+        isHighPriority: false, // SocialDataService isHighPriority
+        isPrivate: false, // SocialDataService isPrivate
+        rating: 1, // SocialDataService rating
+        maxResults: 10, // Unless otherwise specified, the maximum number of principals that can be returned from a provider is 10.
+        principalType: "User", // Specifies user scope and other information: [None | User | DistributionList | SecurityGroup | SharePointGroup | All]
 
-        async: true,                // Allow the user to force async
-        completefunc: null          // Function to call on completion
+        async: true, // Allow the user to force async
+        completefunc: null // Function to call on completion
 
     }; // End $.fn.SPServices.defaults
 
@@ -3565,16 +3606,16 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
     $.fn.SPServices.SPGetCurrentSite = function() {
 
         // We've already determined the current site...
-        if(currentContext.thisSite.length > 0) {
+        if (currentContext.thisSite.length > 0) {
             return currentContext.thisSite;
         }
 
         // If we still don't know the current site, we call WebUrlFromPageUrlResult.
         var msg = SOAPEnvelope.header +
-                "<WebUrlFromPageUrl xmlns='" + SCHEMASharePoint + "/soap/' ><pageUrl>" +
-                ((location.href.indexOf("?") > 0) ? location.href.substr(0, location.href.indexOf("?")) : location.href) +
-                "</pageUrl></WebUrlFromPageUrl>" +
-                SOAPEnvelope.footer;
+            "<WebUrlFromPageUrl xmlns='" + SCHEMASharePoint + "/soap/' ><pageUrl>" +
+            ((location.href.indexOf("?") > 0) ? location.href.substr(0, location.href.indexOf("?")) : location.href) +
+            "</pageUrl></WebUrlFromPageUrl>" +
+            SOAPEnvelope.footer;
         $.ajax({
             async: false, // Need this to be synchronous so we're assured of a valid value
             url: "/_vti_bin/Webs.asmx",
@@ -3582,7 +3623,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
             data: msg,
             dataType: "xml",
             contentType: "text/xml;charset=\"utf-8\"",
-            complete: function (xData, Status) {
+            complete: function(xData, Status) {
                 currentContext.thisSite = $(xData.responseXML).find("WebUrlFromPageUrlResult").text();
             }
         });
@@ -3596,24 +3637,24 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
     $.fn.SPServices.SPCascadeDropdowns = function(options) {
 
         var opt = $.extend({}, {
-            relationshipWebURL: "",             // [Optional] The name of the Web (site) which contains the relationships list
-            relationshipList: "",               // The name of the list which contains the parent/child relationships
-            relationshipListParentColumn: "",   // The internal name of the parent column in the relationship list
-            relationshipListChildColumn: "",    // The internal name of the child column in the relationship list
-            relationshipListSortColumn: "",     // [Optional] If specified, sort the options in the dropdown by this column,
-                                                // otherwise the options are sorted by relationshipListChildColumn
-            parentColumn: "",                   // The display name of the parent column in the form
-            childColumn: "",                    // The display name of the child column in the form
-            listName: $().SPServices.SPListNameFromUrl(),       // The list the form is working with. This is useful if the form is not in the list context.
-            CAMLQuery: "",                      // [Optional] For power users, this CAML fragment will be Anded with the default query on the relationshipList
+            relationshipWebURL: "", // [Optional] The name of the Web (site) which contains the relationships list
+            relationshipList: "", // The name of the list which contains the parent/child relationships
+            relationshipListParentColumn: "", // The internal name of the parent column in the relationship list
+            relationshipListChildColumn: "", // The internal name of the child column in the relationship list
+            relationshipListSortColumn: "", // [Optional] If specified, sort the options in the dropdown by this column,
+            // otherwise the options are sorted by relationshipListChildColumn
+            parentColumn: "", // The display name of the parent column in the form
+            childColumn: "", // The display name of the child column in the form
+            listName: $().SPServices.SPListNameFromUrl(), // The list the form is working with. This is useful if the form is not in the list context.
+            CAMLQuery: "", // [Optional] For power users, this CAML fragment will be Anded with the default query on the relationshipList
             CAMLQueryOptions: "<QueryOptions><IncludeMandatoryColumns>FALSE</IncludeMandatoryColumns></QueryOptions>", // [Optional] For power users, ability to specify Query Options
-            promptText: "",                     // [DEPRECATED] Text to use as prompt. If included, {0} will be replaced with the value of childColumn. IOrignal value "Choose {0}..."
-            noneText: "(None)",                 // [Optional] Text to use for the (None) selection. Provided for non-English language support.
-            simpleChild: false,                 // [Optional] If set to true and childColumn is a complex dropdown, convert it to a simple dropdown
-            selectSingleOption: false,          // [Optional] If set to true and there is only a single child option, select it
-            matchOnId: false,                   // By default, we match on the lookup's text value. If matchOnId is true, we'll match on the lookup id instead.
-            completefunc: null,                 // Function to call on completion of rendering the change.
-            debug: false                        // If true, show error messages;if false, run silent
+            promptText: "", // [DEPRECATED] Text to use as prompt. If included, {0} will be replaced with the value of childColumn. IOrignal value "Choose {0}..."
+            noneText: "(None)", // [Optional] Text to use for the (None) selection. Provided for non-English language support.
+            simpleChild: false, // [Optional] If set to true and childColumn is a complex dropdown, convert it to a simple dropdown
+            selectSingleOption: false, // [Optional] If set to true and there is only a single child option, select it
+            matchOnId: false, // By default, we match on the lookup's text value. If matchOnId is true, we'll match on the lookup id instead.
+            completefunc: null, // Function to call on completion of rendering the change.
+            debug: false // If true, show error messages;if false, run silent
         }, options);
 
 
@@ -3622,21 +3663,27 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
 
         // Find the parent column's select (dropdown)
         var parentSelect = new DropdownCtl(opt.parentColumn);
-        if(parentSelect.Obj.html() === null && opt.debug) {errBox(thisFunction, "parentColumn: " + opt.parentColumn , TXTColumnNotFound);return;}
+        if (parentSelect.Obj.html() === null && opt.debug) {
+            errBox(thisFunction, "parentColumn: " + opt.parentColumn, TXTColumnNotFound);
+            return;
+        }
 
         // Find the child column's select (dropdown)
         var childSelect = new DropdownCtl(opt.childColumn);
-        if(childSelect.Obj.html() === null && opt.debug) {errBox(thisFunction, "childColumn: " + opt.childColumn, TXTColumnNotFound);return;}
+        if (childSelect.Obj.html() === null && opt.debug) {
+            errBox(thisFunction, "childColumn: " + opt.childColumn, TXTColumnNotFound);
+            return;
+        }
 
         // If requested and the childColumn is a complex dropdown, convert to a simple dropdown
-        if(opt.simpleChild === true && childSelect.Type === "C") {
+        if (opt.simpleChild === true && childSelect.Type === "C") {
             $().SPServices.SPComplexToSimpleDropdown({
                 columnName: opt.childColumn
             });
             // Set the childSelect to reference the new simple dropdown
             childSelect = new DropdownCtl(opt.childColumn);
         }
-      
+
         var childColumnRequired, childColumnStatic;
 
         // Get information about the childColumn from the current list
@@ -3659,13 +3706,18 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
         });
 
         // Save data about each child column on the parent
-        var childColumn = {opt: opt, childSelect: childSelect, childColumnStatic: childColumnStatic, childColumnRequired: childColumnRequired};
+        var childColumn = {
+            opt: opt,
+            childSelect: childSelect,
+            childColumnStatic: childColumnStatic,
+            childColumnRequired: childColumnRequired
+        };
         var childColumns = parentSelect.Obj.data("SPCascadeDropdownsChildColumns");
 
         // If this is the first child for this parent, then create the data object to hold the settings
-        if(typeof childColumns === "undefined") {
+        if (typeof childColumns === "undefined") {
             parentSelect.Obj.data("SPCascadeDropdownsChildColumns", [childColumn]);
-        // If we already have a data object for this parent, then add the setting for this child to it
+            // If we already have a data object for this parent, then add the setting for this child to it
         } else {
             childColumns.push(childColumn);
             parentSelect.Obj.data("SPCascadeDropdownsChildColumns", childColumns);
@@ -3673,22 +3725,22 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
         }
 
         // We only need to bind to the event(s) if we haven't already done so
-        if(!thisParentSetUp) {
-            switch(parentSelect.Type) {
+        if (!thisParentSetUp) {
+            switch (parentSelect.Type) {
                 // Plain old select
                 case "S":
                     parentSelect.Obj.bind("change", function() {
                         cascadeDropdown(opt.parentColumn, parentSelect);
                     });
                     break;
-                // Input / Select hybrid
+                    // Input / Select hybrid
                 case "C":
                     // Bind to any change on the hidden input element
-                    $("input[id='"+ parentSelect.Obj.attr("optHid") + "']").bind("propertychange", function() {
+                    $("input[id='" + parentSelect.Obj.attr("optHid") + "']").bind("propertychange", function() {
                         cascadeDropdown(opt.parentColumn, parentSelect);
                     });
                     break;
-                // Multi-select hybrid
+                    // Multi-select hybrid
                 case "M":
                     // Handle the dblclick on the candidate select
                     $(parentSelect.master.candidateControl).bind("dblclick", function() {
@@ -3742,7 +3794,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
             // which don't require any action.  The attribute will be unique per child column in case there are
             // multiple children for a given parent.
             var allParentSelections = parentSelectSelected.join(";#");
-            if(parentSelect.Obj.data("SPCascadeDropdown_Selected_" + childColumnStatic) === allParentSelections) {
+            if (parentSelect.Obj.data("SPCascadeDropdown_Selected_" + childColumnStatic) === allParentSelections) {
                 return;
             }
             parentSelect.Obj.data("SPCascadeDropdown_Selected_" + childColumnStatic, allParentSelections);
@@ -3754,36 +3806,36 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
             // Get the list items which match the current selection
             var sortColumn = (opt.relationshipListSortColumn.length > 0) ? opt.relationshipListSortColumn : opt.relationshipListChildColumn;
             var camlQuery = "<Query><OrderBy><FieldRef Name='" + sortColumn + "'/></OrderBy><Where><And>";
-            if(opt.CAMLQuery.length > 0) {
+            if (opt.CAMLQuery.length > 0) {
                 camlQuery += "<And>";
             }
 
             // Build up the criteria for inclusion
-            if(parentSelectSelected.length === 0) {
+            if (parentSelectSelected.length === 0) {
                 // Handle the case where no values are selected in multi-selects
                 camlQuery += "<Eq><FieldRef Name='" + opt.relationshipListParentColumn + "'/><Value Type='Text'></Value></Eq>";
-            } else if(parentSelectSelected.length === 1) {
+            } else if (parentSelectSelected.length === 1) {
                 // Only one value is selected
                 camlQuery += "<Eq><FieldRef Name='" + opt.relationshipListParentColumn +
                     (opt.matchOnId ? "' LookupId='True'/><Value Type='Integer'>" : "'/><Value Type='Text'>") +
                     escapeColumnValue(parentSelectSelected[0]) + "</Value></Eq>";
             } else {
                 var compound = (parentSelectSelected.length > 2) ? true : false;
-                for(i=0; i < (parentSelectSelected.length - 1); i++) {
+                for (i = 0; i < (parentSelectSelected.length - 1); i++) {
                     camlQuery += "<Or>";
                 }
-                for(i=0; i < parentSelectSelected.length; i++) {
+                for (i = 0; i < parentSelectSelected.length; i++) {
                     camlQuery += "<Eq><FieldRef Name='" + opt.relationshipListParentColumn +
                         (opt.matchOnId ? "' LookupId='True'/><Value Type='Integer'>" : "'/><Value Type='Text'>") +
                         escapeColumnValue(parentSelectSelected[i]) + "</Value></Eq>";
-                    if(i>0 && (i < (parentSelectSelected.length - 1)) && compound) {
+                    if (i > 0 && (i < (parentSelectSelected.length - 1)) && compound) {
                         camlQuery += "</Or>";
                     }
                 }
                 camlQuery += "</Or>";
             }
 
-            if(opt.CAMLQuery.length > 0) {
+            if (opt.CAMLQuery.length > 0) {
                 camlQuery += opt.CAMLQuery + "</And>";
             }
 
@@ -3791,7 +3843,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
             camlQuery += "<IsNotNull><FieldRef Name='" + opt.relationshipListChildColumn + "' /></IsNotNull>";
 
             camlQuery += "</And></Where></Query>";
-        
+
             $().SPServices({
                 operation: "GetListItems",
                 // Force sync so that we have the right values for the child column onchange trigger
@@ -3812,7 +3864,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                     $(xData.responseXML).find("errorstring").each(function() {
                         var thisFunction = "SPServices.SPCascadeDropdowns";
                         var errorText = $(this).text();
-                        if(opt.debug && errorText === "One or more field types are not installed properly. Go to the list settings page to delete these fields.") {
+                        if (opt.debug && errorText === "One or more field types are not installed properly. Go to the list settings page to delete these fields.") {
                             errBox(thisFunction,
                                 "relationshipListParentColumn: " + opt.relationshipListParentColumn + " or " +
                                 "relationshipListChildColumn: " + opt.relationshipListChildColumn,
@@ -3826,14 +3878,14 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                     });
 
                     // Add an explanatory prompt
-                    switch(childSelect.Type) {
+                    switch (childSelect.Type) {
                         case "S":
                             // Remove all of the existing options
                             $(childSelect.Obj).find("option").remove();
                             // If the column is required or the promptText option is empty, don't add the prompt text
-                            if(!childColumnRequired && (opt.promptText.length > 0)) {
+                            if (!childColumnRequired && (opt.promptText.length > 0)) {
                                 childSelect.Obj.append("<option value='0'>" + opt.promptText.replace(/\{0\}/g, opt.childColumn) + "</option>");
-                            } else if(!childColumnRequired){
+                            } else if (!childColumnRequired) {
                                 childSelect.Obj.append("<option value='0'>" + opt.noneText + "</option>");
                             }
                             break;
@@ -3862,32 +3914,32 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                         // If relationshipListChildColumn is a Lookup column, then the ID should be for the Lookup value,
                         // else the ID of the relationshipList item
                         var thisValue = $(this).attr("ows_" + opt.relationshipListChildColumn);
-                        
-                        if(typeof thisValue !== "undefined" && thisValue.indexOf(";#") > 0) {
+
+                        if (typeof thisValue !== "undefined" && thisValue.indexOf(";#") > 0) {
                             thisOption = new SplitIndex(thisValue);
                         } else {
                             thisOption.id = $(this).attr("ows_ID");
-                            thisOption.value = thisValue;                       
+                            thisOption.value = thisValue;
                         }
 
                         // If the relationshipListChildColumn is a calculated column, then the value isn't preceded by the ID,
                         // but by the datatype.  In this case, thisOption.id should be the ID of the relationshipList item.
                         // e.g., float;#12345.67
-                        if(isNaN(thisOption.id)) {
+                        if (isNaN(thisOption.id)) {
                             thisOption.id = $(this).attr("ows_ID");
                         }
-                    
+
                         // Save the id and value for the first child option in case we need to select it (selectSingleOption option is true)
                         firstChildOptionId = thisOption.id;
                         firstChildOptionValue = thisOption.value;
-                    
-                        switch(childSelect.Type) {
+
+                        switch (childSelect.Type) {
                             case "S":
                                 var selected = ($(this).attr("ows_ID") === childSelectSelected[0]) ? " selected='selected'" : "";
                                 childSelect.Obj.append("<option" + selected + " value='" + thisOption.id + "'>" + thisOption.value + "</option>");
                                 break;
                             case "C":
-                                if(thisOption.id === childSelectSelected[0]) {
+                                if (thisOption.id === childSelectSelected[0]) {
                                     childSelect.Obj.attr("value", thisOption.value);
                                 }
                                 choices = choices + ((choices.length > 0) ? "|" : "") + thisOption.value + "|" + thisOption.id;
@@ -3901,11 +3953,11 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                         }
                     });
 
-                    switch(childSelect.Type) {
+                    switch (childSelect.Type) {
                         case "S":
                             childSelect.Obj.trigger("change");
                             // If there is only one option and the selectSingleOption option is true, then select it
-                            if(numChildOptions === 1 && opt.selectSingleOption === true) {
+                            if (numChildOptions === 1 && opt.selectSingleOption === true) {
                                 $(childSelect.Obj).find("option[value!='0']:first").attr("selected", "selected");
                             }
                             break;
@@ -3913,14 +3965,14 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                             // Set the allowable choices
                             childSelect.Obj.attr("choices", choices);
                             // If there is only one option and the selectSingleOption option is true, then select it
-                            if(numChildOptions === 1 && opt.selectSingleOption === true) {
+                            if (numChildOptions === 1 && opt.selectSingleOption === true) {
                                 // Set the input element value
                                 $(childSelect.Obj).attr("value", firstChildOptionValue);
                                 // Set the value of the optHid input element
                                 $("input[id='" + childSelect.Obj.attr("optHid") + "']").val(firstChildOptionId);
                             }
                             // If there's no selection, then remove the value in the associated hidden input element (optHid)
-                            if(childSelect.Obj.val() === "") {
+                            if (childSelect.Obj.val() === "") {
                                 $("input[id='" + childSelect.Obj.attr("optHid") + "']").val("");
                             }
                             break;
@@ -3961,7 +4013,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 }
             });
             // If present, call completefunc when all else is done
-            if(opt.completefunc !== null) {
+            if (opt.completefunc !== null) {
                 opt.completefunc();
             }
         }); // $(childColumns).each(function()
@@ -3973,18 +4025,23 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
     $.fn.SPServices.SPComplexToSimpleDropdown = function(options) {
 
         var opt = $.extend({}, {
-            columnName: "",                     // The display name of the column in the form
-            completefunc: null,                 // Function to call on completion of rendering the change.
-            debug: false                        // If true, show error messages;if false, run silent
+            columnName: "", // The display name of the column in the form
+            completefunc: null, // Function to call on completion of rendering the change.
+            debug: false // If true, show error messages;if false, run silent
         }, options);
 
         // Find the column's select (dropdown)
         var columnSelect = new DropdownCtl(opt.columnName);
-        if(columnSelect.Obj.html() === null && opt.debug) {errBox("SPServices.SPComplexToSimpleDropdown", "columnName: " + opt.columnName, TXTColumnNotFound); return;  }
+        if (columnSelect.Obj.html() === null && opt.debug) {
+            errBox("SPServices.SPComplexToSimpleDropdown", "columnName: " + opt.columnName, TXTColumnNotFound);
+            return;
+        }
 
         // If we don't have a complex dropdown, then there is nothing to do
-        if(columnSelect.Type !== "C") { return; }
-        
+        if (columnSelect.Type !== "C") {
+            return;
+        }
+
         // The available options are stored in the choices attribute of the complex dropdowns's input element...
         var choices = $(columnSelect.Obj).attr("choices").split("|");
         // The optHid attribute contains the id of a hidden input element which stores the selected value for the commit
@@ -3996,13 +4053,13 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
         // Build up the simple dropdown, giving it an easy to select id
         var simpleSelectId = genContainerId("SPComplexToSimpleDropdown", opt.columnName);
 
-        var simpleSelect = "<select id='" + simpleSelectId + "' title='" + opt.columnName + "'>";       
-        for(i=0; i < choices.length; i=i+2) {
-            var simpleSelectSelected = (choices[i+1] === complexSelectSelectedId) ? " selected='selected' " : " ";
-            simpleSelect += "<option" + simpleSelectSelected + "value='" + choices[i+1] + "'>" + choices[i] + "</option>";
+        var simpleSelect = "<select id='" + simpleSelectId + "' title='" + opt.columnName + "'>";
+        for (i = 0; i < choices.length; i = i + 2) {
+            var simpleSelectSelected = (choices[i + 1] === complexSelectSelectedId) ? " selected='selected' " : " ";
+            simpleSelect += "<option" + simpleSelectSelected + "value='" + choices[i + 1] + "'>" + choices[i] + "</option>";
         }
         simpleSelect += "</select>";
-        
+
         // Append the new simple select to the form
         $(columnSelect.Obj).closest("td").prepend(simpleSelect);
 
@@ -4023,7 +4080,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
         $("#" + simpleSelectId).trigger("change");
 
         // If present, call completefunc when all else is done
-        if(opt.completefunc !== null) {
+        if (opt.completefunc !== null) {
             opt.completefunc();
         }
 
@@ -4034,20 +4091,20 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
     $.fn.SPServices.SPDisplayRelatedInfo = function(options) {
 
         var opt = $.extend({}, {
-            columnName: "",                     // The display name of the column in the form
-            relatedWebURL: "",                  // [Optional] The name of the Web (site) which contains the related list
-            relatedList: "",                    // The name of the list which contains the additional information
-            relatedListColumn: "",              // The internal name of the related column in the related list
-            relatedColumns: [],                 // An array of related columns to display
-            displayFormat: "table",             // The format to use in displaying the related information.  Possible values are: [table, list]
-            headerCSSClass: "ms-vh2",           // CSS class for the table headers
-            rowCSSClass: "ms-vb",               // CSS class for the table rows
-            CAMLQuery: "",                      // [Optional] For power users, this CAML fragment will be <And>ed with the default query on the relatedList
-            numChars: 0,                        // If used on an input column (not a dropdown), no matching will occur until at least this number of characters has been entered
-            matchType: "Eq",                    // If used on an input column (not a dropdown), type of match. Can be any valid CAML comparison operator, most often "Eq" or "BeginsWith"
-            matchOnId: false,                   // By default, we match on the lookup's text value. If matchOnId is true, we'll match on the lookup id instead.
-            completefunc: null,                 // Function to call on completion of rendering the change.
-            debug: false                        // If true, show error messages;if false, run silent
+            columnName: "", // The display name of the column in the form
+            relatedWebURL: "", // [Optional] The name of the Web (site) which contains the related list
+            relatedList: "", // The name of the list which contains the additional information
+            relatedListColumn: "", // The internal name of the related column in the related list
+            relatedColumns: [], // An array of related columns to display
+            displayFormat: "table", // The format to use in displaying the related information.  Possible values are: [table, list]
+            headerCSSClass: "ms-vh2", // CSS class for the table headers
+            rowCSSClass: "ms-vb", // CSS class for the table rows
+            CAMLQuery: "", // [Optional] For power users, this CAML fragment will be <And>ed with the default query on the relatedList
+            numChars: 0, // If used on an input column (not a dropdown), no matching will occur until at least this number of characters has been entered
+            matchType: "Eq", // If used on an input column (not a dropdown), type of match. Can be any valid CAML comparison operator, most often "Eq" or "BeginsWith"
+            matchOnId: false, // By default, we match on the lookup's text value. If matchOnId is true, we'll match on the lookup id instead.
+            completefunc: null, // Function to call on completion of rendering the change.
+            debug: false // If true, show error messages;if false, run silent
         }, options);
 
         var divId;
@@ -4057,7 +4114,10 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
 
         // Find the column's select (dropdown)
         var columnSelect = new DropdownCtl(opt.columnName);
-        if(columnSelect.Obj.html() === null && opt.debug) {errBox(thisFunction, "columnName: " + opt.columnName, TXTColumnNotFound); return; }
+        if (columnSelect.Obj.html() === null && opt.debug) {
+            errBox(thisFunction, "columnName: " + opt.columnName, TXTColumnNotFound);
+            return;
+        }
 
         // Generate a unique id for the container
         divId = genContainerId("SPDisplayRelatedInfo", opt.columnName);
@@ -4072,34 +4132,40 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
             completefunc: function(xData) {
                 // If debug is on, notify about an error
                 $(xData.responseXML).find("faultcode").each(function() {
-                    if(opt.debug) {errBox(thisFunction, "relatedList: " + opt.relatedList, "List not found"); return; }
+                    if (opt.debug) {
+                        errBox(thisFunction, "relatedList: " + opt.relatedList, "List not found");
+                        return;
+                    }
                 });
                 // Get info about the related list
                 relatedListXML = $(xData.responseXML).find("List");
                 // Save the information about each column requested
-                for(i=0; i < opt.relatedColumns.length; i++) {
+                for (i = 0; i < opt.relatedColumns.length; i++) {
                     relatedColumnsXML[opt.relatedColumns[i]] = $(xData.responseXML).find("Fields > Field[Name='" + opt.relatedColumns[i] + "']");
                 }
+                relatedColumnsXML[opt.relatedListColumn] = $(xData.responseXML).find("Fields > Field[Name='" + opt.relatedListColumn + "']");
             }
         });
 
-        switch(columnSelect.Type) {
+        switch (columnSelect.Type) {
             // Plain old select
             case "S":
                 columnSelect.Obj.bind("change", function() {
                     showRelated(opt, divId, relatedListXML, relatedColumnsXML);
                 });
                 break;
-            // Input / Select hybrid
+                // Input / Select hybrid
             case "C":
                 // Bind to any change on the hidden input element
                 $("input[id='" + columnSelect.Obj.attr("optHid") + "']").bind("propertychange", function() {
                     showRelated(opt, divId, relatedListXML, relatedColumnsXML);
                 });
                 break;
-            // Multi-select hybrid
+                // Multi-select hybrid
             case "M":
-                if(opt.debug) {errBox(thisFunction, "columnName: " + opt.columnName, "Multi-select columns not supported by this function"); }
+                if (opt.debug) {
+                    errBox(thisFunction, "columnName: " + opt.columnName, "Multi-select columns not supported by this function");
+                }
                 break;
             default:
                 break;
@@ -4119,14 +4185,14 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
 
         // Get the current column selection(s)
         columnSelectSelected = getDropdownSelected(columnSelect, opt.matchOnId);
-        if(columnSelect.Type === "C" && opt.numChars > 0 && columnSelectSelected[0].length < opt.numChars) {
+        if (columnSelect.Type === "C" && opt.numChars > 0 && columnSelectSelected[0].length < opt.numChars) {
             return;
         }
 
         // If the selection hasn't changed, then there's nothing to do right now.  This is useful to reduce
         // the number of Web Service calls when the parentSelect.Type = "C", as there are multiple propertychanges
         // which don't require any action.
-        if(columnSelect.Obj.attr("showRelatedSelected") === columnSelectSelected[0]) {
+        if (columnSelect.Obj.attr("showRelatedSelected") === columnSelectSelected[0]) {
             return;
         }
         columnSelect.Obj.attr("showRelatedSelected", columnSelectSelected[0]);
@@ -4138,13 +4204,13 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
 
         // Get the list items which match the current selection
         var camlQuery = "<Query><Where>";
-        if(opt.CAMLQuery.length > 0) {
+        if (opt.CAMLQuery.length > 0) {
             camlQuery += "<And>";
         }
 
         // Need to handle Lookup columns differently than static columns
         var relatedListColumnType = relatedColumnsXML[opt.relatedListColumn].attr("Type");
-        if(relatedListColumnType === "Lookup") {
+        if (relatedListColumnType === "Lookup") {
             camlQuery += "<Eq><FieldRef Name='" + opt.relatedListColumn +
                 (opt.matchOnId ? "' LookupId='True'/><Value Type='Integer'>" : "'/><Value Type='Text'>") +
                 escapeColumnValue(columnSelectSelected[0]) + "</Value></Eq>";
@@ -4154,13 +4220,13 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 escapeColumnValue(columnSelectSelected[0]) + "</Value></Eq>";
         }
 
-        if(opt.CAMLQuery.length > 0) {
+        if (opt.CAMLQuery.length > 0) {
             camlQuery += opt.CAMLQuery + "</And>";
         }
         camlQuery += "</Where></Query>";
 
         var viewFields = " ";
-        for (i=0; i < opt.relatedColumns.length; i++) {
+        for (i = 0; i < opt.relatedColumns.length; i++) {
             viewFields += "<FieldRef Name='" + opt.relatedColumns[i] + "' />";
         }
 
@@ -4171,7 +4237,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
             listName: opt.relatedList,
             // Filter based on the column's currently selected value
             CAMLQuery: camlQuery,
-            CAMLViewFields: "<ViewFields>" + viewFields +  "</ViewFields>",
+            CAMLViewFields: "<ViewFields>" + viewFields + "</ViewFields>",
             // Override the default view rowlimit and get all appropriate rows
             CAMLRowLimit: 0,
             completefunc: function(xData) {
@@ -4179,7 +4245,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 // Handle errors
                 $(xData.responseXML).find("errorstring").each(function() {
                     var errorText = $(this).text();
-                    if(opt.debug && errorText === "One or more field types are not installed properly. Go to the list settings page to delete these fields.") {
+                    if (opt.debug && errorText === "One or more field types are not installed properly. Go to the list settings page to delete these fields.") {
                         errBox(thisFunction,
                             "relatedListColumn: " + opt.relatedListColumn,
                             "Column not found in relatedList " + opt.relatedList);
@@ -4193,32 +4259,38 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
 
                 var outString;
                 // Output each row
-                switch(opt.displayFormat) {
+                switch (opt.displayFormat) {
                     // Only implementing the table format in the first iteration (v0.2.9)
                     case "table":
                         outString = "<table>";
                         outString += "<tr>";
-                        for (i=0; i < opt.relatedColumns.length; i++) {
-                            if(typeof relatedColumnsXML[opt.relatedColumns[i]] === "undefined" && opt.debug) {errBox(thisFunction, "columnName: " + opt.relatedColumns[i], "Column not found in relatedList"); return; }
+                        for (i = 0; i < opt.relatedColumns.length; i++) {
+                            if (typeof relatedColumnsXML[opt.relatedColumns[i]] === "undefined" && opt.debug) {
+                                errBox(thisFunction, "columnName: " + opt.relatedColumns[i], "Column not found in relatedList");
+                                return;
+                            }
                             outString += "<th class='" + opt.headerCSSClass + "'>" + relatedColumnsXML[opt.relatedColumns[i]].attr("DisplayName") + "</th>";
                         }
                         outString += "</tr>";
                         // Add an option for each child item
                         $(xData.responseXML).SPFilterNode("z:row").each(function() {
                             outString += "<tr>";
-                            for (i=0; i < opt.relatedColumns.length; i++) {
+                            for (i = 0; i < opt.relatedColumns.length; i++) {
                                 outString += "<td class='" + opt.rowCSSClass + "'>" + showColumn(relatedListXML, relatedColumnsXML[opt.relatedColumns[i]], $(this).attr("ows_" + opt.relatedColumns[i]), opt) + "</td>";
                             }
                             outString += "</tr>";
                         });
                         outString += "</table>";
                         break;
-                    // list format implemented in v0.5.0. Still table-based, but vertical orientation.
+                        // list format implemented in v0.5.0. Still table-based, but vertical orientation.
                     case "list":
                         outString = "<table>";
                         $(xData.responseXML).SPFilterNode("z:row").each(function() {
-                            for (i=0; i < opt.relatedColumns.length; i++) {
-                                if(typeof relatedColumnsXML[opt.relatedColumns[i]] === "undefined" && opt.debug) {errBox(thisFunction, "columnName: " + opt.relatedColumns[i], "Column not found in relatedList"); return; }
+                            for (i = 0; i < opt.relatedColumns.length; i++) {
+                                if (typeof relatedColumnsXML[opt.relatedColumns[i]] === "undefined" && opt.debug) {
+                                    errBox(thisFunction, "columnName: " + opt.relatedColumns[i], "Column not found in relatedList");
+                                    return;
+                                }
                                 outString += "<tr>";
                                 outString += "<th class='" + opt.headerCSSClass + "'>" + relatedColumnsXML[opt.relatedColumns[i]].attr("DisplayName") + "</th>";
                                 outString += "<td class='" + opt.rowCSSClass + "'>" + showColumn(relatedListXML, relatedColumnsXML[opt.relatedColumns[i]], $(this).attr("ows_" + opt.relatedColumns[i]), opt) + "</td>";
@@ -4235,7 +4307,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
             }
         });
         // If present, call completefunc when all else is done
-        if(opt.completefunc !== null) {
+        if (opt.completefunc !== null) {
             opt.completefunc();
         }
     } // End showRelated
@@ -4243,32 +4315,35 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
     // Function to filter a lookup based dropdown 
     $.fn.SPServices.SPFilterDropdown = function(options) {
         var opt = $.extend({}, {
-            relationshipWebURL: "",                 // [Optional] The name of the Web (site) which contains the relationshipList
-            relationshipList: "",                   // The name of the list which contains the lookup values
-            relationshipListColumn: "",             // The internal name of the column in the relationship list
-            relationshipListSortColumn: "",         // [Optional] If specified, sort the options in the dropdown by this column,
-                                                    // otherwise the options are sorted by relationshipListColumn
-            relationshipListSortAscending: true,    // [Optional] By default, the sort is ascending. If false, descending
-            columnName: "",                         // The display name of the column in the form
-            listName: $().SPServices.SPListNameFromUrl(),       // The list the form is working with. This is useful if the form is not in the list context.
-            promptText: "",                         // [DEPRECATED] Text to use as prompt. If included, {0} will be replaced with the value of columnName. IOrignal value "Choose {0}..."
-            noneText: "(None)",                     // [Optional] Text to use for the (None) selection. Provided for non-English language support.
-            CAMLQuery: "",                          // This CAML fragment will be applied to the relationshipList
+            relationshipWebURL: "", // [Optional] The name of the Web (site) which contains the relationshipList
+            relationshipList: "", // The name of the list which contains the lookup values
+            relationshipListColumn: "", // The internal name of the column in the relationship list
+            relationshipListSortColumn: "", // [Optional] If specified, sort the options in the dropdown by this column,
+            // otherwise the options are sorted by relationshipListColumn
+            relationshipListSortAscending: true, // [Optional] By default, the sort is ascending. If false, descending
+            columnName: "", // The display name of the column in the form
+            listName: $().SPServices.SPListNameFromUrl(), // The list the form is working with. This is useful if the form is not in the list context.
+            promptText: "", // [DEPRECATED] Text to use as prompt. If included, {0} will be replaced with the value of columnName. IOrignal value "Choose {0}..."
+            noneText: "(None)", // [Optional] Text to use for the (None) selection. Provided for non-English language support.
+            CAMLQuery: "", // This CAML fragment will be applied to the relationshipList
             CAMLQueryOptions: "<QueryOptions><IncludeMandatoryColumns>FALSE</IncludeMandatoryColumns><ViewAttributes Scope='RecursiveAll'/></QueryOptions>", // Need this to mirror SharePoint's behavior, but it can be overridden
-            completefunc: null,                     // Function to call on completion of rendering the change.
-            debug: false                            // If true, show error messages; if false, run silent
+            completefunc: null, // Function to call on completion of rendering the change.
+            debug: false // If true, show error messages; if false, run silent
         }, options);
-    
+
         var choices = "";
         var columnSelectSelected = null;
         var newMultiLookupPickerdata;
         var columnColumnRequired;
         var thisFunction = "SPServices.SPFilterDropdown";
-    
+
         // Find the column's select (dropdown)
         var columnSelect = new DropdownCtl(opt.columnName);
-        if(columnSelect.Obj.html() === null && opt.debug) {errBox(thisFunction, "columnName: " + opt.columnName, TXTColumnNotFound); return;}
-    
+        if (columnSelect.Obj.html() === null && opt.debug) {
+            errBox(thisFunction, "columnName: " + opt.columnName, TXTColumnNotFound);
+            return;
+        }
+
         // Get the current column selection(s)
         columnSelectSelected = getDropdownSelected(columnSelect, true);
 
@@ -4276,11 +4351,11 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
         var sortColumn = (opt.relationshipListSortColumn.length > 0) ? opt.relationshipListSortColumn : opt.relationshipListColumn;
         var sortOrder = (opt.relationshipListSortAscending === true) ? "" : "Ascending='FALSE'";
         var camlQuery = "<Query><OrderBy><FieldRef Name='" + sortColumn + "' " + sortOrder + "/></OrderBy><Where>";
-        if(opt.CAMLQuery.length > 0) {
+        if (opt.CAMLQuery.length > 0) {
             camlQuery += opt.CAMLQuery;
         }
         camlQuery += "</Where></Query>";
-    
+
         // Get information about columnName from the current list
         $().SPServices({
             operation: "GetList",
@@ -4298,7 +4373,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 });
             }
         });
-        
+
         $().SPServices({
             operation: "GetListItems",
             // Force sync so that we have the right values for the column onchange trigger
@@ -4318,7 +4393,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 // Handle errors
                 $(xData.responseXML).find("errorstring").each(function() {
                     var errorText = $(this).text();
-                    if(opt.debug && errorText === "One or more field types are not installed properly. Go to the list settings page to delete these fields.") {
+                    if (opt.debug && errorText === "One or more field types are not installed properly. Go to the list settings page to delete these fields.") {
                         errBox(thisFunction,
                             "relationshipListColumn: " + opt.relationshipListColumn,
                             "Not found in relationshipList " + opt.relationshipList);
@@ -4331,14 +4406,14 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 });
 
                 // Add an explanatory prompt
-                switch(columnSelect.Type) {
+                switch (columnSelect.Type) {
                     case "S":
                         // Remove all of the existing options
                         $(columnSelect.Obj).find("option").remove();
                         // If the column is required or the promptText option is empty, don't add the prompt text
-                        if(!columnColumnRequired && (opt.promptText.length > 0)) {
+                        if (!columnColumnRequired && (opt.promptText.length > 0)) {
                             columnSelect.Obj.append("<option value='0'>" + opt.promptText.replace(/\{0\}/g, opt.columnName) + "</option>");
-                        } else if(!columnColumnRequired){
+                        } else if (!columnColumnRequired) {
                             columnSelect.Obj.append("<option value='0'>" + opt.noneText + "</option>");
                         }
                         break;
@@ -4358,34 +4433,34 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
 
                 // Add an option for each item
                 $(xData.responseXML).SPFilterNode("z:row").each(function() {
-                    
+
                     var thisOption = {};
 
                     // If relationshipListColumn is a Lookup column, then the ID should be for the Lookup value,
                     // else the ID of the relationshipList item
                     var thisValue = $(this).attr("ows_" + opt.relationshipListColumn);
-                    
-                    if(typeof thisValue !== "undefined" && thisValue.indexOf(";#") > 0) {
+
+                    if (typeof thisValue !== "undefined" && thisValue.indexOf(";#") > 0) {
                         thisOption = new SplitIndex(thisValue);
                     } else {
                         thisOption.id = $(this).attr("ows_ID");
-                        thisOption.value = thisValue;                       
+                        thisOption.value = thisValue;
                     }
 
                     // If the relationshipListColumn is a calculated column, then the value isn't preceded by the ID,
                     // but by the datatype.  In this case, thisOption.id should be the ID of the relationshipList item.
                     // e.g., float;#12345.67
-                    if(isNaN(thisOption.id)) {
+                    if (isNaN(thisOption.id)) {
                         thisOption.id = $(this).attr("ows_ID");
                     }
-                    
-                    switch(columnSelect.Type) {
+
+                    switch (columnSelect.Type) {
                         case "S":
                             var selected = ($(this).attr("ows_ID") === columnSelectSelected[0]) ? " selected='selected'" : "";
                             columnSelect.Obj.append("<option" + selected + " value='" + thisOption.id + "'>" + thisOption.value + "</option>");
                             break;
                         case "C":
-                            if(thisOption.id === columnSelectSelected[0]) {
+                            if (thisOption.id === columnSelectSelected[0]) {
                                 columnSelect.Obj.attr("value", thisOption.value);
                             }
                             choices = choices + ((choices.length > 0) ? "|" : "") + thisOption.value + "|" + thisOption.id;
@@ -4398,8 +4473,8 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                             break;
                     }
                 });
-    
-                switch(columnSelect.Type) {
+
+                switch (columnSelect.Type) {
                     case "S":
                         columnSelect.Obj.trigger("change");
                         break;
@@ -4417,7 +4492,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                             var thisSelected = $(this);
                             $(this).attr("selected", "selected");
                             $(columnSelect.master.candidateControl).find("option").each(function() {
-                                if($(this).html() === thisSelected.html()) {
+                                if ($(this).html() === thisSelected.html()) {
                                     thisSelected.removeAttr("selected");
                                 }
                             });
@@ -4427,7 +4502,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                         $(columnSelect.master.candidateControl).find("option").each(function() {
                             var thisSelected = $(this);
                             $(columnSelect.master.resultControl).find("option").each(function() {
-                                if($(this).html() === thisSelected.html()) {
+                                if ($(this).html() === thisSelected.html()) {
                                     thisSelected.remove();
                                 }
                             });
@@ -4446,7 +4521,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
             }
         });
         // If present, call completefunc when all else is done
-        if(opt.completefunc !== null) {
+        if (opt.completefunc !== null) {
             opt.completefunc();
         }
     }; // End $.fn.SPServices.SPFilterDropdown
@@ -4456,8 +4531,8 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
     $.fn.SPServices.SPDebugXMLHttpResult = function(options) {
 
         var opt = $.extend({}, {
-            node: null,                         // An XMLHttpResult object from an ajax call
-            indent: 0                           // Number of indents
+            node: null, // An XMLHttpResult object from an ajax call
+            indent: 0 // Number of indents
         }, options);
 
         var i;
@@ -4468,25 +4543,25 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
         // For each new subnode, begin rendering a new TABLE
         outString += "<table class='ms-vb' style='margin-left:" + opt.indent * 3 + "px;' width='100%'>";
         // DisplayPatterns are a bit unique, so let's handle them differently
-        if(opt.node.nodeName === "DisplayPattern") {
+        if (opt.node.nodeName === "DisplayPattern") {
             outString += "<tr><td width='100px' style='font-weight:bold;'>" + opt.node.nodeName +
                 "</td><td><textarea readonly='readonly' rows='5' cols='50'>" + opt.node.xml + "</textarea></td></tr>";
-        // A node which has no children
+            // A node which has no children
         } else if (!opt.node.hasChildNodes()) {
             outString += "<tr><td width='100px' style='font-weight:bold;'>" + opt.node.nodeName +
                 "</td><td>" + ((opt.node.nodeValue !== null) ? checkLink(opt.node.nodeValue) : "&nbsp;") + "</td></tr>";
             if (opt.node.attributes) {
                 outString += "<tr><td colspan='99'>" + showAttrs(opt.node) + "</td></tr>";
             }
-        // A CDATA_SECTION node
+            // A CDATA_SECTION node
         } else if (opt.node.hasChildNodes() && opt.node.firstChild.nodeType === NODE_CDATA_SECTION) {
             outString += "<tr><td width='100px' style='font-weight:bold;'>" + opt.node.nodeName +
                 "</td><td><textarea readonly='readonly' rows='5' cols='50'>" + opt.node.parentNode.text + "</textarea></td></tr>";
-        // A TEXT node
+            // A TEXT node
         } else if (opt.node.hasChildNodes() && opt.node.firstChild.nodeType === NODE_TEXT) {
             outString += "<tr><td width='100px' style='font-weight:bold;'>" + opt.node.nodeName +
                 "</td><td>" + checkLink(opt.node.firstChild.nodeValue) + "</td></tr>";
-        // Handle child nodes
+            // Handle child nodes
         } else {
             outString += "<tr><td width='100px' style='font-weight:bold;' colspan='99'>" + opt.node.nodeName + "</td></tr>";
             if (opt.node.attributes) {
@@ -4494,7 +4569,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
             }
             // Since the node has child nodes, recurse
             outString += "<tr><td>";
-            for (i = 0;i < opt.node.childNodes.length; i++) {
+            for (i = 0; i < opt.node.childNodes.length; i++) {
                 outString += $().SPServices.SPDebugXMLHttpResult({
                     node: opt.node.childNodes.item(i),
                     indent: opt.indent + 1
@@ -4511,14 +4586,14 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
     $.fn.SPServices.SPGetCurrentUser = function(options) {
 
         var opt = $.extend({}, {
-            webURL: "",             // URL of the target Site Collection.  If not specified, the current Web is used.
-            fieldName: "Name",      // Specifies which field to return from the userdisp.aspx page
-            fieldNames: {},         // Specifies which fields to return from the userdisp.aspx page - added in v0.7.2 to allow multiple columns
-            debug: false            // If true, show error messages; if false, run silent
+            webURL: "", // URL of the target Site Collection.  If not specified, the current Web is used.
+            fieldName: "Name", // Specifies which field to return from the userdisp.aspx page
+            fieldNames: {}, // Specifies which fields to return from the userdisp.aspx page - added in v0.7.2 to allow multiple columns
+            debug: false // If true, show error messages; if false, run silent
         }, options);
 
         // The current user's ID is reliably available in an existing JavaScript variable
-        if(opt.fieldName === "ID" && typeof currentContext.thisUserId !== "undefined") {
+        if (opt.fieldName === "ID" && typeof currentContext.thisUserId !== "undefined") {
             return currentContext.thisUserId;
         }
 
@@ -4535,27 +4610,27 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
             // Force parameter forces redirection to a page that displays the information as stored in the UserInfo table rather than My Site.
             // Adding the extra Query String parameter with the current date/time forces the server to view this as a new request.
             url: thisWeb + "/_layouts/userdisp.aspx?Force=True&" + new Date().getTime(),
-            complete: function (xData, Status) {
+            complete: function(xData, Status) {
                 thisUserDisp = xData;
             }
         });
 
-        for(i=0; i < fieldCount; i++) {
+        for (i = 0; i < fieldCount; i++) {
 
             // The current user's ID is reliably available in an existing JavaScript variable
-            if(opt.fieldNames[i] === "ID") {
+            if (opt.fieldNames[i] === "ID") {
                 thisField = currentContext.thisUserId;
             } else {
                 var thisTextValue;
-                if(fieldCount > 1) {
+                if (fieldCount > 1) {
                     thisTextValue = RegExp("FieldInternalName=\"" + opt.fieldNames[i] + "\"", "gi");
                 } else {
                     thisTextValue = RegExp("FieldInternalName=\"" + opt.fieldName + "\"", "gi");
                 }
                 $(thisUserDisp.responseText).find("table.ms-formtable td[id^='SPField']").each(function() {
-                    if(thisTextValue.test($(this).html())) {
+                    if (thisTextValue.test($(this).html())) {
                         // Each fieldtype contains a different data type, as indicated by the id
-                        switch($(this).attr("id")) {
+                        switch ($(this).attr("id")) {
                             case "SPFieldText":
                                 thisField = $(this).text();
                                 break;
@@ -4565,20 +4640,20 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                             case "SPFieldURL":
                                 thisField = $(this).find("img").attr("src");
                                 break;
-                            // Just in case
+                                // Just in case
                             default:
                                 thisField = $(this).text();
-                                break;                      
+                                break;
                         }
                         // Stop looking; we're done
                         return false;
                     }
                 });
             }
-            if(opt.fieldNames[i] !== "ID") {
+            if (opt.fieldNames[i] !== "ID") {
                 thisField = (typeof thisField !== "undefined") ? thisField.replace(/(^[\s\xA0]+|[\s\xA0]+$)/g, '') : null;
             }
-            if(fieldCount > 1) {
+            if (fieldCount > 1) {
                 theseFields[opt.fieldNames[i]] = thisField;
             }
         }
@@ -4587,7 +4662,6 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
 
     }; // End $.fn.SPServices.SPGetCurrentUser
 
-
     // Function which provides a link on a Lookup column for the user to follow
     // which allows them to add a new value to the Lookup list.
     // Based on http://blog.mastykarz.nl/extending-lookup-fields-add-new-item-option/
@@ -4595,19 +4669,22 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
     $.fn.SPServices.SPLookupAddNew = function(options) {
 
         var opt = $.extend({}, {
-            lookupColumn: "",               // The display name of the Lookup column
-            promptText: "Add new {0}",      // Text to use as prompt + column name
-            newWindow: false,               // If true, the link will open in a new window *without* passing the Source.
-            ContentTypeID: "",              // [Optional] Pass the ContentTypeID if you'd like to specify it
-            completefunc: null,             // Function to call on completion of rendering the change.
-            debug: false                    // If true, show error messages;if false, run silent
+            lookupColumn: "", // The display name of the Lookup column
+            promptText: "Add new {0}", // Text to use as prompt + column name
+            newWindow: false, // If true, the link will open in a new window *without* passing the Source.
+            ContentTypeID: "", // [Optional] Pass the ContentTypeID if you'd like to specify it
+            completefunc: null, // Function to call on completion of rendering the change.
+            debug: false // If true, show error messages;if false, run silent
         }, options);
 
         var thisFunction = "SPServices.SPLookupAddNew";
 
         // Find the lookup column's select (dropdown)
         var lookupSelect = new DropdownCtl(opt.lookupColumn);
-        if(lookupSelect.Obj.html() === null && opt.debug) { errBox(thisFunction, "lookupColumn: " + opt.lookupColumn, TXTColumnNotFound);return;}
+        if (lookupSelect.Obj.html() === null && opt.debug) {
+            errBox(thisFunction, "lookupColumn: " + opt.lookupColumn, TXTColumnNotFound);
+            return;
+        }
 
         var newUrl = "";
         var lookupListUrl = "";
@@ -4618,7 +4695,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
             async: false,
             cacheXML: true,
             listName: $().SPServices.SPListNameFromUrl(),
-            completefunc: function (xData, Status) {
+            completefunc: function(xData, Status) {
                 $(xData.responseXML).find("Field[DisplayName='" + opt.lookupColumn + "']").each(function() {
                     lookupColumnStaticName = $(this).attr("StaticName");
                     // Use GetList for the Lookup column's list to determine the list's URL
@@ -4627,7 +4704,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                         async: false,
                         cacheXML: true,
                         listName: $(this).attr("List"),
-                        completefunc: function (xData, Status) {
+                        completefunc: function(xData, Status) {
                             $(xData.responseXML).find("List").each(function() {
                                 lookupListUrl = $(this).attr("WebFullUrl");
                                 // Need to handle when list is in the root site
@@ -4643,26 +4720,26 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
             }
         });
 
-        if(lookupListUrl.length === 0 && opt.debug) {
+        if (lookupListUrl.length === 0 && opt.debug) {
             errBox(thisFunction, "lookupColumn: " + opt.lookupColumn, "This column does not appear to be a lookup column");
             return;
         }
-        if(newUrl.length > 0) {
+        if (newUrl.length > 0) {
             // Build the link to the Lookup column's list enclosed in a div with the id="SPLookupAddNew_" + lookupColumnStaticName
             var newHref = lookupListUrl + newUrl;
             // If requested, open the link in a new window and if requested, pass the ContentTypeID
             newHref += opt.newWindow ?
-                    ((opt.ContentTypeID.length > 0) ? "?ContentTypeID=" + opt.ContentTypeID : "") + "' target='_blank'" :
-                    "?" + ((opt.ContentTypeID.length > 0) ? "ContentTypeID=" + opt.ContentTypeID + "&" : "") + "Source=" + escapeUrl(location.href) + "'";
+                ((opt.ContentTypeID.length > 0) ? "?ContentTypeID=" + opt.ContentTypeID : "") + "' target='_blank'" :
+                "?" + ((opt.ContentTypeID.length > 0) ? "ContentTypeID=" + opt.ContentTypeID + "&" : "") + "Source=" + escapeUrl(location.href) + "'";
             var newLink = "<div id='SPLookupAddNew_" + lookupColumnStaticName + "'>" + "<a href='" + newHref + ">" + opt.promptText.replace(/\{0\}/g, opt.lookupColumn) + "</a></div>";
             // Append the link to the Lookup columns's formbody table cell
             $(lookupSelect.Obj).parents("td.ms-formbody").append(newLink);
-        } else if(opt.debug) {
+        } else if (opt.debug) {
             errBox(thisFunction, "lookupColumn: " + opt.lookupColumn, "NewForm cannot be found");
             return;
         }
         // If present, call completefunc when all else is done
-        if(opt.completefunc !== null) {
+        if (opt.completefunc !== null) {
             opt.completefunc();
         }
     }; // End $.fn.SPServices.SPLookupAddNew
@@ -4672,10 +4749,10 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
     $.fn.SPServices.SPGetLastItemId = function(options) {
 
         var opt = $.extend({}, {
-            webURL: "",             // URL of the target Web.  If not specified, the current Web is used.
-            listName: "",           // The name or GUID of the list
-            userAccount: "",        // The account for the user in DOMAIN\username format. If not specified, the current user is used.
-            CAMLQuery: ""           // [Optional] For power users, this CAML fragment will be Anded with the default query on the relatedList
+            webURL: "", // URL of the target Web.  If not specified, the current Web is used.
+            listName: "", // The name or GUID of the list
+            userAccount: "", // The account for the user in DOMAIN\username format. If not specified, the current user is used.
+            CAMLQuery: "" // [Optional] For power users, this CAML fragment will be Anded with the default query on the relatedList
         }, options);
 
         var userId;
@@ -4685,7 +4762,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
             webURL: opt.webURL,
             async: false,
             userLoginName: (opt.userAccount !== "") ? opt.userAccount : $().SPServices.SPGetCurrentUser(),
-            completefunc: function (xData, Status) {
+            completefunc: function(xData, Status) {
                 $(xData.responseXML).find("User").each(function() {
                     userId = $(this).attr("ID");
                 });
@@ -4695,11 +4772,11 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
         // Get the list items for the user, sorted by Created, descending. If the CAMLQuery option has been specified, And it with
         // the existing Where clause
         var camlQuery = "<Query><Where>";
-        if(opt.CAMLQuery.length > 0) {
+        if (opt.CAMLQuery.length > 0) {
             camlQuery += "<And>";
         }
         camlQuery += "<Eq><FieldRef Name='Author' LookupId='TRUE'/><Value Type='Integer'>" + userId + "</Value></Eq>";
-        if(opt.CAMLQuery.length > 0) {
+        if (opt.CAMLQuery.length > 0) {
             camlQuery += opt.CAMLQuery + "</And>";
         }
         camlQuery += "</Where><OrderBy><FieldRef Name='Created_x0020_Date' Ascending='FALSE'/></OrderBy></Query>";
@@ -4721,20 +4798,20 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
         });
         return lastId;
     }; // End $.fn.SPServices.SPGetLastItemId
-    
+
     // Function which checks to see if the value for a column on the form is unique in the list.
-    $.fn.SPServices.SPRequireUnique = function (options) {
+    $.fn.SPServices.SPRequireUnique = function(options) {
 
         var opt = $.extend({}, {
-            columnStaticName: "Title",                  // Name of the column
-            duplicateAction: 0,                         // 0 = warn, 1 = prevent
-            ignoreCase: false,                          // If set to true, the function ignores case, if false it looks for an exact match
-            initMsg: "This value must be unique.",      // Initial message to display after setup
-            initMsgCSSClass: "ms-vb",                   // CSS class for initial message
-            errMsg: "This value is not unique.",        // Error message to display if not unique
-            errMsgCSSClass: "ms-formvalidation",        // CSS class for error message
-            showDupes: false,                           // If true, show links to the duplicate item(s) after the error message
-            completefunc: null                          // Function to call on completion of rendering the change.
+            columnStaticName: "Title", // Name of the column
+            duplicateAction: 0, // 0 = warn, 1 = prevent
+            ignoreCase: false, // If set to true, the function ignores case, if false it looks for an exact match
+            initMsg: "This value must be unique.", // Initial message to display after setup
+            initMsgCSSClass: "ms-vb", // CSS class for initial message
+            errMsg: "This value is not unique.", // Error message to display if not unique
+            errMsgCSSClass: "ms-formvalidation", // CSS class for error message
+            showDupes: false, // If true, show links to the duplicate item(s) after the error message
+            completefunc: null // Function to call on completion of rendering the change.
         }, options);
 
         // Get the current item's ID from the Query String
@@ -4745,7 +4822,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
         // Set the messages based on the options provided
         var msg = "<span id='SPRequireUnique" + opt.columnStaticName + "' class='{0}'>{1}</span><br/>";
         var firstMsg = msg.replace(/\{0\}/g, opt.initMsgCSSClass).replace(/\{1\}/g, opt.initMsg);
-        
+
         // We need the DisplayName
         var columnDisplayName = $().SPServices.SPGetDisplayFromStatic({
             listName: currentContext.thisList,
@@ -4754,11 +4831,13 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
         var columnObj = $("input[Title='" + columnDisplayName + "']");
         $(columnObj).parent().append(firstMsg);
 
-        $(columnObj).blur(function () {
+        $(columnObj).blur(function() {
             var columnValueIDs = [];
             // Get the columnDisplayName's value
             var columnValue = $(this).attr("value");
-            if(columnValue.length === 0) { return false; }
+            if (columnValue.length === 0) {
+                return false;
+            }
 
             // Call the Lists Web Service (GetListItems) to see if the value already exists
             $().SPServices({
@@ -4776,7 +4855,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                     $(xData.responseXML).SPFilterNode("z:row").each(function() {
                         var thisValue = opt.ignoreCase ? $(this).attr("ows_" + opt.columnStaticName).toUpperCase() : $(this).attr("ows_" + opt.columnStaticName);
                         // If this value already exists in columnStaticName and it's not the current item, then save the ID in the array
-                        if((testValue === thisValue) && ($(this).attr("ows_ID") !== thisID)) {
+                        if ((testValue === thisValue) && ($(this).attr("ows_ID") !== thisID)) {
                             columnValueIDs.push([$(this).attr("ows_ID"), $(this).attr("ows_" + opt.columnStaticName)]);
                         }
                     });
@@ -4786,16 +4865,16 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
             $("span#SPRequireUnique" + opt.columnStaticName).html(newMsg).attr("class", opt.initMsgCSSClass);
 
             $("input[value='OK']:disabled, input[value='Save']:disabled").removeAttr("disabled");
-            if(columnValueIDs.length > 0) {
+            if (columnValueIDs.length > 0) {
                 newMsg = opt.errMsg;
                 $("span#SPRequireUnique" + opt.columnStaticName).html(newMsg).attr("class", opt.errMsgCSSClass);
-                if(opt.duplicateAction === 1) {
+                if (opt.duplicateAction === 1) {
                     $("input[Title='" + opt.columnDisplayName + "']").focus();
                     $("input[value='OK'], input[value='Save']").attr("disabled", "disabled");
                 }
-                if(opt.showDupes) {
+                if (opt.showDupes) {
                     var out = " " + columnValueIDs.length + " duplicate item" + (columnValueIDs.length > 1 ? "s" : "") + ": ";
-                    for (i=0;i < columnValueIDs.length; i++) {
+                    for (i = 0; i < columnValueIDs.length; i++) {
                         out += "<a href='DispForm.aspx?ID=" + columnValueIDs[i][0] + "&Source=" + location.href + "'>" + columnValueIDs[i][1] + "</a> ";
                     }
                     $("span#SPRequireUnique" + opt.columnStaticName).append(out);
@@ -4804,19 +4883,19 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
 
         });
         // If present, call completefunc when all else is done
-        if(opt.completefunc !== null) {
+        if (opt.completefunc !== null) {
             opt.completefunc();
         }
     }; // End $.fn.SPServices.SPRequireUnique
 
     // This function returns the DisplayName for a column based on the StaticName.
-    $.fn.SPServices.SPGetDisplayFromStatic = function (options) {
+    $.fn.SPServices.SPGetDisplayFromStatic = function(options) {
 
         var opt = $.extend({}, {
-            webURL: "",                     // URL of the target Web.  If not specified, the current Web is used.
-            listName: "",                   // The name or GUID of the list
-            columnStaticName: "",           // StaticName of the column
-            columnStaticNames: {}           // StaticName of the columns - added in v0.7.2 to allow multiple columns
+            webURL: "", // URL of the target Web.  If not specified, the current Web is used.
+            listName: "", // The name or GUID of the list
+            columnStaticName: "", // StaticName of the column
+            columnStaticNames: {} // StaticName of the columns - added in v0.7.2 to allow multiple columns
         }, options);
 
         var displayName = "";
@@ -4830,8 +4909,8 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
             webURL: opt.webURL,
             listName: opt.listName,
             completefunc: function(xData) {
-                if(nameCount > 1) {
-                    for(i=0; i < nameCount; i++) {
+                if (nameCount > 1) {
+                    for (i = 0; i < nameCount; i++) {
                         displayNames[opt.columnStaticNames[i]] = $(xData.responseXML).find("Field[StaticName='" + opt.columnStaticNames[i] + "']").attr("DisplayName");
                     }
                 } else {
@@ -4845,13 +4924,13 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
     }; // End $.fn.SPServices.SPGetDisplayFromStatic
 
     // This function returns the StaticName for a column based on the DisplayName.
-    $.fn.SPServices.SPGetStaticFromDisplay = function (options) {
+    $.fn.SPServices.SPGetStaticFromDisplay = function(options) {
 
         var opt = $.extend({}, {
-            webURL: "",                     // URL of the target Web.  If not specified, the current Web is used.
-            listName: "",                   // The name or GUID of the list
-            columnDisplayName: "",          // DisplayName of the column
-            columnDisplayNames: {}          // DisplayNames of the columns - added in v0.7.2 to allow multiple columns
+            webURL: "", // URL of the target Web.  If not specified, the current Web is used.
+            listName: "", // The name or GUID of the list
+            columnDisplayName: "", // DisplayName of the column
+            columnDisplayNames: {} // DisplayNames of the columns - added in v0.7.2 to allow multiple columns
         }, options);
 
         var staticName = "";
@@ -4865,8 +4944,8 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
             webURL: opt.webURL,
             listName: opt.listName,
             completefunc: function(xData) {
-                if(nameCount > 1) {
-                    for(i=0; i < nameCount; i++) {
+                if (nameCount > 1) {
+                    for (i = 0; i < nameCount; i++) {
                         staticNames[opt.columnDisplayNames[i]] = $(xData.responseXML).find("Field[DisplayName='" + opt.columnDisplayNames[i] + "']").attr("StaticName");
                     }
                 } else {
@@ -4881,12 +4960,12 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
 
     // This function allows you to redirect to a another page from a new item form with the new
     // item's ID. This allows chaining of forms from item creation onward.
-    $.fn.SPServices.SPRedirectWithID = function (options) {
+    $.fn.SPServices.SPRedirectWithID = function(options) {
 
         var opt = $.extend({}, {
-            redirectUrl: "",            // Page for the redirect
-            qsParamName: "ID"           // In some cases, you may want to pass the newly created item's ID with a different
-                                        // parameter name than ID. Specify that name here, if needed.
+            redirectUrl: "", // Page for the redirect
+            qsParamName: "ID" // In some cases, you may want to pass the newly created item's ID with a different
+            // parameter name than ID. Specify that name here, if needed.
         }, options);
 
         currentContext.thisList = $().SPServices.SPListNameFromUrl();
@@ -4895,10 +4974,10 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
         var QSList = queryStringVals.List;
         var QSRootFolder = queryStringVals.RootFolder;
         var QSContentTypeId = queryStringVals.ContentTypeId;
-        
+
         // On first load, change the form actions to redirect back to this page with the current lastID for this user and the
         // original Source.
-        if(typeof queryStringVals.ID === "undefined") {
+        if (typeof queryStringVals.ID === "undefined") {
             lastID = $().SPServices.SPGetLastItemId({
                 listName: currentContext.thisList
             });
@@ -4908,33 +4987,33 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 // ... plus the Source if it exists
                 var thisSource = (typeof queryStringVals.Source === "string") ?
                     "Source=" + queryStringVals.Source.replace(/\//g, "%2f").replace(/:/g, "%3a") : "";
-                
+
                 var newQS = [];
-                if(typeof QSList !== "undefined") {
+                if (typeof QSList !== "undefined") {
                     newQS.push("List=" + QSList);
                 }
-                if(typeof QSRootFolder !== "undefined") {
+                if (typeof QSRootFolder !== "undefined") {
                     newQS.push("RootFolder=" + QSRootFolder);
                 }
-                if(typeof QSContentTypeId !== "undefined") {
+                if (typeof QSContentTypeId !== "undefined") {
                     newQS.push("ContentTypeId=" + QSContentTypeId);
                 }
 
                 var newAction = thisUrl +
                     ((newQS.length > 0) ? ("?" + newQS.join("&") + "&") : "?") +
-                    // Set the Source to point back to this page with the lastID this user has added
-                    "Source=" + thisUrl +
+                // Set the Source to point back to this page with the lastID this user has added
+                "Source=" + thisUrl +
                     "?ID=" + lastID +
-                    // Pass the original source as RealSource, if present
-                    ((thisSource.length > 0) ? ("%26RealSource=" + queryStringVals.Source) : "") +
-                    // Pass the override RedirectURL, if present
-                    ((typeof queryStringVals.RedirectURL === "string") ? ("%26RedirectURL=" + queryStringVals.RedirectURL) : "");
+                // Pass the original source as RealSource, if present
+                ((thisSource.length > 0) ? ("%26RealSource=" + queryStringVals.Source) : "") +
+                // Pass the override RedirectURL, if present
+                ((typeof queryStringVals.RedirectURL === "string") ? ("%26RedirectURL=" + queryStringVals.RedirectURL) : "");
                 $(this).attr("action", newAction);
             });
-        // If this is the load after the item is saved, wait until the new item has been saved (commits are asynchronous),
-        // then do the redirect to redirectUrl with the new lastID, passing along the original Source.
+            // If this is the load after the item is saved, wait until the new item has been saved (commits are asynchronous),
+            // then do the redirect to redirectUrl with the new lastID, passing along the original Source.
         } else {
-            while(queryStringVals.ID === lastID) {
+            while (queryStringVals.ID === lastID) {
                 lastID = $().SPServices.SPGetLastItemId({
                     listName: currentContext.thisList
                 });
@@ -4949,7 +5028,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
 
     // The SPSetMultiSelectSizes function sets the sizes of the multi-select boxes for a column on a form automagically
     // based on the values they contain. The function takes into account the fontSize, fontFamily, fontWeight, etc., in its algorithm.
-    $.fn.SPServices.SPSetMultiSelectSizes = function (options) {
+    $.fn.SPServices.SPSetMultiSelectSizes = function(options) {
 
         var opt = $.extend({}, {
             multiSelectColumn: "",
@@ -4962,17 +5041,23 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
 
         // Find the multi-select column
         var thisMultiSelect = new DropdownCtl(opt.multiSelectColumn);
-        if(thisMultiSelect.Obj.html() === null && opt.debug) { errBox(thisFunction, "multiSelectColumn: " + opt.multiSelectColumn, TXTColumnNotFound);return;}
-        if(thisMultiSelect.Type !== "M" && opt.debug) { errBox(thisFunction, "multiSelectColumn: " + opt.multiSelectColumn, "Column is not multi-select.");return;}
+        if (thisMultiSelect.Obj.html() === null && opt.debug) {
+            errBox(thisFunction, "multiSelectColumn: " + opt.multiSelectColumn, TXTColumnNotFound);
+            return;
+        }
+        if (thisMultiSelect.Type !== "M" && opt.debug) {
+            errBox(thisFunction, "multiSelectColumn: " + opt.multiSelectColumn, "Column is not multi-select.");
+            return;
+        }
 
         // Create a temporary clone of the select to use to determine the appropriate width settings.
         // We'll append it to the end of the enclosing span.
         var cloneId = genContainerId("SPSetMultiSelectSizes", opt.multiSelectColumn);
         var cloneObj = $("<select id='" + cloneId + "' ></select>").appendTo(thisMultiSelect.container);
         cloneObj.css({
-            "width": "auto",        // We want the clone to resize its width based on the contents
-            "height": 0,            // Just to keep the page clean while we are using the clone
-            "visibility": "hidden"  // And let's keep it hidden
+            "width": "auto", // We want the clone to resize its width based on the contents
+            "height": 0, // Just to keep the page clean while we are using the clone
+            "visibility": "hidden" // And let's keep it hidden
         });
 
         // Add all the values to the cloned select.  First the left (possible values) select...
@@ -4987,14 +5072,14 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
         // We'll add 5px for a little padding on the right.
         var divWidth = cloneObj.width() + 5;
         var newDivWidth = divWidth;
-        if(opt.minWidth > 0 || opt.maxWidth > 0) {
-            if(divWidth < opt.minWidth) {
+        if (opt.minWidth > 0 || opt.maxWidth > 0) {
+            if (divWidth < opt.minWidth) {
                 divWidth = opt.minWidth;
             }
-            if(newDivWidth < opt.minWidth) {
+            if (newDivWidth < opt.minWidth) {
                 newDivWidth = opt.minWidth;
             }
-            if(newDivWidth > opt.maxWidth) {
+            if (newDivWidth > opt.maxWidth) {
                 newDivWidth = opt.maxWidth;
             }
         }
@@ -5010,84 +5095,87 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
     }; // End $.fn.SPServices.SPSetMultiSelectSizes
 
     // Does an audit of a site's list forms to show where script is in use.
-    $.fn.SPServices.SPScriptAudit = function (options) {
+    $.fn.SPServices.SPScriptAudit = function(options) {
 
         var opt = $.extend({}, {
-            webURL: "",                     // [Optional] The name of the Web (site) to audit
-            listName: "",                   // [Optional] The name of a specific list to audit. If not present, all lists in the site are audited.
-            outputId: "",                   // The id of the DOM object for output
-            auditForms: true,               // Audit the form pages
-            auditViews: true,               // Audit the view pages
-            auditPages: true,               // Audit the Pages Document Library
-            auditPagesListName: "Pages",    // The Pages Document Library(ies), if desired. Either a single string or an array of strings.
-            showHiddenLists: false,         // Show output for hidden lists
-            showNoScript: false,            // Show output for lists with no scripts (effectively "verbose")
-            showSrc: true                   // Show the source location for included scripts
+            webURL: "", // [Optional] The name of the Web (site) to audit
+            listName: "", // [Optional] The name of a specific list to audit. If not present, all lists in the site are audited.
+            outputId: "", // The id of the DOM object for output
+            auditForms: true, // Audit the form pages
+            auditViews: true, // Audit the view pages
+            auditPages: true, // Audit the Pages Document Library
+            auditPagesListName: "Pages", // The Pages Document Library(ies), if desired. Either a single string or an array of strings.
+            showHiddenLists: false, // Show output for hidden lists
+            showNoScript: false, // Show output for lists with no scripts (effectively "verbose")
+            showSrc: true // Show the source location for included scripts
         }, options);
 
-        var formTypes = [["New", "NewForm.aspx", false], ["Display", "DispForm.aspx", false], ["Edit", "EditForm.aspx", false]];
+        var formTypes = [
+            ["New", "NewForm.aspx", false],
+            ["Display", "DispForm.aspx", false],
+            ["Edit", "EditForm.aspx", false]
+        ];
         var listXml;
 
         // Build the table to contain the results
         $("#" + opt.outputId)
             .append("<table id='SPScriptAudit' width='100%' style='border-collapse: collapse;' border=0 cellSpacing=0 cellPadding=1>" +
-                    "<tr>" +
-                        "<th></th>" +
-                        "<th>List</th>" +
-                        "<th>Page Class</th>" +
-                        "<th>Page Type</th>" +
-                        "<th>Page</th>" +
-                        (opt.showSrc ? "<th>Script References</th>" : "") +
-                    "</tr>" +
+                "<tr>" +
+                "<th></th>" +
+                "<th>List</th>" +
+                "<th>Page Class</th>" +
+                "<th>Page Type</th>" +
+                "<th>Page</th>" +
+                (opt.showSrc ? "<th>Script References</th>" : "") +
+                "</tr>" +
                 "</table>");
         // Apply the CSS class to the headers
         $("#SPScriptAudit th").attr("class", "ms-vh2-nofilter");
-        
+
         // Don't bother with the lists if the options don't require them
-        if(opt.auditForms || opt.auditViews) {
+        if (opt.auditForms || opt.auditViews) {
             // First, get all of the lists within the site
             $().SPServices({
                 operation: "GetListCollection",
                 webURL: opt.webURL,
                 async: false, // Need this to be synchronous so we're assured of a valid value
-                completefunc: function (xData, Status) {
+                completefunc: function(xData, Status) {
                     $(xData.responseXML).find("List").each(function() {
                         listXml = $(this);
-                            
+
                         // If listName has been specified, then only return results for that list
-                        if((opt.listName.length === 0) || (listXml.attr("Title") === opt.listName)) {
+                        if ((opt.listName.length === 0) || (listXml.attr("Title") === opt.listName)) {
                             // Don't work with hidden lists unless we're asked to
-                            if((opt.showHiddenLists && listXml.attr("Hidden") === "False") || !opt.showHiddenLists) {
-    
+                            if ((opt.showHiddenLists && listXml.attr("Hidden") === "False") || !opt.showHiddenLists) {
+
                                 // Audit the list's forms
-                                if(opt.auditForms) {
+                                if (opt.auditForms) {
                                     // Get the list's Content Types, therefore the form pages
                                     $().SPServices({
                                         operation: "GetListContentTypes",
                                         webURL: opt.webURL,
                                         listName: listXml.attr("ID"),
                                         async: false, // Need this to be synchronous so we're assured of a valid value
-                                        completefunc: function (xData, Status) {
+                                        completefunc: function(xData, Status) {
                                             $(xData.responseXML).find("ContentType").each(function() {
                                                 // Don't deal with folders
-                                                if($(this).attr("ID").substring(0,6) !== "0x0120") {
+                                                if ($(this).attr("ID").substring(0, 6) !== "0x0120") {
                                                     var formUrls = $(this).find("FormUrls");
-                                                    for(i=0; i < formTypes.length; i++) {
+                                                    for (i = 0; i < formTypes.length; i++) {
                                                         // Look for a customized form...
                                                         $(formUrls).find(formTypes[i][0]).each(function() {
-                                                            SPScriptAuditPage(opt, listXml, "Form", this.nodeName,
-                                                                ((opt.webURL.length > 0) ? opt.webURL : $().SPServices.SPGetCurrentSite()) + SLASH + $(this).text());
+                                                            SPScriptAuditPage(opt, listXml, "Form", this.nodeName, ((opt.webURL.length > 0) ? opt.webURL : $().SPServices.SPGetCurrentSite()) + SLASH + $(this).text());
                                                             formTypes[i][2] = true;
                                                         });
                                                         // ...else the uncustomized form
-                                                        if(!formTypes[i][2]) {
+                                                        if (!formTypes[i][2]) {
                                                             var defaultViewUrl = listXml.attr("DefaultViewUrl");
                                                             SPScriptAuditPage(opt, listXml, "Form", formTypes[i][0],
-                                                                defaultViewUrl.substring(0, defaultViewUrl.lastIndexOf(SLASH)+1) + formTypes[i][1]);
+                                                                defaultViewUrl.substring(0, defaultViewUrl.lastIndexOf(SLASH) + 1) + formTypes[i][1]);
                                                         }
                                                     }
                                                     // Reset the form types
-                                                    for(i=0; i < formTypes.length; i++) {
+                                                    for (i = 0; i < formTypes.length; i++) {
                                                         formTypes[i][2] = false;
                                                     }
                                                 }
@@ -5095,16 +5183,16 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                                         }
                                     });
                                 }
-    
+
                                 // Audit the list's views
-                                if(opt.auditViews) {
+                                if (opt.auditViews) {
                                     // Get the list's Views
                                     $().SPServices({
                                         operation: "GetViewCollection",
                                         webURL: opt.webURL,
                                         listName: listXml.attr("ID"),
                                         async: false, // Need this to be synchronous so we're assured of a valid value
-                                        completefunc: function (xData, Status) {
+                                        completefunc: function(xData, Status) {
                                             $(xData.responseXML).find("View").each(function() {
                                                 SPScriptAuditPage(opt, listXml, "View", $(this).attr("DisplayName"), $(this).attr("Url"));
                                             });
@@ -5122,23 +5210,23 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
         // Don't bother with auditing pages if the options don't require it
         var numLists = 0;
         var listsArray = [];
-        if(typeof opt.auditPagesListName === "string") {
+        if (typeof opt.auditPagesListName === "string") {
             numLists = 1;
             listsArray.push(opt.auditPagesListName);
         } else {
             numLists = opt.auditPagesListName.length;
             listsArray = opt.auditPagesListName;
         }
-        
-        if(opt.auditPages) {
-            for(i=0; i < numLists; i++) {
+
+        if (opt.auditPages) {
+            for (i = 0; i < numLists; i++) {
                 $().SPServices({
                     operation: "GetList",
                     async: false,
                     cacheXML: true,
                     webURL: opt.webURL,
                     listName: listsArray[i],
-                    completefunc: function (xData, Status) {
+                    completefunc: function(xData, Status) {
                         $(xData.responseXML).find("List").each(function() {
                             listXml = $(this);
                         });
@@ -5158,7 +5246,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                             var thisPageUrl = $(this).attr("ows_FileRef").split(";#")[1];
                             var thisTitle = $(this).attr("ows_Title");
                             var thisPageType = (typeof thisTitle !== "undefined") ? thisTitle : "";
-                            if(thisPageUrl.indexOf(".aspx") > 0) {
+                            if (thisPageUrl.indexOf(".aspx") > 0) {
                                 SPScriptAuditPage(opt, listXml, "Page", thisPageType, SLASH + thisPageUrl);
                             }
                         });
@@ -5195,7 +5283,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                     var scriptLanguage = getScriptAttribute(scriptMatch, "language");
                     var scriptType = getScriptAttribute(scriptMatch, "type");
                     var scriptSrc = getScriptAttribute(scriptMatch, "src");
-                    if(scriptSrc !== null && scriptSrc.length > 0 && !coreScript(scriptSrc)) {
+                    if (scriptSrc !== null && scriptSrc.length > 0 && !coreScript(scriptSrc)) {
                         pageScriptSrc.type.push((scriptLanguage !== null && scriptLanguage.length > 0) ? scriptLanguage : scriptType);
                         pageScriptSrc.src.push(scriptSrc);
                         jQueryPage++;
@@ -5203,19 +5291,19 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 }
 
                 // Only show pages without script if we've been asked to do so.
-                if((!opt.showNoScript && (pageScriptSrc.type.length > 0)) || opt.showNoScript)  {
-                    var pagePath = pageUrl.substring(0, pageUrl.lastIndexOf(SLASH)+1);
+                if ((!opt.showNoScript && (pageScriptSrc.type.length > 0)) || opt.showNoScript) {
+                    var pagePath = pageUrl.substring(0, pageUrl.lastIndexOf(SLASH) + 1);
                     var out = "<tr class=ms-alternating>" +
                         "<td class=ms-vb-icon><a href='" + listXml.attr("DefaultViewUrl") + "'><IMG border=0 src='" + listXml.attr("ImageUrl") + "'width=16 height=16></A></TD>" +
-                        "<td class=ms-vb2><a href='" + listXml.attr("DefaultViewUrl") + "'>" + listXml.attr("Title") + ((listXml.attr("Hidden") === "True") ? '(Hidden)' : '')+ "</td>" +
+                        "<td class=ms-vb2><a href='" + listXml.attr("DefaultViewUrl") + "'>" + listXml.attr("Title") + ((listXml.attr("Hidden") === "True") ? '(Hidden)' : '') + "</td>" +
                         "<td class=ms-vb2>" + pageClass + "</td>" +
                         "<td class=ms-vb2>" + pageType + "</td>" +
                         "<td class=ms-vb2><a href='" + pageUrl + "'>" + fileName(pageUrl) + "</td>";
-                    if(opt.showSrc) {
-                        var thisSrcPath; 
+                    if (opt.showSrc) {
+                        var thisSrcPath;
                         out += "<td valign='top'><table width='100%' style='border-collapse: collapse;' border=0 cellSpacing=0 cellPadding=1>";
-                        for(i=0; i < pageScriptSrc.type.length; i++) {
-                            thisSrcPath = (pageScriptSrc.src[i].substr(0,1) !== SLASH) ? pagePath + pageScriptSrc.src[i] : pageScriptSrc.src[i];
+                        for (i = 0; i < pageScriptSrc.type.length; i++) {
+                            thisSrcPath = (pageScriptSrc.src[i].substr(0, 1) !== SLASH) ? pagePath + pageScriptSrc.src[i] : pageScriptSrc.src[i];
                             out += "<tr><td class=ms-vb2 width='30%'>" + pageScriptSrc.type[i] + "</td>";
                             out += "<td class=ms-vb2 width='70%'><a href='" + thisSrcPath + "'>" + fileName(pageScriptSrc.src[i]) + "</td></tr>";
                         }
@@ -5226,11 +5314,11 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
             }
         });
     } // End of function SPScriptAuditPage
-    
+
     function getScriptAttribute(source, attribute) {
         var matches;
         var regex = RegExp(attribute + "=(\"([^\"]*)\")|('([^']*)')", "gi");
-        if(matches = regex.exec(source)) {
+        if (matches = regex.exec(source)) {
             return matches[2];
         }
         return null;
@@ -5240,28 +5328,28 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
     function coreScript(src) {
         var i;
         var coreScriptLocations = ["WebResource.axd", "_layouts"];
-        for(i=0; i < coreScriptLocations.length; i++) {
-            if(src.indexOf(coreScriptLocations[i]) > -1) {
-                return true;    
+        for (i = 0; i < coreScriptLocations.length; i++) {
+            if (src.indexOf(coreScriptLocations[i]) > -1) {
+                return true;
             }
         }
         return false;
     } // End of function coreScript
 
     // Rearrange radio buttons or checkboxes in a form from vertical to horizontal display to save page real estate
-    $.fn.SPServices.SPArrangeChoices = function (options) {
+    $.fn.SPServices.SPArrangeChoices = function(options) {
 
         var opt = $.extend({}, {
-            listName: $().SPServices.SPListNameFromUrl(),                   // The list name for the current form
-            columnName: "",                 // The display name of the column in the form
-            perRow: 99,                     // Maximum number of choices desired per row.
-            randomize: false                // If true, randomize the order of the options
+            listName: $().SPServices.SPListNameFromUrl(), // The list name for the current form
+            columnName: "", // The display name of the column in the form
+            perRow: 99, // Maximum number of choices desired per row.
+            randomize: false // If true, randomize the order of the options
         }, options);
 
         var columnFillInChoice = false;
         var columnOptions = [];
         var out;
-        
+
         // Get information about columnName from the list to determine if we're allowing fill-in choices
         var thisGetList = $().SPServices({
             operation: "GetList",
@@ -5280,7 +5368,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
             });
 
             var thisFormField = findFormField(opt.columnName);
-        
+
             var totalChoices = $(thisFormField).find("tr").length;
             var choiceNumber = 0;
             var fillinPrompt;
@@ -5289,12 +5377,12 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
             $(thisFormField).find("tr").each(function() {
                 choiceNumber++;
                 // If this is the fill-in prompt, save it...
-                if(columnFillInChoice && choiceNumber === (totalChoices - 1)) {
+                if (columnFillInChoice && choiceNumber === (totalChoices - 1)) {
                     fillinPrompt = $(this).find("td").html();
-                // ...or if it is the fill-in input box, save it...
-                } else if(columnFillInChoice && choiceNumber === totalChoices) {
+                    // ...or if it is the fill-in input box, save it...
+                } else if (columnFillInChoice && choiceNumber === totalChoices) {
                     fillinInput = $(this).find("td").html();
-                // ...else push into the columnOptions array.
+                    // ...else push into the columnOptions array.
                 } else {
                     columnOptions.push($(this).html());
                 }
@@ -5302,22 +5390,22 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
             out = "<TR>";
 
             // If randomize is true, randomly sort the options
-            if(opt.randomize) {
+            if (opt.randomize) {
                 columnOptions.sort(randOrd);
             }
 
             // Add all of the options to the out string
-            for(i=0; i < columnOptions.length; i++) {
+            for (i = 0; i < columnOptions.length; i++) {
                 out += columnOptions[i];
                 // If we've already got perRow columnOptions in the row, close off the row
-                if((i+1) % opt.perRow === 0) {
+                if ((i + 1) % opt.perRow === 0) {
                     out += "</TR><TR>";
                 }
             }
             out += "</TR>";
 
             // If we are allowing a fill-in choice, add that option in a separate row at the bottom
-            if(columnFillInChoice) {
+            if (columnFillInChoice) {
                 out += "<TR><TD colspan='99'>" + fillinPrompt + fillinInput + "</TD></TR>";
             }
 
@@ -5331,25 +5419,25 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
     }; // End $.fn.SPServices.SPArrangeChoices
 
     // Provide suggested values from a list for in input column based on characters typed
-    $.fn.SPServices.SPAutocomplete = function (options) {
+    $.fn.SPServices.SPAutocomplete = function(options) {
 
         var opt = $.extend({}, {
-            webURL: "",                         // [Optional] The name of the Web (site) which contains the sourceList
-            sourceList: "",                     // The name of the list which contains the values
-            sourceColumn: "",                   // The static name of the column which contains the values
-            columnName: "",                     // The display name of the column in the form
-            CAMLQuery: "",                      // [Optional] For power users, this CAML fragment will be Anded with the default query on the relatedList
-            CAMLQueryOptions: "<QueryOptions></QueryOptions>",  // [Optional] For power users, allows specifying the CAMLQueryOptions for the GetListItems call
-            CAMLRowLimit: 0,                    // [Optional] Override the default view rowlimit and get all appropriate rows
-            filterType: "BeginsWith",           // Type of filtering: [BeginsWith, Contains]
-            numChars: 0,                        // Wait until this number of characters has been typed before attempting any actions
-            ignoreCase: false,                  // If set to true, the function ignores case, if false it looks for an exact match
-            highlightClass: "",                 // If a class is supplied, highlight the matched characters in the values by applying that class to a wrapping span
-            uniqueVals: false,                  // If set to true, the function only adds unique values to the list (no duplicates)
-            maxHeight: 99999,                   // Sets the maximum number of values to display before scrolling occurs
-            slideDownSpeed: "fast",             // Speed at which the div should slide down when values match (milliseconds or ["fast" | "slow"])
-            processingIndicator: "_layouts/images/REFRESH.GIF",             // If present, show this while processing
-            debug: false                        // If true, show error messages;if false, run silent
+            webURL: "", // [Optional] The name of the Web (site) which contains the sourceList
+            sourceList: "", // The name of the list which contains the values
+            sourceColumn: "", // The static name of the column which contains the values
+            columnName: "", // The display name of the column in the form
+            CAMLQuery: "", // [Optional] For power users, this CAML fragment will be Anded with the default query on the relatedList
+            CAMLQueryOptions: "<QueryOptions></QueryOptions>", // [Optional] For power users, allows specifying the CAMLQueryOptions for the GetListItems call
+            CAMLRowLimit: 0, // [Optional] Override the default view rowlimit and get all appropriate rows
+            filterType: "BeginsWith", // Type of filtering: [BeginsWith, Contains]
+            numChars: 0, // Wait until this number of characters has been typed before attempting any actions
+            ignoreCase: false, // If set to true, the function ignores case, if false it looks for an exact match
+            highlightClass: "", // If a class is supplied, highlight the matched characters in the values by applying that class to a wrapping span
+            uniqueVals: false, // If set to true, the function only adds unique values to the list (no duplicates)
+            maxHeight: 99999, // Sets the maximum number of values to display before scrolling occurs
+            slideDownSpeed: "fast", // Speed at which the div should slide down when values match (milliseconds or ["fast" | "slow"])
+            processingIndicator: "_layouts/images/REFRESH.GIF", // If present, show this while processing
+            debug: false // If true, show error messages;if false, run silent
         }, options);
 
         var matchNum;
@@ -5360,7 +5448,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
         var columnObjColor = columnObj.css("color");
         var columnObjWidth = columnObj.css("width");
 
-        if(columnObj.html() === null && opt.debug) {
+        if (columnObj.html() === null && opt.debug) {
             errBox("SPServices.SPAutocomplete",
                 "columnName: " + opt.columnName,
                 "Column is not an input control or is not found on page");
@@ -5379,7 +5467,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
         $("#" + containerId).css("width", columnObjWidth);
 
         // Handle keypresses
-        $(columnObj).keyup(function () {
+        $(columnObj).keyup(function() {
 
             // Get the column's value
             var columnValue = $(this).val();
@@ -5388,7 +5476,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
             $("#" + containerId).hide();
 
             // Have enough characters been typed yet?
-            if(columnValue.length < opt.numChars) {
+            if (columnValue.length < opt.numChars) {
                 return false;
             }
 
@@ -5401,14 +5489,14 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
 
             // Array to hold the matched values
             var matchArray = [];
-            
+
             // Build the appropriate CAMLQuery
             var camlQuery = "<Query><OrderBy><FieldRef Name='" + opt.sourceColumn + "'/></OrderBy><Where>";
-            if(opt.CAMLQuery.length > 0) {
+            if (opt.CAMLQuery.length > 0) {
                 camlQuery += "<And>";
             }
             camlQuery += "<" + opt.filterType + "><FieldRef Name='" + opt.sourceColumn + "'/><Value Type='Text'>" + columnValue + "</Value></" + opt.filterType + ">";
-            if(opt.CAMLQuery.length > 0) {
+            if (opt.CAMLQuery.length > 0) {
                 camlQuery += opt.CAMLQuery + "</And>";
             }
             camlQuery += "</Where></Query>";
@@ -5431,18 +5519,18 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                         var thisValue = $(this).attr("ows_" + opt.sourceColumn);
                         var thisValueTest = opt.ignoreCase ? $(this).attr("ows_" + opt.sourceColumn).toUpperCase() : $(this).attr("ows_" + opt.sourceColumn);
                         // Make sure we have a match...
-                        if(opt.filterType === "Contains") {
+                        if (opt.filterType === "Contains") {
                             var firstMatch = thisValueTest.indexOf(testValue);
-                            if((firstMatch >= 0) &&
+                            if ((firstMatch >= 0) &&
                                 // ...and that the match is not already in the array if we want uniqueness
                                 (!opt.uniqueVals || ($.inArray(thisValue, matchArray) === -1))) {
                                 matchArray.push($(this).attr("ows_" + opt.sourceColumn));
                             }
                         } else {
                             // Handles normal case, which is BeginsWith and and other unknown values
-                            if(testValue === thisValueTest.substr(0,testValue.length) &&
-                                    // ...and that the match is not already in the array if we want uniqueness
-                                    (!opt.uniqueVals || ($.inArray(thisValue, matchArray) === -1))) {
+                            if (testValue === thisValueTest.substr(0, testValue.length) &&
+                                // ...and that the match is not already in the array if we want uniqueness
+                                (!opt.uniqueVals || ($.inArray(thisValue, matchArray) === -1))) {
                                 matchArray.push($(this).attr("ows_" + opt.sourceColumn));
                             }
                         }
@@ -5452,16 +5540,16 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
 
             // Build out the set of list elements to contain the available values
             var out = "";
-            for (i=0; i < matchArray.length; i++) {
+            for (i = 0; i < matchArray.length; i++) {
                 // If a highlightClass has been supplied, wrap a span around each match
-                if(opt.highlightClass.length > 0) {
+                if (opt.highlightClass.length > 0) {
                     // Set up Regex based on whether we want to ignore case
                     var thisRegex = new RegExp(columnValue, opt.ignoreCase ? "gi" : "g");
                     // Look for all occurrences
                     var matches = matchArray[i].match(thisRegex);
                     var startLoc = 0;
                     // Loop for each occurrence, wrapping each in a span with the highlightClass CSS class
-                    for (matchNum=0; matchNum < matches.length; matchNum++) {
+                    for (matchNum = 0; matchNum < matches.length; matchNum++) {
                         var thisPos = matchArray[i].indexOf(matches[matchNum], startLoc);
                         var endPos = thisPos + matches[matchNum].length;
                         var thisSpan = "<span class='" + opt.highlightClass + "'>" + matches[matchNum] + "</span>";
@@ -5472,21 +5560,21 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 // Add the value to the markup for the container
                 out += "<li style='display: block;position: relative;cursor: pointer;'>" + matchArray[i] + "</li>";
             }
-            
+
             // Add all the list elements to the containerId container
             $("#" + containerId).html(out);
             // Set up hehavior for the available values in the list element
-            $("#" + containerId + " li").click(function () {
+            $("#" + containerId + " li").click(function() {
                 $("#" + containerId).fadeOut(opt.slideUpSpeed);
                 columnObj.val($(this).text());
-            }).mouseover(function () {
+            }).mouseover(function() {
                 var mouseoverCss = {
                     "cursor": "hand",
                     "color": "#ffffff",
                     "background": "#3399ff"
                 };
                 $(this).css(mouseoverCss);
-            }).mouseout(function () {
+            }).mouseout(function() {
                 var mouseoutCss = {
                     "cursor": "inherit",
                     "color": columnObjColor,
@@ -5496,7 +5584,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
             });
 
             // If we've got some values to show, then show 'em!
-            if(matchArray.length > 0) {
+            if (matchArray.length > 0) {
                 $("#" + containerId).slideDown(opt.slideDownSpeed);
             }
             // Remove the processing indicator
@@ -5506,40 +5594,42 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
     }; // End $.fn.SPServices.SPAutocomplete
 
     // Get the Query String parameters and their values and return in an array
-    $.fn.SPServices.SPGetQueryString = function () {
+    // Includes code from http://www.developerdrive.com/2013/08/turning-the-querystring-into-a-json-object-using-javascript/
+    // Simplified in 2014.01 using this code
+    $.fn.SPServices.SPGetQueryString = function(options) {
+
+        var opt = $.extend({}, {
+            lowercase: false // If true, parameter names will be converted to lowercase
+        }, options);
 
         var queryStringVals = {};
-        var matches;
-        var qs = location.search.substring(1, location.search.length);
-        var args = qs.split("&");
-        var rxQS = /^([^=]+)=(.*)/i;
 
-        for(var i=0; i < args.length; i++) {
-            matches = rxQS.exec(args[i]);
-            if(rxQS.test(location.href)) {
-                if(matches !== null && matches.length > 2) {
-                    queryStringVals[matches[1]] = decodeURIComponent(matches[2]).replace(/\+/g,' ');
-                }
-            }
-        }
+        var qs = location.search.slice(1).split('&');
+
+        qs.forEach(function(param) {
+            param = param.split('=');
+            var paramName = opt.lowercase ? param[0].toLowerCase() : param[0];
+            queryStringVals[paramName] = decodeURIComponent(param[1] || '');
+        });
+
         return queryStringVals;
 
     }; // End $.fn.SPServices.SPGetQueryString
 
     // Get the current list's GUID (ID) from the current URL.  Use of this function only makes sense if we're in a list's context,
     // and we assume that we are calling it from an aspx page which is a form or view for the list.
-    $.fn.SPServices.SPListNameFromUrl = function (options) {
+    $.fn.SPServices.SPListNameFromUrl = function(options) {
 
         var opt = $.extend({}, {
-            listName: ""        // [Optional] Pass in the name or GUID of a list if you are not in its context. e.g., on a Web Part pages in the Pages library
+            listName: "" // [Optional] Pass in the name or GUID of a list if you are not in its context. e.g., on a Web Part pages in the Pages library
         }, options);
 
         // Has the list name or GUID been passed in?
-        if(opt.listName.length > 0) {
+        if (opt.listName.length > 0) {
             currentContext.thisList = opt.listName;
             return currentContext.thisList;
-        // Do we already know the current list?
-        } else if(currentContext.thisList.length > 0) {
+            // Do we already know the current list?
+        } else if (currentContext.thisList.length > 0) {
             return currentContext.thisList;
         }
 
@@ -5556,7 +5646,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 $(xData.responseXML).find("List").each(function() {
                     var defaultViewUrl = $(this).attr("DefaultViewUrl");
                     var listCollList = defaultViewUrl.substring(0, defaultViewUrl.lastIndexOf(SLASH) + 1).toUpperCase();
-                    if(listPath.indexOf(listCollList) > 0) {
+                    if (listPath.indexOf(listCollList) > 0) {
                         currentContext.thisList = $(this).attr("ID");
                         return false;
                     }
@@ -5573,13 +5663,13 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
     $.fn.SPServices.SPUpdateMultipleListItems = function(options) {
 
         var opt = $.extend({}, {
-            webURL: "",         // [Optional] URL of the target Web.  If not specified, the current Web is used.
-            listName: "",       // The list to operate on.
-            CAMLQuery: "",      // A CAML fragment specifying which items in the list will be selected and updated
+            webURL: "", // [Optional] URL of the target Web.  If not specified, the current Web is used.
+            listName: "", // The list to operate on.
+            CAMLQuery: "", // A CAML fragment specifying which items in the list will be selected and updated
             batchCmd: "Update", // The operation to perform. By default, Update.
-            valuepairs: [],     // Valuepairs for the update in the form [[fieldname1, fieldvalue1], [fieldname2, fieldvalue2]...]
+            valuepairs: [], // Valuepairs for the update in the form [[fieldname1, fieldvalue1], [fieldname2, fieldvalue2]...]
             completefunc: null, // Function to call on completion of rendering the change.
-            debug: false        // If true, show error messages;if false, run silent
+            debug: false // If true, show error messages;if false, run silent
         }, options);
 
         var i;
@@ -5598,7 +5688,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 $(xData.responseXML).SPFilterNode("z:row").each(function() {
                     itemsToUpdate.push($(this).attr("ows_ID"));
                     var fileRef = $(this).attr("ows_FileRef");
-                    fileRef = "/" + fileRef.substring(fileRef.indexOf(";#")+2);
+                    fileRef = "/" + fileRef.substring(fileRef.indexOf(";#") + 2);
                     documentsToUpdate.push(fileRef);
                 });
             }
@@ -5606,13 +5696,13 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
 
         var fieldNum;
         var batch = "<Batch OnError='Continue'>";
-        for(i=0; i < itemsToUpdate.length; i++) {
+        for (i = 0; i < itemsToUpdate.length; i++) {
             batch += "<Method ID='" + i + "' Cmd='" + opt.batchCmd + "'>";
-            for (fieldNum=0; fieldNum < opt.valuepairs.length; fieldNum++) {
+            for (fieldNum = 0; fieldNum < opt.valuepairs.length; fieldNum++) {
                 batch += "<Field Name='" + opt.valuepairs[fieldNum][0] + "'>" + escapeColumnValue(opt.valuepairs[fieldNum][1]) + "</Field>";
             }
             batch += "<Field Name='ID'>" + itemsToUpdate[i] + "</Field>";
-            if(documentsToUpdate[i].length > 0) {
+            if (documentsToUpdate[i].length > 0) {
                 batch += "<Field Name='FileRef'>" + documentsToUpdate[i] + "</Field>";
             }
             batch += "</Method>";
@@ -5628,13 +5718,143 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
             updates: batch,
             completefunc: function(xData) {
                 // If present, call completefunc when all else is done
-                if(opt.completefunc !== null) {
+                if (opt.completefunc !== null) {
                     opt.completefunc(xData);
                 }
             }
         });
 
     }; // End $.fn.SPServices.SPUpdateMultipleListItems
+
+    // SPGetListItemsJson retrieves items from a list in JSON format
+    $.fn.SPServices.SPGetListItemsJson = function(options) {
+
+        var opt = $.extend({}, {
+            webURL: "", // [Optional] URL of the target Web.  If not specified, the current Web is used.
+            listName: "",
+            CAMLViewName: "",
+            CAMLQuery: "",
+            CAMLViewFields: "",
+            CAMLRowLimit: "",
+            CAMLQueryOptions: "",
+            changeToken: "", // [Optional] If provided, will be passed with the request
+            contains: "", // CAML snippet for an additional filter
+            mapping: null, // If provided, use this mapping rather than creating one automagically from the list schema
+            mappingOverrides: null, // Pass in specific column overrides here
+            debug: false // If true, show error messages;if false, run silent
+        }, options);
+
+        var newChangeToken;
+        var thisListJsonMapping = {};
+        var thisData;
+        var deletedIds = [];
+        var result = $.Deferred();
+
+        // Call GetListItems to find all of the items matching the CAMLQuery
+        var thisData = $().SPServices({
+            operation: "GetListItemChangesSinceToken",
+            webURL: opt.webURL,
+            listName: opt.listName,
+            CAMLViewName: opt.CAMLViewName,
+            CAMLQuery: opt.CAMLQuery,
+            CAMLViewFields: opt.CAMLViewFields,
+            CAMLRowLimit: opt.CAMLRowLimit,
+            CAMLQueryOptions: opt.CAMLQueryOptions,
+            changeToken: opt.changeToken,
+            contains: opt.contains
+        });
+
+        thisData.done(function() {
+
+            var mappingKey = "SPGetListItemsJson" + opt.webURL + opt.listName;
+
+            // We're going to use this multiple times
+            var responseXml = $(thisData.responseXML);
+
+            // Get the changeToken
+            newChangeToken = responseXml.find("Changes").attr("LastChangeToken");
+
+            // Some of the existing items may have been deleted
+            responseXml.find("listitems Changes Id[ChangeType='Delete']").each(function() {
+                deletedIds.push($(this).text());
+            });
+
+            if (opt.mapping === null) {
+                // Automagically create the mapping
+                responseXml.find("List > Fields > Field").each(function() {
+                    var thisField = $(this);
+                    var thisType = thisField.attr("Type");
+                    // Only work with known column types
+                    if ($.inArray(thisType, spListFieldTypes) >= 0) {
+                        thisListJsonMapping["ows_" + thisField.attr("Name")] = {
+                            mappedName: thisField.attr("Name"),
+                            objectType: thisField.attr("Type")
+                        };
+                    }
+
+                });
+
+            } else {
+                thisListJsonMapping = opt.mapping;
+            }
+
+            // Implement any mappingOverrides
+            // Example: { ows_JSONTextColumn: { mappedName: "JTC", objectType: "JSON" } } 
+            if (opt.mappingOverrides !== null) {
+                // For each mappingOverride, override the list schema
+                for (var mapping in opt.mappingOverrides) {
+                    thisListJsonMapping[mapping] = opt.mappingOverrides[mapping];
+                }
+            }
+
+            // If we haven't retrieved the list schema in this call, try to grab it from the saved data from a prior call
+            if ($.isEmptyObject(thisListJsonMapping)) {
+                thisListJsonMapping = $(document).data(mappingKey);
+            } else {
+                $(document).data(mappingKey, thisListJsonMapping);
+            }
+
+            var jsonData = responseXml.SPFilterNode("z:row").SPXmlToJson({
+                mapping: thisListJsonMapping,
+                sparse: true
+            });
+
+            var thisResult = {
+                changeToken: newChangeToken,
+                mapping: thisListJsonMapping,
+                data: jsonData,
+                deletedIds: deletedIds
+            };
+
+            result.resolveWith(thisResult);
+
+        });
+
+        return result.promise();
+
+    }; // End $.fn.SPServices.SPUpdateMultipleListItems
+
+    // Convert a JavaScript date to the ISO 8601 format required by SharePoint to update list items
+    $.fn.SPServices.SPConvertDateToISO = function(options) {
+
+        var opt = $.extend({}, {
+            dateToConvert: new Date(), // The JavaScript date we'd like to convert. If no date is passed, the function returns the current date/time
+            dateOffset: "-05:00" // The time zone offset requested. Default is EST
+        }, options);
+
+        //Generate ISO 8601 date/time formatted string
+        var s = "";
+        var d = opt.dateToConvert;
+        s += d.getFullYear() + "-";
+        s += pad(d.getMonth() + 1) + "-";
+        s += pad(d.getDate());
+        s += "T" + pad(d.getHours()) + ":";
+        s += pad(d.getMinutes()) + ":";
+        s += pad(d.getSeconds()) + "Z" + opt.dateOffset;
+        //Return the ISO8601 date string
+        return s;
+
+    }; // End $.fn.SPServices.SPConvertDateToISO
 
     // This method for finding specific nodes in the returned XML was developed by Steve Workman. See his blog post
     // http://www.steveworkman.com/html5-2/javascript/2011/improving-javascript-xml-node-finding-performance-by-2000/
@@ -5645,15 +5865,15 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
         });
     }; // End $.fn.SPFilterNode
 
-
     // This function converts an XML node set to JSON
     // Initial implementation focuses only on GetListItems
     $.fn.SPXmlToJson = function(options) {
 
         var opt = $.extend({}, {
-            mapping: {},            // columnName: mappedName: "mappedName", objectType: "objectType"
+            mapping: {}, // columnName: mappedName: "mappedName", objectType: "objectType"
             includeAllAttrs: false, // If true, return all attributes, regardless whether they are in the mapping
-            removeOws: true         // Specifically for GetListItems, if true, the leading ows_ will be stripped off the field name
+            removeOws: true, // Specifically for GetListItems, if true, the leading ows_ will be stripped off the field name
+            sparse: false // If true, empty ("") values will not be returned
         }, options);
 
         var attrNum;
@@ -5663,18 +5883,20 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
             var row = {};
             var rowAttrs = this.attributes;
 
-            // Bring back all mapped columns, even those with no value
-            $.each(opt.mapping, function() { 
-                row[this.mappedName] = ""; 
-            });
+            if (!opt.sparse) {
+                // Bring back all mapped columns, even those with no value
+                $.each(opt.mapping, function() {
+                    row[this.mappedName] = "";
+                });
+            }
 
             // Parse through the element's attributes
-            for(attrNum = 0; attrNum < rowAttrs.length; attrNum++) {
+            for (attrNum = 0; attrNum < rowAttrs.length; attrNum++) {
                 var thisAttrName = rowAttrs[attrNum].name;
                 var thisMapping = opt.mapping[thisAttrName];
                 var thisObjectName = typeof thisMapping !== "undefined" ? thisMapping.mappedName : opt.removeOws ? thisAttrName.split("ows_")[1] : thisAttrName;
                 var thisObjectType = typeof thisMapping !== "undefined" ? thisMapping.objectType : undefined;
-                if(opt.includeAllAttrs || thisMapping !== undefined) {
+                if (opt.includeAllAttrs || thisMapping !== undefined) {
                     row[thisObjectName] = attrToJson(rowAttrs[attrNum].value, thisObjectType);
                 }
             }
@@ -5694,8 +5916,11 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
         var colValue;
 
         switch (objectType) {
+            case "Text":
+                colValue = stringToJsonObject(v);
+                break;
             case "DateTime":
-            case "datetime":    // For calculated columns, stored as datetime;#value
+            case "datetime": // For calculated columns, stored as datetime;#value
                 // Dates have dashes instead of slashes: ows_Created="2009-08-25 14:24:48"
                 colValue = dateToJsonObject(v);
                 break;
@@ -5723,15 +5948,19 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
             case "MultiChoice":
                 colValue = choiceMultiToJsonObject(v);
                 break;
+            case "Number":
             case "Currency":
-            case "float":                           // For calculated columns, stored as float;#value
+            case "float": // For calculated columns, stored as float;#value
                 colValue = floatToJsonObject(v);
                 break;
-            case "Calc":
+            case "Calculated":
                 colValue = calcToJsonObject(v);
                 break;
             case "Attachments":
                 colValue = lookupToJsonObject(v);
+                break;
+            case "JSON":
+                colValue = jsonToJsonObject(v); // Special case for text JSON stored in text columns
                 break;
             default:
                 // All other objectTypes will be simple strings
@@ -5744,94 +5973,124 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
     function stringToJsonObject(s) {
         return s;
     }
+
     function intToJsonObject(s) {
         return parseInt(s, 10);
     }
+
     function floatToJsonObject(s) {
         return parseFloat(s);
     }
+
     function booleanToJsonObject(s) {
         var out = s === "0" ? false : true;
         return out;
     }
+
     function dateToJsonObject(s) {
-        return new Date(s.replace(/-/g, "/"));
+
+        var dt = s.split("T");
+        var d = dt[0].split("-");
+        var t = dt[1].split(":");
+        var t3 = t[2].split("Z");
+        var date = new Date(d[0], (d[1] - 1), d[2], t[0], t[1], t3[0]);
+        return date;
     }
-   function userToJsonObject(s) {
+
+    function userToJsonObject(s) {
         if (s.length === 0) {
             return null;
         } else {
-            var thisUser = new SplitIndex(s); 
+            var thisUser = new SplitIndex(s);
             var thisUserExpanded = thisUser.value.split(",#");
-            if(thisUserExpanded.length === 1) {
-                return {userId: thisUser.Id, userName: thisUser.value};
+            if (thisUserExpanded.length === 1) {
+                return {
+                    userId: thisUser.id,
+                    userName: thisUser.value
+                };
             } else {
                 return {
-                    userId: thisUser.Id, 
-                    userName: thisUserExpanded[0].replace( /(,,)/g, ","), 
-                    loginName: thisUserExpanded[1].replace( /(,,)/g, ","), 
-                    email: thisUserExpanded[2].replace( /(,,)/g, ","), 
-                    sipAddress: thisUserExpanded[3].replace( /(,,)/g, ","), 
-                    title: thisUserExpanded[4].replace( /(,,)/g, ",")
+                    userId: thisUser.id,
+                    userName: thisUserExpanded[0].replace(/(,,)/g, ","),
+                    loginName: thisUserExpanded[1].replace(/(,,)/g, ","),
+                    email: thisUserExpanded[2].replace(/(,,)/g, ","),
+                    sipAddress: thisUserExpanded[3].replace(/(,,)/g, ","),
+                    title: thisUserExpanded[4].replace(/(,,)/g, ",")
                 };
             }
         }
     }
+
     function userMultiToJsonObject(s) {
-        if(s.length === 0) {
+        if (s.length === 0) {
             return null;
         } else {
             var thisUserMultiObject = [];
             var thisUserMulti = s.split(";#");
-            for(i=0; i < thisUserMulti.length; i=i+2) {
-                var thisUser = userToJsonObject(thisUserMulti[i] + ";#" + thisUserMulti[i+1]);
+            for (i = 0; i < thisUserMulti.length; i = i + 2) {
+                var thisUser = userToJsonObject(thisUserMulti[i] + ";#" + thisUserMulti[i + 1]);
                 thisUserMultiObject.push(thisUser);
             }
             return thisUserMultiObject;
         }
     }
+
     function lookupToJsonObject(s) {
-        if(s.length === 0) {
+        if (s.length === 0) {
             return null;
         } else {
             var thisLookup = new SplitIndex(s);
-            return {lookupId: thisLookup.id, lookupValue: thisLookup.value};
+            return {
+                lookupId: thisLookup.id,
+                lookupValue: thisLookup.value
+            };
         }
     }
+
     function lookupMultiToJsonObject(s) {
-        if(s.length === 0) {
+        if (s.length === 0) {
             return null;
         } else {
             var thisLookupMultiObject = [];
             var thisLookupMulti = s.split(";#");
-            for(i=0; i < thisLookupMulti.length; i=i+2) {
-                var thisLookup = lookupToJsonObject(thisLookupMulti[i] + ";#" + thisLookupMulti[i+1]);
+            for (i = 0; i < thisLookupMulti.length; i = i + 2) {
+                var thisLookup = lookupToJsonObject(thisLookupMulti[i] + ";#" + thisLookupMulti[i + 1]);
                 thisLookupMultiObject.push(thisLookup);
             }
             return thisLookupMultiObject;
         }
     }
+
     function choiceMultiToJsonObject(s) {
-        if(s.length === 0) {
+        if (s.length === 0) {
             return null;
         } else {
             var thisChoiceMultiObject = [];
             var thisChoiceMulti = s.split(";#");
-            for(i=0; i < thisChoiceMulti.length; i++) {
-                if(thisChoiceMulti[i].length !== 0) {
+            for (i = 0; i < thisChoiceMulti.length; i++) {
+                if (thisChoiceMulti[i].length !== 0) {
                     thisChoiceMultiObject.push(thisChoiceMulti[i]);
                 }
             }
             return thisChoiceMultiObject;
         }
     }
+
     function calcToJsonObject(s) {
-        if(s.length === 0) {
+        if (s.length === 0) {
             return null;
         } else {
             var thisCalc = s.split(";#");
             // The first value will be the calculated column value type, the second will be the value
             return attrToJson(thisCalc[1], thisCalc[0]);
+        }
+    }
+
+    function jsonToJsonObject(s) {
+        if (s.length === 0) {
+            return null;
+        } else {
+            return $.parseJSON(s);
         }
     }
 
@@ -5841,29 +6100,29 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
     //   contents - The element which contains the current value
     //   currentValue - The current value if it is set
     //   checkNames - The Check Names image (in case you'd like to click it at some point)
-    $.fn.SPFindPeoplePicker = function(options) {
+    $.fn.SPServices.SPFindPeoplePicker = function(options) {
 
         var opt = $.extend({}, {
-            peoplePickerDisplayName: "",    // The displayName of the People Picker on the form
-            valueToSet: "",                 // The value to set the People Picker to. Should be a string containing each username or groupname separated by semi-colons.
-            checkNames: true                // If set to true, the Check Names image will be clicked to resolve the names
+            peoplePickerDisplayName: "", // The displayName of the People Picker on the form
+            valueToSet: "", // The value to set the People Picker to. Should be a string containing each username or groupname separated by semi-colons.
+            checkNames: true // If set to true, the Check Names image will be clicked to resolve the names
         }, options);
 
         var thisRow = $("nobr").filter(function() {
             // Ensures we get a match whether or not the People Picker is required (if required, the nobr contains a span also)
-            return $(this).contents().eq(0).text() === opt.peoplePickerDisplayName; 
+            return $(this).contents().eq(0).text() === opt.peoplePickerDisplayName;
         }).closest("tr");
 
         var thisContents = thisRow.find("div[name='upLevelDiv']");
         var thisCheckNames = thisRow.find("img[Title='Check Names']:first");
 
         // If a value was provided, set the value
-        if(opt.valueToSet.length > 0) {
+        if (opt.valueToSet.length > 0) {
             thisContents.html(opt.valueToSet);
         }
 
         // If checkName is true, click the check names icon
-        if(opt.checkNames) {
+        if (opt.checkNames) {
             thisCheckNames.click();
         }
         var thisCurrentValue = $.trim(thisContents.text());
@@ -5873,14 +6132,14 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
 
         // IE
         thisContents.children("span").each(function() {
-        
+
             // Grab the entity data
             var thisData = $(this).find("div[data]").attr("data");
 
             var dictionaryEntry = {};
 
             // Entity data is only available in IE
-            if(typeof thisData !== "undefined") {
+            if (typeof thisData !== "undefined") {
                 var arrayOfDictionaryEntry = $.parseXML(thisData);
                 var $xml = $(arrayOfDictionaryEntry);
 
@@ -5890,7 +6149,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                     dictionaryEntry[key] = value;
                 });
                 dictionaryEntries.push(dictionaryEntry);
-            // For other browsers, we'll call GetUserInfo to get the data
+                // For other browsers, we'll call GetUserInfo to get the data
             } else {
                 $().SPServices({
                     operation: "GetUserInfo",
@@ -5900,48 +6159,54 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                     completefunc: function(xData) {
 
                         $(xData.responseXML).find("User").each(function() {
-                        
-                            $.each(this.attributes, function(i, attrib){ 
-                                var key = attrib.name; 
-                                var value = attrib.value; 
+
+                            $.each(this.attributes, function(i, attrib) {
+                                var key = attrib.name;
+                                var value = attrib.value;
                                 dictionaryEntry[key] = value;
-                            });                     
+                            });
                             dictionaryEntries.push(dictionaryEntry);
                         });
                     }
                 });
-            }   
+            }
         });
-    
-        return {row: thisRow, contents: thisContents, currentValue: thisCurrentValue, checkNames: thisCheckNames, dictionaryEntries: dictionaryEntries};
+
+        return {
+            row: thisRow,
+            contents: thisContents,
+            currentValue: thisCurrentValue,
+            checkNames: thisCheckNames,
+            dictionaryEntries: dictionaryEntries
+        };
     };
 
     // Return the current version of SPServices as a string
-    $.fn.SPServices.Version = function () {
+    $.fn.SPServices.Version = function() {
 
         return VERSION;
 
     }; // End $.fn.SPServices.Version
 
 
-////// PRIVATE FUNCTIONS ////////
+    ////// PRIVATE FUNCTIONS ////////
 
     // Get the current context (as much as we can) on startup
     // See: http://johnliu.net/blog/2012/2/3/sharepoint-javascript-current-page-context-info.html
     function SPServicesContext() {
-    
+
         // SharePoint 2010 gives us a context variable
-        if(typeof _spPageContextInfo !== "undefined") {
+        if (typeof _spPageContextInfo !== "undefined") {
             this.thisSite = _spPageContextInfo.webServerRelativeUrl;
             this.thisList = _spPageContextInfo.pageListId;
             this.thisUserId = _spPageContextInfo.userId;
-        // In SharePoint 2007, we know the UserID only
+            // In SharePoint 2007, we know the UserID only
         } else {
-             this.thisSite = (typeof L_Menu_BaseUrl !== "undefined") ? L_Menu_BaseUrl : "";
+            this.thisSite = (typeof L_Menu_BaseUrl !== "undefined") ? L_Menu_BaseUrl : "";
             this.thisList = "";
             this.thisUserId = (typeof _spUserId !== "undefined") ? _spUserId : undefined;
         }
-        
+
     } // End of function SPServicesContext
 
 
@@ -5952,7 +6217,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
     //   opt                The current set of options
     function showColumn(listXML, columnXML, columnValue, opt) {
 
-        if(typeof columnValue === "undefined") {
+        if (typeof columnValue === "undefined") {
             return "";
         }
 
@@ -5960,38 +6225,38 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
         var outString = "";
         var dispUrl;
         var numDecimals;
-        var outArray =[];
+        var outArray = [];
         var webUrl = opt.relatedWebURL.length > 0 ? opt.relatedWebURL : $().SPServices.SPGetCurrentSite();
 
-        switch(columnXML.attr("Type")) {
+        switch (columnXML.attr("Type")) {
             case "Text":
                 outString = columnValue;
                 break;
             case "URL":
-                switch(columnXML.attr("Format")) {
+                switch (columnXML.attr("Format")) {
                     // URL as hyperlink
                     case "Hyperlink":
                         outString = "<a href='" + columnValue.substring(0, columnValue.search(",")) + "'>" +
                             columnValue.substring(columnValue.search(",") + 1) + "</a>";
                         break;
-                    // URL as image
+                        // URL as image
                     case "Image":
                         outString = "<img alt='" + columnValue.substring(columnValue.search(",") + 1) +
                             "' src='" + columnValue.substring(0, columnValue.search(",")) + "'/>";
                         break;
-                    // Just in case
+                        // Just in case
                     default:
                         outString = columnValue;
-                        break;                      
+                        break;
                 }
                 break;
             case "User":
             case "UserMulti":
                 var userMultiValues = columnValue.split(";#");
-                for(i=0; i < userMultiValues.length; i = i+2) {
+                for (i = 0; i < userMultiValues.length; i = i + 2) {
                     outArray.push("<a href='/_layouts/userdisp.aspx?ID=" + userMultiValues[i] +
                         "&Source=" + escapeUrl(location.href) + "'>" +
-                        userMultiValues[i+1] +  "</a>");
+                        userMultiValues[i + 1] + "</a>");
                 }
                 outString = outArray.join(", ");
                 break;
@@ -6012,7 +6277,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                     parseFloat(columnValue).toFixed(numDecimals).toString();
                 break;
             case "Lookup":
-                switch(columnXML.attr("Name")) {
+                switch (columnXML.attr("Name")) {
                     case "FileRef":
                         // Get the display form URL for the lookup source list
                         dispUrl = listXML.attr("BaseType") === "1" ? listXML.attr("RootFolder") + SLASH + "Forms/DispForm.aspx" :
@@ -6027,14 +6292,14 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                         outString = "<a href='" + dispUrl + "'>" +
                             columnValue.substring(columnValue.search(";#") + 2) + "</a>";
                         break;
-                    // Any other lookup column
+                        // Any other lookup column
                     default:
                         // Get the display form URL for the lookup source list
                         dispUrl = getListFormUrl(columnXML.attr("List"), "DisplayForm");
                         outString = "<a href='" + opt.relatedWebURL + SLASH + dispUrl +
                             "?ID=" + columnValue.substring(0, columnValue.search(";#")) + "&RootFolder=*&Source=" + escapeUrl(location.href) + "'>" +
                             columnValue.substring(columnValue.search(";#") + 2) + "</a>";
-                        break;                      
+                        break;
                 }
                 break;
             case "LookupMulti":
@@ -6042,9 +6307,9 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
                 dispUrl = getListFormUrl(columnXML.attr("List"), "DisplayForm");
                 // Show all the values as links to the items, separated by commas
                 outString = "";
-                if(columnValue.length > 0) {
+                if (columnValue.length > 0) {
                     var lookupMultiValues = columnValue.split(";#");
-                    for(i=0; i < lookupMultiValues.length / 2; i++) {
+                    for (i = 0; i < lookupMultiValues.length / 2; i++) {
                         outArray.push("<a href='" + webUrl + SLASH + dispUrl +
                             "?ID=" + lookupMultiValues[i * 2] + "&RootFolder=*&Source=" + escapeUrl(location.href) + "'>" +
                             lookupMultiValues[(i * 2) + 1] + "</a>");
@@ -6076,7 +6341,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
     function showAttrs(node) {
         var i;
         var out = "<table class='ms-vb' width='100%'>";
-        for (i=0; i < node.attributes.length; i++) {
+        for (i = 0; i < node.attributes.length; i++) {
             out += "<tr><td width='10px' style='font-weight:bold;'>" + i + "</td><td width='100px'>" +
                 node.attributes.item(i).nodeName + "</td><td>" + checkLink(node.attributes.item(i).nodeValue) + "</td></tr>";
         }
@@ -6086,38 +6351,50 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
 
 
     // Find a dropdown (or multi-select) in the DOM. Returns the dropdown onject and its type:
-    // S = Simple (select);C = Compound (input + select hybrid);M = Multi-select (select hybrid)
+    // S = Simple (select)
+    // C = Compound (input + select hybrid)
+    // M = Multi-select (select hybrid)
     function DropdownCtl(colName) {
-        // Simple
-        if((this.Obj = $("select[Title='" + colName + "']")).length === 1) {
+
+        var idLen = 50;
+        var colStaticName = $().SPServices.SPGetStaticFromDisplay({
+            listName: $().SPServices.SPListNameFromUrl(),
+            columnDisplayName: colName
+        });
+
+        // Simple, where the select's title attribute is colName (DisplayName)
+        if ((this.Obj = $("select[Title='" + colName + "']")).length === 1) {
             this.Type = "S";
-        // Compound
-        } else if((this.Obj = $("input[Title='" + colName + "']")).length === 1) {
+            // Simple, where the select's id begins with colStaticName (StaticName) - needed for required columns where title="colName Required Field"
+        } else if ((this.Obj = $("select:regex(id, (" + colStaticName + ")(_)[0-9a-fA-F]{8}(-))")).length === 1) {
+            this.Type = "S";
+            // Compound
+        } else if ((this.Obj = $("input[Title='" + colName + "']")).length === 1) {
             this.Type = "C";
-        // Multi-select: This will find the multi-select column control in English and most other languages sites where the Title looks like 'Column Name possible values'
-        } else if((this.Obj = $("select[ID$='SelectCandidate'][Title^='" + colName + " ']")).length === 1) {
+            // Multi-select: This will find the multi-select column control in English and most other language sites where the Title looks like 'Column Name possible values'
+        } else if ((this.Obj = $("select[ID$='SelectCandidate'][Title^='" + colName + " ']")).length === 1) {
             this.Type = "M";
-        // Multi-select: This will find the multi-select column control on a Russian site (and perhaps others) where the Title looks like '????????? ????????: Column Name'
-        } else if((this.Obj = $("select[ID$='SelectCandidate'][Title$=': " + colName + "']")).length === 1) {
+            // Multi-select: This will find the multi-select column control on a Russian site (and perhaps others) where the Title looks like '????????? ????????: Column Name'
+        } else if ((this.Obj = $("select[ID$='SelectCandidate'][Title$=': " + colName + "']")).length === 1) {
             this.Type = "M";
-        // Multi-select: This will find the multi-select column control on a German site (and perhaps others) where the Title looks like 'Mögliche Werte für &quot;Column name&quot;.'
-        } else if((this.Obj = $("select[ID$='SelectCandidate'][Title$='\"" + colName + "\".']")).length === 1) {
+            // Multi-select: This will find the multi-select column control on a German site (and perhaps others) where the Title looks like 'MÃ¶gliche Werte fÃ¼r &quot;Column name&quot;.'
+        } else if ((this.Obj = $("select[ID$='SelectCandidate'][Title$='\"" + colName + "\".']")).length === 1) {
             this.Type = "M";
-        // Multi-select: This will find the multi-select column control on a Italian site (and perhaps others) where the Title looks like "Valori possibili Column name"
-        } else if((this.Obj = $("select[ID$='SelectCandidate'][Title$=' " + colName + "']")).length === 1) {
+            // Multi-select: This will find the multi-select column control on a Italian site (and perhaps others) where the Title looks like "Valori possibili Column name"
+        } else if ((this.Obj = $("select[ID$='SelectCandidate'][Title$=' " + colName + "']")).length === 1) {
             this.Type = "M";
         } else {
             this.Type = null;
         }
-        
-        if(this.Type === "M") {
+
+        if (this.Type === "M") {
             // Find the important bits of the multiselect control
             this.container = this.Obj.closest("span");
             this.MultiLookupPickerdata = this.container.find("input[id$='" + multiLookupPrefix + "_data'], input[id$='" + multiLookupPrefix2013 + "_data']");
             var addButtonId = this.container.find("[id$='AddButton']").attr("id");
             this.master =
-                window[addButtonId.replace(/AddButton/, multiLookupPrefix + "_m")] ||   // SharePoint 2007
-                window[addButtonId.replace(/AddButton/, multiLookupPrefix2013 + "_m")]; // SharePoint 2013
+                window[addButtonId.replace(/AddButton/, multiLookupPrefix + "_m")] || // SharePoint 2007
+            window[addButtonId.replace(/AddButton/, multiLookupPrefix2013 + "_m")]; // SharePoint 2013
         }
     } // End of function DropdownCtl
 
@@ -6126,28 +6403,28 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
     function getDropdownSelected(columnSelect, matchOnId) {
 
         var columnSelectSelected = [];
-        
-        switch(columnSelect.Type) {
+
+        switch (columnSelect.Type) {
             case "S":
-                if(matchOnId) {
+                if (matchOnId) {
                     columnSelectSelected.push(columnSelect.Obj.find("option:selected").val() || []);
                 } else {
                     columnSelectSelected.push(columnSelect.Obj.find("option:selected").text() || []);
                 }
                 break;
             case "C":
-                if(matchOnId) {
-                    columnSelectSelected.push($("input[id='"+ columnSelect.Obj.attr("optHid") + "']").val() || []);
+                if (matchOnId) {
+                    columnSelectSelected.push($("input[id='" + columnSelect.Obj.attr("optHid") + "']").val() || []);
                 } else {
                     columnSelectSelected.push(columnSelect.Obj.val() || []);
-                }               
+                }
                 break;
             case "M":
                 $(columnSelect.master.resultControl).find("option").each(function() {
-                    if(matchOnId) {
+                    if (matchOnId) {
                         columnSelectSelected.push($(this).val());
                     } else {
-                        columnSelectSelected.push($(this).html());                  
+                        columnSelectSelected.push($(this).html());
                     }
                 });
                 break;
@@ -6157,7 +6434,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
         return columnSelectSelected;
 
     } // End of function getDropdownSelected
-    
+
     // Build an error message based on passed parameters
     function errBox(func, param, msg) {
         var errMsg = "<b>Error in function</b><br/>" + func + "<br/>" +
@@ -6175,8 +6452,12 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
         var width = $("#SPServices_msgBox").width();
         var leftVal = ($(window).width() / 2) - (width / 2) + "px";
         var topVal = ($(window).height() / 2) - (height / 2) - 100 + "px";
-        $("#SPServices_msgBox").css({border:'5px #C02000 solid', left:leftVal, top:topVal}).show().fadeTo("slow", 0.75).click(function () {
-            $(this).fadeOut("3000", function () {
+        $("#SPServices_msgBox").css({
+            border: '5px #C02000 solid',
+            left: leftVal,
+            top: topVal
+        }).show().fadeTo("slow", 0.75).click(function() {
+            $(this).fadeOut("3000", function() {
                 $(this).remove();
             });
         });
@@ -6189,7 +6470,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
             columnDisplayName: columnName
         });
     } // End of function genContainerId
-    
+
     // Get the URL for a specified form for a list
     function getListFormUrl(l, f) {
 
@@ -6198,7 +6479,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
             operation: "GetFormCollection",
             async: false,
             listName: l,
-            completefunc: function (xData, Status) {
+            completefunc: function(xData, Status) {
                 u = $(xData.responseXML).find("Form[Type='" + f + "']").attr("Url");
             }
         });
@@ -6216,17 +6497,17 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
 
         var i;
 
-        for(i=0; i < paramArray.length; i++) {
+        for (i = 0; i < paramArray.length; i++) {
             // the parameter name and the option name match
-            if(typeof paramArray[i] === "string") {
+            if (typeof paramArray[i] === "string") {
                 SOAPEnvelope.payload += wrapNode(paramArray[i], opt[paramArray[i]]);
-            // the parameter name and the option name are different 
-            } else if($.isArray(paramArray[i]) && paramArray[i].length === 2) {
+                // the parameter name and the option name are different 
+            } else if ($.isArray(paramArray[i]) && paramArray[i].length === 2) {
                 SOAPEnvelope.payload += wrapNode(paramArray[i][0], opt[paramArray[i][1]]);
-            // the element not a string or an array and is marked as "add to payload only if non-null"
-            } else if((typeof paramArray[i] === "object") && (paramArray[i].sendNull !== undefined)) {
+                // the element not a string or an array and is marked as "add to payload only if non-null"
+            } else if ((typeof paramArray[i] === "object") && (paramArray[i].sendNull !== undefined)) {
                 SOAPEnvelope.payload += ((opt[paramArray[i].name] === undefined) || (opt[paramArray[i].name].length === 0)) ? "" : wrapNode(paramArray[i].name, opt[paramArray[i].name]);
-            // something isn't right, so report it
+                // something isn't right, so report it
             } else {
                 errBox(opt.operation, "paramArray[" + i + "]: " + paramArray[i], "Invalid paramArray element passed to addToPayload()");
             }
@@ -6246,7 +6527,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
         // Loop through all of the ms-formbody table cells
         $("td.ms-formbody, td.ms-formbodysurvey").each(function() {
             // Check for the right comment
-            if(searchText.test($(this).html())) {
+            if (searchText.test($(this).html())) {
                 thisFormBody = $(this);
                 // Found it, so we're done
                 return false;
@@ -6254,7 +6535,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
         });
         return thisFormBody;
     } // End of function findFormField
-    
+
     // The SiteData operations have the same names as other Web Service operations. To make them easy to call and unique, I'm using
     // the SiteData prefix on their names. This function replaces that name with the right name in the SOAPEnvelope.
     function siteDataFixSOAPEnvelope(SOAPEnvelope, siteDataOperation) {
@@ -6272,7 +6553,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
 
     // Generate a random number for sorting arrays randomly
     function randOrd() {
-        return (Math.round(Math.random())-0.5);
+        return (Math.round(Math.random()) - 0.5);
     }
 
     // If a string is a URL, format it as a link, else return the string as-is
@@ -6282,37 +6563,40 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
 
     // Get the filename from the full URL
     function fileName(s) {
-        return s.substring(s.lastIndexOf(SLASH)+1,s.length);
+        return s.substring(s.lastIndexOf(SLASH) + 1, s.length);
     }
 
-/* Taken from http://dracoblue.net/dev/encodedecode-special-xml-characters-in-javascript/155/ */
+    /* Taken from http://dracoblue.net/dev/encodedecode-special-xml-characters-in-javascript/155/ */
     var xml_special_to_escaped_one_map = {
         '&': '&amp;',
         '"': '&quot;',
         '<': '&lt;',
-        '>': '&gt;'};
+        '>': '&gt;'
+    };
     var escaped_one_to_xml_special_map = {
         '&amp;': '&',
         '&quot;': '"',
         '&lt;': '<',
-        '&gt;': '>'};
-    
+        '&gt;': '>'
+    };
+
     function encodeXml(string) {
         return string.replace(/([\&"<>])/g, function(str, item) {
             return xml_special_to_escaped_one_map[item];
         });
     }
+
     function decodeXml(string) {
         return string.replace(/(&quot;|&lt;|&gt;|&amp;)/g,
             function(str, item) {
                 return escaped_one_to_xml_special_map[item];
-        });
+            });
     }
-/* Taken from http://dracoblue.net/dev/encodedecode-special-xml-characters-in-javascript/155/ */
+    /* Taken from http://dracoblue.net/dev/encodedecode-special-xml-characters-in-javascript/155/ */
 
     // Escape column values
     function escapeColumnValue(s) {
-        if(typeof s === "string") {
+        if (typeof s === "string") {
             return s.replace(/&(?![a-zA-Z]{1,8};)/g, "&amp;");
         } else {
             return s;
@@ -6321,7 +6605,7 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
 
     // Escape Url
     function escapeUrl(u) {
-        return u.replace(/&/g,'%26');
+        return u.replace(/&/g, '%26');
     }
 
     // Split values like 1;#value into id and value                             
@@ -6329,6 +6613,24 @@ y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="
         var spl = s.split(";#");
         this.id = spl[0];
         this.value = spl[1];
+    }
+
+    function pad(n) {
+        return n < 10 ? "0" + n : n;
+    }
+
+    // James Padolsey's Regex Selector for jQuery http://james.padolsey.com/javascript/regex-selector-for-jquery/
+    $.expr[':'].regex = function(elem, index, match) {
+        var matchParams = match[3].split(','),
+            validLabels = /^(data|css):/,
+            attr = {
+                method: matchParams[0].match(validLabels) ?
+                    matchParams[0].split(':')[0] : 'attr',
+                property: matchParams.shift().replace(validLabels, '')
+            },
+            regexFlags = 'ig',
+            regex = new RegExp(matchParams.join('').replace(/^\s+|\s+$/g, ''), regexFlags);
+        return regex.test(jQuery(elem)[attr.method](attr.property));
     }
 
 
@@ -6700,7 +7002,7 @@ window.vkbeautify = new vkbeautify();
 
 //-------- START SPWidgets plugin: inserted by build script ----------------- 
 
-(function(h){var r=h;document.head||(document.head=document.getElementsByTagName("head")[0]);(function(){try{h.pt||(h.pt={})}catch(c){h.pt={}}void 0===h.pt._cache&&(h.pt._cache={});h.SPWidgets={};h.SPWidgets.version="20140112083148";h.SPWidgets.defaults={};h.fn.SPMsgHasError=function(){var c=h(this).find("ErrorCode"),f=!1;if(!c.length)return h(this).find("faultcode").length?!0:!1;c.each(function(){if("0x00000000"!==h(this).text())return f=!0,!1});return f};h.fn.SPGetMsgError=function(){var c=
+(function(h){var r=h;document.head||(document.head=document.getElementsByTagName("head")[0]);(function(){try{h.pt||(h.pt={})}catch(c){h.pt={}}void 0===h.pt._cache&&(h.pt._cache={});h.SPWidgets={};h.SPWidgets.version="20140208114357";h.SPWidgets.defaults={};h.fn.SPMsgHasError=function(){var c=h(this).find("ErrorCode"),f=!1;if(!c.length)return h(this).find("faultcode").length?!0:!1;c.each(function(){if("0x00000000"!==h(this).text())return f=!0,!1});return f};h.fn.SPGetMsgError=function(){var c=
 h(this),f="",b=c.find("ErrorCode"),d=0;b.length||(b=c.find("faultcode"));if(!b.length)return"";b.each(function(){var a=h(this);"0x00000000"!==a.text()&&(d+=1,f+="("+d+") "+a.text()+": "+a.parent().children().not(a).text()+"\n")});return f=d+" error(s) encountered! \n"+f};h.SPWidgets.fillTemplate=function(c,f){var b,d,a,g,e,m,n,q,l;"object"===typeof c&&1===arguments.length&&(f=c.data,c=c.tmplt);b="";d="string"!==typeof c?String(h("<div/>").append(c).html()):c;a=d.match(/(\{\{.*?\}\})/g);h.isArray(f)||
 (f=[f]);if(null!==a)for(m=0,n=f.length;m<n;m++){q=d;g=0;for(e=a.length;g<e;g++)a[g]=a[g].replace(/[\{\}]/g,""),l=f[m][a[g]]||"",h.isFunction(l)&&(l=l()),q=q.replace("{{"+a[g]+"}}",l);b+=q}return b};h.SPWidgets.parseLookupFieldValue=function(c){var f=[],b=String(c).split(";#"),d=b.length,a,g;if(void 0===c)return f;for(c=0;c<d;c++)a=b[c],c++,g=b[c],(a||g)&&f.push({id:a,title:g});return f};h.SPWidgets.getCamlLogical=function(c){c=h.extend({},{type:"AND",values:[],onEachValue:null},c);var f="<And>",b=
 "</And>",d="",a=0,g=0,e=!1;c.type=String(c.type).toUpperCase();h.isArray(c.values)||(c.values=[c.values]);"AND"!==c.type&&(f="<Or>",b="</Or>");d=f;a=c.values.length;g=a-1;e=h.isFunction(c.onEachValue);2>a&&(d="");for(f=0;f<a;f++)if(d=e?d+String(c.onEachValue(c.values[f])).toString():d+String(c.values[f]).toString(),1<g-f){d+=h.SPWidgets.getCamlLogical(h.extend({},c,{values:c.values.slice(f+1,a-f)}));break}1<a&&(d+=b);return d};h.SPWidgets.SPGetDateString=function(c,f){function b(a){return 10>a?"0"+
@@ -6710,51 +7012,51 @@ c.match(/^(\d{4}|[+\-]\d{6})(?:-(\d{2})(?:-(\d{2}))?)?(?:T(\d{2}):(\d{2})(?::(\d
 h.SPWidgets.version;this.jQuery=h.fn.jquery||"?";this.SPServices=this.jQueryUICss=this.jQueryUI="?";return this}c.prototype.asString=function(){var a="",c;for(c in this)this.hasOwnProperty(c)&&(a+="[ "+c+" = "+this[c]+" ] ");return a};var f=new c,b=h('<div style="position:fixed;width:100px;left:-1000px;"/>').appendTo("body"),d="";try{f.jQueryUI=r.ui.version}catch(a){}try{f.SPServices=h().SPServices.Version()}catch(g){h.fn.SPServices&&(f.SPServices="loaded")}d=b.css("background-image");b.addClass("ui-widget-header");
 b.css("background-image")!==d&&(f.jQueryUICss="loaded");b.remove();return f};h.SPWidgets.getSPVersion=function(c){var f={12:"2007",14:"2010",15:"2013"},b=12;"undefined"!==typeof SP&&(b=14,SP.ClientSchemaVersions?SP.ClientSchemaVersions.currentVersion&&(b=parseInt(SP.ClientSchemaVersions.currentVersion)):(b=parseInt(_spPageContextInfo.webUIVersion),4===b&&(b=14)));c&&(b=f[b]||b);return b}})(r);(function(c){var k={initDone:!1,maxColumns:20};c.SPWidgets.defaults.board={list:"",field:"",CAMLQuery:"<Query></Query>",
 CAMLViewFields:"",fieldFilter:null,optionalLabel:"(none)",template:null,webURL:c().SPServices.SPGetCurrentSite(),showColPicker:!1,colPickerLabel:"Columns",colPickerVisible:[],colPickerCloseLabel:"Close",colPickerApplyLabel:"Apply",colPickerCheckLabel:"Check-Uncheck All",colPickerTotalLabel:"Selected.",colPickerMaxColMsg:"Can not exceed 10 columns!",colPickerMinColMsg:"Mininum of 2 required!",onGetListItems:null,onPreUpdate:null,onBoardCreate:null};c.fn.SPShowBoard=function(f){k.initDone||(k.initDone=
-!0,""!==k.styleSheet&&c('<style type="text/css">\n\n'+k.styleSheet+"\n\n</style>").prependTo("head"));var b=arguments;return this.each(function(){var d=c(this),a="string"===typeof f,g=d.hasClass("hasSPShowBoard"),e=null,m="",h=null;if(g&&!a)return this;if(a&&g&&!d.hasClass("loadingSPShowBoard"))return m=f.toLowerCase(),h=d.data("SPShowBoardOptions"),"refresh"===m?h._getListItems().then(function(){h.showItemsOnBoard({refresh:!0})}):"redraw"===m?h.setBoardColumnHeight():"setvisible"===m&&h.showColPicker&&
-h.setUserDefinedVisibleCol(b[1]),this;if(d.hasClass("loadingSPShowBoard"))return this;e=c.extend({},c.SPWidgets.defaults.board,f,{ele:d,states:[],statesMap:{},tmpltHeader:"",tmpltState:"",statesCntr:"",headersCntr:"",listItems:[],initDone:!1,formUrls:null,isStateRequired:!0,maxColumnVisible:10,showNumberOfColumns:10,getBoardStates:function(){return c.Deferred(function(a){c().SPServices({operation:"GetList",listName:e.list,cacheXML:!0,async:!1,webURL:e.webURL,completefunc:function(b,f){var g=c(b.responseXML),
-m=g.find("Fields Field[StaticName='"+e.field+"']");if(!m.length){m=g.find("Fields Field[DisplayName='"+e.field+"']");if(!m.length){a.rejectWith(d,["Field ("+e.field+") not found in list definition!",b,f]);return}e._origField=e.field;e.field=m.attr("StaticName")}"FALSE"===m.attr("Required")&&(e.isStateRequired=!1);switch(m.attr("Type").toLowerCase()){case "choice":e.isStateRequired||(e.states.push({type:"choice",title:e.optionalLabel,name:e.optionalLabel}),e.statesMap[""]=e.states[e.states.length-
-1]);e.fieldFilter&&(e.fieldFilter=e.fieldFilter.split(/\,/));m.find("CHOICES CHOICE").each(function(a,b){var d=c(this).text();if(!e.fieldFilter||c.grep(e.fieldFilter,function(a){return a===d}).length){if(a>=k.maxColumns){try{console.log("SPWIDGETS:BOARD:Warning: Can only build a max of "+k.maxColumns+" columns!")}catch(f){}return!1}e.states.push({type:"choice",title:d,name:d});e.statesMap[d]=e.states[e.states.length-1]}});a.resolveWith(e,[b,f]);break;case "lookup":e.fieldFilter||(e.fieldFilter="<Query></Query>");
-c().SPServices({operation:"GetListItems",listName:m.attr("List"),async:!0,cacheXML:!0,CAMLQuery:e.fieldFilter,webURL:e.webURL,CAMLRowLimit:k.maxColumns,CAMLViewFields:'<ViewFields><FieldRef Name="'+m.attr("ShowField")+'" /></ViewFields>',completefunc:function(b,f){if("error"===f)a.rejectWith(d,["Communications Error!",b,f]);else{var g=c(b.responseXML);g.SPMsgHasError()?a.rejectWith(d,[g.SPGetMsgError(),b,f]):(e.isStateRequired||(e.states.push({type:"lookup",title:e.optionalLabel,name:""}),e.statesMap[""]=
-e.states[e.states.length-1]),g.SPFilterNode("z:row").each(function(a,b){if(a>=k.maxColumns){try{console.log("SPWIDGETS:BOARD:Warning: Can only build a max of "+k.maxColumns+" columns!")}catch(d){}return!1}var f=c(this),g=f.attr("ows_ID"),f=f.attr("ows_"+m.attr("ShowField")),g=g+";#"+f;e.states.push({type:"lookup",title:f,name:g});e.statesMap[g]=e.states[e.states.length-1]}),a.resolveWith(e,[b,f]))}}});break;default:a.rejectWith(d,["Field ("+e.field+") Type ("+m.attr("Type")+") is not supported!",
-b,f])}}})}).promise()},_getListItems:function(){return c.Deferred(function(a){function b(f){c.isFunction(e.onGetListItems)&&e.onGetListItems.call(d,e.listItems,f);a.resolveWith(d,[e.listItems])}c.isFunction(e.CAMLQuery)?e.CAMLQuery.call(d,function(a){c.isArray(a)&&(e.listItems=a,b(e.CAMLQuery))},f):c().SPServices({operation:"GetListItems",listName:e.list,async:!0,CAMLQuery:e.CAMLQuery,CAMLRowLimit:0,CAMLViewFields:e.CAMLViewFields,webURL:e.webURL,completefunc:function(f,g){if("error"===g)a.rejectWith(d,
-["Communications Error!",f,g]);else{var m=c(f.responseXML);m.SPMsgHasError()?a.rejectWith(d,[m.SPGetMsgError(),f,g]):(e.listItems=m.SPFilterNode("z:row").SPXmlToJson({includeAllAttrs:!0}),b(m))}}})}).promise()},getBoardItemDataObject:function(a){var b=null,d,f,g;if(a)for(a=String(a),d=0,f=e.listItems.length;d<f;d++)g=e.listItems[d].ID,c.isFunction(g)&&(g=e.listItems[d].ID()),g=String(g),a===g&&(b=e.listItems[d],d=f+f);return b},showItemsOnBoard:function(a){function b(a,g){var l="",m=null,q="";c.isFunction(e.template)?
-(l=e.template.call(d,a,g))&&(l=String(l)):l=c.SPWidgets.fillTemplate(e.template,s);void 0!==g&&""!==l?g.html(l):""!==l&&(m=a.ID,c.isFunction(a.ID)&&(m=a.ID()),void 0===k[n]&&(k[n]=""),e.initDone&&f.refresh&&(q+=" spwidget-temp"),k[n]+='<div class="spwidget-board-state-item ui-state-default ui-corner-all'+q+'" data-id="'+m+'">'+l+"</div>");return l}var f=c.extend({},{rows:e.listItems,refresh:!1,doBoardInsert:!0},a);a=[];var g=[],m=[],k={},h=null,n=null,p=h=null,s=null,w;if(!f.refresh)for(p=0,w=e.states.length;p<
-w;p++)e.states[p].headerTotalEle.html("0"),e.states[p].dataEle.empty();p=0;for(w=f.rows.length;p<w;p++)s=f.rows[p],n=s[e.field]||"",h=s.ID,c.isFunction(n)&&(n=s[e.field]()),c.isFunction(h)&&(h=h()),e.statesMap[n]&&(!1===f.refresh?(e.initDone&&a.push(s),b(s)):(h=e.statesCntr.find("div[data-id='"+h+"']"),h.length?(h.addClass("spwidget-temp"),h.closest("div.spwidget-board-state").data("boardstate")!==n&&(h.appendTo(e.statesMap[n].dataEle),m.push(s)),b(s,h)):(e.initDone&&a.push(s),b(s))));if(f.doBoardInsert){for(p in k)k.hasOwnProperty(p)&&
-""!==k[p]&&e.statesMap[p].dataEle.append(k[p]);e.updBoardHeaders();c.pt.addHoverEffect(d.find(".spwidget-board-state-item"))}e.initDone&&f.refresh&&e.statesCntr.find("div.spwidget-board-state-item").not("div.spwidget-temp").each(function(){g.push(e.getBoardItemDataObject(c(this).data("id")));c(this).remove()}).end().removeClass("spwidget-temp");e.initDone&&(e.statesCntr.find("div.spwidget-board-state").sortable("refresh").end().disableSelection(),e.setBoardColumnHeight(),p=e.getEventObject(),a.length&&
-(p.itemsModified.length=0,p.itemsModified.push(a),d.trigger("spwidget:boarditemadd",[d,c.extend({},p)])),g.length&&(p.itemsModified.length=0,p.itemsModified.push(g),d.trigger("spwidget:boarditemremove",[d,c.extend({},p)])),p.itemsModified.length=0,p.itemsModified.push.apply(p.itemsModified,a),p.itemsModified.push.apply(p.itemsModified,g),p.itemsModified.push.apply(p.itemsModified,m),p.itemsModified.length&&d.trigger("spwidget:boardchange",[d,p]));return k},updBoardHeaders:function(a){var b;if(!c.extend({},
-{state:null},a).state)for(a=0,b=e.states.length;a<b;a++)e.states[a].headerTotalEle.html(e.states[a].dataEle.children().length)},getEventObject:function(a){a||(a=e.statesCntr.find("div.spwidget-board-state-item:first"));a=c(a);a={stateTotals:{},itemTotal:0,currentState:a.closest("div.spwidget-board-state").data("boardstate"),itemObj:e.getBoardItemDataObject(a.data("id"))||{},itemsModified:[]};var b,d;b=0;for(d=e.states.length;b<d;b++)a.itemTotal+=a.stateTotals[e.states[b].name]=Number(e.states[b].headerTotalEle.text());
-return a},getListFormUrl:function(a){function b(){c().SPServices({operation:"GetFormCollection",listName:e.list,webURL:e.webURL,cacheXML:!0,async:!1,completefunc:function(a,b){c(a.responseXML).find("Form").each(function(){var a=c(this);e.formUrls[String(a.attr("Type")).toLowerCase()]=e.webURL+"/"+a.attr("Url")})}})}a=String(a).toLowerCase();null===e.formUrls&&(e.formUrls={},b());return e.formUrls[a]||""},setBoardColumnClass:function(a){var b=e.headersCntr.add(e.statesCntr);a=parseInt(a);if(!a||2>
-a)a=0,c.each(e.states,function(c,b){b.isVisible&&a++});if(e.showNumberOfColumns===a)return e;b.addClass("spwidget-states-"+a);e.showNumberOfColumns&&b.removeClass("spwidget-states-"+e.showNumberOfColumns);e.showNumberOfColumns=a;return e},setupColumnPicker:function(){var a=d.find(".spwidget-board-column-list-cntr"),b=a.find("div.spwidget-board-column-list"),f=a.children("div.ui-state-default:last"),g={$totalCntr:a.find("span.spwidget-board-column-total"),setTotalSelected:function(){var a=g.getSelected().length;
-g.$totalCntr.html(a);return a},getSelected:function(){return b.find("a.ui-state-highlight")},showMessage:function(a){c('<div class="spwidget-board-msg ui-state-error ui-corner-all">'+a+"</div>").appendTo(f).fadeOut(8E3,function(){c(this).remove()})},setSelected:function(){var a=b.find("a");c.each(e.states,function(c,b){var e=a.filter("[data-board_col_index='"+c+"']");b.isVisible?g.selectColumn(e,!1):g.selectColumn(e,!0)});g.setTotalSelected()},selectColumn:function(a,b){c(a).each(function(){var a=
-c(this),e=a.find(".ui-icon");a.hasClass("ui-state-highlight")||b?!1!==b&&(e.removeClass("ui-icon-check"),a.removeClass("ui-state-highlight")):(e.addClass("ui-icon-check"),a.addClass("ui-state-highlight"))});return a},setVisibleColumns:function(a){a||(a=g.getSelected());var b=a.length;c.each(e.states,function(c,b){a.filter("[data-board_col_index='"+c+"']").length?!1===b.isVisible&&(b.isVisible=!0,b.dataEle.css("display",""),b.headerEle.css("display","")):(b.isVisible=!1,b.dataEle.css("display","none"),
-b.headerEle.css("display","none"))});e.setBoardColumnClass(b);e.setBoardColumnHeight()}};g.setUserDefinedVisibleCol=e.setUserDefinedVisibleCol=function(a){var d=0,f="";if(!c.isArray(a)||!a.length){if(!c.isArray(a)&&"all"!==String(a).toLowerCase())return;a=[];c.each(e.states,function(c,b){a.push(b.title)})}c.each(a,function(a,b){c.each(e.states,function(a,c){if(c.title===b)return d++,1<d&&(f+=","),f+="a[data-board_col_name='"+c.name+"']",!1});if(d>=e.maxColumnVisible)return!1});2<=d&&(g.setVisibleColumns(b.find(f)),
-g.triggerEvent())};g.triggerEvent=function(){var a=[];e.initDone&&(c.each(e.statesMap,function(c,b){b.isVisible&&a.push(b.title)}),e.ele.trigger("spwidget:boardColumnChange",[e.ele,a]))};a.find("button[name='apply']").button({label:e.colPickerApplyLabel,icons:{secondary:"ui-icon-circle-check"}}).on("click",function(c){c=g.getSelected();var b=c.length;b>e.maxColumnVisible?g.showMessage(e.colPickerMaxColMsg):2>b?g.showMessage(e.colPickerMinColMsg):(a.hide(),g.setVisibleColumns(c),g.triggerEvent())});
-a.find("button[name='check']").attr("title",e.colPickerCheckLabel).button({text:!1,icons:{primary:"ui-icon-radio-off"}}).on("click",function(a){a=g.getSelected();a.length?g.selectColumn(a,!0):g.selectColumn(b.find("a"));g.setTotalSelected()});a.find("button[name='close']").attr("title",e.colPickerCloseLabel).button({text:!1,icons:{primary:"ui-icon-circle-close"}}).on("click",function(c){a.hide()});d.find("div.spwidget-board-settings").css("display","").find("div.spwidget-board-settings-columns").each(function(){var b=
-c(this);b.button({label:e.colPickerLabel,icons:{secondary:"ui-icon-triangle-1-s"}}).on("click.SPWidgets",function(){a.is(":visible")?a.hide():(g.setSelected(),a.show().position({my:"left top",at:"left bottom",of:b}))});return!1});b.each(function(){var a=c(this),b="";c.each(e.states,function(a,c){b+='<a href="javascript:" data-board_col_index="'+a+'" data-board_col_name="'+c.name+'"><span class="ui-icon ui-icon-minus"></span><span>'+c.title+"</span></a>"});a.html(b);return!1}).on("click","a",function(){g.selectColumn(this);
-g.setTotalSelected()});a.find("span.spwidget-board-column-total-label").html(e.colPickerTotalLabel);c.isArray(e.colPickerVisible)&&e.colPickerVisible.length&&g.setUserDefinedVisibleCol(e.colPickerVisible)},setBoardColumnHeight:function(){e.statesCntr.is(":visible")&&c.SPWidgets.makeSameHeight(e.statesCntr.find("div.spwidget-board-state:visible"),20,"min-height");e.headersCntr.is(":visible")&&c.SPWidgets.makeSameHeight(e.headersCntr.find("div.spwidget-board-state:visible"),0,"min-height")}});if(!e.list||
-!e.field)return d.html("<div>SPWidgets:Board [ERROR] Missing required input parameters!</div>"),this;d.addClass("loadingSPShowBoard").data("SPShowBoardOptions",e);e.getBoardStates().then(function(){""===e.CAMLViewFields?e.CAMLViewFields='<ViewFields><FieldRef Name="ID" /><FieldRef Name="Title" /><FieldRef Name="'+e.field+'" /></ViewFields>':0>e.CAMLViewFields.indexOf(e.field)&&(e.CAMLViewFields=e.CAMLViewFields.replace(/\<\/ViewFields\>/i,'<FieldRef Name="'+e.field+'" /></ViewFields>'));d.html(c(k.htmlTemplate).filter("div.spwidget-board"));
-e.tmpltHeader=c("<div/>").append(d.find("div.spwidget-board-headers-cntr div.spwidget-board-state").clone()).html();e.tmpltState=c("<div/>").append(d.find("div.spwidget-board-states-cntr div.spwidget-board-state")).html();e.states.length<=e.maxColumnVisible?e.showNumberOfColumns=e.states.length:e.showColPicker=!0;e.statesCntr=d.find("div.spwidget-board-states-cntr").addClass("spwidget-states-"+e.showNumberOfColumns).empty();e.headersCntr=d.find("div.spwidget-board-headers-cntr").addClass("spwidget-states-"+
-e.showNumberOfColumns).empty();c.each(e.states,function(a,b){b.headerEle=c(e.tmpltHeader).appendTo(e.headersCntr).attr("data-boardstate",b.name).attr("data-boardindex",a).html(b.title);b.dataEle=c(e.tmpltState).appendTo(e.statesCntr).attr("data-boardindex",a).attr("data-boardstate",b.name);b.headerTotalEle=c('<span>&nbsp;[<span class="spwidget-state-item-total">0</span>]</span>').appendTo(b.headerEle).find("span.spwidget-state-item-total");b.isVisible=!0;a>e.maxColumnVisible-1&&(b.headerEle.css("display",
-"none"),b.dataEle.css("display","none"),b.isVisible=!1)});c(e.headersCntr,e.statesCntr).append('<div style="clear:both;"></div>');!0===e.showColPicker&&e.setupColumnPicker();d.on("sortreceive sortremove",function(a,b){e.updBoardHeaders();c(b.item).removeClass("ui-state-hover")}).on("sortreceive",function(a,b){var g=e.getEventObject(b.item),f=c.Deferred(),m="",m=c.isFunction(g.itemObj.ID)?g.itemObj.ID():g.itemObj.ID;g.updates=[];g.updatePromise=f.promise();g.updates.push([e.field,g.currentState]);
-if(c.isFunction(e.onPreUpdate)&&!0===e.onPreUpdate.call(b.item,a,b.item,g)||!g.updates.length)return this;c().SPServices({operation:"UpdateListItems",listName:e.list,async:!0,ID:m,valuepairs:g.updates,webURL:e.webURL,completefunc:function(e,m){if("error"===m)f.rejectWith(d,["Communications Error!",e,m]);else{var k=c(e.responseXML),h=null;k.SPMsgHasError()?f.rejectWith(d,[k.SPGetMsgError(),e,m]):(h=c(e.responseXML).SPFilterNode("z:row").SPXmlToJson({includeAllAttrs:!0}),c(a.target).trigger("spwidget:boardchange",
-[b.item,g]),f.resolveWith(a.target,[h[0],g.itemObj,e]))}}})}).on("click","a.spwidgets-board-action",function(a){a=c(a.currentTarget);var b=String(a.data("spwidgets_board_action")).toLowerCase(),d="",g=c.pt.getEscapedUrl(window.location.href);switch(b){case "edit-item":d=e.getListFormUrl("EditForm");break;case "view-item":d=e.getListFormUrl("DisplayForm")}window.location.href=d+"?ID="+a.data("spwidgets_id")+"&Source="+g;return this});null===e.template&&(e.template=c(k.htmlTemplate).filter("div.spwidget-item-template"));
-e._getListItems().then(function(){e.showItemsOnBoard();e.statesCntr.find("div.spwidget-board-state").each(function(){var a=c(this);a.sortable({connectWith:a.siblings(),containment:d,cursor:"move",tolerance:"pointer",opacity:".80",placeholder:"ui-state-highlight spwidget-board-placeholder",forcePlaceholderSize:!0,remove:function(a,c){e.setBoardColumnHeight()}})});e.statesCntr.disableSelection();e.initDone=!0;e.setBoardColumnHeight();d.addClass("hasSPShowBoard").removeClass("loadingSPShowBoard");c.isFunction(e.onBoardCreate)&&
-e.onBoardCreate.call(d,e.getEventObject());c(d).trigger("spwidget:boardcreate",[d,e.getEventObject()])})}).fail(function(a,c,b){d.append('<div class="ui-state-error"><p>'+a+"</p></div>")});return this})};k.styleSheet="/** \n * Stylesheet for the Board widget\n * \n * BUILD: Paul:December 27, 2013 10:12 AM\n */\ndiv.spwidget-board {\n    width: 100%;\n    position: relative;\n}\n\ndiv.spwidget-board div.spwidget-board-headers,\ndiv.spwidget-board div.spwidget-board-headers-cntr,\ndiv.spwidget-board div.spwidget-board-states-cntr, \ndiv.spwidget-board div.spwidget-board-states {\n    width: 100%;\n}\n\ndiv.spwidget-board div.spwidget-board-state {\n    width: 49%;\n    float: left;\n    margin: .1%;\n    padding: .2%;\n    overflow: auto;\n}\n\ndiv.spwidget-board div.spwidget-board-headers-cntr div.spwidget-board-state {\n    text-align: center;\n    font-weight: bold;\n    font-size: 1.1em;\n    overflow: hidden;\n    word-wrap: break-word;\n}\ndiv.spwidget-board div.spwidget-board-states div.spwidget-board-state {\n    margin-bottom: 1em;\n    min-height: 10em;\n}\n\ndiv.spwidget-board div.spwidget-board-state div.spwidget-board-state-item {\n    padding: .2em;\n    margin: .5em .2em;\n    font-weight: normal;\n    cursor: move;\n    overflow: auto;\n}\ndiv.spwidget-board div.spwidget-board-state-item div.spwidget-board-item-actions{\n    margin-top: .2em;\n    padding: .2em .5em;\n    overflow: hidden;\n}\ndiv.spwidget-board .spwidget-board-placeholder {\n    height: 3em;\n}\n\n/** Setting container */\ndiv.spwidget-board-settings {\n    font-size: .8em;\n    margin: .2em;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list-cntr {\n    z-index: 5;\n    position: absolute;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list-cntr > div {\n    padding: .2em;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list-cntr > div:first-child,\ndiv.spwidget-board-settings div.spwidget-board-column-list-cntr > div:last-child {\n    text-align: right;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list {\n    width: 20em;\n    height: 17em;\n    overflow: auto;\n    position: relative\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list-cntr .spwidget-board-msg {\n    position: absolute;\n    top: 1px;\n    left: 1px;\n    padding: .2em;\n}\ndiv.spwidget-board-settings div.ui-state-default {\n    position: relative;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list > a {\n    display: block;\n    margin: .2em;\n    padding: .2em;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list > a > span.ui-icon {\n    display: inline-block;\n}\n\n/* Number of Columns (96 % #columns)\n * Currently support 10 columns. \n */\ndiv.spwidget-board .spwidget-states-3 div.spwidget-board-state {\n    width: 32.4%;\n}\ndiv.spwidget-board .spwidget-states-4 div.spwidget-board-state {\n    width: 24%;\n}\ndiv.spwidget-board .spwidget-states-5 div.spwidget-board-state {\n    width: 19.1%;\n}\ndiv.spwidget-board .spwidget-states-6 div.spwidget-board-state {\n    width: 15.8%;\n}\ndiv.spwidget-board .spwidget-states-7 div.spwidget-board-state {\n    width: 13.4%;\n}\ndiv.spwidget-board .spwidget-states-8 div.spwidget-board-state {\n    width: 11.6%;\n}\ndiv.spwidget-board .spwidget-states-9 div.spwidget-board-state {\n    width: 10.2%;\n}\ndiv.spwidget-board .spwidget-states-10 div.spwidget-board-state {\n    width: 9.1%;\n}\n";
+!0,""!==k.styleSheet&&c('<style type="text/css">\n\n'+k.styleSheet+"\n\n</style>").prependTo("head"));var b=arguments;return this.each(function(){var d=c(this),a="string"===typeof f,g=d.hasClass("hasSPShowBoard"),e=null,m="",h=null;if(g&&!a)return this;if(a&&g&&!d.hasClass("loadingSPShowBoard"))return m=f.toLowerCase(),h=d.data("SPShowBoardOptions"),"refresh"===m?h._getListItems().then(function(){h.showItemsOnBoard({refresh:!0})}):"redraw"===m?h.setBoardColumnHeight():"setvisible"===m&&h.setUserDefinedVisibleCol(b[1]),
+this;if(d.hasClass("loadingSPShowBoard"))return this;e=c.extend({},c.SPWidgets.defaults.board,f,{ele:d,states:[],statesMap:{},tmpltHeader:"",tmpltState:"",statesCntr:"",headersCntr:"",listItems:[],initDone:!1,formUrls:null,isStateRequired:!0,maxColumnVisible:10,showNumberOfColumns:10,getBoardStates:function(){return c.Deferred(function(a){c().SPServices({operation:"GetList",listName:e.list,cacheXML:!0,async:!1,webURL:e.webURL,completefunc:function(b,f){var g=c(b.responseXML),m=g.find("Fields Field[StaticName='"+
+e.field+"']");if(!m.length){m=g.find("Fields Field[DisplayName='"+e.field+"']");if(!m.length){a.rejectWith(d,["Field ("+e.field+") not found in list definition!",b,f]);return}e._origField=e.field;e.field=m.attr("StaticName")}"FALSE"===m.attr("Required")&&(e.isStateRequired=!1);switch(m.attr("Type").toLowerCase()){case "choice":e.isStateRequired||(e.states.push({type:"choice",title:e.optionalLabel,name:e.optionalLabel}),e.statesMap[""]=e.states[e.states.length-1]);e.fieldFilter&&(e.fieldFilter=e.fieldFilter.split(/\,/));
+m.find("CHOICES CHOICE").each(function(a,d){var b=c(this).text();if(!e.fieldFilter||c.grep(e.fieldFilter,function(a){return a===b}).length){if(a>=k.maxColumns){try{console.log("SPWIDGETS:BOARD:Warning: Can only build a max of "+k.maxColumns+" columns!")}catch(f){}return!1}e.states.push({type:"choice",title:b,name:b});e.statesMap[b]=e.states[e.states.length-1]}});a.resolveWith(e,[b,f]);break;case "lookup":e.fieldFilter||(e.fieldFilter="<Query></Query>");c().SPServices({operation:"GetListItems",listName:m.attr("List"),
+async:!0,cacheXML:!0,CAMLQuery:e.fieldFilter,webURL:e.webURL,CAMLRowLimit:k.maxColumns,CAMLViewFields:'<ViewFields><FieldRef Name="'+m.attr("ShowField")+'" /></ViewFields>',completefunc:function(b,f){if("error"===f)a.rejectWith(d,["Communications Error!",b,f]);else{var g=c(b.responseXML);g.SPMsgHasError()?a.rejectWith(d,[g.SPGetMsgError(),b,f]):(e.isStateRequired||(e.states.push({type:"lookup",title:e.optionalLabel,name:""}),e.statesMap[""]=e.states[e.states.length-1]),g.SPFilterNode("z:row").each(function(a,
+b){if(a>=k.maxColumns){try{console.log("SPWIDGETS:BOARD:Warning: Can only build a max of "+k.maxColumns+" columns!")}catch(d){}return!1}var f=c(this),g=f.attr("ows_ID"),f=f.attr("ows_"+m.attr("ShowField")),g=g+";#"+f;e.states.push({type:"lookup",title:f,name:g});e.statesMap[g]=e.states[e.states.length-1]}),a.resolveWith(e,[b,f]))}}});break;default:a.rejectWith(d,["Field ("+e.field+") Type ("+m.attr("Type")+") is not supported!",b,f])}}})}).promise()},_getListItems:function(){return c.Deferred(function(a){function b(f){c.isFunction(e.onGetListItems)&&
+e.onGetListItems.call(d,e.listItems,f);a.resolveWith(d,[e.listItems])}c.isFunction(e.CAMLQuery)?e.CAMLQuery.call(d,function(a){c.isArray(a)&&(e.listItems=a,b(e.CAMLQuery))},f):c().SPServices({operation:"GetListItems",listName:e.list,async:!0,CAMLQuery:e.CAMLQuery,CAMLRowLimit:0,CAMLViewFields:e.CAMLViewFields,webURL:e.webURL,completefunc:function(f,g){if("error"===g)a.rejectWith(d,["Communications Error!",f,g]);else{var m=c(f.responseXML);m.SPMsgHasError()?a.rejectWith(d,[m.SPGetMsgError(),f,g]):
+(e.listItems=m.SPFilterNode("z:row").SPXmlToJson({includeAllAttrs:!0}),b(m))}}})}).promise()},getBoardItemDataObject:function(a){var b=null,d,f,g;if(a)for(a=String(a),d=0,f=e.listItems.length;d<f;d++)g=e.listItems[d].ID,c.isFunction(g)&&(g=e.listItems[d].ID()),g=String(g),a===g&&(b=e.listItems[d],d=f+f);return b},showItemsOnBoard:function(a){function b(a,g){var l="",m=null,q="";c.isFunction(e.template)?(l=e.template.call(d,a,g))&&(l=String(l)):l=c.SPWidgets.fillTemplate(e.template,s);void 0!==g&&
+""!==l?g.html(l):""!==l&&(m=a.ID,c.isFunction(a.ID)&&(m=a.ID()),void 0===k[n]&&(k[n]=""),e.initDone&&f.refresh&&(q+=" spwidget-temp"),k[n]+='<div class="spwidget-board-state-item ui-state-default ui-corner-all'+q+'" data-id="'+m+'">'+l+"</div>");return l}var f=c.extend({},{rows:e.listItems,refresh:!1,doBoardInsert:!0},a);a=[];var g=[],m=[],k={},h=null,n=null,p=h=null,s=null,w;if(!f.refresh)for(p=0,w=e.states.length;p<w;p++)e.states[p].headerTotalEle.html("0"),e.states[p].dataEle.empty();p=0;for(w=
+f.rows.length;p<w;p++)s=f.rows[p],n=s[e.field]||"",h=s.ID,c.isFunction(n)&&(n=s[e.field]()),c.isFunction(h)&&(h=h()),e.statesMap[n]&&(!1===f.refresh?(e.initDone&&a.push(s),b(s)):(h=e.statesCntr.find("div[data-id='"+h+"']"),h.length?(h.addClass("spwidget-temp"),h.closest("div.spwidget-board-state").data("boardstate")!==n&&(h.appendTo(e.statesMap[n].dataEle),m.push(s)),b(s,h)):(e.initDone&&a.push(s),b(s))));if(f.doBoardInsert){for(p in k)k.hasOwnProperty(p)&&""!==k[p]&&e.statesMap[p].dataEle.append(k[p]);
+e.updBoardHeaders();c.pt.addHoverEffect(d.find(".spwidget-board-state-item"))}e.initDone&&f.refresh&&e.statesCntr.find("div.spwidget-board-state-item").not("div.spwidget-temp").each(function(){g.push(e.getBoardItemDataObject(c(this).data("id")));c(this).remove()}).end().removeClass("spwidget-temp");e.initDone&&(e.statesCntr.find("div.spwidget-board-state").sortable("refresh").end().disableSelection(),e.setBoardColumnHeight(),p=e.getEventObject(),a.length&&(p.itemsModified.length=0,p.itemsModified.push(a),
+d.trigger("spwidget:boarditemadd",[d,c.extend({},p)])),g.length&&(p.itemsModified.length=0,p.itemsModified.push(g),d.trigger("spwidget:boarditemremove",[d,c.extend({},p)])),p.itemsModified.length=0,p.itemsModified.push.apply(p.itemsModified,a),p.itemsModified.push.apply(p.itemsModified,g),p.itemsModified.push.apply(p.itemsModified,m),p.itemsModified.length&&d.trigger("spwidget:boardchange",[d,p]));return k},updBoardHeaders:function(a){var b;if(!c.extend({},{state:null},a).state)for(a=0,b=e.states.length;a<
+b;a++)e.states[a].headerTotalEle.html(e.states[a].dataEle.children().length)},getEventObject:function(a){a||(a=e.statesCntr.find("div.spwidget-board-state-item:first"));a=c(a);a={stateTotals:{},itemTotal:0,currentState:a.closest("div.spwidget-board-state").data("boardstate"),itemObj:e.getBoardItemDataObject(a.data("id"))||{},itemsModified:[]};var b,d;b=0;for(d=e.states.length;b<d;b++)a.itemTotal+=a.stateTotals[e.states[b].name]=Number(e.states[b].headerTotalEle.text());return a},getListFormUrl:function(a){function b(){c().SPServices({operation:"GetFormCollection",
+listName:e.list,webURL:e.webURL,cacheXML:!0,async:!1,completefunc:function(a,b){c(a.responseXML).find("Form").each(function(){var a=c(this);e.formUrls[String(a.attr("Type")).toLowerCase()]=e.webURL+"/"+a.attr("Url")})}})}a=String(a).toLowerCase();null===e.formUrls&&(e.formUrls={},b());return e.formUrls[a]||""},setBoardColumnClass:function(a){var b=e.headersCntr.add(e.statesCntr);a=parseInt(a);if(!a||2>a)a=0,c.each(e.states,function(c,e){e.isVisible&&a++});if(e.showNumberOfColumns===a)return e;b.addClass("spwidget-states-"+
+a);e.showNumberOfColumns&&b.removeClass("spwidget-states-"+e.showNumberOfColumns);e.showNumberOfColumns=a;return e},setupColumnPicker:function(){var a=d.find(".spwidget-board-column-list-cntr"),b=a.find("div.spwidget-board-column-list"),f=a.children("div.ui-state-default:last"),g={$totalCntr:a.find("span.spwidget-board-column-total"),setTotalSelected:function(){var a=g.getSelected().length;g.$totalCntr.html(a);return a},getSelected:function(){return b.find("a.ui-state-highlight")},showMessage:function(a){c('<div class="spwidget-board-msg ui-state-error ui-corner-all">'+
+a+"</div>").appendTo(f).fadeOut(8E3,function(){c(this).remove()})},setSelected:function(){var a=b.find("a");c.each(e.states,function(c,e){var b=a.filter("[data-board_col_index='"+c+"']");e.isVisible?g.selectColumn(b,!1):g.selectColumn(b,!0)});g.setTotalSelected()},selectColumn:function(a,e){c(a).each(function(){var a=c(this),b=a.find(".ui-icon");a.hasClass("ui-state-highlight")||e?!1!==e&&(b.removeClass("ui-icon-check"),a.removeClass("ui-state-highlight")):(b.addClass("ui-icon-check"),a.addClass("ui-state-highlight"))});
+return a},setVisibleColumns:function(a){a||(a=g.getSelected());var b=a.length;c.each(e.states,function(c,e){a.filter("[data-board_col_index='"+c+"']").length?!1===e.isVisible&&(e.isVisible=!0,e.dataEle.css("display",""),e.headerEle.css("display","")):(e.isVisible=!1,e.dataEle.css("display","none"),e.headerEle.css("display","none"))});e.setBoardColumnClass(b);e.setBoardColumnHeight()}};g.setUserDefinedVisibleCol=e.setUserDefinedVisibleCol=function(a){var d=0,f="";if(!c.isArray(a)||!a.length){if(!c.isArray(a)&&
+"all"!==String(a).toLowerCase())return;a=[];c.each(e.states,function(c,e){a.push(e.title)})}c.each(a,function(a,b){c.each(e.states,function(a,c){if(c.title===b)return d++,1<d&&(f+=","),f+="a[data-board_col_name='"+c.name+"']",!1});if(d>=e.maxColumnVisible)return!1});2<=d&&(g.setVisibleColumns(b.find(f)),g.triggerEvent())};g.triggerEvent=function(){var a=[];e.initDone&&(c.each(e.statesMap,function(c,e){e.isVisible&&a.push(e.title)}),e.ele.trigger("spwidget:boardColumnChange",[e.ele,a]))};a.find("button[name='apply']").button({label:e.colPickerApplyLabel,
+icons:{secondary:"ui-icon-circle-check"}}).on("click",function(c){c=g.getSelected();var b=c.length;b>e.maxColumnVisible?g.showMessage(e.colPickerMaxColMsg):2>b?g.showMessage(e.colPickerMinColMsg):(a.hide(),g.setVisibleColumns(c),g.triggerEvent())});a.find("button[name='check']").attr("title",e.colPickerCheckLabel).button({text:!1,icons:{primary:"ui-icon-radio-off"}}).on("click",function(a){a=g.getSelected();a.length?g.selectColumn(a,!0):g.selectColumn(b.find("a"));g.setTotalSelected()});a.find("button[name='close']").attr("title",
+e.colPickerCloseLabel).button({text:!1,icons:{primary:"ui-icon-circle-close"}}).on("click",function(c){a.hide()});d.find("div.spwidget-board-settings").css("display","").find("div.spwidget-board-settings-columns").each(function(){var b=c(this);b.button({label:e.colPickerLabel,icons:{secondary:"ui-icon-triangle-1-s"}}).on("click.SPWidgets",function(){a.is(":visible")?a.hide():(g.setSelected(),a.show().position({my:"left top",at:"left bottom",of:b}))});return!1});b.each(function(){var a=c(this),b="";
+c.each(e.states,function(a,c){b+='<a href="javascript:" data-board_col_index="'+a+'" data-board_col_name="'+c.name+'"><span class="ui-icon ui-icon-minus"></span><span>'+c.title+"</span></a>"});a.html(b);return!1}).on("click","a",function(){g.selectColumn(this);g.setTotalSelected()});a.find("span.spwidget-board-column-total-label").html(e.colPickerTotalLabel);c.isArray(e.colPickerVisible)&&e.colPickerVisible.length&&g.setUserDefinedVisibleCol(e.colPickerVisible)},setBoardColumnHeight:function(){e.statesCntr.is(":visible")&&
+c.SPWidgets.makeSameHeight(e.statesCntr.find("div.spwidget-board-state:visible"),20,"min-height");e.headersCntr.is(":visible")&&c.SPWidgets.makeSameHeight(e.headersCntr.find("div.spwidget-board-state:visible"),0,"min-height")}});if(!e.list||!e.field)return d.html("<div>SPWidgets:Board [ERROR] Missing required input parameters!</div>"),this;d.addClass("loadingSPShowBoard").data("SPShowBoardOptions",e);e.getBoardStates().then(function(){""===e.CAMLViewFields?e.CAMLViewFields='<ViewFields><FieldRef Name="ID" /><FieldRef Name="Title" /><FieldRef Name="'+
+e.field+'" /></ViewFields>':0>e.CAMLViewFields.indexOf(e.field)&&(e.CAMLViewFields=e.CAMLViewFields.replace(/\<\/ViewFields\>/i,'<FieldRef Name="'+e.field+'" /></ViewFields>'));d.html(c(k.htmlTemplate).filter("div.spwidget-board"));e.tmpltHeader=c("<div/>").append(d.find("div.spwidget-board-headers-cntr div.spwidget-board-state").clone()).html();e.tmpltState=c("<div/>").append(d.find("div.spwidget-board-states-cntr div.spwidget-board-state")).html();e.states.length<=e.maxColumnVisible&&(e.showNumberOfColumns=
+e.states.length);e.statesCntr=d.find("div.spwidget-board-states-cntr").addClass("spwidget-states-"+e.showNumberOfColumns).empty();e.headersCntr=d.find("div.spwidget-board-headers-cntr").addClass("spwidget-states-"+e.showNumberOfColumns).empty();c.each(e.states,function(a,b){b.headerEle=c(e.tmpltHeader).appendTo(e.headersCntr).attr("data-boardstate",b.name).attr("data-boardindex",a).html("<span>"+b.title+"</span>");b.dataEle=c(e.tmpltState).appendTo(e.statesCntr).attr("data-boardindex",a).attr("data-boardstate",
+b.name);b.headerTotalEle=c('<span class="spwidget-stat-item-stat-cntr">&nbsp;<span class="spwidget-stat-item-stat ui-widget-content ui-corner-all spwidget-state-item-total">0</span></span>').appendTo(b.headerEle).find("span.spwidget-state-item-total");b.isVisible=!0;a>e.maxColumnVisible-1&&(b.headerEle.css("display","none"),b.dataEle.css("display","none"),b.isVisible=!1)});c(e.headersCntr,e.statesCntr).append('<div style="clear:both;"></div>');!0===e.showColPicker&&e.setupColumnPicker();d.on("sortreceive sortremove",
+function(a,b){e.updBoardHeaders();c(b.item).removeClass("ui-state-hover")}).on("sortreceive",function(a,b){var g=e.getEventObject(b.item),f=c.Deferred(),m="",m=c.isFunction(g.itemObj.ID)?g.itemObj.ID():g.itemObj.ID;g.updates=[];g.updatePromise=f.promise();g.updates.push([e.field,g.currentState]);if(c.isFunction(e.onPreUpdate)&&!0===e.onPreUpdate.call(b.item,a,b.item,g)||!g.updates.length)return this;c().SPServices({operation:"UpdateListItems",listName:e.list,async:!0,ID:m,valuepairs:g.updates,webURL:e.webURL,
+completefunc:function(e,m){if("error"===m)f.rejectWith(d,["Communications Error!",e,m]);else{var k=c(e.responseXML),h=null;k.SPMsgHasError()?f.rejectWith(d,[k.SPGetMsgError(),e,m]):(h=c(e.responseXML).SPFilterNode("z:row").SPXmlToJson({includeAllAttrs:!0}),c(a.target).trigger("spwidget:boardchange",[b.item,g]),f.resolveWith(a.target,[h[0],g.itemObj,e]))}}})}).on("click","a.spwidgets-board-action",function(a){a=c(a.currentTarget);var b=String(a.data("spwidgets_board_action")).toLowerCase(),d="",g=
+c.pt.getEscapedUrl(window.location.href);switch(b){case "edit-item":d=e.getListFormUrl("EditForm");break;case "view-item":d=e.getListFormUrl("DisplayForm")}window.location.href=d+"?ID="+a.data("spwidgets_id")+"&Source="+g;return this});null===e.template&&(e.template=c(k.htmlTemplate).filter("div.spwidget-item-template"));e._getListItems().then(function(){e.showItemsOnBoard();e.statesCntr.find("div.spwidget-board-state").each(function(){var a=c(this);a.sortable({connectWith:a.siblings(),containment:d,
+cursor:"move",tolerance:"pointer",opacity:".80",placeholder:"ui-state-highlight spwidget-board-placeholder",forcePlaceholderSize:!0,remove:function(a,c){e.setBoardColumnHeight()}})});e.statesCntr.disableSelection();e.initDone=!0;e.setBoardColumnHeight();d.addClass("hasSPShowBoard").removeClass("loadingSPShowBoard");c.isFunction(e.onBoardCreate)&&e.onBoardCreate.call(d,e.getEventObject());c(d).trigger("spwidget:boardcreate",[d,e.getEventObject()])})}).fail(function(a,c,b){d.append('<div class="ui-state-error"><p>'+
+a+"</p></div>")});return this})};k.styleSheet="/** \n * Stylesheet for the Board widget\n * \n * BUILD: Paul:January 12, 2014 09:41 PM\n */\ndiv.spwidget-board {\n    width: 100%;\n    position: relative;\n}\n\ndiv.spwidget-board div.spwidget-board-headers,\ndiv.spwidget-board div.spwidget-board-headers-cntr,\ndiv.spwidget-board div.spwidget-board-states-cntr, \ndiv.spwidget-board div.spwidget-board-states {\n    width: 100%;\n}\n\ndiv.spwidget-board div.spwidget-board-state {\n    width: 49%;\n    float: left;\n    margin: .1%;\n    padding: .2%;\n    overflow: auto;\n}\n\ndiv.spwidget-board div.spwidget-board-headers-cntr div.spwidget-board-state {\n    text-align: center;\n    font-weight: bold;\n    font-size: 1.1em;\n    overflow: hidden;\n    word-wrap: break-word;\n}\ndiv.spwidget-board div.spwidget-board-headers-cntr div.spwidget-board-state .spwidget-stat-item-stat {\n    padding: 0em .2em;\n    display: inline-block;\n}\ndiv.spwidget-board div.spwidget-board-states div.spwidget-board-state {\n    margin-bottom: 1em;\n    min-height: 10em;\n}\n\ndiv.spwidget-board div.spwidget-board-state div.spwidget-board-state-item {\n    padding: .2em;\n    margin: .5em .2em;\n    font-weight: normal;\n    cursor: move;\n    overflow: auto;\n}\ndiv.spwidget-board div.spwidget-board-state-item div.spwidget-board-item-actions{\n    margin-top: .2em;\n    padding: .2em .5em;\n    overflow: hidden;\n}\ndiv.spwidget-board .spwidget-board-placeholder {\n    height: 3em;\n}\n\n/** Setting container */\ndiv.spwidget-board-settings {\n    font-size: .8em;\n    margin: .2em;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list-cntr {\n    z-index: 5;\n    position: absolute;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list-cntr > div {\n    padding: .2em;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list-cntr > div:first-child,\ndiv.spwidget-board-settings div.spwidget-board-column-list-cntr > div:last-child {\n    text-align: right;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list {\n    width: 20em;\n    height: 17em;\n    overflow: auto;\n    position: relative\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list-cntr .spwidget-board-msg {\n    position: absolute;\n    top: 1px;\n    left: 1px;\n    padding: .2em;\n}\ndiv.spwidget-board-settings div.ui-state-default {\n    position: relative;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list > a {\n    display: block;\n    margin: .2em;\n    padding: .2em;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list > a > span.ui-icon {\n    display: inline-block;\n}\n\n/* Number of Columns (96 % #columns)\n * Currently support 10 columns. \n */\ndiv.spwidget-board .spwidget-states-3 div.spwidget-board-state {\n    width: 32.4%;\n}\ndiv.spwidget-board .spwidget-states-4 div.spwidget-board-state {\n    width: 24%;\n}\ndiv.spwidget-board .spwidget-states-5 div.spwidget-board-state {\n    width: 19.1%;\n}\ndiv.spwidget-board .spwidget-states-6 div.spwidget-board-state {\n    width: 15.8%;\n}\ndiv.spwidget-board .spwidget-states-7 div.spwidget-board-state {\n    width: 13.4%;\n}\ndiv.spwidget-board .spwidget-states-8 div.spwidget-board-state {\n    width: 11.6%;\n}\ndiv.spwidget-board .spwidget-states-9 div.spwidget-board-state {\n    width: 10.2%;\n}\ndiv.spwidget-board .spwidget-states-10 div.spwidget-board-state {\n    width: 9.1%;\n}\n";
 k.htmlTemplate='<div class="spwidget-board">\n    <div class="spwidget-board-settings" style="display:none;">\n        <div class=\'spwidget-board-settings-columns\'>Columns</div>\n        <div class="spwidget-board-column-list-cntr ui-widget-content ui-corner-all" style="display: none">\n            <div class="ui-state-default">\n                <span>\n                    <span class="spwidget-board-column-total"></span> \n                    <span class="spwidget-board-column-total-label">Selected.</span>\n                </span>\n                <button type="button" name="check" title="Check-Uncheck All">Check</button>\n                <button type="button" name="close" title="Close">Close</button>\n            </div>\n            <div class="spwidget-board-column-list">\n            </div>\n            <div class="ui-state-default">\n                <button type="button" name="apply">Apply</button>\n            </div>\n        </div>\n    </div>\n    <div class="spwidget-board-headers">\n        <div class="spwidget-board-headers-cntr">\n            <div class="spwidget-board-state ui-widget-content ui-corner-all"></div>\n            <div style="clear:both;"></div>\n        </div>\n    </div>\n    <div style="clear:both;"></div>\n    <div class="spwidget-board-states">\n        <div class="spwidget-board-states-cntr">\n            <div class="spwidget-board-state ui-widget-content ui-corner-all"></div>\n            <div style="clear:both;"></div>\n        </div>\n    </div>\n    <div style="clear:both;"></div>\n</div>\n<div class="spwidget-item-template">\n    <div>\n        <div>#{{ID}}: {{Title}}</div>\n        <div class="ui-state-active ui-corner-all spwidget-board-item-actions">\n            <a class="spwidgets-board-action" href="javascript:" title="View Item" data-spwidgets_id="{{ID}}" data-spwidgets_board_action="view-item"><img src="/_layouts/images/icgen.gif" border="0"/></a>\n            <a class="spwidgets-board-action" href="javascript:" title="Edit Item" data-spwidgets_id="{{ID}}" data-spwidgets_board_action="edit-item"><img src="/_layouts/images/CMSEditSourceDoc.GIF" border="0"/></a>\n        </div>\n    </div>\n</div>\n'})(r);
 (function(c){var k={_islookupFieldCssDone:!1,_isLookupbodyEventDone:!1};c.SPWidgets.defaults.LookupField={list:"",allowMultiples:!0,inputLabel:"",inputPlaceholder:"Type and Pick",readOnly:!1,exactMatch:!0,uiContainer:null,selectFields:["Title"],filter:"",filterFields:["Title"],filterOrderBy:"",template:'<div>{{Title}} <span class="spwidgets-item-remove">[x]</span></div>',listTemplate:"{{Title}}",listHeight:0,onItemAdd:null,onItemRemove:null,onReady:null,msgNoItems:"",maxResults:50,minLength:2,hideInput:!0,
 padDelimeter:!1,showSelector:!1};c.fn.SPLookupField=function(f){k._islookupFieldCssDone||(k._islookupFieldCssDone=!0,c('<style type="text/css">\n\n'+k.styleSheet+"\n\n</style>").prependTo("head"));var b=arguments;this.each(function(){var d=c(this);if(!d.is("input")&&!d.is("textarea")||d.hasClass("hasLookupSPField")){if("string"===typeof f&&d.is("input")){var a=d.data("SPWidgetLookupFieldUI").data("SPWidgetLookupFieldOpt");if("method"===f.toLowerCase()){var d=String(b[1]||"").toLowerCase(),g=b[2];
 "clear"===d?(c.isArray(g)||(g=g?[g]:[]),g.length?function(){var b=c();c.each(g,function(c,e){b=b.add(a._selectedItemsCntr.find("div.spwidgets-item-id-"+e))});k.removeItem(a,b)}():k.removeItem(a,a._selectedItemsCntr.find("div.spwidgets-item"))):"add"===d&&k.addItem(a,g)}}return this}a=c.extend({},c.SPWidgets.defaults.LookupField,f,{_ele:d.css("display","none").addClass("hasLookupSPField")});a.showSelectedItems=function(b,e){var d=a._selectedItemsCntr.css("display",""),g=[],f=!1;d.find("div.spwidgets-item").length&&
 !1!==a.allowMultiples||d.empty();c.isArray(b)?g=b:g.push(b);c.each(g,function(b,g){if(!d.find("div.spwidgets-item-id-"+g.ID).length){var m=c('<div class="spwidgets-item spwidgets-item-id-'+g.ID+'" data-spid="'+g.ID+'" style="display:none">'+c.SPWidgets.fillTemplate(a.template,g)+"</div>").appendTo(d).find(".spwidgets-item-remove").on("click.SPWidgets",function(c){k.removeItem(a,this)}).end();c.isFunction(a.onItemAdd)&&!0!==e&&a.onItemAdd.call(a._ele,m,g,a._cntr);0<d.find("div.spwidgets-item-id-"+
 g.ID).length&&(f=!0,m.fadeIn("slow").promise().then(function(){c(this).css("display","")}),!0!==e&&a.storeItemIDs(g.ID,a.allowMultiples),!1===a.allowMultiples&&!0===a.hideInput&&a._lookupInputEleCntr.css("display","none"))}});a.readOnly&&a._cntr.find(".spwidgets-item-remove").remove();f&&a._ele.trigger("change")};a.storeItemIDs=function(b,e){var d=c.trim(a._ele.val()),g=!1;c.isArray(b)||(b=[b]);!0!==e&&(d="");c.each(b,function(c,b){b&&(1>d.length&&(!0===a.padDelimeter&&!g)&&(d+=";#",g=!0),0<d.length&&
-(d+=";#"),d+=b+";#")});a._ele.val(d)};a.showCurrentInputSelection=function(b){return c.Deferred(function(e){var d=c.extend({},{async:!0},b),g=c.SPWidgets.parseLookupFieldValue(a._ele.val());g.length?c().SPServices({operation:"GetListItems",async:d.async,listName:a.list,CAMLQuery:"<Query><Where>"+c.SPWidgets.getCamlLogical({type:"OR",values:g,onEachValue:function(a){var b="";a.id&&(b="<Eq><FieldRef Name='ID'/><Value Type='Counter'>"+a.id+"</Value></Eq>");return b}})+"</Where></Query>",CAMLViewFields:"<ViewFields>"+
+(d+=";#"),d+=b+";#")});a._ele.val(d)};a.showCurrentInputSelection=function(b){return c.Deferred(function(e){var d=c.extend({},{async:!0},b),g=c.SPWidgets.parseLookupFieldValue(a._ele.val());g.length?c().SPServices({operation:"GetListItems",async:d.async,listName:a.list,CAMLQuery:"<Query><Where>"+c.SPWidgets.getCamlLogical({type:"OR",values:g,onEachValue:function(a){var c="";a.id&&(c="<Eq><FieldRef Name='ID'/><Value Type='Counter'>"+a.id+"</Value></Eq>");return c}})+"</Where></Query>",CAMLViewFields:"<ViewFields>"+
 a._selectFields+"</ViewFields>",CAMLRowLimit:0,completefunc:function(b,d){var g=c(b.responseXML).SPFilterNode("z:row").SPXmlToJson({includeAllAttrs:!0,removeOws:!0});a.addToAutocompleteCache(g);a.showSelectedItems(g,!0);e.resolveWith(a,[b,d])}}):e.resolveWith(a,[null,null])}).promise()};a.getItemObjectFromCache=function(b){var e=null;c.each(a._autocompleteCache,function(a,d){c.each(d,function(a,c){if(c.ID==b)return e=c,!1});if(null!==e)return!1});return e};a.addToAutocompleteCache=function(b){c.isArray(b)||
-(b=[b]);c.each(b,function(b,c){a._autocompleteCache[c.ID]||(a._autocompleteCache[c.ID]=[]);a._autocompleteCache[c.ID].push(c)})};a._cntr=c(k.htmlTemplate).find(".spwidgets-lookup-cntr").clone(1);null===a.uiContainer?a._cntr.insertAfter(a._ele):a._cntr.appendTo(c(a.uiContainer));a._selectedItemsCntr=a._cntr.find("div.spwidgets-lookup-selected");a._lookupInputEleCntr=a._cntr.find("div.spwidgets-lookup-input");a._lookupInputEle=a._lookupInputEleCntr.find("input[name='spwidgetLookupInput']");a._ignoreKeywordsRegEx=
-/^(of|and|a|an|to|by|the|or)$/i;a._cntr.data("SPWidgetLookupFieldOpt",a);a._ele.data("SPWidgetLookupFieldUI",a._cntr);a.showSelector?(a._selectorCntr=a._cntr.find("div.spwidget-lookup-selector-cntr"),a._queryInitDone=!1,a._cntr.find(".spwidget-lookup-selector-showhide").on("click",function(b){a._selectorCntr.is(":visible")?a._selectorCntr.css("display","none"):(a._selectorCntr.css("display","block").position({my:"left top",at:"left bottom",of:a._lookupInputEle}),a._queryInitDone||(a._queryInitDone=
-!0,k.doSelectorDataInit(a)))}),a._selectorCntr.find("button[name='close']").button({text:!1,icons:{primary:"ui-icon-circle-close"}}).click(function(){a._selectorCntr.css("display","none")}),a._lookupInputEle.on("focus",function(b){a._selectorCntr.is(":visible")&&a._selectorCntr.css("display","none")})):a._cntr.find(".spwidget-lookup-selector-showhide,.spwidget-lookup-selector-cntr").remove();a.inputLabel?a._cntr.find("div.spwidgets-lookup-input label").empty().append(a.inputLabel):a._cntr.find("div.spwidgets-lookup-input label").remove();
-a.inputPlaceholder&&a._lookupInputEleCntr.find("input").attr("placeholder",a.inputPlaceholder);!0===a.readOnly&&(a._lookupInputEleCntr.css("display","none"),a._cntr.find("div.spwidget-lookup").addClass("spwidget-lookup-readyonly"));a._selectFields="";c.each(a.selectFields,function(b,c){a._selectFields+="<FieldRef Name='"+c+"'/>"});a._templateTokens=String(a.template).match(/(\$\{.*?\})/g);null==a._templateTokens&&(a._templateTokens=[]);c.each(a._templateTokens,function(b,c){a._templateTokens[b]=c.replace(/[\$\{\}]/g,
+(b=[b]);c.each(b,function(c,b){a._autocompleteCache[b.ID]||(a._autocompleteCache[b.ID]=[]);a._autocompleteCache[b.ID].push(b)})};a._cntr=c(k.htmlTemplate).find(".spwidgets-lookup-cntr").clone(1);null===a.uiContainer?a._cntr.insertAfter(a._ele):a._cntr.appendTo(c(a.uiContainer));a._selectedItemsCntr=a._cntr.find("div.spwidgets-lookup-selected");a._lookupInputEleCntr=a._cntr.find("div.spwidgets-lookup-input");a._lookupInputEle=a._lookupInputEleCntr.find("input[name='spwidgetLookupInput']");a._ignoreKeywordsRegEx=
+/^(of|and|a|an|to|by|the|or)$/i;a._cntr.data("SPWidgetLookupFieldOpt",a);a._ele.data("SPWidgetLookupFieldUI",a._cntr);a.showSelector?(a._selectorCntr=a._cntr.find("div.spwidget-lookup-selector-cntr"),a._queryInitDone=!1,a._cntr.find(".spwidget-lookup-selector-showhide").on("click",function(c){a._selectorCntr.is(":visible")?a._selectorCntr.css("display","none"):(a._selectorCntr.css("display","block").position({my:"left top",at:"left bottom",of:a._lookupInputEle}),a._queryInitDone||(a._queryInitDone=
+!0,k.doSelectorDataInit(a)))}),a._selectorCntr.find("button[name='close']").button({text:!1,icons:{primary:"ui-icon-circle-close"}}).click(function(){a._selectorCntr.css("display","none")}),a._lookupInputEle.on("focus",function(c){a._selectorCntr.is(":visible")&&a._selectorCntr.css("display","none")})):a._cntr.find(".spwidget-lookup-selector-showhide,.spwidget-lookup-selector-cntr").remove();a.inputLabel?a._cntr.find("div.spwidgets-lookup-input label").empty().append(a.inputLabel):a._cntr.find("div.spwidgets-lookup-input label").remove();
+a.inputPlaceholder&&a._lookupInputEleCntr.find("input").attr("placeholder",a.inputPlaceholder);!0===a.readOnly&&(a._lookupInputEleCntr.css("display","none"),a._cntr.find("div.spwidget-lookup").addClass("spwidget-lookup-readyonly"));a._selectFields="";c.each(a.selectFields,function(c,b){a._selectFields+="<FieldRef Name='"+b+"'/>"});a._templateTokens=String(a.template).match(/(\$\{.*?\})/g);null==a._templateTokens&&(a._templateTokens=[]);c.each(a._templateTokens,function(c,b){a._templateTokens[c]=b.replace(/[\$\{\}]/g,
 "")});var e=a._autocompleteCache={};a._cntr.find("div.spwidgets-lookup-input input").autocomplete({minLength:2,appendTo:a._cntr,open:function(b,e){c(this).autocomplete("widget").each(function(){0<a.listHeight&&c(this).css("height",a.listHeight+"px");return!1})},source:function(b,d){b.term=c.trim(b.term);var g=String(c.trim(b.term)).toUpperCase();if(g in e)d(e[g]);else{e[g]=[];var f=[],k=String(b.term);if(null===k.match(/\D/)&&null!==k.match(/\d/))f.push("<Eq><FieldRef Name='ID'/><Value Type='Counter'>"+
 k+"</Value></Eq>");else{k=[b.term];a.exactMatch||(k=String(b.term).split(/ /));for(var h=0,t=a.filterFields.length;h<t;h++){for(var u=[],v=0,y=k.length;v<y;v++)a._ignoreKeywordsRegEx.test(k[v])||u.push("<Contains><FieldRef Name='"+a.filterFields[h]+"'/><Value Type='Text'>"+k[v]+"</Value></Contains>");f.push(c.SPWidgets.getCamlLogical({values:u,type:"AND"}))}}f=c.SPWidgets.getCamlLogical({values:f,type:"OR"});a.filter&&(f=c.SPWidgets.getCamlLogical({values:[f,a.filter],type:"AND"}));c().SPServices({operation:"GetListItems",
-listName:a.list,async:!0,CAMLQuery:"<Query><Where>"+f+"</Where>"+a.filterOrderBy+"</Query>",CAMLRowLimit:a.maxResults,CAMLViewFields:"<ViewFields>"+a._selectFields+"</ViewFields>",completefunc:function(b,f){c(b.responseXML).SPFilterNode("z:row").each(function(){var b=c(this).SPXmlToJson({includeAllAttrs:!0})[0];b.value="";b.label=c.SPWidgets.fillTemplate(a.listTemplate,b);e[g].push(b)});d(e[g])}})}},select:function(b,c){a.showSelectedItems(c.item)}}).on("keyup.SPWidgets",function(b){if(13==b.which){var e=
+listName:a.list,async:!0,CAMLQuery:"<Query><Where>"+f+"</Where>"+a.filterOrderBy+"</Query>",CAMLRowLimit:a.maxResults,CAMLViewFields:"<ViewFields>"+a._selectFields+"</ViewFields>",completefunc:function(b,f){c(b.responseXML).SPFilterNode("z:row").each(function(){var b=c(this).SPXmlToJson({includeAllAttrs:!0})[0];b.value="";b.label=c.SPWidgets.fillTemplate(a.listTemplate,b);e[g].push(b)});d(e[g])}})}},select:function(c,b){a.showSelectedItems(b.item)}}).on("keyup.SPWidgets",function(b){if(13==b.which){var e=
 c(b.target).val();e&&String(e).length<a.minLength&&c(b.target).autocomplete("search",e+"    ")}});a._ele.val()?a.showCurrentInputSelection().then(function(b,e){c.isFunction(a.onReady)&&a.onReady.call(a._ele,a._cntr)}):c.isFunction(a.onReady)&&a.onReady.call(a._ele,a._cntr);return this});return this};k.removeItem=function(f,b){var d=c(b).closest("div.spwidgets-item"),a=f._selectedItemsCntr,g=[];if(c.isFunction(f.onItemRemove)){d.each(function(){g.push(f.getItemObjectFromCache(c(this).data("spid")))});
 if(!1===f.onItemRemove.call(f._ele,d,g,f._cntr))return k;g=[]}d.fadeOut("fast").promise().then(function(){d.remove();!f.msgNoItems&&(!1===f.allowMultiples||!0===f.allowMultiples&&1>a.find("div.spwidgets-item").length)&&a.css("display","none");!1===f.allowMultiples&&!0===f.hideInput&&f._lookupInputEleCntr.css("display","");1>a.find("div.spwidgets-item").length&&f.msgNoItems&&a.append("<div>"+f.msgNoItems+"</div>");a.find("div.spwidgets-item").each(function(){g.push(c(this).data("spid"))});f._lookupInputEleCntr.find("input").focus();
 f.storeItemIDs(g);f._ele.change()});return k};k.addItem=function(c,b){if(!b||"string"!==typeof b)return c;var d=c._ele.val();""===d&&!0===c.padDelimeter&&(d+=";#");d&&(d+=";#");c._ele.val(d+b);c.showCurrentInputSelection();return c};k.doSelectorDataInit=function(f){var b={$resultsCntr:f._selectorCntr.find("div.spwidget-lookup-selector-item-cntr"),nextPageToken:"",isLoading:!1,hasMorePages:!0,$lastPage:c(),queryXml:f.filter?"<Query><Where>"+f.filter+"</Where>"+f.filterOrderBy+"</Query>":"<Query>"+
@@ -6764,17 +7066,17 @@ e=c("<div/>").insertBefore(b.$nextPage),h="";b.nextPageToken=m.attr("ListItemCol
 "div.spwidget-lookup-item",function(a){a=c(this).data("spwidgetsindex");f.showSelectedItems(k[a])});b.isLoading=!1;d.resolveWith(e,[e])}}))})};b.$nextPage=c('<div class="ui-state-highlight spwidget-lookup-selector-next">Next...</div>').appendTo(b.$resultsCntr.empty()).click(function(c){b.hasMorePages&&(b.$nextPage.css("display","none"),b.getListRows().then(function(a){b.hasMorePages?b.$nextPage.css("display",""):a.children().length||a.append("<div class='ui-state-highlight'>No Items Found!</div>");
 b.$resultsCntr.scrollTop(a.position().top)}))});b.$nextPage.click();return f};k.styleSheet='/**\n * Stylesheet for the Lookup Field widget.\n * \n */\n\n.spwidgets-lookup-cntr {\n    position: relative;\n    display: inline-block;\n    zoom: 1; /* IE7 hack */\n    *display: inline; /* IE7 hack */\n}\n\n\n.spwidgets-lookup-cntr .spwidgets-lookup-selected {\n    -moz-appearance: textfield;\n    -webkit-appearance: textfield;\n    background-color: white;\n    background-color: -moz-field;\n    border: 1px solid  darkgray;\n    box-shadow: 1px 1px 1px 0 lightgray inset;  \n    font: -moz-field;\n    font: -webkit-small-control;\n    margin-top: 5px;\n    padding: 2px 5px; \n}\n\n.spwidgets-lookup-cntr  .spwidgets-lookup-selected .spwidgets-item {\n    display: inline-block;\n    margin-left: .5em;\n}\n.spwidgets-lookup-cntr .spwidgets-item:first-child {\n    margin-left: 0px;\n}\n.spwidgets-lookup-cntr .spwidgets-item-remove {\n    color: red;\n    font-size: xx-small;\n    vertical-align: super;\n    cursor: pointer;\n}\n\n.spwidgets-lookup-cntr .spwidgets-lookup-input {\n    margin: .2em 0em;\n    position: relative;\n}\n.spwidgets-lookup-cntr .spwidgets-lookup-input input {\n    width: 99%;\n}\n.spwidgets-lookup-cntr ul.ui-autocomplete {\n    overflow: auto;\n    z-index: 1;\n}\n\n/* Ready only display */\n.spwidgets-lookup-cntr div.spwidget-lookup-readyonly .spwidgets-lookup-selected {\n    -moz-appearance: none;\n    -webkit-appearance: none;\n    background-color: transparent;\n    border: none;\n    box-shadow: none;\n    font: inherit;\n}\n.spwidgets-lookup-cntr div.spwidget-lookup-readyonly .spwidgets-item-remove {\n    display: none;\n}\n\n/** SELECTOR */\n.spwidgets-lookup-cntr .spwidget-lookup-selector-showhide {\n    background-repeat: no-repeat;\n    background-image: url("/_layouts/images/bizdatacontentsource.gif");\n    cursor: pointer;\n    display: block;\n    position: absolute;\n    text-indent: -99999px;\n    z-index: 5;\n    height: 16px;\n    width: 16px;\n    right: 5px;\n    top: .3em;\n}\n.spwidgets-lookup-cntr div.spwidget-lookup-selector-cntr {\n    display: none;\n    position: absolute;\n    left: 0px;\n    z-index: 10;\n    padding: .2em;\n    width: 98%;\n    font-size: .8em;\n}\n.spwidgets-lookup-cntr div.spwidget-lookup-selector-cntr > .ui-state-default {\n    padding: .2em;\n    text-align: right;\n}\n\n.spwidgets-lookup-cntr div.spwidget-lookup-selector-item-cntr {\n    height: 15em;\n    overflow: auto;\n    padding: .2em;\n    font-size: 1em;\n}\n.spwidgets-lookup-cntr div.spwidget-lookup-selector-item-cntr .ui-state-highlight {\n    padding: .5em;\n    margin: 1em .2em;\n    text-align: center;\n    font-size: 1.1em;\n    font-weight: bold;\n}\n.spwidgets-lookup-cntr div.spwidget-lookup-selector-item-cntr .spwidget-lookup-selector-next {\n    cursor: pointer;\n}\n.spwidgets-lookup-cntr div.spwidget-lookup-selector-item-cntr .spwidget-lookup-item {\n    padding: .2em .5em;\n    margin: .2em;\n    cursor: pointer;\n    font-weight: normal;\n}\n\n';
 k.htmlTemplate='<div>\n    <div class="spwidgets-lookup-cntr">\n        <div class="spwidget-lookup">\n            <div class="spwidgets-lookup-selected" style="display:none;">\n            </div>\n            <div class="spwidgets-lookup-input">\n                <label>Add</label>\n                <input type="text" name="spwidgetLookupInput" value="" />\n                <span class="spwidget-lookup-selector-showhide" title="Browse">Browse</span>\n                <div class="spwidget-lookup-selector-cntr ui-widget-content">\n                    <div class="ui-state-default">\n                        <button type="button" name="close" title="Close">Close</button>\n                    </div>\n                    <div class="spwidget-lookup-selector-item-cntr"></div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n\n'})(r);
-(function(){h.pt.pickSPUser={_isPickSPUserCssDone:!1};h.fn.pickSPUser=function(c){h.pt.pickSPUser._isPickSPUserCssDone||(h.pt.pickSPUser._isPickSPUserCssDone=!0,h('<style type="text/css">\n\n'+h.pt.pickSPUser.styleSheet+"\n\n</style>").prependTo("head"));var k=arguments;this.each(function(){var f=h(this);if(!f.is("input")||f.hasClass("hasPickSPUser"))return"string"===typeof c&&f.is("input")?h.pt.pickSPUser.handleAction.apply(this,k):this;var b=h.extend({},{allowMultiples:!0,maxSearchResults:50,webURL:h().SPServices.SPGetCurrentSite(),
-type:"User",onPickUser:null,onCreate:null,onRemoveUser:null,inputPlaceholder:"Type and Pick"},c,{eleUserInput:f.css("display","none").addClass("hasPickSPUser")});b.maxSearchResults=parseInt(b.maxSearchResults)||50;var d=h(h.pt.pickSPUser.htmlTemplate).find(".pt-pickSPUser").clone(1).insertAfter(f);b.eleSelected=d.find("div.pt-pickSPUser-selected").empty().on("click",".tt-delete-icon",function(){h.pt.pickSPUser.removeUser(this)});b.elePickInput=d.find("div.pt-pickSPUser-input");b.addPeopleToList=function(a,
-c){var d=(new String(a)).split(";#"),f=d.length,k,l,x;for(k=0;k<f;k++)l=d[k],k++,x=d[k],l=h.pt.pickSPUser.getUserHtmlElement(b,l,x).appendTo(b.eleSelected),function(a,c){b.getSearchResults(c).done(function(b,e,d){var g=String(c).toLowerCase();h.each(b,function(b,c){if(String(c.displayName).toLowerCase()===g)return a.data("pickspuser_object",c),!1})})}(l,x);h.pt.addHoverEffect(b.eleSelected.find("div.pt-pickSPUser-person-cntr"));!1===b.allowMultiples&&b.elePickInput.css("display","none");h.pt.pickSPUser.storeListOfUsers(b.eleSelected,
-c)};b.getSearchResults=function(a){return h.Deferred(function(c){h().SPServices({operation:"SearchPrincipals",searchText:a,maxResults:b.maxSearchResults,principalType:b.type,async:!0,webURL:b.webURL,completefunc:function(a,b){var d=[];h(a.responseXML).find("PrincipalInfo").each(function(){var a=h(this),a={displayName:a.find("DisplayName").text(),accountId:a.find("UserInfoID").text(),accountName:a.find("AccountName").text(),accountType:a.find("PrincipalType").text(),value:a.find("DisplayName").text(),
-label:""};a.label+=a.displayName;d.push(a)});c.resolveWith(a,[d,a,b])}})}).promise()};!0===b.allowMultiples&&b.eleSelected.addClass("pt-pickSPUser-selected-multiple");var a={};b.elePickInput.find("input[name='pickSPUserInputField']").attr("placeholder",b.inputPlaceholder).autocomplete({minLength:3,appendTo:b.elePickInput,source:function(c,e){c.term in a?e(a[c.term]):(a[c.term]=[],b.getSearchResults(c.term).then(function(b,d,f){a[c.term].push.apply(a[c.term],b);e(a[c.term])}))},select:function(a,c){if(!1===
-b.allowMultiples)b.eleSelected.empty();else if(b.eleSelected.find("div[data-pickspuserid='"+c.item.accountId+"']").length)return;h.pt.pickSPUser.getUserHtmlElement(b,c.item.accountId,c.item.displayName).appendTo(b.eleSelected).data("pickspuser_object",c.item);h.pt.pickSPUser.storeListOfUsers(d);h.pt.addHoverEffect(d.find("div.pt-pickSPUser-person-cntr"));setTimeout(function(){a.target.value=""},50);!1===b.allowMultiples&&b.elePickInput.hide();h.isFunction(b.onPickUser)&&b.onPickUser.call(b.eleUserInput,
-h.extend({},c.item));f.trigger(h.Event("spwidget:peoplePickerAdd"),[b.eleUserInput,h.extend({},c.item)])}});d.data("pickSPUserContainerOpt",b);f.data("pickSPUserContainer",d);f.val()&&b.addPeopleToList(f.val(),!0);h.isFunction(b.onCreate)&&b.onCreate.call(f,f);f.trigger(h.Event("spwidget:peoplePickerCreate"),[b.eleUserInput]);return this});return this};h.pt.pickSPUser.getUserHtmlElement=function(c,k,f){c=h(h.pt.pickSPUser.htmlTemplate).find(".pt-pickSPUser-person").clone(1);c.attr("data-pickSPUserID",
-k);c.find("span.pt-person-name").append(f).end().attr("data-pickSPUserNAME",f);return c};h.pt.pickSPUser.removeUser=function(c){var k=h(c).closest("div.pt-pickSPUser"),f=k.data("pickSPUserContainerOpt");c=h(c).closest("div.pt-pickSPUser-person");var b=c.data("pickspuser_object");h.isFunction(f.onRemoveUser)&&f.onRemoveUser.call(f.ele,f.ele,c,b);c.fadeOut("fast",function(){h(this).remove();h.pt.pickSPUser.storeListOfUsers(k)});!1===f.allowMultiples&&f.elePickInput.show("fast",function(){f.elePickInput.find("input").focus()});
-f.eleUserInput.trigger(h.Event("spwidget:peoplePickerRemove"),[f.eleUserInput,b])};h.pt.pickSPUser.storeListOfUsers=function(c,k){var f=h(c).closest("div.pt-pickSPUser"),b=f.data("pickSPUserContainerOpt"),d="",a={};f.find("div.pt-pickSPUser-selected div.pt-pickSPUser-person").each(function(){a[h(this).attr("data-pickSPUserID")]||(a[h(this).attr("data-pickSPUserID")]=!0,d&&(d+=";#"),d+=h(this).attr("data-pickSPUserID"),d+=";#",d+=h(this).attr("data-pickSPUserNAME"))});b.eleUserInput.val(d);k||b.eleUserInput.change()};
-h.pt.pickSPUser.handleAction=function(c,k,f){c=String(c).toLowerCase();k=String(k).toLowerCase();var b=h(this).data("pickSPUserContainer").data("pickSPUserContainerOpt"),d=this;if("method"===c)switch(k){case "clear":b.eleUserInput.val("");b.eleSelected.empty();!1===b.allowMultiples&&(b.eleSelected.css("display","none"),b.elePickInput.show());break;case "destroy":h(this).hasClass("hasPickSPUser")&&h(this).removeClass("hasPickSPUser").next(".pt-pickSPUser").remove().show().trigger("change");break;case "add":b.addPeopleToList(f);
-break;case "remove":f&&(c=b.eleSelected.find("div[data-pickspuserid='"+f+"']"),c.length||(c=b.eleSelected.find("div[data-pickspusername='"+f+"']")),c.length&&h.pt.pickSPUser.removeUser(c));break;case "getSelected":d=h.SPWidgets.parseLookupFieldValue(b.eleUserInput.val())}return d};h.pt.pickSPUser.styleSheet="/**\n * Styles for the Pick User Widget\n */\n.pt-pickSPUser .pt-pickSPUser-selected-multiple {\n    min-height: 3em;\n}\n\n.pt-pickSPUser .pt-pickSPUser-selected .pt-pickSPUser-person {\n    float: left;\n    margin-left: .2em;\n}\n.pt-pickSPUser .pt-pickSPUser-hint {\n    font-size: .9em;\n}\n\n.pt-pickSPUser div.pt-pickSPUser-input input.ui-autocomplete {\n    width: 99%;\n}\n.pt-pickSPUser div.pt-pickSPUser-input ul.ui-autocomplete {\n    z-index: 1;\n}\n\n.pt-pickSPUser .pt-pickSPUser-person-cntr {\n    margin: .2em 0em;\n    padding: .2em;\n    position: relative;\n}\n\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-person-name {\n    padding-right: 2em;\n}\n\n/* Item action container (delete button) */\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-pickSPUser-person-actions {\n    position: absolute;\n    right: 1px;\n    top: 1px;\n    padding: .2em;\n    display: none;\n}\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-pickSPUser-person-actions .pt-pickSPUser-person-action-links,\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-pickSPUser-person-actions .pt-pickSPUser-person-action-links .tt-confirm-delete {\n    float:right;\n}\n\n/* Make the action visible if we hover or we are trying to confirm a deletion */\n.pt-pickSPUser .pt-pickSPUser-person-cntr.ui-state-hover .pt-pickSPUser-person-actions,\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-pickSPUser-person-actions.tt-confirm,\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-pickSPUser-person-actions a {\n    display:block;\n    float: right;\n}\n\n/* autocomplete busy image */\n.ui-autocomplete-loading {\n    background: white url('/_layouts/images/loading.gif') right center no-repeat;\n}\n\n\n";
+(function(){h.pt.pickSPUser={_isPickSPUserCssDone:!1};h.fn.pickSPUser=function(c){h.pt.pickSPUser._isPickSPUserCssDone||(h.pt.pickSPUser._isPickSPUserCssDone=!0,h('<style type="text/css">\n\n'+h.pt.pickSPUser.styleSheet+"\n\n</style>").prependTo("head"));var k=arguments,f=this;if("string"===typeof c)return function(c){return c.is("input")&&c.hasClass("hasPickSPUser")?h.pt.pickSPUser.handleAction.apply(c,k):f}(f.eq(0));this.each(function(){var b=h(this),d=h.extend({},{allowMultiples:!0,maxSearchResults:50,
+webURL:h().SPServices.SPGetCurrentSite(),type:"User",onPickUser:null,onCreate:null,onRemoveUser:null,inputPlaceholder:"Type and Pick"},c,{eleUserInput:b.css("display","none").addClass("hasPickSPUser")});d.maxSearchResults=parseInt(d.maxSearchResults)||50;var a=h(h.pt.pickSPUser.htmlTemplate).find(".pt-pickSPUser").clone(1).insertAfter(b);d.eleSelected=a.find("div.pt-pickSPUser-selected").empty().on("click",".tt-delete-icon",function(){h.pt.pickSPUser.removeUser(this)});d.elePickInput=a.find("div.pt-pickSPUser-input");
+d.addPeopleToList=function(a,c){var b=(new String(a)).split(";#"),g=b.length,f,k,x;for(f=0;f<g;f++)k=b[f],f++,x=b[f],k=h.pt.pickSPUser.getUserHtmlElement(d,k,x).appendTo(d.eleSelected),function(a,c){d.getSearchResults(c).done(function(b,e,d){var g=String(c).toLowerCase();h.each(b,function(c,b){if(String(b.displayName).toLowerCase()===g)return a.data("pickspuser_object",b),!1})})}(k,x);h.pt.addHoverEffect(d.eleSelected.find("div.pt-pickSPUser-person-cntr"));!1===d.allowMultiples&&d.elePickInput.css("display",
+"none");h.pt.pickSPUser.storeListOfUsers(d.eleSelected,c)};d.getSearchResults=function(a){return h.Deferred(function(c){h().SPServices({operation:"SearchPrincipals",searchText:a,maxResults:d.maxSearchResults,principalType:d.type,async:!0,webURL:d.webURL,completefunc:function(a,b){var e=[];h(a.responseXML).find("PrincipalInfo").each(function(){var a=h(this),a={displayName:a.find("DisplayName").text(),accountId:a.find("UserInfoID").text(),accountName:a.find("AccountName").text(),accountType:a.find("PrincipalType").text(),
+value:a.find("DisplayName").text(),label:""};a.label+=a.displayName;e.push(a)});c.resolveWith(a,[e,a,b])}})}).promise()};!0===d.allowMultiples&&d.eleSelected.addClass("pt-pickSPUser-selected-multiple");var g={};d.elePickInput.find("input[name='pickSPUserInputField']").attr("placeholder",d.inputPlaceholder).autocomplete({minLength:3,appendTo:d.elePickInput,source:function(a,c){a.term in g?c(g[a.term]):(g[a.term]=[],d.getSearchResults(a.term).then(function(b,d,f){g[a.term].push.apply(g[a.term],b);c(g[a.term])}))},
+select:function(c,g){if(!1===d.allowMultiples)d.eleSelected.empty();else if(d.eleSelected.find("div[data-pickspuserid='"+g.item.accountId+"']").length)return;h.pt.pickSPUser.getUserHtmlElement(d,g.item.accountId,g.item.displayName).appendTo(d.eleSelected).data("pickspuser_object",g.item);h.pt.pickSPUser.storeListOfUsers(a);h.pt.addHoverEffect(a.find("div.pt-pickSPUser-person-cntr"));setTimeout(function(){c.target.value=""},50);!1===d.allowMultiples&&d.elePickInput.hide();h.isFunction(d.onPickUser)&&
+d.onPickUser.call(d.eleUserInput,h.extend({},g.item));b.trigger(h.Event("spwidget:peoplePickerAdd"),[d.eleUserInput,h.extend({},g.item)])}});a.data("pickSPUserContainerOpt",d);b.data("pickSPUserContainer",a);b.val()&&d.addPeopleToList(b.val(),!0);h.isFunction(d.onCreate)&&d.onCreate.call(b,b);b.trigger(h.Event("spwidget:peoplePickerCreate"),[d.eleUserInput]);return this});return this};h.pt.pickSPUser.getUserHtmlElement=function(c,k,f){c=h(h.pt.pickSPUser.htmlTemplate).find(".pt-pickSPUser-person").clone(1);
+c.attr("data-pickSPUserID",k);c.find("span.pt-person-name").append(f).end().attr("data-pickSPUserNAME",f);return c};h.pt.pickSPUser.removeUser=function(c){var k=h(c).closest("div.pt-pickSPUser"),f=k.data("pickSPUserContainerOpt");c=h(c).closest("div.pt-pickSPUser-person");var b=c.data("pickspuser_object");h.isFunction(f.onRemoveUser)&&f.onRemoveUser.call(f.ele,f.ele,c,b);c.fadeOut("fast",function(){h(this).remove();h.pt.pickSPUser.storeListOfUsers(k)});!1===f.allowMultiples&&f.elePickInput.show("fast",
+function(){f.elePickInput.find("input").focus()});f.eleUserInput.trigger(h.Event("spwidget:peoplePickerRemove"),[f.eleUserInput,b])};h.pt.pickSPUser.storeListOfUsers=function(c,k){var f=h(c).closest("div.pt-pickSPUser"),b=f.data("pickSPUserContainerOpt"),d="",a={};f.find("div.pt-pickSPUser-selected div.pt-pickSPUser-person").each(function(){a[h(this).attr("data-pickSPUserID")]||(a[h(this).attr("data-pickSPUserID")]=!0,d&&(d+=";#"),d+=h(this).attr("data-pickSPUserID"),d+=";#",d+=h(this).attr("data-pickSPUserNAME"))});
+b.eleUserInput.val(d);k||b.eleUserInput.change()};h.pt.pickSPUser.handleAction=function(c,k,f){c=String(c).toLowerCase();k=String(k).toLowerCase();var b=h(this).data("pickSPUserContainer").data("pickSPUserContainerOpt"),d=this;if("method"===c)switch(k){case "clear":b.eleUserInput.val("");b.eleSelected.empty();!1===b.allowMultiples&&(b.eleSelected.css("display","none"),b.elePickInput.show());break;case "destroy":h(this).hasClass("hasPickSPUser")&&h(this).removeClass("hasPickSPUser").next(".pt-pickSPUser").remove().show().trigger("change");
+break;case "add":b.addPeopleToList(f);break;case "remove":f&&(c=b.eleSelected.find("div[data-pickspuserid='"+f+"']"),c.length||(c=b.eleSelected.find("div[data-pickspusername='"+f+"']")),c.length&&h.pt.pickSPUser.removeUser(c));break;case "getselected":d=h.SPWidgets.parseLookupFieldValue(b.eleUserInput.val())}return d};h.pt.pickSPUser.styleSheet="/**\n * Styles for the Pick User Widget\n */\n.pt-pickSPUser .pt-pickSPUser-selected-multiple {\n    min-height: 3em;\n}\n\n.pt-pickSPUser .pt-pickSPUser-selected .pt-pickSPUser-person {\n    float: left;\n    margin-left: .2em;\n}\n.pt-pickSPUser .pt-pickSPUser-hint {\n    font-size: .9em;\n}\n\n.pt-pickSPUser div.pt-pickSPUser-input input.ui-autocomplete {\n    width: 99%;\n}\n.pt-pickSPUser div.pt-pickSPUser-input ul.ui-autocomplete {\n    z-index: 1;\n}\n\n.pt-pickSPUser .pt-pickSPUser-person-cntr {\n    margin: .2em 0em;\n    padding: .2em;\n    position: relative;\n}\n\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-person-name {\n    padding-right: 2em;\n}\n\n/* Item action container (delete button) */\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-pickSPUser-person-actions {\n    position: absolute;\n    right: 1px;\n    top: 1px;\n    padding: .2em;\n    display: none;\n}\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-pickSPUser-person-actions .pt-pickSPUser-person-action-links,\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-pickSPUser-person-actions .pt-pickSPUser-person-action-links .tt-confirm-delete {\n    float:right;\n}\n\n/* Make the action visible if we hover or we are trying to confirm a deletion */\n.pt-pickSPUser .pt-pickSPUser-person-cntr.ui-state-hover .pt-pickSPUser-person-actions,\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-pickSPUser-person-actions.tt-confirm,\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-pickSPUser-person-actions a {\n    display:block;\n    float: right;\n}\n\n/* autocomplete busy image */\n.ui-autocomplete-loading {\n    background: white url('/_layouts/images/loading.gif') right center no-repeat;\n}\n\n\n";
 h.pt.pickSPUser.htmlTemplate='\x3c!--\n    Html Templates for the PickSPUser plugin.\n    \n    |\n    |   $Author$\n    | $Revision$\n    |     $Date$\n    |       $Id$\n    |\n--\x3e\n<div>\n    <div class="pt-pickSPUser">\n        <div class="pt-pickSPUser-selected">\n            None Selected!\n        </div>\n        <div style="clear:both"></div>\n        <div class="pt-pickSPUser-input" \n                title="Type user name above to view search results.">\n            <input name="pickSPUserInputField" value="" type="text"/>\n        </div>\n    </div>\n    \n    <div class="pt-pickSPUser-person">\n        <div class="pt-pickSPUser-person-cntr ui-state-default ui-corner-all">\n            <span class="pt-person-name"></span>\n            <div class="pt-pickSPUser-person-actions">\n                <div class="tt-record-item-action-links">\n                    <a class="tt-delete-icon" href="javascript:" onclick="jQuery.pt.pickSPUser.removeUser(this);">\n                        <img style="border: medium none; margin-right: 2px;" alt="Delete" src="/_layouts/images/delitem.gif">\n                    </a>\n                    <div style="clear:both;"></div>\n                </div>\n                <div style="clear:both;"></div>\n            </div>\n        </div>\n    </div>\n</div>\n';
 h.pt.addHoverEffect=function(c){return h(c).each(function(){if(!h(this).hasClass("addHoverEffectDone")){h(this).addClass("addHoverEffectDone");var c=this;h(c).mouseenter(function(){h(c).toggleClass("ui-state-hover")});h(c).mouseleave(function(){h(c).toggleClass("ui-state-hover")})}})}})(r);(function(c){var k={isSPUploadCssDone:!1};c.SPWidgets.defaults.upload={listName:"",folderPath:"",uploadDonePage:"/_layouts/images/STS_ListItem_43216.gif",onPageChange:null,onUploadDone:null,uploadUrlOpt:"",overwrite:!1,
 uploadPage:"",overlayClass:"",overlayBgColor:"white",overlayMessage:"<div>Working on it</div>",selectFileMessage:"Click here to select file...",uploadDoneMessage:"Upload Successful!",fileNameErrorMessage:'A file name cannot contain any of the following characters: \\ / : * ? " &lt; &gt; | # { } % ~ &amp;',noFileErrorMessage:"No file selected!",checkInFormHeight:"25em",webURL:null,debug:!1};c.fn.SPControlUpload=function(f){k.isSPUploadCssDone||(k.isSPUploadCssDone=!0,c('<style type="text/css">\n\n'+
@@ -6799,7 +7101,7 @@ d._lastError="");d._reloadCount=0;d.overwrite?g.find("input[type='checkbox'][nam
 "): Upload widget process DONE!"),e.isUploadDone=!0,e.hideOverlay=!1,d.showHideBusy(),d.showHideSuccess();else if(d.log("Upload.onIframeChange("+d._iframeLoadId+"): Post Upload Form being displayed! Hooking into form.onsubmit!"),f.length){var q=f.prop("onsubmit");f.children(":visible").css("display","none").addClass("ptWasVisible").end().find("input[title='Name']").closest("div[id^='WebPart']").appendTo(g.find("form")).css("display","").removeClass("ptWasVisible");f[0].onsubmit=function(){d.log("Upload.onIframeChange("+
 a+"): iframe form.onsubmit triggered!");d.showHideBusy();var b=!0;c.isFunction(d.onPageChange)&&(b=d.onPageChange.call(d.$ele,c.extend({},e,{state:3,action:"preLoad"})));if(!1===b)return d.showHideBusy(!0),b;c.isFunction(q)&&(b=q());if(!1===b)return d.showHideBusy(!0),b;d.showHideFullForm(!0);return b}}c(b.find("iframe")[0].contentWindow).unload(function(a){d.log("Upload.onIframeChange("+d._iframeLoadId+"): iframe.unload() triggered!");d.showHideBusy();d.showHideFullForm(!0);if(c.isFunction(d.onPageChange))return d.onPageChange.call(d.$ele,
 c.extend({},e,{state:3,action:"preLoad"}))})}d.log("Upload.onIframeChange("+d._iframeLoadId+"): iframe page setup done!");d.onPageChange&&d.onPageChange.call(d.$ele,e);if("postload"!==e.action.toLowerCase()||!0===e.hideOverlay)d.showHideBusy(!0),!1===e.isUploadDone&&3===e.state&&d.showHideFullForm();e.isUploadDone&&(d.resetWidget(),d.$successCntr.animate({opacity:1},3E3,function(){d.showHideSuccess(!0)}),c.isFunction(d.onUploadDone)&&d.onUploadDone.call(d.$ele,e.file))}},500))};k.isSameUrlPage=function(c,
-b){if(!c||!b)return!1;var d=function(a){var b=document.createElement("a");b.href=a;return b.protocol+"//"+b.hostname+(b.port?":"+b.port:"")+b.pathname},a=String(d(c)).toLowerCase(),d=String(d(b)).toLowerCase();return a===d};c.pt.getEscapedUrl=escapeProperly;c.pt.getUnEscapedUrl=unescapeProperly;c.pt.getListUID=function(f){if(!f)return"";var b="";if(c.pt._cache["getListUID:"+f])return b=c.pt._cache["getListUID:"+f];c().SPServices({operation:"GetList",listName:f,async:!1,completefunc:function(d,a){b=
+b){if(!c||!b)return!1;var d=function(a){var c=document.createElement("a");c.href=a;return c.protocol+"//"+c.hostname+(c.port?":"+c.port:"")+c.pathname},a=String(d(c)).toLowerCase(),d=String(d(b)).toLowerCase();return a===d};c.pt.getEscapedUrl=escapeProperly;c.pt.getUnEscapedUrl=unescapeProperly;c.pt.getListUID=function(f){if(!f)return"";var b="";if(c.pt._cache["getListUID:"+f])return b=c.pt._cache["getListUID:"+f];c().SPServices({operation:"GetList",listName:f,async:!1,completefunc:function(d,a){b=
 c(d.responseXML).find("List").attr("ID")}});b&&(c.pt._cache["getListUID:"+f]=b);return b};k.log=function(){var f,b,d=1,a=0,g=!1,e=!1,k=["#FFFFFF","#F5F5F2"];"undefined"===typeof console||"undefined"===typeof console.debug?f=function(){var c,e,g="";c=0;for(e=arguments.length;c<e;c++)g+='<div style="padding: .1em .1em;background-color:'+k[a]+'"><span>['+d+"] </span>"+arguments[c]+"</div>",d++,a=1===a?0:1;g&&(b.append(g),b.dialog("isOpen")||b.dialog("open"))}:g=!0;return function(){e||(e=!0,g||(b=c("<div><h2>SPWidgets Debug Output</h2></div>").appendTo("body").dialog({title:"Debug output",
 height:300})));if(g){var a,d;a=0;for(d=arguments.length;a<d;a++)console.debug(arguments[a])}else f.apply(this,arguments)}}();k.StyleSheet="/**\n * FILE: jquery.SPControlUpload.css\n * \n * \n */\n.spcontrolupload .mainContainer {\n\tposition: relative;\n\tdisplay:block;\n\theight: 4em;\n}\n\n.spcontrolupload .iFrameWindow,\n.spcontrolupload .buttonPane,\n.spcontrolupload .spwidget-success-cntr,\n.spcontrolupload .loadingOverlay {\n    position: absolute;\n    top: 0px;\n    height: 3em;\n    width: 100%;\n}\n.spcontrolupload .buttonPane {\n    left: 0px;\n    width: 10%;\n    overflow: hidden;\n    cursor: pointer;\n}\n.spcontrolupload .buttonPane .upload_button {\n    font-weight: bold;\n    font-size: 1.1em;\n    text-align: center;\n    margin-top: .8em;\n}\n\n.spcontrolupload .iFrameWindow {\n    width: 90%;\n    left: 10%;\n    overflow: hidden;\n}\n.spcontrolupload .iFrameWindow iframe {\n\toverflow: auto;\n\twidth: 100%;\n\theight: 99%;\n}\n\n.spcontrolupload .spwidget-show-full-form .iFrameWindow {\n    overflow: auto;\n    width: 100%;\n    margin: 0em;\n    left: 0px;\n    right: auto;\n    z-index: 5;\n}\n\n.spcontrolupload .loadingOverlayMsg {\n\tfont-size: 1em;\n\tbackground-position: left top;\n    background-repeat: no-repeat;\n    background-image: url('/_layouts/images/loadingcirclests16.gif');\n    margin: 0.5em;\n    padding-left: 25px;\n}\n\n.spcontrolupload .spwidget-success-cntr,\n.spcontrolupload .spwidget-error-cntr {\n    display: none;\n}\n.spcontrolupload div.spwidget-msg-cntr {\n    margin: 0.5em .5em .5em 3em;\n\tfont-size: 1em;\n\tbackground-position: left top;\n    background-repeat: no-repeat;    \n}\n.spcontrolupload .spwidget-close {\n    color: red;\n    font-size: xx-small;\n    font-weight: bold;\n    vertical-align: super;\n    cursor: pointer;\n}\n\n.spcontrolupload .spwidget-success-cntr div.spwidget-msg-cntr {\n    background-image: url('/_layouts/images/STS_ListItem_43216.gif');\n    padding-left: 30px;\n}\n\n.spcontrolupload .spwidget-error-cntr {\n    bottom: -1.5em;\n    left: 0px;\n    width: 100%;\n    position: absolute;\n}\n\n.spcontrolupload-dev-mode .iFrameWindow {\n    overflow: auto !important;\n    height: auto !important;\n}\n\n\n";
 k.HtmlUI='<div class="SPControlUploadUI spcontrolupload">\n    <div class="mainContainer">\n        <div class="buttonPane ui-state-default">\n            <div class="upload_button">\n                Upload\n            </div>\n        </div>\n        <div class="iFrameWindow ui-state-default">\n            <iframe name="SPControlUploadUI" frameborder="0" scrollbars="yes" scrolling="yes"></iframe>\n        </div>\n        <div class="loadingOverlay ui-widget-content">\n            <div class="loadingOverlayMsg"></div>\n        </div>\n        <div class="spwidget-success-cntr ui-widget-content">\n            <div class="spwidget-msg-cntr">\n                <span class="spwidget-msg">Upload Successful!</span> \n                <span class="spwidget-close">x</span> \n            </div>\n        </div>\n        <div class="spwidget-error-cntr ui-state-error">\n            <div class="spwidget-msg-cntr">\n                <span class="spwidget-msg">Error</span> \n                <span class="spwidget-close">x</span> \n            </div>\n        </div>\n    </div>\n</div>\n\n<div id="SPControlUploadModUI" \n    style="\n        position:   absolute;\n        width:      99.9%;\n        height:     99.9%;\n        left:       0px;\n        top:        0px;\n        padding-left:       .5em;\n        background-color:   white;">\n    <div class="SPControlUploadModUIFileSelected"\n        style="\n        background-position: left center;\n        background-repeat: no-repeat;\n        background-image: url(\'/_layouts/images/urn-content-classes-smartfolder16.gif\');\n        padding: 0.5em 2em;">Select...</div>\n</div>\n'})(r);
@@ -6807,14 +7109,14 @@ k.HtmlUI='<div class="SPControlUploadUI spcontrolupload">\n    <div class="mainC
 c.fn.SPDateField=function(f){var b=arguments,d=this;k.isInitDone||(k.isInitDone=!0,""!==k.styleSheet&&c('<style type="text/css">\n\n'+k.styleSheet+"\n\n</style>").prependTo("head"),c("body").on("click"+k.evNamespace,k.onPageClick));return"string"===typeof f?function(){var a=String(b[0]).toLowerCase(),g=d;c(d).each(function(e,f){if(c(d).hasClass("hasSPDateField")){var k=c(f),h=k.data("SPDateFieldInstance");if(h&&0<k.length)switch(a){case "getdate":g=h.getDate();break;case "setdate":b[1]&&h.setDate({date:b[1],
 format:b[2]||h.opt.datepicker.dateFormat});break;case "removedate":b[1]&&h.removeDate({date:b[1],format:b[2]||h.opt.datepicker.dateFormat});break;case "reset":h.reset();break;case "destroy":h.destroy()}}});return g}():this.each(function(){var a={$ele:c(this).addClass("hasSPDateField"),isInline:!1,inlineCntr:null};if(!a.$ele.is("input[type='text']")){if(a.$ele.is(":input"))return;a.isInline=!0;a.inlineCntr=c(this);a.$ele=c('<input name="spdatefieldinline" value="" type="text" style="display:none" />')}a.opt=
 c.extend(!0,{},c.SPWidgets.defaults.date,f);a.$ui=c(k.htmlTemplate).filter("div.spwidget-date-cntr").clone();a.isInline?(a.$ui.appendTo(a.inlineCntr).addClass("spwidget-inline").css("display","none"),a.$ele.appendTo(a.$ui)):a.$ui.insertAfter(a.$ele).css("display","none");a.eleOrigVal=a.$ele.val();a.$ele.val("");a.$input=a.$ui.find("input[name='SPDateFieldInput']").val(a.$ele.val());a.$inputCntr=a.$input.closest(".spwidget-date-input-cntr");a.$dtCntr=a.$ui.find("div.spwidget-date-selected-cntr");a.getDate=
-function(){var b={input:a.$ele.val(),dates:[]};b.input&&(a.opt.allowMultiples?b.dates=b.input.split(a.opt.delimeter):b.dates.push(b.input));return b};a.reset=function(){a.$input.val("").datepicker("hide");a.$ele.val("").change();a.$dtCntr.empty();return a};a.setDate=function(b){var e=c.extend({},{date:"",time:"",format:a.opt.datepicker.dateFormat,setDatepicker:!0,triggerEvent:!0},b),d=a.$ele.val(),f="",k;if(!e.date)return a;c.isArray(e.date)||(e.date=[e.date]);c.each(e.date,function(b,g){var h=g,
-t="",u="";if(!(h instanceof Date))if(h=String(h),-1<h.indexOf("T"))h=c.SPWidgets.parseDateString(h);else try{h=c.datepicker.parseDate(e.format,g)}catch(v){return a}k=h;t=c.datepicker.formatDate("yy-mm-dd",h);u=c.datepicker.formatDate(a.opt.datepicker.dateFormat,h);a.opt.showTimepicker&&(t=c.SPWidgets.SPGetDateString(h,a.opt._timeFmt),u+=a.$timepicker.formatTime(h));a.opt.allowMultiples?0>d.indexOf(t)&&(d&&(d+=a.opt.delimeter),d+=t,f+='<span class="spwidgets-item" data-spwidget_dt1="'+t+'" data-spwidget_dt2="'+
-u+'">'+c.SPWidgets.fillTemplate({tmplt:a.opt.dateTemplate,data:{date:u}})+" </span>"):(d=t,f=u)});a.opt.allowMultiples?a.$dtCntr.append(f):e.setDatepicker&&(a.$input.val(f),a.isInline&&!a.opt.showTimepicker?a.$inputCntr.datepicker("setDate",k):a.isInline&&a.$timepicker.updateDateTimeWidgets(k));a.$ele.val(d);e.triggerEvent&&(a.isInline||a.$ele.change(),c.isFunction(a.opt.onSelect)&&a.opt.onSelect.call(a.isInline?a.inlineCntr:a.$ele));return a};a.removeDate=function(b){var e=c.extend({},{date:"",format:a.opt.datepicker.dateFormat},
-b),d=a.getDate();if(!e.date)return a;c.isArray(e.date)||(e.date=[e.date]);c.each(e.date,function(b,f){var g=f,h="",k="";if(!(g instanceof Date))try{g=c.datepicker.parseDate(e.format,f)}catch(t){return a}h=a.opt.showTimepicker?c.SPWidgets.SPGetDateString(g,a.opt._timeFmt):c.datepicker.formatDate("yy-mm-dd",g);k=RegExp("("+a.opt.delimeter+")?"+h,"g");d.input=d.input.replace(k,"");a.opt.allowMultiples&&a.$dtCntr.find("span[data-spwidget_dt1='"+h+"']").remove()});d.input=d.input.replace(RegExp("^"+a.opt.delimeter),
+function(){var c={input:a.$ele.val(),dates:[]};c.input&&(a.opt.allowMultiples?c.dates=c.input.split(a.opt.delimeter):c.dates.push(c.input));return c};a.reset=function(){a.$input.val("").datepicker("hide");a.$ele.val("").change();a.$dtCntr.empty();return a};a.setDate=function(b){var e=c.extend({},{date:"",time:"",format:a.opt.datepicker.dateFormat,setDatepicker:!0,triggerEvent:!0},b),d=a.$ele.val(),f="",h;if(!e.date)return a;c.isArray(e.date)||(e.date=[e.date]);c.each(e.date,function(b,g){var k=g,
+t="",u="";if(!(k instanceof Date))if(k=String(k),-1<k.indexOf("T"))k=c.SPWidgets.parseDateString(k);else try{k=c.datepicker.parseDate(e.format,g)}catch(v){return a}h=k;t=c.datepicker.formatDate("yy-mm-dd",k);u=c.datepicker.formatDate(a.opt.datepicker.dateFormat,k);a.opt.showTimepicker&&(t=c.SPWidgets.SPGetDateString(k,a.opt._timeFmt),u+=a.$timepicker.formatTime(k));a.opt.allowMultiples?0>d.indexOf(t)&&(d&&(d+=a.opt.delimeter),d+=t,f+='<span class="spwidgets-item" data-spwidget_dt1="'+t+'" data-spwidget_dt2="'+
+u+'">'+c.SPWidgets.fillTemplate({tmplt:a.opt.dateTemplate,data:{date:u}})+" </span>"):(d=t,f=u)});a.opt.allowMultiples?a.$dtCntr.append(f):e.setDatepicker&&(a.$input.val(f),a.isInline&&!a.opt.showTimepicker?a.$inputCntr.datepicker("setDate",h):a.isInline&&a.$timepicker.updateDateTimeWidgets(h));a.$ele.val(d);e.triggerEvent&&(a.isInline||a.$ele.change(),c.isFunction(a.opt.onSelect)&&a.opt.onSelect.call(a.isInline?a.inlineCntr:a.$ele));return a};a.removeDate=function(b){var e=c.extend({},{date:"",format:a.opt.datepicker.dateFormat},
+b),d=a.getDate();if(!e.date)return a;c.isArray(e.date)||(e.date=[e.date]);c.each(e.date,function(b,g){var f=g,k="",h="";if(!(f instanceof Date))try{f=c.datepicker.parseDate(e.format,g)}catch(t){return a}k=a.opt.showTimepicker?c.SPWidgets.SPGetDateString(f,a.opt._timeFmt):c.datepicker.formatDate("yy-mm-dd",f);h=RegExp("("+a.opt.delimeter+")?"+k,"g");d.input=d.input.replace(h,"");a.opt.allowMultiples&&a.$dtCntr.find("span[data-spwidget_dt1='"+k+"']").remove()});d.input=d.input.replace(RegExp("^"+a.opt.delimeter),
 "").replace(RegExp(a.opt.delimeter+"$"),"");a.$ele.val(d.input).change();return a};a.destroy=function(){a.$ele.removeData("SPDateFieldInstance");a.$ele.removeClass("hasSPDateField").css("display","");a.$ui.css("display","none");a.$input.datepicker("hide");a.$input.datepicker("destroy");a.$timepicker&&(a.$timepicker.$timePicker.off(".spdatefield"),a.$input.off(".spdatefield"));a.isInline&&a.inlineCntr.removeClass("hasSPDateField").removeData("SPDateFieldInstance");a.$ui.remove()};a.createDatePicker=
 function(){var b={};if(a.opt.showTimepicker){b.$selectorCntr=c(k.htmlTemplate).filter("div.spwidget-datetime-selector").clone().appendTo(a.$inputCntr).css("display","none");b.$datePicker=b.$selectorCntr.find("div.spwidget-date-selector");b.$timePicker=b.$selectorCntr.find("div.spwidget-time-selector");b.$setButton=b.$selectorCntr.find("div.spwidget-btn-set");b.$hourSelect=b.$timePicker.find("select.spwidget-hour");b.$minSelect=b.$timePicker.find("select.spwidget-min");b.$ampmSelect=b.$timePicker.find("select.spwidget-ampm");
-b.heightDone=!1;b.firstShowDone=!1;b.getTime=function(){var a={hour:b.$hourSelect.val(),minutes:b.$minSelect.val(),ampm:b.$ampmSelect.val()};a.hour24=a.hour;"PM"===a.ampm&&"12"!==a.hour?a.hour24=String(parseInt(a.hour)+12):"AM"===a.ampm&&"12"===a.hour&&(a.hour24="0");return a};b.formatTime=function(e){var d=e,f="";e instanceof Date?(d={hour:e.getHours(),hour24:String(e.getHours()),minutes:String(e.getMinutes()),ampm:"AM"},12<d.hour?(d.hour=String(d.hour-12),d.ampm="PM"):12===d.hour&&(d.ampm="PM"),
-d.hour=String(d.hour),"0"===d.hour&&(d.hour="12"),2>String(d.minutes).length&&(d.minutes="0"+d.minutes)):e||(d=b.getTime());return f=c.SPWidgets.fillTemplate(a.opt.timeFormat,d)};b.setDateTime=function(c){var d=b.getTime();c instanceof Date||(c=b.$datePicker.datepicker("getDate"),null===c&&(c=new Date));c.setHours(d.hour24);c.setMinutes(d.minutes);a.setDate({date:c,format:a.opt.datepicker.dateFormat,setDatepicker:!0});b.execUsersCallback(a.$input.val())};b.updateDateTimeWidgets=function(a){var c;
+b.heightDone=!1;b.firstShowDone=!1;b.getTime=function(){var a={hour:b.$hourSelect.val(),minutes:b.$minSelect.val(),ampm:b.$ampmSelect.val()};a.hour24=a.hour;"PM"===a.ampm&&"12"!==a.hour?a.hour24=String(parseInt(a.hour)+12):"AM"===a.ampm&&"12"===a.hour&&(a.hour24="0");return a};b.formatTime=function(d){var f=d,k="";d instanceof Date?(f={hour:d.getHours(),hour24:String(d.getHours()),minutes:String(d.getMinutes()),ampm:"AM"},12<f.hour?(f.hour=String(f.hour-12),f.ampm="PM"):12===f.hour&&(f.ampm="PM"),
+f.hour=String(f.hour),"0"===f.hour&&(f.hour="12"),2>String(f.minutes).length&&(f.minutes="0"+f.minutes)):d||(f=b.getTime());return k=c.SPWidgets.fillTemplate(a.opt.timeFormat,f)};b.setDateTime=function(c){var d=b.getTime();c instanceof Date||(c=b.$datePicker.datepicker("getDate"),null===c&&(c=new Date));c.setHours(d.hour24);c.setMinutes(d.minutes);a.setDate({date:c,format:a.opt.datepicker.dateFormat,setDatepicker:!0});b.execUsersCallback(a.$input.val())};b.updateDateTimeWidgets=function(a){var c;
 a instanceof Date||(a=new Date);c=a.getHours();0===c?c="12":12<c&&(c-=12);b.$hourSelect.val(c);for(c=a.getMinutes();c%5;)--c;10>c&&(c="0"+c);b.$minSelect.val(c);11<a.getHours()?b.$ampmSelect.val("PM"):b.$ampmSelect.val("AM");b.$datePicker.datepicker("setDate",a)};b.showPicker=function(){b.$selectorCntr.show(function(){var d;b.heightDone||(b.heightDone=!0,c.SPWidgets.makeSameHeight(b.$datePicker.find("div.ui-datepicker-inline").add(b.$timePicker)));b.firstShowDone||(b.firstShowDone=!0,d=a.getDate(),
 d=d.dates.length?c.SPWidgets.parseDateString(d.dates[d.dates.length-1]):new Date,b.updateDateTimeWidgets(d))}).position({my:"left top",at:"left bottom",of:a.$input})};b.execUsersCallback=function(d,f){c.isFunction(a.opt.datepicker._onSelect)&&a.opt.datepicker._onSelect.call(b.$datePicker,d,f)};a.opt.datepicker.altFormat="";a.opt.datepicker.altField="";if(a.opt.datepicker.buttonImage&&!a.isInline)c('<img class="ui-datepicker-trigger" src="'+a.opt.datepicker.buttonImage+'" alt="..." title="...">').appendTo(a.$inputCntr).on("click"+
 k.evNamespace,function(){b.showPicker()});if(a.opt.allowMultiples||a.isInline)b.$selectorCntr.addClass("spwidget-date-multiples-cntr"),b.$setButton.find("div.spwidget-btn").button({label:a.opt.labelSet}).on("click"+k.evNamespace,function(a){b.setDateTime();return this});b.$timePicker.find("div.ui-widget-header").html(a.opt.labelTime).end().find("div.spwidget-time-hour > label").html(a.opt.labelHour).end().find("div.spwidget-time-min > label").html(a.opt.labelMinutes).end().find("div.spwidget-time-ampm > label").html(a.opt.labelAMPM).end();
@@ -6824,30 +7126,29 @@ a.opt.datepicker._onSelect.call(this,b,d);a.opt.allowMultiples&&a.$input.val("")
 "",a.$dtCntr.css("display","").on("click",".spwidgets-item-remove",function(b){b=c(b.target).closest(".spwidgets-item").data("spwidget_dt1");a.opt.allowMultiples&&(b=c.SPWidgets.parseDateString(b));a.removeDate({date:b,format:"yy-mm-dd"})}));a.$ele.css("display","none").data("SPDateFieldInstance",a);a.isInline&&a.inlineCntr.data("SPDateFieldInstance",a);a.$timepicker=a.createDatePicker();a.eleOrigVal&&a.setDate({date:a.eleOrigVal.split(a.opt.delimeter),format:"yy-mm-dd",triggerEvent:!1});a.$input.on("change",
 function(b){b.stopPropagation();a.$ele.change()});a.$ui.css("display","")})};k.onPageClick=function(f){f=c(f.target);var b=c("div.spwidget-datetime-selector:visible:not('.spwidget-inline')"),d=null;if(!c.contains(document.documentElement,f[0]))return this;b.length&&(d=f.closest("div.spwidget-datetime-selector"),!d.length&&f.is("input.spwidget-date-datepicker,.ui-datepicker-trigger")&&(d=f.parent().find("div.spwidget-datetime-selector")),b.not(d).hide());return this};k.styleSheet='.spwidget-date-cntr {\n    display: inline-block;   \n    position: relative;\n}\n.spwidget-date-cntr div.spwidget-date-input-cntr {\n    position: relative;\n}\n.spwidget-date-cntr input {\n    width: 99%;\n}\n.spwidget-date-cntr img.ui-datepicker-trigger {\n    display: block;\n    position: absolute;\n    right: 2%;\n    top: .3em;\n}\n\n.spwidget-date-cntr .spwidgets-item-remove {\n    color: red;\n    font-size: xx-small;\n    vertical-align: super;\n    cursor: pointer;\n}\n/** --------------------------- Date and Time picker -- */\n.spwidget-date-cntr div.spwidget-datetime-selector {\n    padding: .5em;\n    position: absolute;\n    width: 28em;\n    z-index: 1;\n}\n.spwidget-date-cntr div.spwidget-datetime-selector div.ui-datepicker-inline {\n    width: 14em;\n}\n\n.spwidget-date-cntr div.spwidget-datetime-selector div.spwidget-date-selector,\n.spwidget-date-cntr div.spwidget-datetime-selector div.spwidget-time-selector {\n    float: left;\n}\n.spwidget-date-cntr div.spwidget-selectors:before,\n.spwidget-date-cntr div.spwidget-selectors:after {\n    content: "";\n    display: table;\n    line-height: 0;\n}\n.spwidget-date-cntr div.spwidget-selectors:after {\n    clear: both;    \n}\n.spwidget-date-cntr div.spwidget-datetime-selector select.spwidget-hour,\n.spwidget-date-cntr div.spwidget-datetime-selector select.spwidget-min,\n.spwidget-date-cntr div.spwidget-datetime-selector select.spwidget-ampm {\n    font-size: 1.2em;\n}\n/* Time selector */\n.spwidget-date-cntr div.spwidget-time-selector {\n    margin-left: .2em;\n    width: 11em;\n}\n.spwidget-date-cntr div.spwidget-time-selector-cntr {\n    padding: .2em;\n}\n.spwidget-date-cntr div.spwidget-time-selector div.ui-widget-header {\n    text-align: center;\n    line-height: 2em;\n    margin-bottom: .5em;\n}\n.spwidget-date-cntr .spwidget-time-hour,\n.spwidget-date-cntr .spwidget-time-min,\n.spwidget-date-cntr .spwidget-time-ampm {\n    margin-top: .2em;\n    padding: .2em;\n}\n.spwidget-date-cntr .spwidget-time-selector-cntr select,\n.spwidget-date-cntr .spwidget-time-selector-cntr label {\n    overflow: hidden;\n    display: inline-block;\n    font-weight: bold;\n}\n.spwidget-date-cntr .spwidget-time-selector-cntr select {\n    width: 4em;\n}\n.spwidget-date-cntr .spwidget-time-selector-cntr label {\n    width: 5em;\n    font-size: .9em;\n}\n\n/* inline mode */\n.spwidget-date-cntr .spwidget-inline div.spwidget-datetime-selector {\n    position: relative;\n    width: 26em;\n}\n\n.spwidget-btn-set {\n    display: none;\n    position: absolute;\n    right: .2em;\n    bottom: .2em;\n}\n.spwidget-date-multiples-cntr .spwidget-btn-set {\n    display: block;\n}\n';
 k.htmlTemplate='<div class="spwidget-date-cntr">\n    <div class="spwidget-date-selected-cntr" style="display:none;"></div>\n    <div class="spwidget-date-input-cntr">\n        <input class="spwidget-date-datepicker" name="SPDateFieldInput" value="" />\n    </div>\n</div>\n<div class="spwidget-datetime-selector ui-widget-content ui-corner-all">\n    <div class="spwidget-selectors">\n        <div class="spwidget-date-selector"></div>\n        <div class="spwidget-time-selector ui-widget-content ui-corner-all">\n            <div class="spwidget-time-selector-cntr">\n                <div class="ui-widget-header ui-helper-clearfix ui-corner-all">\n                    Time\n                </div>\n                <div class="spwidget-time-hour">\n                    <label>Hour</label>\n                    <select name="spwidget_hour" class="spwidget-hour">\n                        <option value="1"> 1</option>\n                        <option value="2"> 2</option>\n                        <option value="3"> 3</option>\n                        <option value="4"> 4</option>\n                        <option value="5"> 5</option>\n                        <option value="6"> 6</option>\n                        <option value="7"> 7</option>\n                        <option value="8"> 8</option>\n                        <option value="9"> 9</option>\n                        <option value="10">10</option>\n                        <option value="11">11</option>\n                        <option value="12">12</option>\n                    </select>\n                </div>\n                <div class="spwidget-time-min">   \n                    <label>Minutes</label>\n                    <select name="spwidget_min" class="spwidget-min">\n                        <option value="00">00</option>\n                        <option value="05">05</option>\n                        <option value="10">10</option>\n                        <option value="15">15</option>\n                        <option value="20">20</option>\n                        <option value="25">25</option>\n                        <option value="30">30</option>\n                        <option value="35">35</option>\n                        <option value="40">40</option>\n                        <option value="45">45</option>\n                        <option value="50">50</option>\n                        <option value="55">55</option>\n                    </select>\n                </div>\n                <div class="spwidget-time-ampm">\n                    <label>AM|PM</label>\n                    <select name="spwidget_ampm" class="spwidget-ampm">\n                        <option value="AM">AM</option>\n                        <option value="PM">PM</option>\n                    </select>\n                </div>\n            </div>\n        </div>\n    </div>\n    <div class="spwidget-btn-set">\n        <div class="spwidget-btn">\n            Set\n        </div>\n    </div>\n</div>\n'})(r);
-(function(c){var h={isInitDone:!1,templates:null};c.SPWidgets.defaults.filter={list:"",webURL:c().SPServices.SPGetCurrentSite(),columns:["Title"],textFieldTooltip:"Use a semicolon to delimiter multiple keywords.",definedClass:"spwidget-column-dirty",showFilterButton:!0,showFilterButtonTop:!0,filterButtonLabel:"Filter",onFilterClick:null,onReady:null,onReset:null,ignoreKeywords:/^(of|and|a|an|to|by|the|or|from)$/i,delimeter:";"};c.fn.SPFilterPanel=function(f){var b=arguments;h.isInitDone||(h.isInitDone=
-!0,""!==h.styleSheet&&c('<style type="text/css">\n\n'+h.styleSheet+"\n\n</style>").prependTo("head"),h.templates=c(h.htmlTemplate));return"string"===typeof f?this.eq(0).hasClass("hasSPFilterPanel")?function(c){c=c.eq(0).find("div.spwidget-filter").data("SPFilterPanelInst");var a=f.toLowerCase(),g=c.$ele;switch(a){case "getfilter":g=h.getFilterValues(c);break;case "setfilter":h.setFilterValues(c,b[1]);break;case "reset":h.doResetFilter(c);break;case "destroy":c.$ele.removeClass("hasSPFilterPanel").empty()}return g}(this):
+(function(c){var k={isInitDone:!1,templates:null};c.SPWidgets.defaults.filter={list:"",webURL:c().SPServices.SPGetCurrentSite(),columns:["Title"],textFieldTooltip:"Use a semicolon to delimiter multiple keywords.",definedClass:"spwidget-column-dirty",showFilterButton:!0,showFilterButtonTop:!0,filterButtonLabel:"Filter",onFilterClick:null,onReady:null,onReset:null,ignoreKeywords:/^(of|and|a|an|to|by|the|or|from)$/i,delimeter:";"};c.fn.SPFilterPanel=function(f){var b=arguments;k.isInitDone||(k.isInitDone=
+!0,""!==k.styleSheet&&c('<style type="text/css">\n\n'+k.styleSheet+"\n\n</style>").prependTo("head"),k.templates=c(k.htmlTemplate));return"string"===typeof f?this.eq(0).hasClass("hasSPFilterPanel")?function(c){c=c.eq(0).find("div.spwidget-filter").data("SPFilterPanelInst");var a=f.toLowerCase(),g=c.$ele;switch(a){case "getfilter":g=k.getFilterValues(c);break;case "setfilter":k.setFilterValues(c,b[1]);break;case "reset":k.doResetFilter(c);break;case "destroy":c.$ele.removeClass("hasSPFilterPanel").empty()}return g}(this):
 void 0:this.each(function(){var b=c.extend({},c.SPWidgets.defaults.filter,f),a={$ele:c(this),$ui:null,opt:b,getListDefinition:function(){return c.Deferred(function(a){c().SPServices({operation:"GetList",listName:b.list,cacheXML:!0,async:!0,webURL:b.webURL,completefunc:function(b,d){var f=c(b.responseXML);"error"===d?a.rejectWith(f,[b,d]):f.SPMsgHasError()?a.rejectWith(f,[b,d]):a.resolveWith(f,[b,d])}})}).promise()},buildWidget:function(){return c.Deferred(function(b){a.getListDefinition().then(function(d,
-m){var n=this,q="",l=h.templates.filter("#filter_column").html();a.$ui=c(h.templates.filter("#filter_main_ui").html()).appendTo(a.$ele.empty().addClass("hasSPFilterPanel"));a.$list=n;c.each(a.opt.columns,function(b,d){var e=n.find("Field[DisplayName='"+d+"']"),f=l,g="",m=null;e.length||(e=n.find("Field[Name='"+d+"']"));if(e.length){m={type:null,otherFilterTypes:"",sp_type:e.attr("Type"),sp_format:e.attr("Format")};m.Name=e.attr("Name");switch(e.attr("Type")){case "Choice":case "MultiChoice":e.find("CHOICES CHOICE").each(function(a,
-b){g+=c.SPWidgets.fillTemplate(h.templates.filter("#filter_choice_field").html(),{DisplayName:e.attr("DisplayName"),Name:e.attr("Name"),value:c(b).text()})});f=f.replace(/__COLUMN__UI__/,g);f=c.SPWidgets.fillTemplate(f,{DisplayName:e.attr("DisplayName"),type:"choice",Name:e.attr("Name")});break;case "Lookup":case "LookupMulti":null===m.type&&(m.type="lookup",m.list=e.attr("List"),"Self"===m.list&&(m.list=n.find("List").attr("Title")));case "User":case "UserMulti":null===m.type&&(m.type="people");
-case "Counter":null===m.type&&(m.type="text",m.otherFilterTypes='<option value="Gt">Greater Than</option><option value="Lt">Less Than</option>');case "DateTime":null===m.type&&(m.type="date",m.otherFilterTypes='<option value="Gt">After</option><option value="Lt">Before</option>',m.sp_format="DateOnly"!==e.attr("Format")?"DateTime":"DateOnly");default:null===m.type&&(m.type="text"),g=h.templates.filter("#filter_text_field").html(),f=f.replace(/__COLUMN__UI__/,g).replace(/__OTHER_FILTER_TYPES__/,m.otherFilterTypes),
-f=c.SPWidgets.fillTemplate(f,c.extend(m,{DisplayName:e.attr("DisplayName"),Name:e.attr("Name"),tooltip:a.opt.textFieldTooltip}))}q+=f}});a.$ele.find("div.spwidget-filter-column-cntr").html(q);a.$ele.find("div.spwidget-type-lookup input").each(function(){var a=c(this);a.SPLookupField({list:a.closest("div.spwidget-column").data("spwidget_list"),template:'<div>{{Title}} <span class="spwidgets-item-remove">[x]</span></div>',listTemplate:"{{Title}}",allowMultiples:!0,readOnly:!1,filter:"",showSelector:!0});
+h){var n=this,q="",l=k.templates.filter("#filter_column").html();a.$ui=c(k.templates.filter("#filter_main_ui").html()).appendTo(a.$ele.empty().addClass("hasSPFilterPanel"));a.$list=n;c.each(a.opt.columns,function(b,d){var e=n.find("Field[DisplayName='"+d+"']"),f=l,g="",h=null;e.length||(e=n.find("Field[Name='"+d+"']"));if(e.length){h={type:null,otherFilterTypes:"",sp_type:e.attr("Type"),sp_format:e.attr("Format")};h.Name=e.attr("Name");switch(e.attr("Type")){case "Choice":case "MultiChoice":e.find("CHOICES CHOICE").each(function(a,
+b){g+=c.SPWidgets.fillTemplate(k.templates.filter("#filter_choice_field").html(),{DisplayName:e.attr("DisplayName"),Name:e.attr("Name"),value:c(b).text()})});f=f.replace(/__COLUMN__UI__/,g);f=c.SPWidgets.fillTemplate(f,{DisplayName:e.attr("DisplayName"),type:"choice",Name:e.attr("Name")});break;case "Lookup":case "LookupMulti":null===h.type&&(h.type="lookup",h.list=e.attr("List"),"Self"===h.list&&(h.list=n.find("List").attr("Title")));case "User":case "UserMulti":null===h.type&&(h.type="people");
+case "Counter":null===h.type&&(h.type="text",h.otherFilterTypes='<option value="Gt">Greater Than</option><option value="Lt">Less Than</option>');case "DateTime":null===h.type&&(h.type="date",h.otherFilterTypes='<option value="Gt">After</option><option value="Lt">Before</option>',h.sp_format="DateOnly"!==e.attr("Format")?"DateTime":"DateOnly");default:null===h.type&&(h.type="text"),g=k.templates.filter("#filter_text_field").html(),f=f.replace(/__COLUMN__UI__/,g).replace(/__OTHER_FILTER_TYPES__/,h.otherFilterTypes),
+f=c.SPWidgets.fillTemplate(f,c.extend(h,{DisplayName:e.attr("DisplayName"),Name:e.attr("Name"),tooltip:a.opt.textFieldTooltip}))}q+=f}});a.$ele.find("div.spwidget-filter-column-cntr").html(q);a.$ele.find("div.spwidget-type-lookup input").each(function(){var a=c(this);a.SPLookupField({list:a.closest("div.spwidget-column").data("spwidget_list"),template:'<div>{{Title}} <span class="spwidgets-item-remove">[x]</span></div>',listTemplate:"{{Title}}",allowMultiples:!0,readOnly:!1,filter:"",showSelector:!0});
 a.parent().find(".spwidget-tooltip").remove()});a.$ele.find("div.spwidget-type-people input").each(function(){var a=c(this),b="User";"PeopleOnly"!==n.find("Field[Name='"+a.attr("name")+"']").attr("UserSelectionMode")&&(b="All");a.pickSPUser({allowMultiple:!0,type:b});a.parent().find(".spwidget-tooltip").remove()});a.$ele.find("div.spwidget-type-date").each(function(){var a=c(this);a.find("input").SPDateField({allowMultiples:!0,showTimepicker:"DateTime"===a.data("spwidget_sp_format")?!0:!1});a.find(".spwidget-tooltip").remove();
-a.find("select.spwidget-filter-type").val("Eq").find("option[value='Contains']").remove();return this});a.opt.showFilterButton||a.opt.showFilterButtonTop?a.$ui.find("div.spwidget-filter-button-cntr").each(function(){var b=c(this),d=c();a.opt.showFilterButtonTop&&(d=d.add(b.clone(!0)).prependTo(a.$ui));a.opt.showFilterButton?d=d.add(b):b.remove();d.find("button[name='filter']").button({icons:{primary:"ui-icon-search"},label:a.opt.filterButtonLabel}).on("click",h.onFilterButtonClick);d.find("button[name='reset']").button({icons:{primary:"ui-icon-arrowreturnthick-1-n"},
-text:!1}).on("click",function(b){h.doResetFilter(a);return this})}):a.$ui.find("div.spwidget-filter-button-cntr").remove();a.$ui.on("change.SPWigets.SPFilterPanel","select.spwidget-filter-type",h.onFilterTypeChange);if(""!==a.opt.definedClass)a.$ui.on("change.SPWidgets.SPFilterPanel",".spwidget-filter-input",h.onFilterInputChange);a.$ui.data("SPFilterPanelInst",a);c.isFunction(a.opt.onReady)&&a.opt.onReady.call(a.$ele,f);a.$ui.fadeIn().promise().then(function(){c(this).css("display","");b.resolve()})}).fail(function(c,
-d){a.$ele.html('<div class="ui-state-error">Unable to retrieve list information. '+this.SPGetMsgError()+"</div>");b.reject()})}).promise()}};a.opt.ignoreKeywords&&!a.opt.ignoreKeywords instanceof RegExp&&(a.opt.ignoreKeywords=/Inst.opt.ignoreKeywords/i);a.buildWidget();return this})};h.onFilterInputChange=function(f){var b=c(this);f=b.closest("div.spwidget-filter-value-input");var d=f.closest("div.spwidget-column"),a=d.find("div.spwidget-filter-type-cntr select.spwidget-filter-type").val(),b=b.val(),
-g=f.closest("div.spwidget-filter").data("SPFilterPanelInst");d.is(".spwidget-type-choice")&&(f.find(".spwidget-filter-input:checked").length||(b=""));""!==b?d.addClass(g.opt.definedClass):"IsNull"!==a&&"IsNotNull"!==a&&d.removeClass(g.opt.definedClass);return this};h.onFilterTypeChange=function(f){var b=c(this);f=b.closest("div.spwidget-column");var d=f.find("div.spwidget-filter-type-cntr select.spwidget-match-type"),a=f.find("div.spwidget-filter-value-cntr"),g=a.find(".spwidget-input"),e="",h=f.data("spwidget_column_type"),
+a.find("select.spwidget-filter-type").val("Eq").find("option[value='Contains']").remove();return this});a.opt.showFilterButton||a.opt.showFilterButtonTop?a.$ui.find("div.spwidget-filter-button-cntr").each(function(){var b=c(this),d=c();a.opt.showFilterButtonTop&&(d=d.add(b.clone(!0)).prependTo(a.$ui));a.opt.showFilterButton?d=d.add(b):b.remove();d.find("button[name='filter']").button({icons:{primary:"ui-icon-search"},label:a.opt.filterButtonLabel}).on("click",k.onFilterButtonClick);d.find("button[name='reset']").button({icons:{primary:"ui-icon-arrowreturnthick-1-n"},
+text:!1}).on("click",function(b){k.doResetFilter(a);return this})}):a.$ui.find("div.spwidget-filter-button-cntr").remove();a.$ui.on("change.SPWigets.SPFilterPanel","select.spwidget-filter-type",k.onFilterTypeChange);if(""!==a.opt.definedClass)a.$ui.on("change.SPWidgets.SPFilterPanel",".spwidget-filter-input",k.onFilterInputChange);a.$ui.data("SPFilterPanelInst",a);c.isFunction(a.opt.onReady)&&a.opt.onReady.call(a.$ele,f);a.$ui.fadeIn().promise().then(function(){c(this).css("display","");b.resolve()})}).fail(function(c,
+d){a.$ele.html('<div class="ui-state-error">Unable to retrieve list information. '+this.SPGetMsgError()+"</div>");b.reject()})}).promise()}};a.opt.ignoreKeywords&&!a.opt.ignoreKeywords instanceof RegExp&&(a.opt.ignoreKeywords=/Inst.opt.ignoreKeywords/i);a.buildWidget();return this})};k.onFilterInputChange=function(f){var b=c(this);f=b.closest("div.spwidget-filter-value-input");var d=f.closest("div.spwidget-column"),a=d.find("div.spwidget-filter-type-cntr select.spwidget-filter-type").val(),b=b.val(),
+g=f.closest("div.spwidget-filter").data("SPFilterPanelInst");d.is(".spwidget-type-choice")&&(f.find(".spwidget-filter-input:checked").length||(b=""));""!==b?d.addClass(g.opt.definedClass):"IsNull"!==a&&"IsNotNull"!==a&&d.removeClass(g.opt.definedClass);return this};k.onFilterTypeChange=function(f){var b=c(this);f=b.closest("div.spwidget-column");var d=f.find("div.spwidget-filter-type-cntr select.spwidget-match-type"),a=f.find("div.spwidget-filter-value-cntr"),g=a.find(".spwidget-input"),e="",h=f.data("spwidget_column_type"),
 k=b.val(),b=b.closest("div.spwidget-filter").data("SPFilterPanelInst");"IsNull"===k||"IsNotNull"===k?(a.addClass("spwidget-disabled"),g.attr("disabled","disabled"),d.attr("disabled","disabled"),f.addClass(b.opt.definedClass)):(a.removeClass("spwidget-disabled"),g.removeAttr("disabled","disabled"),d.removeAttr("disabled"),"choice"===h||"multichoice"===h?g.filter(":checkbox").each(function(){var a=c(this);if(a.is(":checked"))return e+=a.val(),!1}):e+=g.val(),e||f.removeClass(b.opt.definedClass));return this};
-h.onFilterButtonClick=function(f){f=c(this).closest("div.spwidget-filter").data("SPFilterPanelInst");var b=null;c.isFunction(f.opt.onFilterClick)&&(b=h.getFilterValues(f),f.opt.onFilterClick.call(f.$ele,b));return this};h.doResetFilter=function(f){if(c.isFunction(f.onReset)&&!0===f.onReset.call(f.$ele,h.getFilterValues(f)))return f;f.$ui.find("div[data-spwidget_column_type='text'] input").val("").end().find("div[data-spwidget_column_type='choice'] input").prop("checked",!1).end().find(".hasPickSPUser").pickSPUser("method",
-"clear").end().find(".hasSPDateField").SPDateField("reset").end().find(".hasLookupSPField").SPLookupField("method","clear");""!==f.opt.definedClass&&f.$ui.find("."+f.opt.definedClass).removeClass(f.opt.definedClass);f.$ui.find("select.spwidget-filter-type").each(function(){var b=c(this),d=b.val();if("IsNull"===d||"IsNotNull"===d)b.val("Eq"),b.change()});f.$ui.find(":input.spwidget-input:first").focus();return f};h.getFilterValues=function(f){function b(a){return c.SPWidgets.getCamlLogical({type:a.logicalType,
-values:a.values,onEachValue:function(b){return"<"+a.matchType+"><FieldRef Name='"+a.columnName+"' /><Value Type='Text'>"+c.SPWidgets.escapeXML(b)+"</Value></"+a.matchType+">"}})}var d={CAMLQuery:"",URLParams:"",filters:{},count:0},a=[];f.$ui.find("div.spwidget-column").each(function(g,e){var m=c(e),n=m.find(".spwidget-input"),q=n.attr("name"),l=new h.ColumnFilter({columnName:q,matchType:m.find("select.spwidget-filter-type").val(),logicalType:m.find("select.spwidget-match-type").val()}),m=m.data("spwidget_column_type"),
-r={};if("IsNull"===l.matchType||"IsNotNull"===l.matchType)l.CAMLQuery="<"+l.matchType+"><FieldRef Name='"+q+"' /></"+l.matchType+">",l.count+=1;else switch(m){case "choice":case "multichoice":n.each(function(){var a=c(this),b=a.val();a.is(":checked")&&l.values.push(b)});l.values.length&&(l.count=l.values.length,l.CAMLQuery=b(l));break;case "lookup":case "people":(function(){var a=[];n.each(function(){var b=c(this),b=c.SPWidgets.parseLookupFieldValue(b.val()),d,e;d=0;for(e=b.length;d<e;d++)b[d].id&&
-(l.values.push(b[d].id+";#"+b[d].title),a.push(b[d].id))});l.values.length&&(l.count=l.values.length,l.CAMLQuery=c.SPWidgets.getCamlLogical({type:l.logicalType,values:a,onEachValue:function(a){return"<"+l.matchType+"><FieldRef Name='"+l.columnName+"' LookupId='True'/><Value Type='Lookup'>"+a+"</Value></"+l.matchType+">"}}))})();break;case "date":n.each(function(){var a=n.SPDateField("getDate");a.dates.length&&(l.values=a.dates,l.count=l.values.length,l.CAMLQuery=c.SPWidgets.getCamlLogical({type:l.logicalType,
-values:l.values,onEachValue:function(a){return"<"+l.matchType+"><FieldRef Name='"+l.columnName+"'/><Value Type='DateTime'>"+a+"</Value></"+l.matchType+">"}}));return!1});break;case "text":String(c.trim(n.val())).length&&function(){var a=n.val().split(f.opt.delimeter),d,e,g;d=0;for(e=a.length;d<e;d++)g=c.trim(a[d]),!f.opt.ignoreKeywords.test(g)&&g&&l.values.push(g);l.CAMLQuery=b(l);l.count=l.values.length}()}0<l.count&&(a.push(l.CAMLQuery),d.count+=l.count,d.filters[q]=l,r[q]={matchType:l.matchType,
-logicalType:l.logicalType,values:l.values},l.URLParams=c.param(r,!1),""!==d.URLParams&&(d.URLParams+="&"),d.URLParams+=l.URLParams)});1<d.count?d.CAMLQuery=c.SPWidgets.getCamlLogical({type:"AND",values:a}):1===d.count&&(d.CAMLQuery=a[0]);return d};h.setFilterValues=function(f,b){if("object"!==typeof b||c.isEmptyObject(b))return f;h.doResetFilter(f);c.each(b,function(b,a){var g=f.$ui.find(".spwidget-filter-input[name='"+b+"']"),e=g.closest("div.spwidget-column"),m=e.data("spwidget_column_type"),n=
-e.find("select[name='"+b+"_type']"),q=e.find("div.spwidget-filter-type-cntr select.spwidget-match-type"),l=new h.ColumnFilter;c.extend(l,a);l.matchType&&n.val(l.matchType);l.logicalType&&q.val(l.logicalType);if("IsNull"!==a.matchType&&"IsNotNull"!==a.matchType)switch(m){case "text":l.values instanceof Array?g.val(l.values.join(f.opt.delimeter)):g.val(l.values);break;case "choice":case "multichoice":c.each(l.values,function(a,b){g.filter("[value='"+b+"']").prop("checked",!0)});break;case "lookup":g.SPLookupField("method",
-"add",l.values.join(";#"));break;case "people":g.pickSPUser("method","add",l.values.join(";#"));break;case "date":"DateTime"===e.data("spwidget_sp_format")?g.SPDateField("setDate",l.values):g.SPDateField("setDate",l.values,"yy-mm-dd")}else n.change();g.change()});return f};h.ColumnFilter=function(c){var b=new function(){};"object"!==typeof c&&(c={});b.columnName=c.columnName||"";b.matchType=c.matchType||"";b.logicalType=c.logicalType||"";b.values=c.values||[];b.CAMLQuery=c.CAMLQuery||"";b.URLParams=
-c.URLParams||"";b.count=c.count||0;return b};h.styleSheet='/** \n * Stylesheet for the Board widget\n * \n * BUILD: September 07, 2013 - 03:52 PM\n */\ndiv.spwidget-filter {\n    width: 100%;\n    position: relative;\n}\ndiv.spwidget-filter .spwidget-date-cntr,\ndiv.spwidget-filter .spwidgets-lookup-cntr {\n    display: block;\n}\n/* Adjust the width of the widget inputs inside the filter panel */\ndiv.spwidget-filter .spwidget-type-text input.spwidget-filter-input,\ndiv.spwidget-filter .spwidget-type-people input.ui-autocomplete-input,\ndiv.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input {\n    width: 95%;\n}\n\ndiv.spwidget-filter .spwidgets-lookup-cntr {\n    width: 96%;\n}\ndiv.spwidget-filter .spwidget-date-cntr div.spwidget-date-input-cntr {\n    width: 97%\n}\n\ndiv.spwidget-filter div.spwidget-column {\n    padding: .5em;\n    margin: .5em;\n    position: relative;\n    border-bottom: 1px solid  darkgray;\n    box-shadow: 1px 1px 1px 0 lightgray inset;\n}\ndiv.spwidget-filter div.spwidget-filter-type-cntr {\n    right: 4%;\n    position: absolute;\n    font-size: .8em;\n    top: .6em;\n    opacity: .6;\n    filter: Alpha(opacity=60);\n}\ndiv.spwidget-filter div.spwidget-filter-type-cntr:hover {\n    opacity: 1;\n}\ndiv.spwidget-filter div.spwidget-filter-value-cntr {\n    width: 100%;\n}\n\ndiv.spwidget-filter div.spwidget-filter-value-cntr > label {\n    display: block;\n    padding: .2em;\n    font-weight: bold;\n}\ndiv.spwidget-filter div.spwidget-column-dirty div.spwidget-filter-value-cntr > label {\n    color: #FF0000;\n}\ndiv.spwidget-filter .spwidget-tooltip {\n    display: block;\n    font-size: .8em;\n    font-style: italic;\n}\n\n/* LOOKUP FIELDS */\ndiv.spwidget-filter div.spwidgets-lookup-cntr div.spwidgets-lookup-selected > div.spwidgets-item {\n    display: block;\n    margin-left: 0px;\n}\n\n/* CHOICE FIELDS */\ndiv.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input {\n    max-height: 6em;\n    overflow: auto;\n    -moz-appearance: textfield;\n    -webkit-appearance: textfield;\n    background-color: white;\n    background-color: -moz-field;\n    border: 1px solid  darkgray;\n    box-shadow: 1px 1px 1px 0 lightgray inset;\n    font: -moz-field;\n    font: -webkit-small-control;\n    padding: 2px 5px;\n}\ndiv.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input label {\n    display: block;\n    padding: .2em;\n}\n\n/** DISABLED COLUMN VALUE CONTAINER */\ndiv.spwidget-filter .spwidget-disabled {\n    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";\n    filter: alpha(opacity=50);\n    opacity: 0.5;\n}\n\n/** Button container */\ndiv.spwidget-filter div.spwidget-filter-button-cntr {\n    padding: .5em 4%;\n    margin-top: .5em;\n    text-align: right;\n}\n\n';
-h.htmlTemplate='<div id="filter_main_ui">\n    <div class="spwidget-filter" style="display: none;">\n        <div class="spwidget-filter-column-cntr"></div>\n        <div class="spwidget-filter-button-cntr">\n            <button type="button" class="spwidget-button" name=\'reset\'>Reset</button>\n            <button type="button" class="spwidget-button" name=\'filter\'>Filter</button>\n        </div>\n    </div>\n</div>\n<div id="filter_column">\n    <div class="spwidget-column spwidget-type-{{type}}" \n            data-spwidget_column_type="{{type}}" \n            data-spwidget_list="{{list}}" \n            data-spwidget_sp_type="{{sp_type}}" \n            data-spwidget_sp_format="{{sp_format}}" >\n        <div class="spwidget-filter-value-cntr">\n            <label>{{DisplayName}}</label>\n            <div class="spwidget-filter-value-input">\n                __COLUMN__UI__\n            </div>\n        </div>\n        <div class="spwidget-filter-type-cntr" title="Match Type">\n            <select name="{{Name}}_type" class="spwidget-filter-type" tabindex="-1">\n                <option value="Contains">Contains</option>\n                <option value="Eq" selected="selected">Equal</option>\n                <option value="Neq">Not Equal</option>\n                <option value="IsNull">Is Blank</option> \n                <option value="IsNotNull">Is Not Blank</option>\n                __OTHER_FILTER_TYPES__\n            </select>\n            <select name="{{Name}}_match" class="spwidget-match-type" tabindex="-1">\n                <option value="Or" selected="selected">Any</option>\n                <option value="And">All</option>\n            </select>\n        </div>\n    </div>\n</div>\n<div id="filter_text_field">\n    <input name="{{Name}}" title="{{DisplayName}}" type="text" value="" class="spwidget-input spwidget-filter-input" />\n    <span class="spwidget-tooltip">{{tooltip}}</span>\n</div>\n<div id="filter_choice_field">\n    <label>\n        <input name="{{Name}}" title="{{DisplayName}}" type="checkbox" value="{{value}}" class="spwidget-input spwidget-filter-input" />\n        {{value}}\n    </label>\n</div>\n'})(r)})(jQuery);
+k.onFilterButtonClick=function(f){f=c(this).closest("div.spwidget-filter").data("SPFilterPanelInst");var b=null;c.isFunction(f.opt.onFilterClick)&&(b=k.getFilterValues(f),f.opt.onFilterClick.call(f.$ele,b));return this};k.doResetFilter=function(f){if(c.isFunction(f.onReset)&&!0===f.onReset.call(f.$ele,k.getFilterValues(f)))return f;f.$ui.find("div[data-spwidget_column_type='text'] input").val("").end().find("div[data-spwidget_column_type='choice'] input").prop("checked",!1).end().find(".hasPickSPUser").pickSPUser("method",
+"clear").end().find(".hasSPDateField").SPDateField("reset").end().find(".hasLookupSPField").SPLookupField("method","clear");""!==f.opt.definedClass&&f.$ui.find("."+f.opt.definedClass).removeClass(f.opt.definedClass);f.$ui.find("select.spwidget-filter-type").each(function(){var b=c(this),d=b.val();if("IsNull"===d||"IsNotNull"===d)b.val("Eq"),b.change()});return f};k.getFilterValues=function(f){function b(a){return c.SPWidgets.getCamlLogical({type:a.logicalType,values:a.values,onEachValue:function(b){return"<"+
+a.matchType+"><FieldRef Name='"+a.columnName+"' /><Value Type='Text'>"+c.SPWidgets.escapeXML(b)+"</Value></"+a.matchType+">"}})}var d={CAMLQuery:"",URLParams:"",filters:{},count:0},a=[];f.$ui.find("div.spwidget-column").each(function(g,e){var h=c(e),n=h.find(".spwidget-input"),q=n.attr("name"),l=new k.ColumnFilter({columnName:q,matchType:h.find("select.spwidget-filter-type").val(),logicalType:h.find("select.spwidget-match-type").val()}),h=h.data("spwidget_column_type"),r={};if("IsNull"===l.matchType||
+"IsNotNull"===l.matchType)l.CAMLQuery="<"+l.matchType+"><FieldRef Name='"+q+"' /></"+l.matchType+">",l.count+=1;else switch(h){case "choice":case "multichoice":n.each(function(){var a=c(this),b=a.val();a.is(":checked")&&l.values.push(b)});l.values.length&&(l.count=l.values.length,l.CAMLQuery=b(l));break;case "lookup":case "people":(function(){var a=[];n.each(function(){var b=c(this),b=c.SPWidgets.parseLookupFieldValue(b.val()),d,e;d=0;for(e=b.length;d<e;d++)b[d].id&&(l.values.push(b[d].id+";#"+b[d].title),
+a.push(b[d].id))});l.values.length&&(l.count=l.values.length,l.CAMLQuery=c.SPWidgets.getCamlLogical({type:l.logicalType,values:a,onEachValue:function(a){return"<"+l.matchType+"><FieldRef Name='"+l.columnName+"' LookupId='True'/><Value Type='Lookup'>"+a+"</Value></"+l.matchType+">"}}))})();break;case "date":n.each(function(){var a=n.SPDateField("getDate");a.dates.length&&(l.values=a.dates,l.count=l.values.length,l.CAMLQuery=c.SPWidgets.getCamlLogical({type:l.logicalType,values:l.values,onEachValue:function(a){return"<"+
+l.matchType+"><FieldRef Name='"+l.columnName+"'/><Value Type='DateTime'>"+a+"</Value></"+l.matchType+">"}}));return!1});break;case "text":String(c.trim(n.val())).length&&function(){var a=n.val().split(f.opt.delimeter),d,e,g;d=0;for(e=a.length;d<e;d++)g=c.trim(a[d]),!f.opt.ignoreKeywords.test(g)&&g&&l.values.push(g);l.CAMLQuery=b(l);l.count=l.values.length}()}0<l.count&&(a.push(l.CAMLQuery),d.count+=l.count,d.filters[q]=l,r[q]={matchType:l.matchType,logicalType:l.logicalType,values:l.values},l.URLParams=
+c.param(r,!1),""!==d.URLParams&&(d.URLParams+="&"),d.URLParams+=l.URLParams)});1<d.count?d.CAMLQuery=c.SPWidgets.getCamlLogical({type:"AND",values:a}):1===d.count&&(d.CAMLQuery=a[0]);return d};k.setFilterValues=function(f,b){if("object"!==typeof b||c.isEmptyObject(b))return f;k.doResetFilter(f);c.each(b,function(b,a){var g=f.$ui.find(".spwidget-filter-input[name='"+b+"']"),e=g.closest("div.spwidget-column"),h=e.data("spwidget_column_type"),n=e.find("select[name='"+b+"_type']"),q=e.find("div.spwidget-filter-type-cntr select.spwidget-match-type"),
+l=new k.ColumnFilter;c.extend(l,a);l.matchType&&n.val(l.matchType);l.logicalType&&q.val(l.logicalType);if("IsNull"!==a.matchType&&"IsNotNull"!==a.matchType)switch(h){case "text":l.values instanceof Array?g.val(l.values.join(f.opt.delimeter)):g.val(l.values);break;case "choice":case "multichoice":c.each(l.values,function(a,b){g.filter("[value='"+b+"']").prop("checked",!0)});break;case "lookup":g.SPLookupField("method","add",l.values.join(";#"));break;case "people":g.pickSPUser("method","add",l.values.join(";#"));
+break;case "date":"DateTime"===e.data("spwidget_sp_format")?g.SPDateField("setDate",l.values):g.SPDateField("setDate",l.values,"yy-mm-dd")}else n.change();g.change()});return f};k.ColumnFilter=function(c){var b=new function(){};"object"!==typeof c&&(c={});b.columnName=c.columnName||"";b.matchType=c.matchType||"";b.logicalType=c.logicalType||"";b.values=c.values||[];b.CAMLQuery=c.CAMLQuery||"";b.URLParams=c.URLParams||"";b.count=c.count||0;return b};k.styleSheet='/** \n * Stylesheet for the Board widget\n * \n * BUILD: September 07, 2013 - 03:52 PM\n */\ndiv.spwidget-filter {\n    width: 100%;\n    position: relative;\n}\ndiv.spwidget-filter .spwidget-date-cntr,\ndiv.spwidget-filter .spwidgets-lookup-cntr {\n    display: block;\n}\n/* Adjust the width of the widget inputs inside the filter panel */\ndiv.spwidget-filter .spwidget-type-text input.spwidget-filter-input,\ndiv.spwidget-filter .spwidget-type-people input.ui-autocomplete-input,\ndiv.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input {\n    width: 95%;\n}\n\ndiv.spwidget-filter .spwidgets-lookup-cntr {\n    width: 96%;\n}\ndiv.spwidget-filter .spwidget-date-cntr div.spwidget-date-input-cntr {\n    width: 97%\n}\n\ndiv.spwidget-filter div.spwidget-column {\n    padding: .5em;\n    margin: .5em;\n    position: relative;\n    border-bottom: 1px solid  darkgray;\n    box-shadow: 1px 1px 1px 0 lightgray inset;\n}\ndiv.spwidget-filter div.spwidget-filter-type-cntr {\n    right: 4%;\n    position: absolute;\n    font-size: .8em;\n    top: .6em;\n    opacity: .6;\n    filter: Alpha(opacity=60);\n}\ndiv.spwidget-filter div.spwidget-filter-type-cntr:hover {\n    opacity: 1;\n}\ndiv.spwidget-filter div.spwidget-filter-value-cntr {\n    width: 100%;\n}\n\ndiv.spwidget-filter div.spwidget-filter-value-cntr > label {\n    display: block;\n    padding: .2em;\n    font-weight: bold;\n}\ndiv.spwidget-filter div.spwidget-column-dirty div.spwidget-filter-value-cntr > label {\n    color: #FF0000;\n}\ndiv.spwidget-filter .spwidget-tooltip {\n    display: block;\n    font-size: .8em;\n    font-style: italic;\n}\n\n/* LOOKUP FIELDS */\ndiv.spwidget-filter div.spwidgets-lookup-cntr div.spwidgets-lookup-selected > div.spwidgets-item {\n    display: block;\n    margin-left: 0px;\n}\n\n/* CHOICE FIELDS */\ndiv.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input {\n    max-height: 6em;\n    overflow: auto;\n    -moz-appearance: textfield;\n    -webkit-appearance: textfield;\n    background-color: white;\n    background-color: -moz-field;\n    border: 1px solid  darkgray;\n    box-shadow: 1px 1px 1px 0 lightgray inset;\n    font: -moz-field;\n    font: -webkit-small-control;\n    padding: 2px 5px;\n}\ndiv.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input label {\n    display: block;\n    padding: .2em;\n}\n\n/** DISABLED COLUMN VALUE CONTAINER */\ndiv.spwidget-filter .spwidget-disabled {\n    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";\n    filter: alpha(opacity=50);\n    opacity: 0.5;\n}\n\n/** Button container */\ndiv.spwidget-filter div.spwidget-filter-button-cntr {\n    padding: .5em 4%;\n    margin-top: .5em;\n    text-align: right;\n}\n\n';
+k.htmlTemplate='<div id="filter_main_ui">\n    <div class="spwidget-filter" style="display: none;">\n        <div class="spwidget-filter-column-cntr"></div>\n        <div class="spwidget-filter-button-cntr">\n            <button type="button" class="spwidget-button" name=\'reset\'>Reset</button>\n            <button type="button" class="spwidget-button" name=\'filter\'>Filter</button>\n        </div>\n    </div>\n</div>\n<div id="filter_column">\n    <div class="spwidget-column spwidget-type-{{type}}" \n            data-spwidget_column_type="{{type}}" \n            data-spwidget_list="{{list}}" \n            data-spwidget_sp_type="{{sp_type}}" \n            data-spwidget_sp_format="{{sp_format}}" >\n        <div class="spwidget-filter-value-cntr">\n            <label>{{DisplayName}}</label>\n            <div class="spwidget-filter-value-input">\n                __COLUMN__UI__\n            </div>\n        </div>\n        <div class="spwidget-filter-type-cntr" title="Match Type">\n            <select name="{{Name}}_type" class="spwidget-filter-type" tabindex="-1">\n                <option value="Contains">Contains</option>\n                <option value="Eq" selected="selected">Equal</option>\n                <option value="Neq">Not Equal</option>\n                <option value="IsNull">Is Blank</option> \n                <option value="IsNotNull">Is Not Blank</option>\n                __OTHER_FILTER_TYPES__\n            </select>\n            <select name="{{Name}}_match" class="spwidget-match-type" tabindex="-1">\n                <option value="Or" selected="selected">Any</option>\n                <option value="And">All</option>\n            </select>\n        </div>\n    </div>\n</div>\n<div id="filter_text_field">\n    <input name="{{Name}}" title="{{DisplayName}}" type="text" value="" class="spwidget-input spwidget-filter-input" />\n    <span class="spwidget-tooltip">{{tooltip}}</span>\n</div>\n<div id="filter_choice_field">\n    <label>\n        <input name="{{Name}}" title="{{DisplayName}}" type="checkbox" value="{{value}}" class="spwidget-input spwidget-filter-input" />\n        {{value}}\n    </label>\n</div>\n'})(r)})(jQuery);
 
 
 //-------- END of SPWidgets plugin: inserted by build script ----------------- 
