@@ -812,7 +812,7 @@
                 
             }
             
-            return version
+            return version;
             
         }; //end: $.SPWidgets.getSPVersion();
         
