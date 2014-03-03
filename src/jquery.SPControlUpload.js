@@ -55,7 +55,7 @@
     $.SPWidgets.defaults.upload = {
         listName:               '',
         folderPath:             '',
-        uploadDonePage:         '/_layouts/images/STS_ListItem_43216.gif',
+        uploadDonePage:         '',
         onPageChange:           null,
         onUploadDone:           null,
         uploadUrlOpt:           '',
@@ -70,7 +70,8 @@
         noFileErrorMessage:     "No file selected!",
         checkInFormHeight:      '25em',
         webURL:                 null, // set later
-        debug:                  false
+        debug:                  false,
+        _filenameFieldSelector: "input[id$='onetidIOFile']"
     }; 
     
     
@@ -540,7 +541,9 @@
                         break;
                     
                 }
-                
+            
+            // If user defined a upload page using relative URL from root of site, then
+            // prepend the site URL. 
             } else if (opt.uploadPage.toLowerCase().indexOf("http") === -1) {
                 
                 var s = "/";
@@ -555,18 +558,13 @@
                 
             }
             
+            
+            opt.uploadDonePage = String(opt.uploadDonePage);
+            
             // Set the uploadDonePage url
-            if (String(opt.uploadDonePage).toLowerCase().indexOf("http") === -1) {
+            if (!opt.uploadDonePage) {
                 
-                var s = "/";
-                
-                if (opt.uploadDonePage.indexOf('/') == 0) {
-                    
-                    s = "";
-                    
-                }
-                
-                opt.uploadDonePage = opt.webURL + s + opt.uploadDonePage;
+                opt.uploadDonePage = opt.webURL + "/_layouts/images/STS_ListItem_43216.gif";
                 
             }
             
@@ -842,6 +840,9 @@
             opt = e.data("SPControlUploadOptions"),
             id  = 0;
         
+        try {
+            opt.log("Upload.onIframeChange(): Document readyState: " + e.find("iframe").contents()[0].readyState);
+        } catch(err){}
         
         // TODO: Need to capture the SP2013 page that says somethign like "wait"... Is this neede?
         // window[opt.ev.state + "-" + opt.ev.action + "-html"] = $(e.find("iframe").contents()).find("html").html(); 
@@ -1095,7 +1096,7 @@
                     
                     opt.log(
                         "Upload.onIframeChange(" + opt._iframeLoadId + 
-                        "): File was uploaded to server!" 
+                        "): File uploaded to server! Need [" + opt.uploadDonePage + "] to be done." 
                     );
                     
                     ev.state            = 3;
@@ -1127,21 +1128,25 @@
                         
                         if (form.length) {
                             
-                            var formOnSubmit = form.prop("onsubmit");
+                            var formOnSubmit    = form.prop("onsubmit"),
+                                $nameField      = form.find(opt._filenameFieldSelector).eq(0);
                             
-                            // Show only the form in the page
-                            form
-                                .children(":visible")
+                            // Hide the Form content if we found the File name input field,
+                            // and move that input field to the root of the form.
+                            if ($nameField.length) {
+                                
+                                form.children(":visible")
                                     .css("display", "none")
-                                    .addClass("ptWasVisible")
-                                    .end()
-                                .find("input[title='Name']")
-                                    .closest("div[id^='WebPart']")
-                                        .appendTo(page.find("form"))
-                                        // 8/30/2013: ensure the UI is visible.
-                                        // Just in case it was at root of form
-                                        .css("display", "")
-                                        .removeClass("ptWasVisible");
+                                    .addClass("ptWasVisible");
+                                        
+                                $nameField.closest("div[id^='WebPart']")
+                                    .appendTo(form)
+                                    // 8/30/2013: ensure the UI is visible.
+                                    // Just in case it was at root of form
+                                    .css("display", "")
+                                    .removeClass("ptWasVisible");
+                                    
+                            }
                             
                             // SP seems to have a good hold of the Form, because
                             // we are unable o bind an event via $. Thus:
@@ -1305,10 +1310,8 @@
                             var parser = document.createElement('a');
                             parser.href = urlString;
                             
-                            return parser.protocol + "//" + parser.hostname + 
-                                    ( parser.port ? ":" + parser.port : "" ) +
-                                    parser.pathname;
-                   
+                            return unescape(parser.pathname);
+                            
                         },
             url1        = String( normalize(u1) ).toLowerCase(),
             url2        = String( normalize(u2) ).toLowerCase();
