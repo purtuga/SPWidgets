@@ -71,7 +71,7 @@
         checkInFormHeight:      '25em',
         webURL:                 null, // set later
         debug:                  false,
-        _filenameFieldSelector: "input[id$='onetidIOFile']"
+        filenameInputSelector: "input[id$='onetidIOFile']" // 3/14/2014: Undocumented for now
     }; 
     
     
@@ -798,7 +798,8 @@
             opt.log("Upload.onUpload(" + opt._iframeLoadId + "): Clicking the OK button on upload form.");
 
             page.find("input[type='button'][id$='btnOK']").click();
-            ev.action = "postLoad";
+            
+            // ev.action = "postLoad";
             
             // If error message are displayed (after we click upload button), 
             // then just return control back to the user.
@@ -847,9 +848,6 @@
         // TODO: Need to capture the SP2013 page that says somethign like "wait"... Is this neede?
         // window[opt.ev.state + "-" + opt.ev.action + "-html"] = $(e.find("iframe").contents()).find("html").html(); 
         
-        
-        
-        
         // If the upload event state is 2, then {Upload.onUpload} has already
         // taken care of the form and user call back... There is nothing to do
         // here and form is arleady being submitted... Set the ev. to
@@ -857,13 +855,13 @@
         if (opt.ev.state === 2 && opt.ev.action === "preLoad") {
             
             opt.log("Upload.onIframeChange(" + opt._iframeLoadId + 
-                "): ev.action=[" + opt.ev.action + "] and ev.state=[" + 
-                opt.ev.state+ "] - handled by onUpload(). Setting action to postLoad"
+                "): Exiting! ev.action=[" + opt.ev.action + "] and ev.state=[" + 
+                opt.ev.state+ "] - Nothing to do. Action handled by onUpload(). Setting action to postLoad"
             );
             
             opt.ev.action = "postLoad";
             
-            // FIXME: needed to comment this out for SP2007
+            // FIXME: needed to comment this out for SP2007???
             return;
             
         } 
@@ -1129,7 +1127,7 @@
                         if (form.length) {
                             
                             var formOnSubmit    = form.prop("onsubmit"),
-                                $nameField      = form.find(opt._filenameFieldSelector).eq(0);
+                                $nameField      = form.find(opt.filenameInputSelector).eq(0);
                             
                             // Hide the Form content if we found the File name input field,
                             // and move that input field to the root of the form.
