@@ -364,6 +364,16 @@
 /** ==================================================================== */
 /** ==================================================================== */
 
+#s4-leftpanel,
+#sideNavBox {
+    display:none !important;
+}
+.s4-ca,
+#contentBox {
+    margin-left: .5em !important;
+    width: 98%;
+}
+
 #spwidgets_demo_cntr {
     padding: 1em;
     minHeight: 100em;;
