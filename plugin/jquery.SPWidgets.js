@@ -3,7 +3,7 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *  
- * @version 20140208114357
+ * @version 20140314040043
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  * 
@@ -11,8 +11,8 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date:  Paul:February 08, 2014 11:43 AM
- * Version:     20140208114357
+ * Build Date:  Paul:March 14, 2014 04:00 PM
+ * Version:     20140314040043
  * 
  */
 ;(function($){
@@ -53,7 +53,7 @@
         }
         
         $.SPWidgets             = {};
-        $.SPWidgets.version     = "20140208114357";
+        $.SPWidgets.version     = "20140314040043";
         $.SPWidgets.defaults    = {};
         
         /**
@@ -4772,7 +4772,7 @@
  * on jQuery UI's Autocomplete and SPServices library.
  *      
  *  
- * @version 20140208114357NUMBER_
+ * @version 20140302043008NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
@@ -4780,7 +4780,7 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date Paul:February 08, 2014 11:43 AM
+ * Build Date Paul:March 02, 2014 04:30 PM
  * 
  */
 (function(){
@@ -4928,6 +4928,8 @@
         // If input is a string, then it must be an action (method).
         // Process only the first element in the selection.
         if (typeof options === "string") {
+            
+            // TODO: should methods support actions on all items in selection?
             
             return (function(ele){
                 
@@ -5646,14 +5648,14 @@
  * through the many SP pages and without having to leave the user's current page.
  *      
  *  
- * @version 20140112094123NUMBER_
+ * @version 20140314040043NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * 
  * @requires jQuery.js {@link http://jquery.com}
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date Paul:January 12, 2014 09:41 PM
+ * Build Date Paul:March 14, 2014 04:00 PM
  * 
  */
 ;(function($){
@@ -5694,7 +5696,7 @@
     $.SPWidgets.defaults.upload = {
         listName:               '',
         folderPath:             '',
-        uploadDonePage:         '/_layouts/images/STS_ListItem_43216.gif',
+        uploadDonePage:         '',
         onPageChange:           null,
         onUploadDone:           null,
         uploadUrlOpt:           '',
@@ -5709,7 +5711,8 @@
         noFileErrorMessage:     "No file selected!",
         checkInFormHeight:      '25em',
         webURL:                 null, // set later
-        debug:                  false
+        debug:                  false,
+        filenameInputSelector: "input[id$='onetidIOFile']" // 3/14/2014: Undocumented for now
     }; 
     
     
@@ -6179,7 +6182,9 @@
                         break;
                     
                 }
-                
+            
+            // If user defined a upload page using relative URL from root of site, then
+            // prepend the site URL. 
             } else if (opt.uploadPage.toLowerCase().indexOf("http") === -1) {
                 
                 var s = "/";
@@ -6194,18 +6199,13 @@
                 
             }
             
+            
+            opt.uploadDonePage = String(opt.uploadDonePage);
+            
             // Set the uploadDonePage url
-            if (String(opt.uploadDonePage).toLowerCase().indexOf("http") === -1) {
+            if (!opt.uploadDonePage) {
                 
-                var s = "/";
-                
-                if (opt.uploadDonePage.indexOf('/') == 0) {
-                    
-                    s = "";
-                    
-                }
-                
-                opt.uploadDonePage = opt.webURL + s + opt.uploadDonePage;
+                opt.uploadDonePage = opt.webURL + "/_layouts/images/STS_ListItem_43216.gif";
                 
             }
             
@@ -6439,7 +6439,8 @@
             opt.log("Upload.onUpload(" + opt._iframeLoadId + "): Clicking the OK button on upload form.");
 
             page.find("input[type='button'][id$='btnOK']").click();
-            ev.action = "postLoad";
+            
+            // ev.action = "postLoad";
             
             // If error message are displayed (after we click upload button), 
             // then just return control back to the user.
@@ -6481,12 +6482,12 @@
             opt = e.data("SPControlUploadOptions"),
             id  = 0;
         
+        try {
+            opt.log("Upload.onIframeChange(): Document readyState: " + e.find("iframe").contents()[0].readyState);
+        } catch(err){}
         
         // TODO: Need to capture the SP2013 page that says somethign like "wait"... Is this neede?
         // window[opt.ev.state + "-" + opt.ev.action + "-html"] = $(e.find("iframe").contents()).find("html").html(); 
-        
-        
-        
         
         // If the upload event state is 2, then {Upload.onUpload} has already
         // taken care of the form and user call back... There is nothing to do
@@ -6734,7 +6735,7 @@
                     
                     opt.log(
                         "Upload.onIframeChange(" + opt._iframeLoadId + 
-                        "): File was uploaded to server!" 
+                        "): File uploaded to server! Need [" + opt.uploadDonePage + "] to be done." 
                     );
                     
                     ev.state            = 3;
@@ -6766,21 +6767,25 @@
                         
                         if (form.length) {
                             
-                            var formOnSubmit = form.prop("onsubmit");
+                            var formOnSubmit    = form.prop("onsubmit"),
+                                $nameField      = form.find(opt.filenameInputSelector).eq(0);
                             
-                            // Show only the form in the page
-                            form
-                                .children(":visible")
+                            // Hide the Form content if we found the File name input field,
+                            // and move that input field to the root of the form.
+                            if ($nameField.length) {
+                                
+                                form.children(":visible")
                                     .css("display", "none")
-                                    .addClass("ptWasVisible")
-                                    .end()
-                                .find("input[title='Name']")
-                                    .closest("div[id^='WebPart']")
-                                        .appendTo(page.find("form"))
-                                        // 8/30/2013: ensure the UI is visible.
-                                        // Just in case it was at root of form
-                                        .css("display", "")
-                                        .removeClass("ptWasVisible");
+                                    .addClass("ptWasVisible");
+                                        
+                                $nameField.closest("div[id^='WebPart']")
+                                    .appendTo(form)
+                                    // 8/30/2013: ensure the UI is visible.
+                                    // Just in case it was at root of form
+                                    .css("display", "")
+                                    .removeClass("ptWasVisible");
+                                    
+                            }
                             
                             // SP seems to have a good hold of the Form, because
                             // we are unable o bind an event via $. Thus:
@@ -6944,10 +6949,8 @@
                             var parser = document.createElement('a');
                             parser.href = urlString;
                             
-                            return parser.protocol + "//" + parser.hostname + 
-                                    ( parser.port ? ":" + parser.port : "" ) +
-                                    parser.pathname;
-                   
+                            return unescape(parser.pathname);
+                            
                         },
             url1        = String( normalize(u1) ).toLowerCase(),
             url2        = String( normalize(u2) ).toLowerCase();
