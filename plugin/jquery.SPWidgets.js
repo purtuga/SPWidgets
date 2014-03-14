@@ -3,7 +3,7 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *  
- * @version 20140314040043
+ * @version 20140314062642
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  * 
@@ -11,8 +11,8 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date:  Paul:March 14, 2014 04:00 PM
- * Version:     20140314040043
+ * Build Date:  Paul:March 14, 2014 06:26 PM
+ * Version:     20140314062642
  * 
  */
 ;(function($){
@@ -53,7 +53,7 @@
         }
         
         $.SPWidgets             = {};
-        $.SPWidgets.version     = "20140314040043";
+        $.SPWidgets.version     = "20140314062642";
         $.SPWidgets.defaults    = {};
         
         /**
@@ -828,7 +828,7 @@
  *  -   jQuery-UI Draggable
  * 
  * 
- * BUILD: Paul:January 12, 2014 09:47 PM
+ * BUILD: Paul:March 14, 2014 05:06 PM
  */
 
 ;(function($){
@@ -3208,7 +3208,7 @@
  * THe user, however, is presented with the existing items
  * and has the ability to Remove them and add new ones.
  * 
- * BUILD: Paul:January 12, 2014 09:41 PM
+ * BUILD: Paul:March 14, 2014 05:06 PM
  * 
  */
 
@@ -4772,7 +4772,7 @@
  * on jQuery UI's Autocomplete and SPServices library.
  *      
  *  
- * @version 20140302043008NUMBER_
+ * @version 20140314050658NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
@@ -4780,7 +4780,7 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date Paul:March 02, 2014 04:30 PM
+ * Build Date Paul:March 14, 2014 05:06 PM
  * 
  */
 (function(){
@@ -5648,14 +5648,14 @@
  * through the many SP pages and without having to leave the user's current page.
  *      
  *  
- * @version 20140314040043NUMBER_
+ * @version 20140314062642NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * 
  * @requires jQuery.js {@link http://jquery.com}
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date Paul:March 14, 2014 04:00 PM
+ * Build Date Paul:March 14, 2014 06:26 PM
  * 
  */
 ;(function($){
@@ -6446,6 +6446,8 @@
             // then just return control back to the user.
             if (msgs.is(":visible")) {
                 
+                opt.log("Upload.onUpload(" + opt._iframeLoadId + "): Error message reported! \n" + msgs.text());
+                
                 e.find(".loadingOverlay")
                         .css("display", "none")
                         .end();
@@ -6458,6 +6460,31 @@
         
     };//* Upload.onUpload()
     
+    /**
+     * Returns true of false indicating if the given Selection has the
+     * Sharepoint busy animation image/element.
+     * 
+     * @param {jQuery} $doc
+     * 
+     * @return {Boolean} 
+     */
+    Upload.isSPBusyAnimation = function($doc) {
+        
+        if ($doc.find("#GearPage").length) {
+            
+            return true;
+            
+        }
+            
+        if ($doc.find("#ms-loading-box").length) {
+            
+            return true;
+            
+        }
+        
+        return false;
+        
+    }; /* Upload.isSPBusyAnimation() */
     
     /**
      * FUNTION: Upload.onIframeChange()
@@ -6478,31 +6505,43 @@
      */
     Upload.onIframeChange = function(ele){
         
-        var e   = $(ele).closest(".SPControlUploadUI"),
-            opt = e.data("SPControlUploadOptions"),
-            id  = 0;
+        var e       = $(ele).closest(".SPControlUploadUI"),
+            opt     = e.data("SPControlUploadOptions"),
+            id      = 0,
+            page    = $(e.find("iframe").contents());
         
-        try {
-            opt.log("Upload.onIframeChange(): Document readyState: " + e.find("iframe").contents()[0].readyState);
-        } catch(err){}
+        if (opt.debug) {
+            
+            try {
+                
+                opt.log("Upload.onIframeChange(): ENTERING... Document readyState: " + page[0].readyState + 
+                " IFRAME URL: " + page[0].location.href);
+                
+            } catch(err){}
+            
+        }
         
-        // TODO: Need to capture the SP2013 page that says somethign like "wait"... Is this neede?
-        // window[opt.ev.state + "-" + opt.ev.action + "-html"] = $(e.find("iframe").contents()).find("html").html(); 
+        if (Upload.isSPBusyAnimation(page)) {
+            
+            opt.log("Upload.onIframeChange(): EXITING... Gear page displyed.");
+            return;
+            
+        }
         
         // If the upload event state is 2, then {Upload.onUpload} has already
         // taken care of the form and user call back... There is nothing to do
         // here and form is arleady being submitted... Set the ev. to
         // postLoad and Exit. 
-        if (opt.ev.state === 2 && opt.ev.action === "preLoad") {
+        if (opt.ev.state === 2 && opt.ev.action === "preLoad" && page[0].spcontrolupload_init_done === true) {
             
             opt.log("Upload.onIframeChange(" + opt._iframeLoadId + 
-                "): ev.action=[" + opt.ev.action + "] and ev.state=[" + 
-                opt.ev.state+ "] - handled by onUpload(). Setting action to postLoad"
+                "): Exiting! ev.action=[" + opt.ev.action + "] and ev.state=[" + 
+                opt.ev.state+ "] - Nothing to do. Action handled by onUpload(). Setting action to postLoad"
             );
             
             opt.ev.action = "postLoad";
             
-            // FIXME: needed to comment this out for SP2007
+            // FIXME: needed to comment this out for SP2007???
             return;
             
         } 
@@ -6510,10 +6549,7 @@
         opt._iframeLoadId++;
         id = opt._iframeLoadId;
         
-        opt.log("Upload.onIframeChange(" + id + "): State=[" + opt.ev.state + 
-            "] Action=[" + opt.ev.action + "] iframe.url: " + 
-            e.find("iframe").contents()[0].location.href
-        );
+        opt.log("Upload.onIframeChange(" + id + "): State=[" + opt.ev.state + "] Action=[" + opt.ev.action + "]");
         
         // Because just about every browser differs on how the load() event
         // is triggered, we do all our work in a function that is triggered
@@ -6532,11 +6568,23 @@
                     
                 } 
                 
-                opt.log("Upload.onIframeChange(" + id + "): START... Executing setTimeout() for iframe ID: " + id);
-                
-                var page    = $(e.find("iframe").contents()),
-                    ev      = opt.ev,
+                var ev      = opt.ev,
                     form    = page.find("form").eq(0);
+                
+                // Re-Set the page variale here (in timeout... Case the page changed and prior point is no good)
+                page    = $(e.find("iframe").contents());
+                
+                opt.log("Upload.onIframeChange(" + id + "): STARTING... Executing setTimeout(). URL:" + page[0].location.href);
+                
+                // If page was already processed, then exit.
+                if (page.spcontrolupload_init_done === true) {
+                    
+                    opt.log("Upload.onIframeChange(" + id + "): EXITING!!! Page was already processed!");
+                    return;
+                    
+                }
+                
+                page.spcontrolupload_init_done = true;
                 
                 ev.pageUrl  = page[0].location.href;
                 ev.page     = page;
@@ -6596,7 +6644,7 @@
                     // SP2010 Code
                     // If this is the new SP2010 "Processing..." page, then
                     // the just exit... there is nothing for us to do yet...
-                    if (    page.find("#GearPage") 
+                    if (    Upload.isSPBusyAnimation(page)
                         &&  !page.find("input[type='file']").length
                     ) {
                         
@@ -7215,11 +7263,15 @@
 + "    position: absolute;\n"
 + "}\n"
 + "\n"
++ "/* For debug/dev purpose. Add it to .spcontrolupload container */\n"
 + ".spcontrolupload-dev-mode .iFrameWindow {\n"
 + "    overflow: auto !important;\n"
 + "    height: auto !important;\n"
++ "    z-index: 5 !important;\n"
 + "}\n"
-+ "\n"
++ ".spcontrolupload-dev-mode .iFrameWindow iframe {\n"
++ "    overflow: scroll !important;\n"
++ "}\n"
 + "\n";
 //_HAS_SPUPLOAD_CSS_TEMPLATE_
     
@@ -7280,7 +7332,7 @@
  * jquery.SPDateField.js
  * The SPDateField widget. Introduced with v2.2, August 2013
  * 
- * BUILD: Paul:January 12, 2014 09:41 PM
+ * BUILD: Paul:March 14, 2014 05:06 PM
  * 
  */
 ;(function($){
@@ -8821,7 +8873,7 @@
 /**
  * @fileOverview - List filter panel widget
  * 
- * BUILD: Paul:January 12, 2014 09:41 PM
+ * BUILD: Paul:March 14, 2014 05:06 PM
  * 
  */
 (function($){
