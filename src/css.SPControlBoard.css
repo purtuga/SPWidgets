@@ -18,22 +18,35 @@ div.spwidget-board div.spwidget-board-states {
 div.spwidget-board div.spwidget-board-state {
     width: 49%;
     float: left;
-    margin: .1%;
+    margin: 0% .1%;
     padding: .2%;
     overflow: auto;
 }
-
+/* Board Individual Headers */
 div.spwidget-board div.spwidget-board-headers-cntr div.spwidget-board-state {
-    text-align: center;
     font-weight: bold;
     font-size: 1.1em;
     overflow: hidden;
     word-wrap: break-word;
 }
-div.spwidget-board div.spwidget-board-headers-cntr div.spwidget-board-state .spwidget-stat-item-stat {
-    padding: 0em .2em;
-    display: inline-block;
+/* Board Header Title */
+div.spwidget-board div.spwidget-board-headers-cntr .spwidget-board-header-title,
+div.spwidget-board div.spwidget-board-headers-cntr .spwidget-state-item-stat-cntr {
+    display: inline-block
 }
+/* Board Header Stats container*/
+div.spwidget-board div.spwidget-board-headers-cntr .spwidget-state-item-stat-cntr {
+    font-size: .9em;
+    float: right;
+}
+div.spwidget-board div.spwidget-board-headers-cntr .spwidget-item-stat {
+    display: inline-block;
+    min-width: 2em;
+    padding: 0 0.2em;
+    text-align: center;
+}
+
+/* Board column content */
 div.spwidget-board div.spwidget-board-states div.spwidget-board-state {
     margin-bottom: 1em;
     min-height: 10em;

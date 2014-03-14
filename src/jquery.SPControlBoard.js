@@ -1940,18 +1940,20 @@
                 // Build the board columns
                 $.each(opt.states, function(i,v){
                     
-                    v.headerEle = $(opt.tmpltHeader).appendTo(opt.headersCntr)
+                    v.headerEle = $(opt.tmpltHeader)
+                                    .appendTo(opt.headersCntr)
                                     .attr("data-boardstate", v.name)
                                     .attr("data-boardindex", i)
-                                    .html("<span>" + v.title + "</span>");
+                                    .find(".spwidget-board-header-title")
+                                        .html(v.title)
+                                        .end();
                                     
                     v.dataEle = $(opt.tmpltState).appendTo(opt.statesCntr)
                                     .attr("data-boardindex", i)
                                     .attr("data-boardstate", v.name);
                     
                     // Create the header element that holds the total
-                    v.headerTotalEle = $('<span class="spwidget-stat-item-stat-cntr">&nbsp;<span class="spwidget-stat-item-stat ui-widget-content ui-corner-all spwidget-state-item-total">0</span></span>')
-                                        .appendTo(v.headerEle)
+                    v.headerTotalEle = v.headerEle
                                         .find("span.spwidget-state-item-total");
                     
                     // Create variable to track if column is visible
