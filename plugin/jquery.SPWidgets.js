@@ -3,7 +3,7 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *  
- * @version 20140314062642
+ * @version 20140315113942
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  * 
@@ -11,8 +11,8 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date:  Paul:March 14, 2014 06:26 PM
- * Version:     20140314062642
+ * Build Date:  Paul:March 15, 2014 11:39 AM
+ * Version:     20140315113942
  * 
  */
 ;(function($){
@@ -53,7 +53,7 @@
         }
         
         $.SPWidgets             = {};
-        $.SPWidgets.version     = "20140314062642";
+        $.SPWidgets.version     = "20140315113942";
         $.SPWidgets.defaults    = {};
         
         /**
@@ -828,7 +828,7 @@
  *  -   jQuery-UI Draggable
  * 
  * 
- * BUILD: Paul:March 14, 2014 05:06 PM
+ * BUILD: Paul:March 15, 2014 11:39 AM
  */
 
 ;(function($){
@@ -871,7 +871,8 @@
         colPickerMinColMsg:     "Mininum of 2 required!",
         onGetListItems:         null,
         onPreUpdate:            null,
-        onBoardCreate:          null
+        onBoardCreate:          null,
+        height:                 null
     };
     
     /**
@@ -1036,6 +1037,10 @@
      *                  See spwidget:boardcreate even for parameters that
      *                  will be given to function.
      * 
+     * @param {String}  [options.height=null]
+     *                  The height for the board. This value should be a valid CSS
+     *                  dimention (ex. integer + unit - 100px). Default is null,
+     *                  indicating that its not fixed height (entire board is expanded)
      * 
      * @return {jQuery} this
      * 
@@ -1132,6 +1137,13 @@
      *                  $().SPShowBoard("setVisible", ['Not Started', 'Completed']);
      * 
      * 
+     * setHeight    -   Sets the height of the board by applying the value passed in
+     *                  to the column area that holds the cards. Use null to remove
+     *                  the height.
+     *                  Example:
+     *                      $().SPShowBoard("setHeight", "300px");
+     *                      $().SPShowBoard("setHeight", null);
+     * 
      * // TODO: Destroy method (must remove all event bindings)
      * // TODO: move method - moves an item on the board (identified by ID) to
      *          a different state
@@ -1201,6 +1213,12 @@
                 } else if (method === "setvisible") {
                     
                     board.setUserDefinedVisibleCol( args[1] );
+                    
+                //*** SETHEIGHT ***
+                } else if (method === "setheight") {
+                    
+                    board.height = args[1];
+                    board.setBoardColumnHeight();
                     
                 }//end: if(): methods
                 
@@ -2653,16 +2671,7 @@
                      */
                     setBoardColumnHeight: function() {
                         
-                        if (opt.statesCntr.is(":visible")) {
-                            
-                            $.SPWidgets.makeSameHeight(
-                                opt.statesCntr.find("div.spwidget-board-state:visible"),
-                                20,
-                                'min-height'
-                            );
-                            
-                        }
-                        
+                        // Set the height of the headers
                         if (opt.headersCntr.is(":visible")) {
                             
                             $.SPWidgets.makeSameHeight(
@@ -2673,6 +2682,36 @@
                             
                         }
                         
+                        // If user defined a fixed height, then use that on the
+                        // card content column and exit.
+                        if (opt.height) {
+                            
+                            opt.statesCntr
+                                .find("div.spwidget-board-state:visible")
+                                .css({
+                                    height:         opt.height,
+                                    "min-height":   ""
+                                });
+                                
+                            return;
+                            
+                        }
+                        
+                        // Else, set the height of the column area that holds the cards.
+                        // We also remove the fixed height from these if set.
+                        if (opt.statesCntr.is(":visible")) {
+                            
+                            $.SPWidgets.makeSameHeight(
+                                opt.statesCntr
+                                    .find("div.spwidget-board-state:visible")
+                                    .css("height", ""),
+                                20,
+                                'min-height'
+                            );
+                            
+                        }
+                        
+                        return;
                         
                     } // end: opt.setBoardCOlumnHeight()
                     
@@ -2761,18 +2800,20 @@
                 // Build the board columns
                 $.each(opt.states, function(i,v){
                     
-                    v.headerEle = $(opt.tmpltHeader).appendTo(opt.headersCntr)
+                    v.headerEle = $(opt.tmpltHeader)
+                                    .appendTo(opt.headersCntr)
                                     .attr("data-boardstate", v.name)
                                     .attr("data-boardindex", i)
-                                    .html("<span>" + v.title + "</span>");
+                                    .find(".spwidget-board-header-title")
+                                        .html(v.title)
+                                        .end();
                                     
                     v.dataEle = $(opt.tmpltState).appendTo(opt.statesCntr)
                                     .attr("data-boardindex", i)
                                     .attr("data-boardstate", v.name);
                     
                     // Create the header element that holds the total
-                    v.headerTotalEle = $('<span class="spwidget-stat-item-stat-cntr">&nbsp;<span class="spwidget-stat-item-stat ui-widget-content ui-corner-all spwidget-state-item-total">0</span></span>')
-                                        .appendTo(v.headerEle)
+                    v.headerTotalEle = v.headerEle
                                         .find("span.spwidget-state-item-total");
                     
                     // Create variable to track if column is visible
@@ -3025,7 +3066,7 @@
     Board.styleSheet = "/** \n"
 + " * Stylesheet for the Board widget\n"
 + " * \n"
-+ " * BUILD: Paul:January 12, 2014 09:41 PM\n"
++ " * BUILD: Paul:March 15, 2014 11:21 AM\n"
 + " */\n"
 + "div.spwidget-board {\n"
 + "    width: 100%;\n"
@@ -3042,22 +3083,35 @@
 + "div.spwidget-board div.spwidget-board-state {\n"
 + "    width: 49%;\n"
 + "    float: left;\n"
-+ "    margin: .1%;\n"
++ "    margin: 0% .1%;\n"
 + "    padding: .2%;\n"
 + "    overflow: auto;\n"
 + "}\n"
-+ "\n"
++ "/* Board Individual Headers */\n"
 + "div.spwidget-board div.spwidget-board-headers-cntr div.spwidget-board-state {\n"
-+ "    text-align: center;\n"
 + "    font-weight: bold;\n"
 + "    font-size: 1.1em;\n"
 + "    overflow: hidden;\n"
 + "    word-wrap: break-word;\n"
 + "}\n"
-+ "div.spwidget-board div.spwidget-board-headers-cntr div.spwidget-board-state .spwidget-stat-item-stat {\n"
-+ "    padding: 0em .2em;\n"
-+ "    display: inline-block;\n"
++ "/* Board Header Title */\n"
++ "div.spwidget-board div.spwidget-board-headers-cntr .spwidget-board-header-title,\n"
++ "div.spwidget-board div.spwidget-board-headers-cntr .spwidget-state-item-stat-cntr {\n"
++ "    display: inline-block\n"
 + "}\n"
++ "/* Board Header Stats container*/\n"
++ "div.spwidget-board div.spwidget-board-headers-cntr .spwidget-state-item-stat-cntr {\n"
++ "    font-size: .8em;\n"
++ "    float: right;\n"
++ "}\n"
++ "div.spwidget-board div.spwidget-board-headers-cntr .spwidget-item-stat {\n"
++ "    display: inline-block;\n"
++ "    min-width: 2em;\n"
++ "    padding: 0 0.2em;\n"
++ "    text-align: center;\n"
++ "}\n"
++ "\n"
++ "/* Board column content */\n"
 + "div.spwidget-board div.spwidget-board-states div.spwidget-board-state {\n"
 + "    margin-bottom: 1em;\n"
 + "    min-height: 10em;\n"
@@ -3175,14 +3229,19 @@
 + "    </div>\n"
 + "    <div class=\"spwidget-board-headers\">\n"
 + "        <div class=\"spwidget-board-headers-cntr\">\n"
-+ "            <div class=\"spwidget-board-state ui-widget-content ui-corner-all\"></div>\n"
++ "            <div class=\"spwidget-board-state ui-widget-content ui-corner-top\">\n"
++ "                <span class=\"spwidget-board-header-title\"></span>\n"
++ "                <span class=\"spwidget-state-item-stat-cntr\">\n"
++ "                    <span class=\"spwidget-item-stat ui-widget-content ui-corner-all spwidget-state-item-total\">0</span>\n"
++ "                </span>\n"
++ "            </div>\n"
 + "            <div style=\"clear:both;\"></div>\n"
 + "        </div>\n"
 + "    </div>\n"
 + "    <div style=\"clear:both;\"></div>\n"
 + "    <div class=\"spwidget-board-states\">\n"
 + "        <div class=\"spwidget-board-states-cntr\">\n"
-+ "            <div class=\"spwidget-board-state ui-widget-content ui-corner-all\"></div>\n"
++ "            <div class=\"spwidget-board-state ui-widget-content ui-corner-bottom\"></div>\n"
 + "            <div style=\"clear:both;\"></div>\n"
 + "        </div>\n"
 + "    </div>\n"
@@ -3208,7 +3267,7 @@
  * THe user, however, is presented with the existing items
  * and has the ability to Remove them and add new ones.
  * 
- * BUILD: Paul:March 14, 2014 05:06 PM
+ * BUILD: Paul:March 15, 2014 11:21 AM
  * 
  */
 
@@ -4772,7 +4831,7 @@
  * on jQuery UI's Autocomplete and SPServices library.
  *      
  *  
- * @version 20140314050658NUMBER_
+ * @version 20140315112156NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  * 
@@ -4780,7 +4839,7 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date Paul:March 14, 2014 05:06 PM
+ * Build Date Paul:March 15, 2014 11:21 AM
  * 
  */
 (function(){
@@ -5648,14 +5707,14 @@
  * through the many SP pages and without having to leave the user's current page.
  *      
  *  
- * @version 20140314062642NUMBER_
+ * @version 20140315112156NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * 
  * @requires jQuery.js {@link http://jquery.com}
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date Paul:March 14, 2014 06:26 PM
+ * Build Date Paul:March 15, 2014 11:21 AM
  * 
  */
 ;(function($){
@@ -7332,7 +7391,7 @@
  * jquery.SPDateField.js
  * The SPDateField widget. Introduced with v2.2, August 2013
  * 
- * BUILD: Paul:March 14, 2014 05:06 PM
+ * BUILD: Paul:March 15, 2014 11:21 AM
  * 
  */
 ;(function($){
@@ -8873,7 +8932,7 @@
 /**
  * @fileOverview - List filter panel widget
  * 
- * BUILD: Paul:March 14, 2014 05:06 PM
+ * BUILD: Paul:March 15, 2014 11:21 AM
  * 
  */
 (function($){
