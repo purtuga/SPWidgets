@@ -1103,9 +1103,6 @@
                                 
                             }
                             
-                            // Update the board headers with the totals
-                            opt.updBoardHeaders();
-                            
                             // Add the mouseover hover affect.
                             $.pt.addHoverEffect(ele.find(".spwidget-board-state-item"));
                             
@@ -1144,8 +1141,6 @@
                                     .sortable("refresh")
                                     .end()
                                 .disableSelection();
-                                
-                            opt.setBoardColumnHeight();
                             
                             // Get a new event object
                             evData = opt.getEventObject();
@@ -1186,8 +1181,10 @@
                             
                         }//end: if(): initDone == true
                         
-         
-         
+                        // Update the headers and set the board height
+                        opt.updBoardHeaders();
+                        opt.setBoardColumnHeight();
+                        
          // console.timeEnd("Board.ShowItemsOnBoard()");
          
                         return itemsForBoard;
