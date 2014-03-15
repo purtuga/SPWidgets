@@ -50,7 +50,8 @@
         colPickerMinColMsg:     "Mininum of 2 required!",
         onGetListItems:         null,
         onPreUpdate:            null,
-        onBoardCreate:          null
+        onBoardCreate:          null,
+        height:                 null
     };
     
     /**
@@ -215,6 +216,10 @@
      *                  See spwidget:boardcreate even for parameters that
      *                  will be given to function.
      * 
+     * @param {String}  [options.height=null]
+     *                  The height for the board. This value should be a valid CSS
+     *                  dimention (ex. integer + unit - 100px). Default is null,
+     *                  indicating that its not fixed height (entire board is expanded)
      * 
      * @return {jQuery} this
      * 
@@ -311,6 +316,13 @@
      *                  $().SPShowBoard("setVisible", ['Not Started', 'Completed']);
      * 
      * 
+     * setHeight    -   Sets the height of the board by applying the value passed in
+     *                  to the column area that holds the cards. Use null to remove
+     *                  the height.
+     *                  Example:
+     *                      $().SPShowBoard("setHeight", "300px");
+     *                      $().SPShowBoard("setHeight", null);
+     * 
      * // TODO: Destroy method (must remove all event bindings)
      * // TODO: move method - moves an item on the board (identified by ID) to
      *          a different state
@@ -380,6 +392,12 @@
                 } else if (method === "setvisible") {
                     
                     board.setUserDefinedVisibleCol( args[1] );
+                    
+                //*** SETHEIGHT ***
+                } else if (method === "setheight") {
+                    
+                    board.height = args[1];
+                    board.setBoardColumnHeight();
                     
                 }//end: if(): methods
                 
@@ -1832,16 +1850,7 @@
                      */
                     setBoardColumnHeight: function() {
                         
-                        if (opt.statesCntr.is(":visible")) {
-                            
-                            $.SPWidgets.makeSameHeight(
-                                opt.statesCntr.find("div.spwidget-board-state:visible"),
-                                20,
-                                'min-height'
-                            );
-                            
-                        }
-                        
+                        // Set the height of the headers
                         if (opt.headersCntr.is(":visible")) {
                             
                             $.SPWidgets.makeSameHeight(
@@ -1852,6 +1861,36 @@
                             
                         }
                         
+                        // If user defined a fixed height, then use that on the
+                        // card content column and exit.
+                        if (opt.height) {
+                            
+                            opt.statesCntr
+                                .find("div.spwidget-board-state:visible")
+                                .css({
+                                    height:         opt.height,
+                                    "min-height":   ""
+                                });
+                                
+                            return;
+                            
+                        }
+                        
+                        // Else, set the height of the column area that holds the cards.
+                        // We also remove the fixed height from these if set.
+                        if (opt.statesCntr.is(":visible")) {
+                            
+                            $.SPWidgets.makeSameHeight(
+                                opt.statesCntr
+                                    .find("div.spwidget-board-state:visible")
+                                    .css("height", ""),
+                                20,
+                                'min-height'
+                            );
+                            
+                        }
+                        
+                        return;
                         
                     } // end: opt.setBoardCOlumnHeight()
                     

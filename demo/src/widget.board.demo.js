@@ -46,7 +46,8 @@
                             showColPicker:          true,
                             colPickerLabel:         "Choose Columns",
                             colPickerCloseLabel:    "Close Picker",
-                            colPickerApplyLabel:    "Change"
+                            colPickerApplyLabel:    "Change",
+                            height:                 "500px"
                         });
                     
                 }

@@ -33,6 +33,7 @@ This method takes as input an object containing the supported options:
             template:               null,
             webURL:                 $().SPServices.SPGetCurrentSite(),
             showColPicker:          false,
+            height:                 null,
             colPickerLabel:         "Columns",
             colPickerCloseLabel:    "Close",
             colPickerApplyLabel:    "Apply",
@@ -196,6 +197,16 @@ The default options for this widget can be manipulated/set via the following obj
     If true, the column picker option will be displayed on the page. Allows user to pick which column are visible/hidden. (Since v2.1)
     
     
+-   **height**     :   *String. Optional. Default=null* <br>
+    If set, the board will have a fixed height and column content, if too long to display in the displayed area, will display a scroll bar for the user to scroll through the content. Value of this parameter should be a string that defined as a valid CSS length (include both an integer and associated dimention; ex: 100px). 
+    
+    Note that this value will be applied to the area of each column that displays the content only, and not the entire board markup (ex. the Column headers). The result is a board that is actually longer than the defined height. Default is null, which indicates the board does not have fixed height and will expand with the card content. (Since v2.3)
+    
+    Example: Make the board have a fixed height
+    
+        options.height = "700px"
+
+
 -   **colPickerVisible**     :   *Array. Optional. Default=[]* <br>
     An array with a list of board columns that should be visible. Used only when showColPicker is true. (Since v2.1). 
     
@@ -336,7 +347,19 @@ The following methods are supported:
         
         // Set all column to be visible
         $("#board").SPShowBoard("setVisible", []); 
+    
         
+-   **setHeight(null|String)**<br>
+    Sets the height of the board column content. See the _options.height_ option above to read more about the _height_ parameter. (Since v2.3)
+    
+    Example:
+        
+        // Set Height to 500px
+        $("#board").SPShowBoard("setHeight", "500px"); 
+        
+        // Un-set the height and let content flow down the page
+        $("#board").SPShowBoard("setHeight", null);
+
 
 Events
 ------

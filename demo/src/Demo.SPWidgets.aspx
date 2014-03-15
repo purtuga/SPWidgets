@@ -179,7 +179,9 @@ SPWidgets - Widgets for building custom UIs
                     <p>
                         Click below to select a list followed by a column from
                         that list. Reminder: Column must be of a type supported
-                        by the widget. 
+                        by the widget (Lookup, Choice).<br>
+                        The Board is configured to be displayed with a fixed height
+                        of 500px.
                     </p>
                     
                     <div class="spwidgets-demo-lists"></div>
