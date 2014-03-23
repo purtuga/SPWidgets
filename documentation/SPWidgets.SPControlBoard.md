@@ -361,6 +361,22 @@ The following methods are supported:
         $("#board").SPShowBoard("setHeight", null);
 
 
+-   **getColumns()**<br>
+    Returns an array of objects containing information about the board columns currently setup. The informationon each column will include the name, title and isVisible properties.
+    
+        [
+            {
+                name: 'internal column name',
+                title: 'external column name',
+                isVisible: true|false
+            }
+        ]
+    
+    Example:
+    
+        var boardColumns = $("#board").SPShowBoard("getColumns"); 
+    
+    
 Events
 ------
 

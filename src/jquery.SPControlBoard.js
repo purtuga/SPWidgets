@@ -323,6 +323,16 @@
      *                      $().SPShowBoard("setHeight", "300px");
      *                      $().SPShowBoard("setHeight", null);
      * 
+     * getColumns   -   Returns an array board columns. Array will include a list of
+     *                  object that each represent a column in the board. The object
+     *                  will contain the following information:
+     *                  
+     *                      {
+     *                          name: 'internal name',
+     *                          title: 'external name',
+     *                          isVisible: true|false
+     *                      }
+     * 
      * // TODO: Destroy method (must remove all event bindings)
      * // TODO: move method - moves an item on the board (identified by ID) to
      *          a different state
@@ -350,10 +360,11 @@
         }
         
         // Capture original set of input arguments.
-        var args = arguments;
+        var args    = arguments,
+            retVal  = this;
         
         // Attach the board to each element
-        return this.each(function(){
+        this.each(function(){
             
             var ele         = $(this),
                 isMethod    = (typeof options === "string"),
@@ -399,6 +410,11 @@
                     board.height = args[1];
                     board.setBoardColumnHeight();
                     
+                //*** GET COLUMNS ***
+                } else if (method === "getcolumns") {
+                    
+                    retVal = board.getBoardColumnList();
+                    
                 }//end: if(): methods
                 
                 return this;
@@ -431,7 +447,7 @@
                     maxColumnVisible:   10,
                     showNumberOfColumns: 10,    // number of columns shown on the board
                     /**
-                     * Populates the opt.stats and opt.statesMap by 
+                     * Populates the opt.states and opt.statesMap by 
                      * pulling info. from the List definition
                      * 
                      * @return {jQuery.Promise}
@@ -1889,7 +1905,38 @@
                         
                         return;
                         
-                    } // end: opt.setBoardCOlumnHeight()
+                    }, // end: opt.setBoardCOlumnHeight()
+                    
+                    /**
+                     * Returns an array of objects with the list of board
+                     * columns currently defined for the board. This list
+                     * is _NOT_ the internal array, but rather an external
+                     * "safe" list.
+                     * 
+                     * @return {Array}
+                     *      An array of objects. Each object contains the
+                     *      name, title and isVisible attributes.
+                     *  
+                     */
+                    getBoardColumnList: function() {
+                        
+                        var columns = [],
+                            i,j;
+                        
+                        for(i=0,j=opt.states.length; i<j; i++){
+                            
+                            columns.push({
+                                name:       opt.states[i].name,
+                                title:      opt.states[i].title,
+                                isVisible:  opt.states[i].isVisible
+                            });
+                            
+                        }
+                        
+                        return columns;
+                        
+                    } //end: opt.getBoardColumnList()
+                    
                     
             });//end: $.extend() set opt
             
@@ -2230,6 +2277,10 @@
             return this;
             
         });//end: return .each()
+        
+        // return the original jQuery selection OR whatever
+        // a method might have generated if one was called.
+        return retVal;
         
     };//end: $.fn.SPShowBoard()
     
