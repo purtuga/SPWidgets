@@ -24,7 +24,7 @@
     "use strict";
 
     // Version info
-    var VERSION = "2014.01ALFHA2"; // TODO: Update version
+    var VERSION = "2014.01"; // TODO: Update version
 
     // String constants
     //   General
@@ -33,6 +33,13 @@
     var SCHEMASharePoint = "http://schemas.microsoft.com/sharepoint";
     var multiLookupPrefix = "MultiLookupPicker";
     var multiLookupPrefix2013 = "MultiLookup";
+
+    // Dropdown Types
+    var dropdownType = {
+        simple: "S",
+        complex: "C",
+        multiSelect: "M"
+    };
 
     // Known list field types
     var spListFieldTypes = [
@@ -301,6 +308,7 @@
     WSops.GetUserProfileByName = [USERPROFILESERVICE, false];
     WSops.GetUserProfileCount = [USERPROFILESERVICE, false];
     WSops.GetUserProfileSchema = [USERPROFILESERVICE, false];
+    WSops.GetUserPropertyByAccountName = [USERPROFILESERVICE, false];
     WSops.ModifyUserPropertyByAccountName = [USERPROFILESERVICE, true];
     WSops.RemoveAllColleagues = [USERPROFILESERVICE, true];
     WSops.RemoveAllLinks = [USERPROFILESERVICE, true];
@@ -858,12 +866,12 @@
                 addToPayload(opt, ["url", "lastModifiedTime", "comment", "isHighPriority"]);
                 break;
 
-                // SPELLCHECK OPERATIONS 
+                // SPELLCHECK OPERATIONS
             case "SpellCheck":
                 addToPayload(opt, ["chunksToSpell", "declaredLanguage", "useLad"]);
                 break;
 
-                // TAXONOMY OPERATIONS 
+                // TAXONOMY OPERATIONS
             case "AddTerms":
                 addToPayload(opt, ["sharedServiceId", "termSetId", "lcid", "newTerms"]);
                 break;
@@ -1071,6 +1079,9 @@
             case "GetUserProfileCount":
                 break;
             case "GetUserProfileSchema":
+                break;
+            case "GetUserPropertyByAccountName":
+                addToPayload(opt, ["accountName", "propertyName"]);
                 break;
             case "ModifyUserPropertyByAccountName":
                 addToPayload(opt, ["accountName", "newData"]);
@@ -1360,7 +1371,7 @@
             data: msg,
             dataType: "xml",
             contentType: "text/xml;charset=\"utf-8\"",
-            complete: function(xData, Status) {
+            complete: function(xData) {
                 currentContext.thisSite = $(xData.responseXML).find("WebUrlFromPageUrlResult").text();
             }
         });
@@ -1399,26 +1410,32 @@
         var thisFunction = "SPServices.SPCascadeDropdowns";
 
         // Find the parent column's select (dropdown)
-        var parentSelect = new DropdownCtl(opt.parentColumn);
+        var parentSelect = $().SPServices.SPDropdownCtl({
+            displayName: opt.parentColumn
+        });
         if (parentSelect.Obj.html() === null && opt.debug) {
             errBox(thisFunction, "parentColumn: " + opt.parentColumn, TXTColumnNotFound);
             return;
         }
 
         // Find the child column's select (dropdown)
-        var childSelect = new DropdownCtl(opt.childColumn);
+        var childSelect = $().SPServices.SPDropdownCtl({
+            displayName: opt.childColumn
+        });
         if (childSelect.Obj.html() === null && opt.debug) {
             errBox(thisFunction, "childColumn: " + opt.childColumn, TXTColumnNotFound);
             return;
         }
 
         // If requested and the childColumn is a complex dropdown, convert to a simple dropdown
-        if (opt.simpleChild === true && childSelect.Type === "C") {
+        if (opt.simpleChild === true && childSelect.Type === dropdownType.complex) {
             $().SPServices.SPComplexToSimpleDropdown({
                 columnName: opt.childColumn
             });
             // Set the childSelect to reference the new simple dropdown
-            childSelect = new DropdownCtl(opt.childColumn);
+            childSelect = $().SPServices.SPDropdownCtl({
+                displayName: opt.childColumn
+            });
         }
 
         var childColumnRequired, childColumnStatic;
@@ -1465,20 +1482,20 @@
         if (!thisParentSetUp) {
             switch (parentSelect.Type) {
                 // Plain old select
-                case "S":
+                case dropdownType.simple:
                     parentSelect.Obj.bind("change", function() {
                         cascadeDropdown(opt.parentColumn, parentSelect);
                     });
                     break;
                     // Input / Select hybrid
-                case "C":
+                case dropdownType.complex:
                     // Bind to any change on the hidden input element
-                    $("input[id='" + parentSelect.Obj.attr("optHid") + "']").bind("propertychange", function() {
+                    parentSelect.optHid.bind("propertychange", function() {
                         cascadeDropdown(opt.parentColumn, parentSelect);
                     });
                     break;
                     // Multi-select hybrid
-                case "M":
+                case dropdownType.multiSelect:
                     // Handle the dblclick on the candidate select
                     $(parentSelect.master.candidateControl).bind("dblclick", function() {
                         cascadeDropdown(opt.parentColumn, parentSelect);
@@ -1527,7 +1544,7 @@
             parentSelectSelected = getDropdownSelected(parentSelect, opt.matchOnId);
 
             // If the selection hasn't changed, then there's nothing to do right now.  This is useful to reduce
-            // the number of Web Service calls when the parentSelect.Type = "C" or "M", as there are multiple propertychanges
+            // the number of Web Service calls when the parentSelect.Type = dropdownType.complex or dropdownType.multiSelect, as there are multiple propertychanges
             // which don't require any action.  The attribute will be unique per child column in case there are
             // multiple children for a given parent.
             var allParentSelections = parentSelectSelected.join(";#");
@@ -1616,7 +1633,7 @@
 
                     // Add an explanatory prompt
                     switch (childSelect.Type) {
-                        case "S":
+                        case dropdownType.simple:
                             // Remove all of the existing options
                             $(childSelect.Obj).find("option").remove();
                             // If the column is required or the promptText option is empty, don't add the prompt text
@@ -1626,12 +1643,12 @@
                                 childSelect.Obj.append("<option value='0'>" + opt.noneText + "</option>");
                             }
                             break;
-                        case "C":
+                        case dropdownType.complex:
                             // If the column is required, don't add the "(None)" option
                             choices = childColumnRequired ? "" : opt.noneText + "|0";
-                            childSelect.Obj.attr("value", "");
+                            childSelect.Obj.val("");
                             break;
-                        case "M":
+                        case dropdownType.multiSelect:
                             // Remove all of the existing options
                             $(childSelect.master.candidateControl).find("option").remove();
                             newMultiLookupPickerdata = "";
@@ -1639,7 +1656,7 @@
                         default:
                             break;
                     }
-                    // Get the count of items returned and save it so that we can select if it's a single option 
+                    // Get the count of items returned and save it so that we can select if it's a single option
                     // The item count is stored thus: <rs:data ItemCount="1">
                     numChildOptions = parseFloat($(xData.responseXML).SPFilterNode("rs:data").attr("ItemCount"));
 
@@ -1671,17 +1688,17 @@
                         firstChildOptionValue = thisOption.value;
 
                         switch (childSelect.Type) {
-                            case "S":
+                            case dropdownType.simple:
                                 var selected = ($(this).attr("ows_ID") === childSelectSelected[0]) ? " selected='selected'" : "";
                                 childSelect.Obj.append("<option" + selected + " value='" + thisOption.id + "'>" + thisOption.value + "</option>");
                                 break;
-                            case "C":
+                            case dropdownType.complex:
                                 if (thisOption.id === childSelectSelected[0]) {
-                                    childSelect.Obj.attr("value", thisOption.value);
+                                    childSelect.Obj.val(thisOption.value);
                                 }
                                 choices = choices + ((choices.length > 0) ? "|" : "") + thisOption.value + "|" + thisOption.id;
                                 break;
-                            case "M":
+                            case dropdownType.multiSelect:
                                 $(childSelect.master.candidateControl).append("<option value='" + thisOption.id + "'>" + thisOption.value + "</option>");
                                 newMultiLookupPickerdata += thisOption.id + "|t" + thisOption.value + "|t |t |t";
                                 break;
@@ -1691,32 +1708,32 @@
                     });
 
                     switch (childSelect.Type) {
-                        case "S":
+                        case dropdownType.simple:
                             childSelect.Obj.trigger("change");
                             // If there is only one option and the selectSingleOption option is true, then select it
                             if (numChildOptions === 1 && opt.selectSingleOption === true) {
                                 $(childSelect.Obj).find("option[value!='0']:first").attr("selected", "selected");
                             }
                             break;
-                        case "C":
+                        case dropdownType.complex:
                             // Set the allowable choices
                             childSelect.Obj.attr("choices", choices);
                             // If there is only one option and the selectSingleOption option is true, then select it
                             if (numChildOptions === 1 && opt.selectSingleOption === true) {
                                 // Set the input element value
-                                $(childSelect.Obj).attr("value", firstChildOptionValue);
+                                $(childSelect.Obj).val(firstChildOptionValue);
                                 // Set the value of the optHid input element
-                                $("input[id='" + childSelect.Obj.attr("optHid") + "']").val(firstChildOptionId);
+                                childSelect.optHid.val(firstChildOptionId);
                             }
                             // If there's no selection, then remove the value in the associated hidden input element (optHid)
                             if (childSelect.Obj.val() === "") {
-                                $("input[id='" + childSelect.Obj.attr("optHid") + "']").val("");
+                                childSelect.optHid.val("");
                             }
                             break;
-                        case "M":
+                        case dropdownType.multiSelect:
                             // Clear the master
                             childSelect.master.data = "";
-                            childSelect.MultiLookupPickerdata.attr("value", newMultiLookupPickerdata);
+                            childSelect.MultiLookupPickerdata.val(newMultiLookupPickerdata);
 
                             // Clear any prior selections that are no longer valid or aren't selected
                             $(childSelect.master.resultControl).find("option").each(function() {
@@ -1768,24 +1785,24 @@
         }, options);
 
         // Find the column's select (dropdown)
-        var columnSelect = new DropdownCtl(opt.columnName);
+        var columnSelect = $().SPServices.SPDropdownCtl({
+            displayName: opt.columnName
+        });
         if (columnSelect.Obj.html() === null && opt.debug) {
             errBox("SPServices.SPComplexToSimpleDropdown", "columnName: " + opt.columnName, TXTColumnNotFound);
             return;
         }
 
         // If we don't have a complex dropdown, then there is nothing to do
-        if (columnSelect.Type !== "C") {
+        if (columnSelect.Type !== dropdownType.complex) {
             return;
         }
 
         // The available options are stored in the choices attribute of the complex dropdowns's input element...
         var choices = $(columnSelect.Obj).attr("choices").split("|");
-        // The optHid attribute contains the id of a hidden input element which stores the selected value for the commit
-        var columnOptHid = $(columnSelect.Obj).attr("optHid");
-        var columnOptHidInput = $("input[id='" + columnOptHid + "']");
+
         // We need to know which option is selected already, if any
-        var complexSelectSelectedId = $("input[id='" + columnOptHid + "']").val();
+        var complexSelectSelectedId = columnSelect.optHid.val();
 
         // Build up the simple dropdown, giving it an easy to select id
         var simpleSelectId = genContainerId("SPComplexToSimpleDropdown", opt.columnName);
@@ -1809,7 +1826,7 @@
         $("#" + simpleSelectId).change(function() {
             var thisVal = $(this).val();
             // ...set the optHid input element's value to the valus of the selected option...
-            columnOptHidInput.val(thisVal);
+            columnSelect.optHid.val(thisVal);
             // ...and save the selected value as the hidden input's value only if the value is not equal to "0" (None)
             $(columnSelect.Obj).val($(this).find("option[value='" + (thisVal !== "0" ? thisVal : "") + "']").html());
         });
@@ -1850,7 +1867,9 @@
         var thisFunction = "SPServices.SPDisplayRelatedInfo";
 
         // Find the column's select (dropdown)
-        var columnSelect = new DropdownCtl(opt.columnName);
+        var columnSelect = $().SPServices.SPDropdownCtl({
+            displayName: opt.columnName
+        });
         if (columnSelect.Obj.html() === null && opt.debug) {
             errBox(thisFunction, "columnName: " + opt.columnName, TXTColumnNotFound);
             return;
@@ -1886,20 +1905,20 @@
 
         switch (columnSelect.Type) {
             // Plain old select
-            case "S":
+            case dropdownType.simple:
                 columnSelect.Obj.bind("change", function() {
                     showRelated(opt, divId, relatedListXML, relatedColumnsXML);
                 });
                 break;
                 // Input / Select hybrid
-            case "C":
+            case dropdownType.complex:
                 // Bind to any change on the hidden input element
-                $("input[id='" + columnSelect.Obj.attr("optHid") + "']").bind("propertychange", function() {
+                columnSelect.optHid.bind("propertychange", function() {
                     showRelated(opt, divId, relatedListXML, relatedColumnsXML);
                 });
                 break;
                 // Multi-select hybrid
-            case "M":
+            case dropdownType.multiSelect:
                 if (opt.debug) {
                     errBox(thisFunction, "columnName: " + opt.columnName, "Multi-select columns not supported by this function");
                 }
@@ -1918,16 +1937,18 @@
         var thisFunction = "SPServices.SPDisplayRelatedInfo";
 
         // Find the column's select (dropdown)
-        var columnSelect = new DropdownCtl(opt.columnName);
+        var columnSelect = $().SPServices.SPDropdownCtl({
+            displayName: opt.columnName
+        });
 
         // Get the current column selection(s)
         columnSelectSelected = getDropdownSelected(columnSelect, opt.matchOnId);
-        if (columnSelect.Type === "C" && opt.numChars > 0 && columnSelectSelected[0].length < opt.numChars) {
+        if (columnSelect.Type === dropdownType.complex && opt.numChars > 0 && columnSelectSelected[0].length < opt.numChars) {
             return;
         }
 
         // If the selection hasn't changed, then there's nothing to do right now.  This is useful to reduce
-        // the number of Web Service calls when the parentSelect.Type = "C", as there are multiple propertychanges
+        // the number of Web Service calls when the parentSelect.Type = dropdownType.complex, as there are multiple propertychanges
         // which don't require any action.
         if (columnSelect.Obj.attr("showRelatedSelected") === columnSelectSelected[0]) {
             return;
@@ -2049,7 +2070,7 @@
         }
     } // End showRelated
 
-    // Function to filter a lookup based dropdown 
+    // Function to filter a lookup based dropdown
     $.fn.SPServices.SPFilterDropdown = function(options) {
         var opt = $.extend({}, {
             relationshipWebURL: "", // [Optional] The name of the Web (site) which contains the relationshipList
@@ -2075,7 +2096,9 @@
         var thisFunction = "SPServices.SPFilterDropdown";
 
         // Find the column's select (dropdown)
-        var columnSelect = new DropdownCtl(opt.columnName);
+        var columnSelect = $().SPServices.SPDropdownCtl({
+            displayName: opt.columnName
+        });
         if (columnSelect.Obj.html() === null && opt.debug) {
             errBox(thisFunction, "columnName: " + opt.columnName, TXTColumnNotFound);
             return;
@@ -2144,7 +2167,7 @@
 
                 // Add an explanatory prompt
                 switch (columnSelect.Type) {
-                    case "S":
+                    case dropdownType.simple:
                         // Remove all of the existing options
                         $(columnSelect.Obj).find("option").remove();
                         // If the column is required or the promptText option is empty, don't add the prompt text
@@ -2154,12 +2177,12 @@
                             columnSelect.Obj.append("<option value='0'>" + opt.noneText + "</option>");
                         }
                         break;
-                    case "C":
+                    case dropdownType.complex:
                         // If the column is required, don't add the "(None)" option
                         choices = columnColumnRequired ? "" : opt.noneText + "|0";
-                        columnSelect.Obj.attr("value", "");
+                        columnSelect.Obj.val("");
                         break;
-                    case "M":
+                    case dropdownType.multiSelect:
                         // Remove all of the existing options
                         $(columnSelect.master.candidateControl).find("option").remove();
                         newMultiLookupPickerdata = "";
@@ -2192,17 +2215,17 @@
                     }
 
                     switch (columnSelect.Type) {
-                        case "S":
+                        case dropdownType.simple:
                             var selected = ($(this).attr("ows_ID") === columnSelectSelected[0]) ? " selected='selected'" : "";
                             columnSelect.Obj.append("<option" + selected + " value='" + thisOption.id + "'>" + thisOption.value + "</option>");
                             break;
-                        case "C":
+                        case dropdownType.complex:
                             if (thisOption.id === columnSelectSelected[0]) {
-                                columnSelect.Obj.attr("value", thisOption.value);
+                                columnSelect.Obj.val(thisOption.value);
                             }
                             choices = choices + ((choices.length > 0) ? "|" : "") + thisOption.value + "|" + thisOption.id;
                             break;
-                        case "M":
+                        case dropdownType.multiSelect:
                             $(columnSelect.master.candidateControl).append("<option value='" + thisOption.id + "'>" + thisOption.value + "</option>");
                             newMultiLookupPickerdata += thisOption.id + "|t" + thisOption.value + "|t |t |t";
                             break;
@@ -2212,18 +2235,18 @@
                 });
 
                 switch (columnSelect.Type) {
-                    case "S":
+                    case dropdownType.simple:
                         columnSelect.Obj.trigger("change");
                         break;
-                    case "C":
+                    case dropdownType.complex:
                         columnSelect.Obj.attr("choices", choices);
                         columnSelect.Obj.trigger("propertychange");
                         break;
-                    case "M":
+                    case dropdownType.multiSelect:
                         // Clear the master
                         columnSelect.master.data = "";
 
-                        columnSelect.MultiLookupPickerdata.attr("value", newMultiLookupPickerdata);
+                        columnSelect.MultiLookupPickerdata.val(newMultiLookupPickerdata);
                         // Clear any prior selections that are no longer valid
                         $(columnSelect.master.resultControl).find("option").each(function() {
                             var thisSelected = $(this);
@@ -2347,7 +2370,7 @@
             // Force parameter forces redirection to a page that displays the information as stored in the UserInfo table rather than My Site.
             // Adding the extra Query String parameter with the current date/time forces the server to view this as a new request.
             url: thisWeb + "/_layouts/userdisp.aspx?Force=True&" + new Date().getTime(),
-            complete: function(xData, Status) {
+            complete: function(xData) {
                 thisUserDisp = xData;
             }
         });
@@ -2417,7 +2440,9 @@
         var thisFunction = "SPServices.SPLookupAddNew";
 
         // Find the lookup column's select (dropdown)
-        var lookupSelect = new DropdownCtl(opt.lookupColumn);
+        var lookupSelect = $().SPServices.SPDropdownCtl({
+            displayName: opt.lookupColumn
+        });
         if (lookupSelect.Obj.html() === null && opt.debug) {
             errBox(thisFunction, "lookupColumn: " + opt.lookupColumn, TXTColumnNotFound);
             return;
@@ -2432,7 +2457,7 @@
             async: false,
             cacheXML: true,
             listName: $().SPServices.SPListNameFromUrl(),
-            completefunc: function(xData, Status) {
+            completefunc: function(xData) {
                 $(xData.responseXML).find("Field[DisplayName='" + opt.lookupColumn + "']").each(function() {
                     lookupColumnStaticName = $(this).attr("StaticName");
                     // Use GetList for the Lookup column's list to determine the list's URL
@@ -2441,7 +2466,7 @@
                         async: false,
                         cacheXML: true,
                         listName: $(this).attr("List"),
-                        completefunc: function(xData, Status) {
+                        completefunc: function(xData) {
                             $(xData.responseXML).find("List").each(function() {
                                 lookupListUrl = $(this).attr("WebFullUrl");
                                 // Need to handle when list is in the root site
@@ -2499,7 +2524,7 @@
             webURL: opt.webURL,
             async: false,
             userLoginName: (opt.userAccount !== "") ? opt.userAccount : $().SPServices.SPGetCurrentUser(),
-            completefunc: function(xData, Status) {
+            completefunc: function(xData) {
                 $(xData.responseXML).find("User").each(function() {
                     userId = $(this).attr("ID");
                 });
@@ -2571,7 +2596,7 @@
         $(columnObj).blur(function() {
             var columnValueIDs = [];
             // Get the columnDisplayName's value
-            var columnValue = $(this).attr("value");
+            var columnValue = $(this).val();
             if (columnValue.length === 0) {
                 return false;
             }
@@ -2777,12 +2802,14 @@
         var thisFunction = "SPServices.SPSetMultiSelectSizes";
 
         // Find the multi-select column
-        var thisMultiSelect = new DropdownCtl(opt.multiSelectColumn);
+        var thisMultiSelect = $().SPServices.SPDropdownCtl({
+            displayName: opt.multiSelectColumn
+        });
         if (thisMultiSelect.Obj.html() === null && opt.debug) {
             errBox(thisFunction, "multiSelectColumn: " + opt.multiSelectColumn, TXTColumnNotFound);
             return;
         }
-        if (thisMultiSelect.Type !== "M" && opt.debug) {
+        if (thisMultiSelect.Type !== dropdownType.multiSelect && opt.debug) {
             errBox(thisFunction, "multiSelectColumn: " + opt.multiSelectColumn, "Column is not multi-select.");
             return;
         }
@@ -2876,7 +2903,7 @@
                 operation: "GetListCollection",
                 webURL: opt.webURL,
                 async: false, // Need this to be synchronous so we're assured of a valid value
-                completefunc: function(xData, Status) {
+                completefunc: function(xData) {
                     $(xData.responseXML).find("List").each(function() {
                         listXml = $(this);
 
@@ -2893,7 +2920,7 @@
                                         webURL: opt.webURL,
                                         listName: listXml.attr("ID"),
                                         async: false, // Need this to be synchronous so we're assured of a valid value
-                                        completefunc: function(xData, Status) {
+                                        completefunc: function(xData) {
                                             $(xData.responseXML).find("ContentType").each(function() {
                                                 // Don't deal with folders
                                                 if ($(this).attr("ID").substring(0, 6) !== "0x0120") {
@@ -2929,7 +2956,7 @@
                                         webURL: opt.webURL,
                                         listName: listXml.attr("ID"),
                                         async: false, // Need this to be synchronous so we're assured of a valid value
-                                        completefunc: function(xData, Status) {
+                                        completefunc: function(xData) {
                                             $(xData.responseXML).find("View").each(function() {
                                                 SPScriptAuditPage(opt, listXml, "View", $(this).attr("DisplayName"), $(this).attr("Url"));
                                             });
@@ -2963,7 +2990,7 @@
                     cacheXML: true,
                     webURL: opt.webURL,
                     listName: listsArray[i],
-                    completefunc: function(xData, Status) {
+                    completefunc: function(xData) {
                         $(xData.responseXML).find("List").each(function() {
                             listXml = $(this);
                         });
@@ -3095,7 +3122,7 @@
             listName: opt.listName
         });
 
-        // when the promise is available...     
+        // when the promise is available...
         thisGetList.done(function() {
             $(thisGetList.responseXML).find("Field[DisplayName='" + opt.columnName + "']").each(function() {
                 // Determine whether columnName allows a fill-in choice
@@ -3343,11 +3370,11 @@
 
         var qs = location.search.slice(1).split('&');
 
-        qs.forEach(function(param) {
-            param = param.split('=');
+        for (var i = 0; i < qs.length; i++) {
+            var param = qs[i].split('=');
             var paramName = opt.lowercase ? param[0].toLowerCase() : param[0];
-            queryStringVals[paramName] = decodeURIComponent(param[1] || '');
-        });
+            queryStringVals[paramName] = decodeURIComponent(param[1] || "");
+        }
 
         return queryStringVals;
 
@@ -3379,7 +3406,7 @@
         $().SPServices({
             operation: "GetListCollection",
             async: false,
-            completefunc: function(xData, Status) {
+            completefunc: function(xData) {
                 $(xData.responseXML).find("List").each(function() {
                     var defaultViewUrl = $(this).attr("DefaultViewUrl");
                     var listCollList = defaultViewUrl.substring(0, defaultViewUrl.lastIndexOf(SLASH) + 1).toUpperCase();
@@ -3483,7 +3510,6 @@
 
         var newChangeToken;
         var thisListJsonMapping = {};
-        var thisData;
         var deletedIds = [];
         var result = $.Deferred();
 
@@ -3536,7 +3562,7 @@
             }
 
             // Implement any mappingOverrides
-            // Example: { ows_JSONTextColumn: { mappedName: "JTC", objectType: "JSON" } } 
+            // Example: { ows_JSONTextColumn: { mappedName: "JTC", objectType: "JSON" } }
             if (opt.mappingOverrides !== null) {
                 // For each mappingOverride, override the list schema
                 for (var mapping in opt.mappingOverrides) {
@@ -3637,7 +3663,7 @@
                     row[thisObjectName] = attrToJson(rowAttrs[attrNum].value, thisObjectType);
                 }
             }
-            // Push this item into the JSON Object          
+            // Push this item into the JSON Object
             jsonObject.push(row);
 
         });
@@ -3726,7 +3752,7 @@
 
     function dateToJsonObject(s) {
 
-        var dt = s.split("T");
+        var dt = s.split("T")[0] !== s ? s.split("T") : s.split(" ");
         var d = dt[0].split("-");
         var t = dt[1].split(":");
         var t3 = t[2].split("Z");
@@ -3926,6 +3952,84 @@
     }; // End $.fn.SPServices.Version
 
 
+    // Find a dropdown (or multi-select) in the DOM. Returns the dropdown object and its type:
+    // S = Simple (select)
+    // C = Compound (input + select hybrid)
+    // M = Multi-select (select hybrid)
+    $.fn.SPServices.SPDropdownCtl = function(options) {
+
+        var opt = $.extend({}, {
+            displayName: "" // The displayName of the column on the form
+        }, options);
+
+        var columnObj = {};
+
+        var colStaticName = $().SPServices.SPGetStaticFromDisplay({
+            listName: $().SPServices.SPListNameFromUrl(),
+            columnDisplayName: opt.displayName
+        });
+
+        // Simple, where the select's title attribute is colName (DisplayName)
+        //  Examples:
+        //      SP2013 <select title="Country" id="Country_d578ed64-2fa7-4c1e-8b41-9cc1d524fc28_$LookupField">
+        //      SP2010: <SELECT name=ctl00$m$g_d10479d7_6965_4da0_b162_510bbbc58a7f$ctl00$ctl05$ctl01$ctl00$ctl00$ctl04$ctl00$Lookup title=Country id=ctl00_m_g_d10479d7_6965_4da0_b162_510bbbc58a7f_ctl00_ctl05_ctl01_ctl00_ctl00_ctl04_ctl00_Lookup>
+        //      SP2007: <select name="ctl00$m$g_e845e690_00da_428f_afbd_fbe804787763$ctl00$ctl04$ctl04$ctl00$ctl00$ctl04$ctl00$Lookup" Title="Country" id="ctl00_m_g_e845e690_00da_428f_afbd_fbe804787763_ctl00_ctl04_ctl04_ctl00_ctl00_ctl04_ctl00_Lookup">
+        if ((columnObj.Obj = $("select[Title='" + opt.displayName + "']")).length === 1) {
+            columnObj.Type = dropdownType.simple;
+            // Compound
+        } else if ((columnObj.Obj = $("input[Title='" + opt.displayName + "']")).length === 1) {
+            columnObj.Type = dropdownType.complex;
+            // Simple, where the select's id begins with colStaticName (StaticName) - needed for required columns where title="DisplayName Required Field"
+            //   Example: SP2013 <select title="Region Required Field" id="Region_59566f6f-1c3b-4efb-9b7b-6dbc35fe3b0a_$LookupField" showrelatedselected="3">
+        } else if ((columnObj.Obj = $("select:regex(id, (" + colStaticName + ")(_)[0-9a-fA-F]{8}(-))")).length === 1) {
+            columnObj.Type = dropdownType.simple;
+            // Multi-select: This will find the multi-select column control in English and most other language sites where the Title looks like 'Column Name possible values'
+        } else if ((columnObj.Obj = $("select[ID$='SelectCandidate'][Title^='" + opt.displayName + " ']")).length === 1) {
+            columnObj.Type = dropdownType.multiSelect;
+            // Multi-select: This will find the multi-select column control on a Russian site (and perhaps others) where the Title looks like '????????? ????????: Column Name'
+        } else if ((columnObj.Obj = $("select[ID$='SelectCandidate'][Title$=': " + opt.displayName + "']")).length === 1) {
+            columnObj.Type = dropdownType.multiSelect;
+            // Multi-select: This will find the multi-select column control on a German site (and perhaps others) where the Title looks like 'MÃ¶gliche Werte fÃ¼r &quot;Column name&quot;.'
+        } else if ((columnObj.Obj = $("select[ID$='SelectCandidate'][Title$='\"" + opt.displayName + "\".']")).length === 1) {
+            columnObj.Type = dropdownType.multiSelect;
+            // Multi-select: This will find the multi-select column control on a Italian site (and perhaps others) where the Title looks like "Valori possibili Column name"
+        } else if ((columnObj.Obj = $("select[ID$='SelectCandidate'][Title$=' " + opt.displayName + "']")).length === 1) {
+            columnObj.Type = dropdownType.multiSelect;
+        } else {
+            columnObj.Type = null;
+        }
+
+        // Last ditch effort
+        // Simple, finding based on the comment text at the top of the td.ms-formbody where the select's title begins with DisplayName - needed for required columns where title="DisplayName Required Field"
+        //   Example: SP2010 <select name="ctl00$m$g_308135f8_3f59_4d67_b5f8_c26776c498b7$ff51$ctl00$Lookup" id="ctl00_m_g_308135f8_3f59_4d67_b5f8_c26776c498b7_ff51_ctl00_Lookup" title="Region Required Field">
+        if (columnObj.Type === null) {
+            var fieldContainer = findFormField(opt.displayName);
+            if (fieldContainer !== undefined) {
+                var fieldSelect = fieldContainer.find("select[title^='" + opt.displayName + "'][id$='$Lookup']");
+
+                if (fieldSelect && fieldSelect.length === 1) {
+                    columnObj.Type = dropdownType.simple;
+                    columnObj.Obj = fieldSelect;
+                }
+            }
+        }
+
+        if (columnObj.Type === dropdownType.complex) {
+            columnObj.optHid = $("input[id='" + columnObj.Obj.attr("optHid") + "']");
+        } else if (columnObj.Type === dropdownType.multiSelect) {
+            // Find the important bits of the multiselect control
+            columnObj.container = columnObj.Obj.closest("span");
+            columnObj.MultiLookupPickerdata = columnObj.container.find("input[id$='" + multiLookupPrefix + "_data'], input[id$='" + multiLookupPrefix2013 + "_data']");
+            var addButtonId = columnObj.container.find("[id$='AddButton']").attr("id");
+            columnObj.master =
+                window[addButtonId.replace(/AddButton/, multiLookupPrefix + "_m")] || // SharePoint 2007
+            window[addButtonId.replace(/AddButton/, multiLookupPrefix2013 + "_m")]; // SharePoint 2013
+        }
+
+        return columnObj;
+
+    }; // End of function $.fn.SPServices.SPDropdownCtl
+
     ////// PRIVATE FUNCTIONS ////////
 
     // Get the current context (as much as we can) on startup
@@ -4086,55 +4190,6 @@
         return out;
     } // End of function showAttrs
 
-
-    // Find a dropdown (or multi-select) in the DOM. Returns the dropdown onject and its type:
-    // S = Simple (select)
-    // C = Compound (input + select hybrid)
-    // M = Multi-select (select hybrid)
-    function DropdownCtl(colName) {
-
-        var idLen = 50;
-        var colStaticName = $().SPServices.SPGetStaticFromDisplay({
-            listName: $().SPServices.SPListNameFromUrl(),
-            columnDisplayName: colName
-        });
-
-        // Simple, where the select's title attribute is colName (DisplayName)
-        if ((this.Obj = $("select[Title='" + colName + "']")).length === 1) {
-            this.Type = "S";
-            // Simple, where the select's id begins with colStaticName (StaticName) - needed for required columns where title="colName Required Field"
-        } else if ((this.Obj = $("select:regex(id, (" + colStaticName + ")(_)[0-9a-fA-F]{8}(-))")).length === 1) {
-            this.Type = "S";
-            // Compound
-        } else if ((this.Obj = $("input[Title='" + colName + "']")).length === 1) {
-            this.Type = "C";
-            // Multi-select: This will find the multi-select column control in English and most other language sites where the Title looks like 'Column Name possible values'
-        } else if ((this.Obj = $("select[ID$='SelectCandidate'][Title^='" + colName + " ']")).length === 1) {
-            this.Type = "M";
-            // Multi-select: This will find the multi-select column control on a Russian site (and perhaps others) where the Title looks like '????????? ????????: Column Name'
-        } else if ((this.Obj = $("select[ID$='SelectCandidate'][Title$=': " + colName + "']")).length === 1) {
-            this.Type = "M";
-            // Multi-select: This will find the multi-select column control on a German site (and perhaps others) where the Title looks like 'MÃ¶gliche Werte fÃ¼r &quot;Column name&quot;.'
-        } else if ((this.Obj = $("select[ID$='SelectCandidate'][Title$='\"" + colName + "\".']")).length === 1) {
-            this.Type = "M";
-            // Multi-select: This will find the multi-select column control on a Italian site (and perhaps others) where the Title looks like "Valori possibili Column name"
-        } else if ((this.Obj = $("select[ID$='SelectCandidate'][Title$=' " + colName + "']")).length === 1) {
-            this.Type = "M";
-        } else {
-            this.Type = null;
-        }
-
-        if (this.Type === "M") {
-            // Find the important bits of the multiselect control
-            this.container = this.Obj.closest("span");
-            this.MultiLookupPickerdata = this.container.find("input[id$='" + multiLookupPrefix + "_data'], input[id$='" + multiLookupPrefix2013 + "_data']");
-            var addButtonId = this.container.find("[id$='AddButton']").attr("id");
-            this.master =
-                window[addButtonId.replace(/AddButton/, multiLookupPrefix + "_m")] || // SharePoint 2007
-            window[addButtonId.replace(/AddButton/, multiLookupPrefix2013 + "_m")]; // SharePoint 2013
-        }
-    } // End of function DropdownCtl
-
     // Returns the selected value(s) for a dropdown in an array. Expects a dropdown object as returned by the DropdownCtl function.
     // If matchOnId is true, returns the ids rather than the text values for the selection options(s).
     function getDropdownSelected(columnSelect, matchOnId) {
@@ -4142,21 +4197,21 @@
         var columnSelectSelected = [];
 
         switch (columnSelect.Type) {
-            case "S":
+            case dropdownType.simple:
                 if (matchOnId) {
                     columnSelectSelected.push(columnSelect.Obj.find("option:selected").val() || []);
                 } else {
                     columnSelectSelected.push(columnSelect.Obj.find("option:selected").text() || []);
                 }
                 break;
-            case "C":
+            case dropdownType.complex:
                 if (matchOnId) {
-                    columnSelectSelected.push($("input[id='" + columnSelect.Obj.attr("optHid") + "']").val() || []);
+                    columnSelectSelected.push(columnSelect.optHid.val() || []);
                 } else {
                     columnSelectSelected.push(columnSelect.Obj.val() || []);
                 }
                 break;
-            case "M":
+            case dropdownType.multiSelect:
                 $(columnSelect.master.resultControl).find("option").each(function() {
                     if (matchOnId) {
                         columnSelectSelected.push($(this).val());
@@ -4216,7 +4271,7 @@
             operation: "GetFormCollection",
             async: false,
             listName: l,
-            completefunc: function(xData, Status) {
+            completefunc: function(xData) {
                 u = $(xData.responseXML).find("Form[Type='" + f + "']").attr("Url");
             }
         });
@@ -4238,7 +4293,7 @@
             // the parameter name and the option name match
             if (typeof paramArray[i] === "string") {
                 SOAPEnvelope.payload += wrapNode(paramArray[i], opt[paramArray[i]]);
-                // the parameter name and the option name are different 
+                // the parameter name and the option name are different
             } else if ($.isArray(paramArray[i]) && paramArray[i].length === 2) {
                 SOAPEnvelope.payload += wrapNode(paramArray[i][0], opt[paramArray[i][1]]);
                 // the element not a string or an array and is marked as "add to payload only if non-null"
@@ -4345,7 +4400,7 @@
         return u.replace(/&/g, '%26');
     }
 
-    // Split values like 1;#value into id and value                             
+    // Split values like 1;#value into id and value
     function SplitIndex(s) {
         var spl = s.split(";#");
         this.id = spl[0];
@@ -4368,7 +4423,7 @@
             regexFlags = 'ig',
             regex = new RegExp(matchParams.join('').replace(/^\s+|\s+$/g, ''), regexFlags);
         return regex.test(jQuery(elem)[attr.method](attr.property));
-    }
+    };
 
 
 })(jQuery);
