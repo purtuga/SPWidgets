@@ -16,6 +16,19 @@
  * @category Plugins/SPServices
  * @author Sympraxis Consulting LLC/marc.anderson@sympraxisconsulting.com
  */
+
+/**
+ * ################ FORKED VERSION OF SPSERVICES - BY PAUL TAVARES #############
+ *
+ * [001]    -   Added fix for: http://spservices.codeplex.com/workitem/10182
+ *              Changes start at line 1271.
+ * [002]    -   2014.06.14:
+ *              Added fix for: https://spservices.codeplex.com/workitem/10146
+ *              which was dropped from latest version
+ *
+ *
+ */
+
 /* jshint undef: true */
 /* global L_Menu_BaseUrl, _spUserId, _spPageContextInfo, GipAddSelectedItems, GipRemoveSelectedItems, GipGetGroupData */
 
@@ -24,7 +37,7 @@
     "use strict";
 
     // Version info
-    var VERSION = "2014.01"; // TODO: Update version
+    var VERSION = "2014.01_FORK_001"; // TODO: Update version
 
     // String constants
     //   General
@@ -160,7 +173,7 @@
     WSops.RemoveMeeting = [MEETINGS, true];
     WSops.SetWorkSpaceTitle = [MEETINGS, true];
 
-    WSops.ResolvePrincipals = [PEOPLE, false];
+    WSops.ResolvePrincipals = [PEOPLE, true];
     WSops.SearchPrincipals = [PEOPLE, false];
 
     WSops.AddPermission = [PERMISSIONS, true];
@@ -1255,22 +1268,25 @@
 
         // Check to see if we've already cached the results
         var cachedPromise;
-        if (opt.cacheXML) {
+        if(opt.cacheXML) {
             cachedPromise = promisesCache[msg];
         }
 
-        if (typeof cachedPromise === "undefined") {
+        // If we don't have a completefunc, then we won't attempt to call it
+        var thisHasCompletefunc = $.isFunction(opt.completefunc);
+
+        if(typeof cachedPromise === "undefined") {
 
             // Finally, make the Ajax call
-            promisesCache[msg] = $.ajax({
+            cachedPromise = $.ajax({
                 // The relative URL for the AJAX call
                 url: ajaxURL,
                 // By default, the AJAX calls are asynchronous.  You can specify false to require a synchronous call.
                 async: opt.async,
                 // Before sending the msg, need to send the request header
-                beforeSend: function(xhr) {
+                beforeSend: function (xhr) {
                     // If we need to pass the SOAPAction, do so
-                    if (WSops[opt.operation][1]) {
+                    if(WSops[opt.operation][1]) {
                         xhr.setRequestHeader("SOAPAction", SOAPAction);
                     }
                 },
@@ -1284,15 +1300,24 @@
                 contentType: "text/xml;charset='utf-8'",
                 complete: function(xData, Status) {
                     // When the call is complete, call the completefunc if there is one
-                    if ($.isFunction(opt.completefunc)) {
+                    if(thisHasCompletefunc) {
                         opt.completefunc(xData, Status);
-
                     }
                 }
             });
 
+            // If cache is true
+            // OR
+            // we have this message cached from a prior call,
+            // then update it with this most current version
+            if (opt.cacheXML || promisesCache[msg]) {
+
+                promisesCache[msg] = cachedPromise;
+
+            }
+
             // Return the promise
-            return promisesCache[msg];
+            return cachedPromise;
 
         } else {
             // Call the completefunc if there is one
