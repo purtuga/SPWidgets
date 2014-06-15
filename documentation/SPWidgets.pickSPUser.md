@@ -85,6 +85,14 @@ This method takes as input an object containing the options below. These can als
     The text to appear in the HTML5 placeholder attribute of the input field.  Since v2.1.
 
 
+-   **meKeyword** : *String. Optional. Default=[me]* <br />
+    The keyword used to represent the current user. When the user types this keyword, an additional suggestion is added to the autocomplete titled 'Current User' (value is configurable. See option below). This suggestion, when selected by the user, will use sharepoint's &lt;ThisUser/&gt; keyword instead of an ID;#name format and thus can be used to accomodate a dynamic setting based on the user using the widget.  (Since v.2.3)
+
+
+-   **meKeywordLabel** : *String. Optional. Default=Current User* <br />
+    The label to be shown on the suggestion box or selected list of user when using the [me] keyword.  (Since v.2.3)
+
+
 Return Value
 ------------
 

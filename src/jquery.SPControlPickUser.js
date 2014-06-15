@@ -43,7 +43,9 @@
         inputPlaceholder:   "Type and Pick",
         appendTo:           null,
         minLength:          3,
-        resolvePrincipals:  true
+        resolvePrincipals:  true,
+        meKeyword:          "[me]",
+        meKeywordLabel:     "Current User"
     };
 
     /**
@@ -288,14 +290,28 @@
                     i++;
                     user    = curUsers[i];
 
+                    if (id.toLowerCase() === "<userid/>") {
+
+                        user = o.meKeywordLabel;
+
+                    }
+
                     $ui     = $.pt.pickSPUser
                                 .getUserHtmlElement(o, id, user)
                                 .appendTo( o.eleSelected );
 
                     // Get this user's info. and store it in the input element
-                    (function($thisUserUI, thisUserName){
+                    (function($thisUserUI, thisUserName, thisUserId){
 
-                        o.getSearchResults(thisUserName)
+                        var searchString = thisUserName;
+
+                        if (id.toLowerCase() === "<userid/>") {
+
+                            searchString = o.meKeyword;
+
+                        }
+
+                        o.getSearchResults(searchString)
                             .done(function(rows, xData, status){
 
                                 var personName = String(thisUserName).toLowerCase();
@@ -322,7 +338,7 @@
 
                             });
 
-                    })($ui, user);
+                    })($ui, user, id);
 
                 }
 
@@ -341,7 +357,7 @@
             }; //end: o.addPeopleToList()
 
             /**
-             * Searches SP for the value providedon input
+             * Searches SP for the value provided on input
              *
              * @param {String} searchString
              *
@@ -363,6 +379,23 @@
 
                             var resp = $(xData.responseXML),
                                 rows = [];
+
+                            // If searchString is part of the keyword [me],
+                            // then add <UserID>;#current user to the list
+                            // of suggestions
+                            if (String(o.meKeyword).indexOf(searchString.toLowerCase()) > -1) {
+
+                                rows.push({
+                                    displayName:    o.meKeywordLabel,
+                                    accountId:      '<UserID/>',
+                                    accountName:    o.meKeywordLabel,
+                                    accountType:    'User',
+                                    // needed attributes for autocomplete
+                                    value:          o.meKeywordLabel,
+                                    label:          o.meKeywordLabel
+                                });
+
+                            }
 
                             resp.find("PrincipalInfo").each(function(){
 
@@ -394,6 +427,7 @@
                                 rows.push(thisUser);
 
                             });
+
 
                             dfd.resolveWith(xData, [rows, xData, status]);
 
