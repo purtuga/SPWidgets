@@ -3,7 +3,7 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *  
- * @version 20140315113942
+ * @version 20140614083309
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  * 
@@ -11,8 +11,8 @@
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date:  Paul:March 15, 2014 11:39 AM
- * Version:     20140315113942
+ * Build Date:  Paul:June 14, 2014 08:33 PM
+ * Version:     20140614083309
  * 
  */
 ;(function($){
@@ -53,7 +53,7 @@
         }
         
         $.SPWidgets             = {};
-        $.SPWidgets.version     = "20140315113942";
+        $.SPWidgets.version     = "20140614083309";
         $.SPWidgets.defaults    = {};
         
         /**
@@ -822,13 +822,13 @@
 /**
  * Displays data from a list in Kan-Ban board using a specific column from
  * that list.  Column (at this point) is assume to be a CHOICE type of field.
- * 
+ *
  * Dependencies:
- * 
+ *
  *  -   jQuery-UI Draggable
- * 
- * 
- * BUILD: Paul:March 15, 2014 11:39 AM
+ *
+ *
+ * BUILD: Paul:June 06, 2014 07:26 PM
  */
 
 ;(function($){
@@ -836,20 +836,20 @@
     "use strict";
     /*jslint nomen: true, plusplus: true */
     /*global SPWidgets */
-    
+
     /**
      * @class Baard
      */
     var Board   = {};
-    
+
     /** @property {Boolean} */
     Board.initDone = false;
-    
+
     /** @property {Integer} The max number of columns that can be built (not displayed) */
     Board.maxColumns = 20;
-    
+
     /**
-     * Board widget default options. 
+     * Board widget default options.
      */
     $.SPWidgets.defaults.board = {
         list:                   '',
@@ -874,25 +874,25 @@
         onBoardCreate:          null,
         height:                 null
     };
-    
+
     /**
-     * Given a selector, this method will insert a Kan-Ban board inside 
+     * Given a selector, this method will insert a Kan-Ban board inside
      * of it with data retrieved from a specific list.
      * This widget will retrieve the List definition upon first call
      * using SPServices and setting cache = true. In some implementations
      * it may be desirable to get these defintions ahead of calling this
      * widget so that a cached version is used.
-     * 
+     *
      * @param {Object} options
-     * 
+     *
      * @param {String} options.list
      *                  The list name or UID.
-     * 
+     *
      * @param {String} options.field
      *                  The field from the List from where the board should
      *                  be built from. This field should be either of type
      *                  CHOICE or LOOKUP.
-     * 
+     *
      * @param {String|Function} [options.CAMLQuery="<Query></Query>"]
      *                  String with CAML query to be used against the list
      *                  to filter what is displayed or a function that will
@@ -913,23 +913,23 @@
      *                      //get items from DB
      *                      sendResults([...]);
      *                  }
-     * 
+     *
      * @param {String} [options.CAMLViewFields=""]
      *                  String in CAML format with list of fields to be
      *                  returned from the list when retrieving the rows
-     *                  to be displayed on the board. 
-     * 
+     *                  to be displayed on the board.
+     *
      * @param {String} [options.fieldFilter=""]
      *                  A string with either a comma delimetered list of
      *                  column values to show if field is of CHOICE type;
      *                  or a string with a CAML query to filter field values,
      *                  if field is of type Lookup
-     *  
+     *
      * @param {String} [options.optionalLabel="(none)"]
      *                  The string to be used as the State column header when
      *                  field from where Board was built is optional in the
-     *                  List. 
-     * 
+     *                  List.
+     *
      * @param {String|Function} [options.template="<div></div>"]
      *                  The HTML template that will be used to for displaying
      *                  items on the board. The HTML can be defined with tokens
@@ -939,67 +939,67 @@
      *                  given two input params:
      *                  1. Item data object
      *                  2. Null || jQuery object
-     * 
+     *
      *                  Example:
-     * 
+     *
      *                      function(listItemObj, $ItemUI){
      *                          // this = jQuery - the container of the board.
-     *                      } 
-     * 
+     *                      }
+     *
      * @param {String} [options.webURL=$().SPServices.SPGetCurrentSite()]
      *                  The WebURL for the list.
-     * 
+     *
      * @param {Boolean} [options.showColPicker=false]
      *                  If true, the column picker option will be displayed
      *                  on the page. Allows user to pick which column are
      *                  visible/hidden.
-     * 
+     *
      * @param {Array} [options.colPickerVisible=[]]
      *                  The list of board columns that should be visible. Used
      *                  only when showColPicker is true.
-     * 
+     *
      * @param {String} [options.colPickerLabel="Columns"]
      *                  The label for the column picker button.
-     * 
+     *
      * @param {String} [options.colPickerCloseLabel="Close"]
      *                  The label for the column picker pop-up close button
-     * 
+     *
      * @param {String} [options.colPickerCheckLabel="Apply"]
      *                  Label for the Check all/uncheck all
-     * 
+     *
      * @param {String} [options.colPickerApplyLabel="Apply"]
      *                  The label for the column picker pop-up apply button
-     * 
+     *
      * @param {String} [options.colPickerMaxColMsg="Can not exceed 10 columns!"]
      *                  Message to display when more than 10 columns were selected
-     * 
+     *
      * @param {String} [options.colPickerMinColMsg="Minimum of 2 required!"]
      *                  Message to display when less then 2 columsn were selected
-     * 
+     *
      * @param {String} [options.colPickerTotalLabel="Selected."]
      *                  The label for the number of column selected text on
-     *                  the column picker popup. 
-     * 
+     *                  the column picker popup.
+     *
      * @param {Function} [options.onGetListItems=null]
      *                  Callback function to be called after data has been
      *                  retrieved from the 'list'. Function will be given a
      *                  scope (this) of the selection they used on input to
-     *                  this method and two input parameters: 
+     *                  this method and two input parameters:
      *                  An Array of Objects with the list of rows returned
      *                  from the List, and
      *                  A jQuery object representing the entire xml document
      *                  response.  Example:
-     * 
+     *
      *                      onGetListItems: function(items, xmlResponse){
      *                          //this = jQuery element container selction
-     *                      } 
-     * 
+     *                      }
+     *
      * @param {Function} [options.onPreUpdate=null]
      *                  Callback function to be called just prior to a List Item
      *                  update. The callback will have a scope of the item being
      *                  updated and be given 2 parameters:
      *                  1) the event object,
-     *                  2) the item (DOM element) that triggered the event and 
+     *                  2) the item (DOM element) that triggered the event and
      *                  3) a data object with information/methods for the current
      *                     item/widget binding. The object will include two
      *                     attributes that will impact the updates:
@@ -1010,51 +1010,51 @@
      *                          Format will be identical to what SPServices uses:
      *                          ["field", "value"]. Example:
      *                          data.updates.push(["Title", "New title here"]);
-     * 
+     *
      *                      data.updatePromise - A jQuery.Promise that represents
      *                          the update that will be made. This can be used to
      *                          bind on additional functionality. The queued functions
      *                          will be given the following as input:
-     *                          
+     *
      *                              updatePromise.then(function(newItemObj, oldItemObj, xData){
      *                                  // this = jQuery of the row container on the board
      *                              })
-     * 
+     *
      *                          -   The update item object (as returned by SP)
      *                          -   current item object (the one used to display the item on the board)
      *                          -   XML Document of the response from SP (xData)
-     * 
+     *
      *                  The function should return a boolean indicating whether the
      *                  update should be canceled. True will cancel the update.
      *                  Example:
-     * 
+     *
      *                      onPreUpdate: function(ev, item, data){
      *                          //this = jQuery element container selction
-     *                      } 
-     * 
+     *                      }
+     *
      * @param {Function} [options.onBoardCreate=null]
      *                  Function triggered after board is initially created.
      *                  See spwidget:boardcreate even for parameters that
      *                  will be given to function.
-     * 
+     *
      * @param {String}  [options.height=null]
      *                  The height for the board. This value should be a valid CSS
      *                  dimention (ex. integer + unit - 100px). Default is null,
      *                  indicating that its not fixed height (entire board is expanded)
-     * 
+     *
      * @return {jQuery} this
-     * 
-     * 
+     *
+     *
      * @example
-     * 
+     *
      *      $("#boardContainer").SPShowBoard({
      *          list:   "Tasks",
      *          field:  "Status"
      *      });
-     * 
-     * 
+     *
+     *
      * EVENTS TRIGGERED BY THIS PLUGIN:
-     * 
+     *
      *  spwidget:boardchange,
      *  spwidget:boardcreate    -   Events triggered anytime a change happens
      *                              in the board or when the board is first created.
@@ -1069,13 +1069,13 @@
      *                              The function's 'this'
      *                              variable will point to the column element that
      *                              received the new item.
-     * 
+     *
      *                              Example:
-     *                                  
+     *
      *                                  ele.on("spwidget:boardchange", function(ev, item, data){
      *                                      // this = ele;
      *                                  })
-     *  
+     *
      * spwidget:boarditemadd    -   Event triggered when new items are added to the
      *                              board (ex. from a refresh). Event will be given
      *                              the following input params:
@@ -1085,7 +1085,7 @@
      *                              3) a data object with information/methods for the current
      *                                 item/widget binding.  The objects's .itemsModified attribute
      *                                 will contain an array of Objects  that were added.
-     * 
+     *
      * spwidget:boarditemremove -   Event triggered when items are removed from the
      *                              board (ex. from a refresh). Event will be given
      *                              the following input params:
@@ -1094,8 +1094,8 @@
      *                              3) a data object with information/methods for the current
      *                                 item/widget binding.  The objects's .itemsModified attribute
      *                                 will contain an array of Objects that were removed.
-     * 
-     * spwidget:boardColumnChange -   Event triggered when columns on the board are changed. 
+     *
+     * spwidget:boardColumnChange -   Event triggered when columns on the board are changed.
      *                              Event will be given the following input params:
      *                              1) jQuery: the event object (jquery)
      *                              2) jQuery: the board container (DOM element)
@@ -1103,136 +1103,152 @@
      *                                 static name, while value is the external visible name.
      *                                 For boards created from CHOICE values, key and value is
      *                                 the same.
-     *                              
+     *
      *                              $("#board")
      *                                  .on(
      *                                      "spwidget:boardColumnChange",
      *                                      function($board, columnsObj){
      *                                          //this = $board object
      *                                      })
-     * 
-     * 
-     * 
-     * 
+     *
+     *
+     *
+     *
      * AVAILABLE METHODS:
-     * 
+     *
      *  refresh     -   Refreshes the data in the Board by retrieving the data
      *                  from the list again. During a refresh, existing board
      *                  items (the html element in DOM) is not actually deleted
      *                  and recreated if it already exists, but re-used. It is
      *                  important to note this specially if a custom template
      *                  function was defined as an input param.
-     *  
+     *
      *                  $().SPShowBoard("refresh");
-     *  
+     *
      * redraw       -   Redraws the board without pulling in data from the list.
      *                  Column heights will be normalized and jQuery UI's sortable
      *                  widget will be refreshed.
-     * 
+     *
      *                  $().SPShowBoard("redraw");
-     * 
+     *
      * setVisible   -   Sets which Board columns should be visible.  Method takes
      *                  as input an array of board column values (the visible name)
-     * 
+     *
      *                  $().SPShowBoard("setVisible", ['Not Started', 'Completed']);
-     * 
-     * 
+     *
+     *
      * setHeight    -   Sets the height of the board by applying the value passed in
      *                  to the column area that holds the cards. Use null to remove
      *                  the height.
      *                  Example:
      *                      $().SPShowBoard("setHeight", "300px");
      *                      $().SPShowBoard("setHeight", null);
-     * 
+     *
+     * getColumns   -   Returns an array board columns. Array will include a list of
+     *                  object that each represent a column in the board. The object
+     *                  will contain the following information:
+     *
+     *                      {
+     *                          name: 'internal name',
+     *                          title: 'external name',
+     *                          isVisible: true|false
+     *                      }
+     *
      * // TODO: Destroy method (must remove all event bindings)
      * // TODO: move method - moves an item on the board (identified by ID) to
      *          a different state
-     * 
-     * 
+     *
+     *
      */
     $.fn.SPShowBoard = function(options){
-        
+
         // TODO: need to determine how to page large datasets.
-        
+
         // If initialization was not done yet, then do it now.
         // if the global styles have not yet been inserted into the page, do it now
         if (!Board.initDone) {
-            
+
             Board.initDone = true;
-            
+
             if (Board.styleSheet !== "") {
-                
+
                 $('<style type="text/css">' + "\n\n" +
                         Board.styleSheet + "\n\n</style>" )
                     .prependTo("head");
-                
+
             }
-            
+
         }
-        
+
         // Capture original set of input arguments.
-        var args = arguments;
-        
+        var args    = arguments,
+            retVal  = this;
+
         // Attach the board to each element
-        return this.each(function(){
-            
+        this.each(function(){
+
             var ele         = $(this),
                 isMethod    = (typeof options === "string"),
                 hasBoard    = ele.hasClass("hasSPShowBoard"),
                 opt         = null,
                 method      = '',
                 board       = null;
-            
+
             // if this element alraedy has a board on it, and
             // options is not a string, then exit.
             if ( hasBoard && !isMethod ) {
-                
+
                 return this;
-            
+
             // Handle METHODS
             } else if (isMethod && hasBoard && !ele.hasClass("loadingSPShowBoard")) {
-                
+
                 method  = options.toLowerCase();
                 board   = ele.data("SPShowBoardOptions");
-                
+
                 //*** REFRESH ***
                 if (method === "refresh") {
-                    
+
                     board._getListItems().then(function(){
-                        
+
                         board.showItemsOnBoard({ refresh: true });
-                        
+
                     });
-                    
+
                 //*** REDRAW ***
                 } else if (method === "redraw") {
-                    
+
                     board.setBoardColumnHeight();
-                    
+
                 //*** SETVISIBLE ***
                 } else if (method === "setvisible") {
-                    
+
                     board.setUserDefinedVisibleCol( args[1] );
-                    
+
                 //*** SETHEIGHT ***
                 } else if (method === "setheight") {
-                    
+
                     board.height = args[1];
                     board.setBoardColumnHeight();
-                    
+
+                //*** GET COLUMNS ***
+                } else if (method === "getcolumns") {
+
+                    retVal = board.getBoardColumnList();
+
                 }//end: if(): methods
-                
+
                 return this;
-                
+
             }//end: if()
-            
+
             // If this element is already loading the UI, exit now
             if (ele.hasClass("loadingSPShowBoard")) {
-            
+
                 return this;
-            
+
             }
-            
+
             // Define this Widget instance
             opt = $.extend({},
                 $.SPWidgets.defaults.board,
@@ -1252,20 +1268,20 @@
                     maxColumnVisible:   10,
                     showNumberOfColumns: 10,    // number of columns shown on the board
                     /**
-                     * Populates the opt.stats and opt.statesMap by 
+                     * Populates the opt.states and opt.statesMap by
                      * pulling info. from the List definition
-                     * 
+                     *
                      * @return {jQuery.Promise}
                      *      Success, promise get resolved with a scope of 'opt' and
                      *          receives the xData and status variables
                      *      Failure, promise gets resolved with cope of 'ele' and
                      *          received a string with the error, xData and Status.
-                     * 
+                     *
                      */
                     getBoardStates:     function(){
-                        
+
                         return $.Deferred(function(dfd){
-                                
+
                             // Get List information (use cached if already done in prior calls)
                             // and get list of States to build
                             $().SPServices({
@@ -1275,7 +1291,7 @@
                                 async:      false,
                                 webURL:     opt.webURL,
                                 completefunc : function(xData, status) {
-        
+
                                     // FIXME: need to handle errors
                                     // if (resp.hasSPError()) {
                                         // spAgile.logMsg({
@@ -1284,68 +1300,68 @@
                                         // });
                                         // return null;
                                     // }
-                                    
+
                                     var resp    = $(xData.responseXML),
                                         f       = resp.find("Fields Field[StaticName='" + opt.field + "']");
-                                    
+
                                     // If we did not find the field by internal name, try external.
                                     // If we found it by Display name, then lets change the
                                     // field value... We need internal name for referencing
                                     // item column values.
                                     if (!f.length) {
-                                        
+
                                         f = resp.find("Fields Field[DisplayName='" + opt.field + "']");
-                                        
+
                                         if (!f.length) {
-                                            
+
                                             dfd.rejectWith(
                                                 ele,
                                                 [ 'Field (' + opt.field +  ') not found in list definition!',
                                                 xData, status ]);
-                                            
+
                                             return;
-                                            
+
                                         }
-                                        
+
                                         opt._origField  = opt.field;
                                         opt.field       = f.attr("StaticName");
-                                            
+
                                     }
-                                    
+
                                     // store if field is required
                                     if ( f.attr("Required") === "FALSE" ) {
-                                        
+
                                         opt.isStateRequired = false;
-                                        
+
                                     }
-                                    
+
                                     switch(f.attr("Type").toLowerCase()) {
                                         // CHOICE COLUMNS
                                         case "choice":
-                                            
+
                                             // Should there be a blank column?
                                             if ( !opt.isStateRequired ) {
-                                                
+
                                                 opt.states.push({
                                                     type:   'choice',
                                                     title:  opt.optionalLabel,
                                                     name:   opt.optionalLabel
                                                 });
-                                                
+
                                                 opt.statesMap[""] = opt.states[opt.states.length - 1];
-                                                
+
                                             }
-                                            
+
                                             if (opt.fieldFilter) {
-                                                
+
                                                 opt.fieldFilter = opt.fieldFilter.split(/\,/);
-                                            
+
                                             }
-                                            
+
                                             f.find("CHOICES CHOICE").each(function(i,v){
-                                                
+
                                                 var thisChoice = $(this).text();
-                                                
+
                                                 // if there i sa filter and this column
                                                 // is not part of it, exit now
                                                 if (opt.fieldFilter) {
@@ -1353,44 +1369,44 @@
                                                         return;
                                                     }
                                                 }
-                                                
+
                                                 // If we reached a max column number, exit here.
                                                 if (i >= Board.maxColumns){
-                                                    
+
                                                     try { console.log(
-                                                            "SPWIDGETS:BOARD:Warning: Can only build a max of " + 
+                                                            "SPWIDGETS:BOARD:Warning: Can only build a max of " +
                                                             Board.maxColumns + " columns!");
-                                                    
+
                                                     } catch(e){ }
-                                                    
+
                                                     return false;
-                                                    
+
                                                 }
-                                                
+
                                                 opt.states.push({
                                                     type:   'choice',
                                                     title:  thisChoice, // extenal visible
                                                     name:   thisChoice  // internal name
                                                 });
-                                                
+
                                                 // Store State value in mapper (use internal name)
                                                 opt.statesMap[thisChoice] = opt.states[opt.states.length - 1];
-                                                
+
                                             });
-                                            
+
                                             dfd.resolveWith(opt, [xData, status]);
-                                            
+
                                             break;
-                                            
+
                                         // LOOKUP COLUMNS
                                         case "lookup":
-                                            
+
                                             if ( !opt.fieldFilter ) {
-                                                
+
                                                 opt.fieldFilter = "<Query></Query>";
-                                                
+
                                             }
-                                            
+
                                             // Query the lookup table and get the rows that
                                             // should be used to build the states
                                             $().SPServices({
@@ -1401,177 +1417,177 @@
                                                 CAMLQuery:      opt.fieldFilter,
                                                 webURL:         opt.webURL,
                                                 CAMLRowLimit:   Board.maxColumns,
-                                                CAMLViewFields: 
-                                                    '<ViewFields><FieldRef Name="' + 
+                                                CAMLViewFields:
+                                                    '<ViewFields><FieldRef Name="' +
                                                     f.attr("ShowField") +
                                                     '" /></ViewFields>',
                                                 completefunc:   function(xData, status){
-                                                    
+
                                                     // Process Errors
                                                     if (status === "error") {
-                                                        
+
                                                         dfd.rejectWith(
                                                                 ele,
                                                                 [ 'Communications Error!', xData, status ]);
-                                                        
+
                                                         return;
-                                                        
+
                                                     }
-                                                    
+
                                                     var resp = $(xData.responseXML);
-                                                    
+
                                                     if ( resp.SPMsgHasError() ) {
-                                                         
+
                                                          dfd.rejectWith(
                                                                 ele,
                                                                 [ resp.SPGetMsgError(), xData, status ]);
-                                                        
+
                                                         return;
-                                                        
+
                                                     }
-                                                    
+
                                                     // Should there be a blank column?
                                                     if ( !opt.isStateRequired ) {
-                                                        
+
                                                         opt.states.push({
                                                             type:   'lookup',
                                                             title:  opt.optionalLabel,  // extenal visible
                                                             name:   ""                  // internal name
                                                         });
-                                                        
+
                                                         opt.statesMap[""] = opt.states[opt.states.length - 1];
-                                                        
+
                                                     }
-                                                    
+
                                                     // Loop thorugh all rows and build the
                                                     // array of states.
                                                     resp.SPFilterNode("z:row").each(function(i,v){
-                                                        
+
                                                         // If we reached a max column number, exit here.
                                                         if (i >= Board.maxColumns){
-                                                            
+
                                                             try { console.log(
-                                                                    "SPWIDGETS:BOARD:Warning: Can only build a max of " + 
+                                                                    "SPWIDGETS:BOARD:Warning: Can only build a max of " +
                                                                     Board.maxColumns + " columns!");
-                                                            
+
                                                             } catch(e){ }
-                                                            
+
                                                             return false;
-                                                            
+
                                                         }
-                                                        
+
                                                         var thisRow     = $(this),
                                                             thisId      = thisRow.attr("ows_ID"),
                                                             thisTitle   = thisRow.attr( "ows_" + f.attr("ShowField") ),
-                                                            thisName    = thisId + ";#" + thisTitle; 
-                                                            
-                                                        
+                                                            thisName    = thisId + ";#" + thisTitle;
+
+
                                                         opt.states.push({
                                                             type:   'lookup',
                                                             title:  thisTitle,  // Extenal visible
                                                             name:   thisName    // internal name
                                                         });
-                                                        
+
                                                         // Store State value in mapper (use internal name)
                                                         opt.statesMap[thisName] = opt.states[opt.states.length - 1];
-                                                        
+
                                                     });
-                                                    
+
                                                     dfd.resolveWith(opt, [xData, status]);
-                                                    
+
                                                     return;
-                                                    
+
                                                 } //end: completefunc
                                             });
-                                            
+
                                             break;
-                                        
+
                                         // DEFAULT: Type on the column is not supported.
                                         default:
-                                            
+
                                             dfd.rejectWith(
                                                 ele,
-                                                [   'Field (' + opt.field +  
-                                                    ') Type (' + f.attr("Type") + 
+                                                [   'Field (' + opt.field +
+                                                    ') Type (' + f.attr("Type") +
                                                     ') is not supported!',
                                                     xData,
                                                     status ]);
-                                            
+
                                             break;
-                                        
+
                                     }
-                                    
+
                                     return;
-                                    
+
                                 }//end: completefunc()
-                            });//end: spservices 
-                            
+                            });//end: spservices
+
                         })
                         .promise();
-                        
+
                     }, //end: getBoardStates()
-                    
+
                     /**
                      * Retrieves the items from the list for display on the board.
                      * Method return a promise whose input param is an array of
                      * object.
-                     * 
+                     *
                      * @param {object} options
-                     * 
+                     *
                      * @return {jQuery.Promise} jQuery promise
-                     * 
+                     *
                      */
                     _getListItems:   function(){
-                        
+
                         return $.Deferred(function(dfd){
-                            
+
                             /**
-                             * Resolves the Deferred object. 
-                             * 
+                             * Resolves the Deferred object.
+                             *
                              * @param {jQuery|Function} rawResponse
                              *              Raw response from teh call to get data.
                              *              is passed along to the user's onGetListItems()
-                             *              callback. 
+                             *              callback.
                              */
                             function resolveDeferred(rawResponse) {
-                                            
+
                                 // If a callback was defined for onGetListItems,
                                 // then call it now
                                 if ($.isFunction(opt.onGetListItems)) {
-                                    
+
                                     opt.onGetListItems.call(
-                                        ele, 
-                                        opt.listItems, 
+                                        ele,
+                                        opt.listItems,
                                         rawResponse
                                     );
-                                    
+
                                 }
-                                
+
                                 dfd.resolveWith(ele, [opt.listItems]);
-                                
+
                             } //end: resolveDeferred()
-                            
+
                             // If CAMLQuery is a function, then call user'
                             // data retrieval method.
                             if ($.isFunction( opt.CAMLQuery )) {
-                                
+
                                 opt.CAMLQuery.call(
                                     ele,
                                     function(items){
-                                        
+
                                         if ($.isArray(items)) {
-                                            
+
                                             opt.listItems = items;
                                             resolveDeferred( opt.CAMLQuery );
                                         }
-                                        
+
                                     },
                                     options );
-                                
+
                             // ELSE, opt.CAMLQuery is not a function...
                             // call GetListItems operation.
                             } else {
-                                
+
                                 $().SPServices({
                                     operation:      "GetListItems",
                                     listName:       opt.list,
@@ -1581,126 +1597,126 @@
                                     CAMLViewFields: opt.CAMLViewFields,
                                     webURL:         opt.webURL,
                                     completefunc:   function(xData, status){
-                                        
+
                                         // Process Errors
                                         if (status === "error") {
-                                            
+
                                             dfd.rejectWith(
                                                     ele,
                                                     [ 'Communications Error!', xData, status ]);
-                                            
+
                                             return;
-                                            
+
                                         }
-                                        
+
                                         var resp = $(xData.responseXML);
-                                        
+
                                         if ( resp.SPMsgHasError() ) {
-                                             
+
                                              dfd.rejectWith(
                                                     ele,
                                                     [ resp.SPGetMsgError(), xData, status ]);
-                                            
+
                                             return;
-                                            
+
                                         }
-                                        
+
                                         // Store the list of items
                                         opt.listItems   = resp
                                                             .SPFilterNode("z:row")
                                                             .SPXmlToJson({
                                                                 includeAllAttrs: true
                                                             });
-                                        
+
                                         resolveDeferred( resp );
-                                        
-                                        
-                                        
+
+
+
                                     }//end: completefunc()
                                 });//end: SPServices
-                                
+
                             } //end: else: do SPServices call
-                            
+
                         }).promise();
-                        
+
                     }, //end: _getListItems()
-                    
+
                     /**
                      * Given an ID, this method will return the data object
                      * for that item - the element retrieved during for
                      * display on the board.
-                     * 
+                     *
                      * @param {String|Interger}
-                     * 
+                     *
                      * @return {Object} Item Object
-                     * 
+                     *
                      */
                     getBoardItemDataObject: function(itemId){
-                        
+
                         var itemObject = null,
                             x,y,id;
-                        
+
                         if (itemId) {
-                            
+
                             itemId = String(itemId);
-                            
+
                             for(x=0,y=opt.listItems.length; x<y; x++){
-                                
+
                                 id = opt.listItems[x].ID;
-                                
+
                                 if ($.isFunction(id)) {
-                                    
+
                                     id = opt.listItems[x].ID();
-                                    
+
                                 }
-                                
+
                                 id = String(id);
-                                
+
                                 if (itemId === id) {
-                                    
+
                                     itemObject = opt.listItems[x];
                                     x = y + y;
-                                    
+
                                 }
-                                
+
                             }
-                            
+
                         }
-                        
+
                         return itemObject;
-                        
+
                     }, // end: pageSetup.getBoardItemDataObject
-                    
-                    
+
+
                     /**
-                     * Shows the List items on the board. 
-                     * 
+                     * Shows the List items on the board.
+                     *
                      * @param {Object} [options]
-                     * 
+                     *
                      * @param {Array} [options.rows=opt.listItems]
                      *              The rows to display on tehe board. Default
                      *              to list stored in opt.listItems.
-                     * 
+                     *
                      * @param {Boolean} [options.refresh=false]
                      *              If true, then items currently on the board
                      *              will not be erased; only new items will be
                      *              added and invalid item will be removed.
-                     * 
+                     *
                      * @param {Boolean} [options.doBoardInsert=true]
                      *              When true, the items created will be inserted
                      *              into the board widget. Set to false if doing it
                      *              elsewhere.
-                     * 
+                     *
                      * @return {Object} itemsForBoard
                      *              An object with state=string of html for
                      *              insertion into the Board.
-                     * 
+                     *
                      */
                     showItemsOnBoard:   function(options){
-                        
+
         // console.time("Board.ShowItemsOnBoard()");
-                        
-                        
+
+
                         var thisOpt         = $.extend({}, {
                                                 rows:           opt.listItems,
                                                 refresh:        false,
@@ -1717,406 +1733,403 @@
                             evData          = null,
                             thisListRow     = null,
                             x,y;
-                        
-                        
+
+
                         /**
                          * Creates a new items using the given template
                          * and returns a string of that new items.
-                         *  
+                         *
                          * @param {Object} itemDataObj  -   The item's object.
                          * @param {jQUery} $uiELe       -   The UI container.
-                         * 
+                         *
                          * @return {String} new item html
-                         * 
+                         *
                          */
                         function createNewItem(itemDataObj, $uiEle) {
-                            
+
                             var newItem     = "",
                                 itemId      = null,
                                 css         = "";
-                            
+
                             // Caller defined a function for item template?
                             if ($.isFunction(opt.template)) {
-                                
+
                                 newItem = opt.template.call(
                                             ele, itemDataObj, $uiEle);
-                                
+
                                 if (newItem) {
-                                    
+
                                     newItem = String(newItem);
-                                    
+
                                 }
-                                
-                                
+
+
                             // ELSE: Caller did not define function for template
                             } else {
-                                
+
                                 newItem = $.SPWidgets.fillTemplate(opt.template, thisListRow );
-    
+
                             }
-                            
+
                             // If we have a UI element already and a new item was created
                             // insert it directly into the UI element.
                             if ($uiEle !== undefined && newItem !== "") {
-                                
+
                                 $uiEle.html(newItem);
-                                
+
                             // Else, we have no UI Element... If the new Item is not
                             // blank, then create a new item for insertion.
                             } else if (newItem !== "") {
-                                
+
                                 // Accomodate possible knockout objects
                                 itemId = itemDataObj.ID;
-                                
+
                                 if ($.isFunction(itemDataObj.ID)) {
-                                    
+
                                     itemId = itemDataObj.ID();
-                                    
+
                                 }
-                                
+
                                 // Store this item to be added to the board in bulk
                                 if ( itemsForBoard[thisRowState] === undefined ) {
-                                    
+
                                     itemsForBoard[thisRowState] = "";
-                                    
+
                                 }
-                                
+
                                 if (opt.initDone && thisOpt.refresh) {
-                                    
+
                                     css += " spwidget-temp";
-                                    
+
                                 }
-                                
-                                itemsForBoard[thisRowState] += 
+
+                                itemsForBoard[thisRowState] +=
                                     '<div class="spwidget-board-state-item ui-state-default ui-corner-all' +
                                     css + '" data-id="' + itemId + '">' + newItem + '</div>';
-                                
+
                             }
-                            
+
                             return newItem;
-                            
+
                         } //end: ------> createNewItem()
-                        
-                        
+
+
                         // If refresh is false, then erase all items
                         // currently in the board
                         if (!thisOpt.refresh) {
-                            
+
                             for(x=0,y=opt.states.length; x<y; x++){
 
                                 opt.states[x].headerTotalEle.html("0");
                                 opt.states[x].dataEle.empty();
 
                             }
-                            
+
                         }
-                        
-         
+
+
          // console.time("Board.ShowItemsOnBoard().each(rows)");
-         
+
                         // Populate each row into its respective column
                         for(x=0,y=thisOpt.rows.length; x<y; x++){
-                            
+
                             thisListRow = thisOpt.rows[x];
-                            
-                            // Get this row's State and ID. 
+
+                            // Get this row's State and ID.
                             // Accomodate possible knockout objects
                             thisRowState = thisListRow[opt.field] || "";
                             thisRowID    = thisListRow.ID;
-                            
+
                             if ($.isFunction(thisRowState)) {
-                                
+
                                 thisRowState = thisListRow[opt.field]();
-                                
+
                             }
-                            
+
                             if ($.isFunction(thisRowID)) {
-                                
+
                                 thisRowID = thisRowID();
-                                
+
                             }
-                            
+
                             // If this state value is on the board (as a column),
                             // Then proced to build the item into the board.
                             if (opt.statesMap[thisRowState]) {
-                                
+
                                 // If not a refresh, then the entire UI is being
-                                // rebuilt. We'll be working with Strings. 
+                                // rebuilt. We'll be working with Strings.
                                 if (thisOpt.refresh === false) {
-                                    
+
                                     // if INIT is done (true), then capture this as a new
                                     // item on the board (for events)
                                     if (opt.initDone) {
-                                        
+
                                         newItems.push(thisListRow);
-                                        
+
                                     }
-                                    
+
                                     createNewItem(thisListRow);
-                                    
+
                                 // ELSE, must be doing a Refresh and these
                                 // items could already exist on the board.
                                 } else {
-                                    
+
                                     // Try to find this row in the board
                                     boardItemCntr = opt.statesCntr
                                             .find( "div[data-id='" + thisRowID + "']" );
-                                
+
                                     // If item was NOT found on the board, then
                                     // we're adding it now.
                                     if ( !boardItemCntr.length ) {
-                                        
+
                                         // if INIT is done (true), then capture this as a new
                                         // item on the board (for events)
                                         if (opt.initDone) {
-                                            
+
                                             newItems.push(thisListRow);
-                                            
+
                                         }
-                                        
+
                                         createNewItem(thisListRow);
-                                        
+
                                     // Else, item was found on the Board.
                                     } else {
-                                        
+
                                         // Add a temporary class to the item, so that we
                                         // know a little later (below) that this is still
                                         // a valid item
                                         boardItemCntr.addClass("spwidget-temp");
-                                        
+
                                         // Check if it should be moved to a new STate (column)
                                         if (boardItemCntr.closest("div.spwidget-board-state")
                                                 .data("boardstate") !== thisRowState
                                         ) {
-                                            
+
                                             boardItemCntr.appendTo(opt.statesMap[thisRowState].dataEle);
                                             chgItems.push(thisListRow);
-                                            
+
                                         }
-                                        
+
                                         // Refresh the UI for the item with the new data
                                         createNewItem(thisListRow, boardItemCntr);
-                                        
+
                                     }
-                                    
+
                                 } //end: if(): is it refresh?
-                                
+
                             } //end: if(): Does the state appear on the board?
-                                                    
+
                         } //end: for() - each thisOpt.rows[]
-                        
+
          // console.timeEnd("Board.ShowItemsOnBoard().each(rows)");
-         
+
                         // should we update the board?
                         if (thisOpt.doBoardInsert) {
-                            
-         
+
+
          // console.time("Board.ShowItemsOnBoard().InsertIntoDOM");
-         
-         
+
+
                             for (x in itemsForBoard) {
-                                
+
                                 if ( itemsForBoard.hasOwnProperty(x) && itemsForBoard[x] !== "" ) {
-                                    
+
                                     opt.statesMap[x].dataEle.append( itemsForBoard[x] );
-                                    
+
                                 }
-                                
+
                             }
-                            
-                            // Update the board headers with the totals
-                            opt.updBoardHeaders();
-                            
+
                             // Add the mouseover hover affect.
                             $.pt.addHoverEffect(ele.find(".spwidget-board-state-item"));
-                            
-         
+
+
          // console.timeEnd("Board.ShowItemsOnBoard().InsertIntoDOM");
-         
-         
-                        } 
-         
-                        // If initialization is done and board is being 
+
+
+                        }
+
+                        // If initialization is done and board is being
                         // refreshed, then check to see if any items are
                         // no longer valid
                         if (opt.initDone && thisOpt.refresh) {
-                            
+
                             opt.statesCntr.find("div.spwidget-board-state-item")
                                     .not("div.spwidget-temp").each(function(){
-                                        
-                                        delItems.push( 
+
+                                        delItems.push(
                                             opt.getBoardItemDataObject( $(this).data("id") )
                                         );
-                                        
+
                                         $(this).remove();
-                                        
+
                                     })
                                     .end()
                                 .removeClass("spwidget-temp");
-                                
+
                         }
-                        
-                        // If initialization was done already, then 
+
+                        // If initialization was done already, then
                         // trigger events and refresh jQuery UI widget
                         if (opt.initDone) {
-                            
+
                             // Refresh sortable widget if init was already done
                             opt.statesCntr.find("div.spwidget-board-state")
                                     .sortable("refresh")
                                     .end()
                                 .disableSelection();
-                                
-                            opt.setBoardColumnHeight();
-                            
+
                             // Get a new event object
                             evData = opt.getEventObject();
-                            
+
                             // Trigger events if init has already been done
                             if (newItems.length) {
-                                
+
                                 evData.itemsModified.length = 0;
                                 evData.itemsModified.push(newItems);
                                 ele.trigger(
                                     "spwidget:boarditemadd",
                                     [ ele, $.extend( {}, evData ) ] );
-                                
+
                             }
-                            
+
                             if (delItems.length) {
-                                
+
                                 evData.itemsModified.length = 0;
                                 evData.itemsModified.push(delItems);
                                 ele.trigger(
                                     "spwidget:boarditemremove",
                                     [ ele, $.extend( {}, evData ) ] );
-                                
+
                             }
-                            
+
                             // Push both updates and removals to the eventObject
                             evData.itemsModified.length = 0;
                             evData.itemsModified.push.apply(evData.itemsModified, newItems);
                             evData.itemsModified.push.apply(evData.itemsModified, delItems);
                             evData.itemsModified.push.apply(evData.itemsModified, chgItems);
-                            
+
                             // Trigger event if anything has changed.
                             if (evData.itemsModified.length) {
-                                
+
                                 ele.trigger("spwidget:boardchange", [ ele, evData ]);
-                                
+
                             }
-                            
+
                         }//end: if(): initDone == true
-                        
-         
-         
+
+                        // Update the headers and set the board height
+                        opt.updBoardHeaders();
+                        opt.setBoardColumnHeight();
+
          // console.timeEnd("Board.ShowItemsOnBoard()");
-         
+
                         return itemsForBoard;
-                            
+
                     }, //end: opt.showItemsOnBoard()
-                    
+
                     /**
                      * Updates the board headers with the total number of
                      * items under each state column
-                     * 
+                     *
                      * @param {options} [options]
                      * @param {String|} [options.state=null] The state to be updated
-                     * 
+                     *
                      */
                     updBoardHeaders: function(options) {
-                        
+
                         var thisOpt = $.extend({}, {
                                 state: null
                             }, options ),
                             x,y;
-                        
+
                         // Specific state
                         if (thisOpt.state) {
-                            
+
                             // FIXME: Need to implement functionality
-                            
+
                         // ALL States
                         } else {
-                            
+
                             for( x=0,y=opt.states.length; x<y; x++ ){
-                                
+
                                 opt.states[x].headerTotalEle
                                     .html(
                                         opt.states[x].dataEle.children().length
                                     );
-                                    
+
                             }
-                            
+
                         }
-                        
+
                     }, //end: opt.updBoardHeaders()
-                    
+
                     /**
                      * Returns an object with data about the board that can
                      * be used to pass along to events.
-                     * 
+                     *
                      * @param {jQuery|HTMLElement} [uiItemEle]
                      *      The board item to initiate the event object from.
-                     * 
+                     *
                      * @return {Object}
-                     * 
+                     *
                      */
                     getEventObject: function(uiItemEle){
-                        
+
                         if (!uiItemEle) {
                             uiItemEle = opt.statesCntr.find("div.spwidget-board-state-item:first");
                         }
                         uiItemEle = $(uiItemEle);
-                        
+
                         var evObj = {
                                 /** @property {Object} evObj.stateTotal A map of state name to total number of items */
                                 stateTotals:    {},
-                                
+
                                 /** @property {Integer} itemTotal   The total number of items in the board, across all states. */
                                 itemTotal: 0,
-                                
-                                /** @property {String} evObj.currentState   The state name */ 
+
+                                /** @property {String} evObj.currentState   The state name */
                                 currentState:   uiItemEle.closest("div.spwidget-board-state")
                                                     .data("boardstate"),
-                                
+
                                 /** @property {Object} evObj.itemObj    The individual board item data */
                                 itemObj:        ( opt.getBoardItemDataObject( uiItemEle.data("id") ) || {} ),
-                                
+
                                 /** @property {Array} evObj.itemsModified   The list of objects representing the modified items */
                                 itemsModified: []
                             },
                             x,j;
-                        
+
                         // Build totals
                         for( x=0,j=opt.states.length; x<j; x++ ){
-                            
+
                             evObj.itemTotal += evObj.stateTotals[opt.states[x].name] = Number( opt.states[x].headerTotalEle.text() );
-                            
+
                         }
-                        
+
                         return evObj;
-                        
+
                     }, //end: opt.getEventObject()
-                    
+
                     /**
                      * Returns the url (full url) for the requested form
                      * of the List.
-                     * 
+                     *
                      * @param {String} type
                      *          A static string value indicating the type
                      *          of form to return. Valid values include
-                     *          'EditForm', 'DisplayForm' and 'NewForm' 
-                     * 
+                     *          'EditForm', 'DisplayForm' and 'NewForm'
+                     *
                      * @return {String}
                      *          The url to the list form.
-                     *  
+                     *
                      */
                     getListFormUrl: function(type) {
-                        
+
                         type = String(type).toLowerCase();
-                        
+
                         function loadFormCollection() {
-                            
+
                             $().SPServices({
                                 operation:      "GetFormCollection",
                                 listName:       opt.list,
@@ -2124,390 +2137,535 @@
                                 cacheXML:       true,
                                 async:          false,
                                 completefunc:   function(xData, Status) {
-                                    
+
                                     // Need to check for errors?
-                                    
+
                                     $(xData.responseXML)
                                         .find("Form")
                                         .each(function(){
-                                            
+
                                             var $thisForm = $(this);
-                                            
-                                            opt.formUrls[ String($thisForm.attr("Type")).toLowerCase() ] = 
+
+                                            opt.formUrls[ String($thisForm.attr("Type")).toLowerCase() ] =
                                                 opt.webURL + "/" + $thisForm.attr("Url");
-                                            
+
                                         });
-                                    
-                                    
+
+
                                 } //end: completefunc
                             });
-                            
+
                         } //end: loadFormCollection()
-                        
-                        
+
+
                         if (opt.formUrls === null) {
-                            
+
                             opt.formUrls = {};
                             loadFormCollection();
-                            
+
                         }
-                        
+
                         return ( opt.formUrls[type] || "" );
-                        
+
                     }, // end: opt.getListFormUrl()
-                    
+
+                    /**
+                     * Handles the setting of visible board columns based on
+                     * user input, which shoudl be an array of column names.
+                     *
+                     * @param {Array|String} colList
+                     *      An array of columns names or a static string value
+                     *      of 'all'. Column names can be either internal name
+                     *      or external.
+                     *
+                     */
+                    setUserDefinedVisibleCol: function (colList){
+
+                        var count   = 0,
+                            showAll = false;
+
+                        if (!colList) {
+
+                            return;
+
+                        }
+
+                        // If input is not an array, then exit, unless
+                        // it is the keyword 'all'.
+                        if (!$.isArray(colList) || !colList.length) {
+
+                            if (    !$.isArray(colList)
+                                &&  String(colList).toLowerCase() !== "all"
+                            ) {
+
+                                return;
+
+                            }
+
+                            showAll = true;
+                            colList = [];
+
+                        }
+
+                        if (colList.length < 2) {
+
+                            return;
+
+                        }
+
+                        // isValidColumn - checks if a column is valid
+                        function isValidColumn(colName) {
+
+                            var response = false;
+
+                            $.each(opt.states, function(i, state){
+
+                                if (state.title === colName || state.name === colName) {
+
+                                    response = true;
+                                    return false;
+
+                                }
+
+                            });
+
+                            return response;
+                        } //end: function isValidColumn
+
+
+                        // Validate that at least 2 of the column names are valid.
+                        if (!showAll) {
+
+                            count = 0;
+                            $.each(colList, function(i, col){
+
+                                if (isValidColumn(col)) {
+
+                                    count++;
+
+                                }
+
+                                // If we validated at least 2 columns, exit. Next loop
+                                // will do the job of show/hide if column valid.
+                                if (count === 2) {
+
+                                    return false;
+
+                                }
+
+                            });
+
+                        }
+
+                        // Loop through all states and if any of them are
+                        // in the list of columns to make visible, ensure they
+                        // are visible on the board, else hide it.
+                        count = 0;
+                        $.each(opt.states, function(i, colDef){
+
+                            if (    $.inArray(colDef.title, colList) > -1
+                                ||  $.inArray(colDef.name, colList) > -1
+                            ) {
+
+                                count++;
+
+                                if (colDef.isVisible === false) {
+
+                                    colDef.isVisible = true;
+                                    colDef.dataEle.css("display", "");
+                                    colDef.headerEle.css("display", "");
+
+                                }
+
+                            } else {
+
+                                colDef.isVisible = false;
+                                colDef.dataEle.css("display", "none");
+                                colDef.headerEle.css("display", "none");
+
+                            }
+
+
+                            // if we reached the MAX allowed number
+                            // of visible columns, then break loop.
+                            if (count >= opt.maxColumnVisible) {
+
+                                return false;
+
+                            }
+
+                        });
+
+                        opt.setBoardColumnClass(count);
+
+                        // Adjust the board columns height
+                        opt.setBoardColumnHeight();
+
+                        opt.triggerBoardColumnChangeEvent();
+
+                        return;
+
+                    }, //end: setUserDefinedVisibleCol()
+
                     /**
                      * Sets the class on the board based on the number
                      * of columns displayed.
-                     * 
+                     *
                      * @param {Integer} colCount
                      *      Number of columns. If not defined, then this
                      *      method will loop through opt.states to determine
                      *      what is visible
-                     * 
-                     * @return {Object} opt 
+                     *
+                     * @return {Object} opt
                      */
                     setBoardColumnClass: function(colCount) {
-                        
+
                         var $colCntr = opt.headersCntr.add(opt.statesCntr);
-                        
+
                         colCount = parseInt( colCount );
-                        
+
                         if (!colCount || colCount < 2) {
-                            
+
                             colCount = 0;
-                            
+
                             $.each(opt.states, function(i, colDef){
-                                
+
                                 if (colDef.isVisible) {
 
                                     colCount++;
-                                    
+
                                 }
-                                
+
                             });
-                            
+
                         }
-                        
+
                         if (opt.showNumberOfColumns === colCount) {
-                            
+
                             return opt;
-                            
+
                         }
-                        
+
                         // Add the new class...
                         $colCntr.addClass("spwidget-states-" + colCount);
-                        
+
                         if (opt.showNumberOfColumns) {
-                            
+
                             $colCntr.removeClass(
                                 "spwidget-states-" + opt.showNumberOfColumns);
-                            
+
                         }
-                        
+
                         opt.showNumberOfColumns = colCount;
-                        
+
                         return opt;
-                                                
+
                     }, //end: opt.setBoardColumnClass()
-                    
+
+                    /**
+                     * Triggers a spwidget:boardColumnChange event on the board.
+                     * This is done only if initiazliation has been done. Called
+                     * when there are changes invisibility to the board's columns.
+                     */
+                    triggerBoardColumnChangeEvent: function() {
+
+                        var columns = [];
+
+                        if (opt.initDone) {
+
+                            $.each(opt.statesMap, function(key,defObj){
+
+                                if (defObj.isVisible){
+
+                                    columns.push(defObj.title);
+
+                                }
+
+                            });
+
+                            opt.ele.trigger(
+                                "spwidget:boardColumnChange",
+                                [ opt.ele, columns ] );
+
+                        }
+
+                    }, //end: opt.triggerBoardColumnChangeEvent
+
                     /**
                      * Sets up the button for the Column picker.
                      */
                     setupColumnPicker: function(){
-                        
+
                         var $colCntr    = ele.find(".spwidget-board-column-list-cntr"),
                             $colList    = $colCntr.find("div.spwidget-board-column-list"),
                             $colFooter  = $colCntr.children("div.ui-state-default:last"),
                             Picker      = {
                                 $totalCntr:     $colCntr.find("span.spwidget-board-column-total")
                             };
-                        
-                        
+
+
                         /**
                          * SEts the total selected on the picker and returns
                          * that total to the caller.
-                         * 
-                         * @return {Integer} 
+                         *
+                         * @return {Integer}
                          */
                         Picker.setTotalSelected = function(){
-                            
+
                             var total = Picker.getSelected().length;
-                            
+
                             Picker.$totalCntr.html(total);
-                            
+
                             return total;
-                            
+
                         }; //end: Picker.setTotalSelected()
-                        
+
                         /**
                          * Returns a jQuery object with the list of columns
                          * selected by the user (anchors <a>)
-                         *  
+                         *
                          * @return {jQuery}
                          */
                         Picker.getSelected = function() {
-                            
+
                             return $colList.find("a.ui-state-highlight");
-                            
+
                         }; //end: Picker.getSelected()
-                        
+
                         /**
                          * Shows a message on the picker
-                         *  
+                         *
                          */
                         Picker.showMessage = function(msg) {
-                            
+
                             $('<div class="spwidget-board-msg ui-state-error ui-corner-all">' +
                                     msg + '</div>')
                                 .appendTo($colFooter)
                                 .fadeOut(8000, function(){
                                     $(this).remove();
                                 });
-                            
-                        }; 
-                        
+
+                        };
+
                         /**
-                         * Sets the currently displayed columns on the picker 
+                         * Sets the currently displayed columns on the picker
                          */
                         Picker.setSelected = function() {
-                            
+
                             var $columns    = $colList.find("a");
-                            
+
                             $.each(opt.states, function(i, colDef){
-                                
+
                                 var $thisCol = $columns.filter(
                                                 "[data-board_col_index='" + i + "']" );
-                                
+
                                 if (colDef.isVisible) {
-                                    
+
                                     Picker.selectColumn($thisCol, false);
-                                    
+
                                 } else {
-                                    
+
                                     Picker.selectColumn($thisCol, true);
-                                    
+
                                 }
-                                
+
                             });
-                            
+
                             Picker.setTotalSelected();
-                            
+
                         }; //end: Picker.setSelected()
-                        
+
                         /**
                          * Sets the columns (an <a> anchor) to either
                          * selected or not selected
-                         * 
+                         *
                          * @param {HTMLElement} colEle
                          *          Single html element or an array of elements
-                         * 
+                         *
                          * @param {Boolean} unSelect
                          *          If true, then the column, regardless of its
-                         *          current display setting, will be un-selected. 
-                         * 
-                         * @return {HTMLElement} anchor 
+                         *          current display setting, will be un-selected.
+                         *
+                         * @return {HTMLElement} anchor
                          */
                         Picker.selectColumn = function(colEle, unSelect){
-                            
+
                             $(colEle).each(function(){
-                                
+
                                 var $a      = $(this),
                                     $icon   = $a.find(".ui-icon");
-                                
+
                                 if ($a.hasClass("ui-state-highlight") || unSelect) {
-                                    
+
                                     if (unSelect !== false) {
-                                        
+
                                         $icon.removeClass("ui-icon-check");
                                         $a.removeClass("ui-state-highlight");
-                                                                                
+
                                     }
-                                    
+
                                 } else {
-                                    
+
                                     $icon.addClass("ui-icon-check");
                                     $a.addClass("ui-state-highlight");
-                                    
+
                                 }
-                                
+
                             });
-                            
+
                             return colEle;
-                            
+
                         }; //end: Picker.selectColumn()
-                        
+
                         /**
                          * CHanges the board columns and makes only those selected
                          * on the COlumn Picker visible. A set of colunsn (the <a>
                          * element on the picker) can also be given on input, which
                          * will be used as the set to make visible, regardless of
                          * their state on the picker.
-                         * 
+                         *
                          * @param {jQuery} $selected
-                         * 
+                         *
                          * @return {undefined}
                          */
                         Picker.setVisibleColumns = function($selected){
-                            
+
                             if (!$selected) {
-                                
+
                                 $selected = Picker.getSelected();
-                                
+
                             }
-                            
+
                             var colNum = $selected.length;
-                            
+
                             // Apply columns
                             $.each(opt.states, function(i, colDef){
-                                
+
                                 if ($selected.filter(
                                             "[data-board_col_index='" + i + "']"
                                         ).length
                                 ) {
-                                    
+
                                     if (colDef.isVisible === false) {
-                                        
+
                                         colDef.isVisible = true;
                                         colDef.dataEle.css("display", "");
                                         colDef.headerEle.css("display", "");
-                                        
+
                                     }
-                                    
+
                                 } else {
-                                    
+
                                     colDef.isVisible = false;
                                     colDef.dataEle.css("display", "none");
                                     colDef.headerEle.css("display", "none");
-                                    
+
                                 }
-                                
+
                             });
-                            
+
                             opt.setBoardColumnClass(colNum);
-                            
+
                             // Adjust the board columns height
                             opt.setBoardColumnHeight();
-                            
+
                         }; //end: Picker.setVisibleColumns()
-                        
+
                         /**
                          * Given an array of visible column names, this method
                          * will make that set of columns visible.
                          * Columns are first validated to ensure they exist,
                          * and the min/max limits are also honored.
-                         *  
+                         *
+                         * FIXME: Refactor method Picker.setUserDefinedVisibleCol to use opt.setUserDefinedVisibleCol
                          */
-                        Picker.setUserDefinedVisibleCol = 
-                            opt.setUserDefinedVisibleCol = function(colList){
-                                
+                        Picker.setUserDefinedVisibleCol = function(colList){
+
                                 var count       = 0,
                                     selector    = "";
-                                
+
                                 // If input is not an array, then exit, unless
-                                // it is the keyword 'all'. 
+                                // it is the keyword 'all'.
                                 if (!$.isArray(colList) || !colList.length) {
-                                    
+
                                     if (    !$.isArray(colList)
                                         &&  String(colList).toLowerCase() !== "all"
                                     ) {
-                                        
+
                                         return;
-                                        
+
                                     }
-                                    
+
                                     // set all columns visible
                                     colList = [];
-                                    
+
                                     $.each(opt.states, function(i,colDef){
-                                        
+
                                         colList.push(colDef.title);
-                                        
+
                                     });
-                                    
+
                                 }
-                                
+
                                 // Build the jQUery selector for the set of columns
                                 // that should be made visible. This selector is used
                                 // to get a set of elements (columns) from the Picker
                                 // that will then drive which columns are visible.
                                 $.each(colList, function(i,columnName){
-                                    
+
                                     // loop through the Array of states looking
                                     // for this column. Once found, build the
-                                    // jquery selector for it and exit loop 
+                                    // jquery selector for it and exit loop
                                     $.each(opt.states, function(i, state){
-                                        
+
                                         if (state.title === columnName) {
-                                            
+
                                             count++;
-                                            
+
                                             if (count > 1) {
-                                                
+
                                                 selector += ",";
-                                                
+
                                             }
-                                            
-                                            selector += "a[data-board_col_name='" + 
+
+                                            selector += "a[data-board_col_name='" +
                                                         state.name + "']";
-                                        
+
                                             return false;
-                                            
+
                                         }
-                                        
+
                                     });
-                                    
+
                                     // if we reached the MAX allowed number
                                     // of visible columns, then break loop.
                                     if (count >= opt.maxColumnVisible) {
-                                        
+
                                         return false;
-                                        
+
                                     }
-                                    
+
                                 });
-                                
+
                                 // if we have at least 2 columns, then make only the
                                 // requested set visible
                                 if (count >= 2) {
-                                    
+
                                     Picker.setVisibleColumns($colList.find(selector));
                                     Picker.triggerEvent();
-                                    
+
                                 }
-                                
+
                             }; //end: Picker.setUserDefinedVisibleCol() and opt.setUserDefinedVisibleCol()
-                        
+
                         /**
                          * Triggers a spwidget:boardColumnChange event on the board.
-                         * This is done only if initiazliation has been done. 
+                         * This is done only if initiazliation has been done.
                          */
-                        Picker.triggerEvent = function() {
-                            
-                            var columns = [];
-                            
-                            if (opt.initDone) {
-                                
-                                $.each(opt.statesMap, function(key,defObj){
-                                    
-                                    if (defObj.isVisible){
-                                        
-                                        columns.push(defObj.title);
-                                        
-                                    }
-                                    
-                                });
-                                
-                                opt.ele.trigger(
-                                    "spwidget:boardColumnChange",
-                                    [ opt.ele, columns ] );
-                                
-                            }
-                            
-                        }; //end: PIcker.triggerEvent()
-                        
+                        Picker.triggerEvent = opt.triggerBoardColumnChangeEvent;
+
                         // ----------------- [ setup ] ------------------
-                        
+
                         // Setup Picker apply button
                         $colCntr.find("button[name='apply']")
                             .button({
@@ -2517,31 +2675,31 @@
                                 }
                             })
                             .on("click", function(ev){
-                                
+
                                 var $selected   = Picker.getSelected(),
                                     colNum      = $selected.length;
-                                
+
                                 // validate
                                 if (colNum > opt.maxColumnVisible) {
-                                    
+
                                     Picker.showMessage(opt.colPickerMaxColMsg)
                                     return;
-                                    
+
                                 } else if (colNum < 2) {
-                                    
+
                                     Picker.showMessage(opt.colPickerMinColMsg)
                                     return;
-                                    
+
                                 }
-                                
+
                                 // Hide container
                                 $colCntr.hide();
-                                
+
                                 Picker.setVisibleColumns($selected);
                                 Picker.triggerEvent();
-                                
+
                             });
-                        
+
                         // Setup Picker CHECK button
                         $colCntr.find("button[name='check']")
                             .attr("title", opt.colPickerCheckLabel)
@@ -2552,23 +2710,23 @@
                                 }
                             })
                             .on("click", function(ev){
-                                
-                                var $sel = Picker.getSelected(); 
-                                
+
+                                var $sel = Picker.getSelected();
+
                                 if ($sel.length) {
-                                    
+
                                     Picker.selectColumn($sel, true);
-                                    
+
                                 } else {
-                                    
+
                                     Picker.selectColumn( $colList.find("a") );
-                                    
+
                                 }
-                                
+
                                 Picker.setTotalSelected();
-                                
+
                             });
-                        
+
                         // Setup Picker Close button
                         $colCntr.find("button[name='close']")
                             .attr("title", opt.colPickerCloseLabel)
@@ -2579,19 +2737,19 @@
                                 }
                             })
                             .on("click", function(ev){
-                                
+
                                 $colCntr.hide();
-                                
+
                             });
-                        
+
                         // Setup the columns button
                         ele.find("div.spwidget-board-settings")
                             .css("display", "")
                             .find("div.spwidget-board-settings-columns")
                                 .each(function(){
-                                    
+
                                     var $btn = $(this);
-                                    
+
                                     $btn.button({
                                         label: opt.colPickerLabel,
                                         icons: {
@@ -2599,108 +2757,100 @@
                                         }
                                     })
                                     .on("click.SPWidgets", function(){
-                                        
+
                                         if ($colCntr.is(":visible")) {
-                                            
+
                                             $colCntr.hide();
-                                            
+
                                         } else {
-                                            
+
                                             Picker.setSelected();
-                                            
+
                                             $colCntr.show()
                                                 .position({
                                                     my: "left top",
                                                     at: "left bottom",
                                                     of: $btn
                                                 });
-                                            
+
                                         }
-                                        
+
                                     });
-                                    
+
                                     return false;
-                                    
+
                                 });
-                        
+
                         // Setup the Column choices in the popup
                         $colList.each(function(){
-                                    
+
                                 var $cntr   = $(this),
                                     columns = "";
-                                
+
                                 $.each(opt.states, function(i,colDef){
-                                    
+
                                     columns += '<a href="javascript:" data-board_col_index="' +
                                         i + '" data-board_col_name="' + colDef.name +
                                         '"><span class="ui-icon ui-icon-minus"></span>' +
                                         '<span>' + colDef.title + '</span></a>';
-                                    
+
                                 });
-                                
+
                                 $cntr.html(columns);
-                                
+
                                 return false;
-                                
+
                             })
                             .on("click", "a", function(){
-                                
+
                                 Picker.selectColumn(this);
                                 Picker.setTotalSelected();
-                                
+
                             });
-                        
+
                         // Set the label of the Total
                         $colCntr.find("span.spwidget-board-column-total-label")
                             .html( opt.colPickerTotalLabel );
-                        
-                        // If user defined colPickerVisible on input, then
-                        // make only those items visible
-                        if ($.isArray(opt.colPickerVisible) && opt.colPickerVisible.length) {
-                            
-                            Picker.setUserDefinedVisibleCol(opt.colPickerVisible);
-                            
-                        } //end: if() Have opt.colPickerVisible?
-                        
+
                     }, //end: opt.setupColumnPicker()
-                    
+
                     /**
                      * Sets the height on the board header and
                      * data columns so that they are all equal.
-                     *  
+                     *
                      */
                     setBoardColumnHeight: function() {
-                        
+
                         // Set the height of the headers
                         if (opt.headersCntr.is(":visible")) {
-                            
+
                             $.SPWidgets.makeSameHeight(
                                 opt.headersCntr.find("div.spwidget-board-state:visible"),
                                 0,
                                 'min-height'
                             );
-                            
+
                         }
-                        
+
                         // If user defined a fixed height, then use that on the
                         // card content column and exit.
                         if (opt.height) {
-                            
+
                             opt.statesCntr
                                 .find("div.spwidget-board-state:visible")
                                 .css({
                                     height:         opt.height,
                                     "min-height":   ""
                                 });
-                                
+
                             return;
-                            
+
                         }
-                        
+
                         // Else, set the height of the column area that holds the cards.
                         // We also remove the fixed height from these if set.
                         if (opt.statesCntr.is(":visible")) {
-                            
+
                             $.SPWidgets.makeSameHeight(
                                 opt.statesCntr
                                     .find("div.spwidget-board-state:visible")
@@ -2708,98 +2858,129 @@
                                 20,
                                 'min-height'
                             );
-                            
+
                         }
-                        
+
                         return;
-                        
-                    } // end: opt.setBoardCOlumnHeight()
-                    
+
+                    }, // end: opt.setBoardCOlumnHeight()
+
+                    /**
+                     * Returns an array of objects with the list of board
+                     * columns currently defined for the board. This list
+                     * is _NOT_ the internal array, but rather an external
+                     * "safe" list.
+                     *
+                     * @return {Array}
+                     *      An array of objects. Each object contains the
+                     *      name, title and isVisible attributes.
+                     *
+                     */
+                    getBoardColumnList: function() {
+
+                        var columns = [],
+                            i,j;
+
+                        for(i=0,j=opt.states.length; i<j; i++){
+
+                            columns.push({
+                                name:       opt.states[i].name,
+                                title:      opt.states[i].title,
+                                isVisible:  opt.states[i].isVisible
+                            });
+
+                        }
+
+                        return columns;
+
+                    } //end: opt.getBoardColumnList()
+
+
             });//end: $.extend() set opt
-            
+
             //----------------------------------------------------------
             //----------------[ Initialize this instance ]--------------
             //----------------------------------------------------------
-            
+
             // Check for Required params
             if ( !opt.list || !opt.field ) {
-                
+
                 ele.html("<div>SPWidgets:Board [ERROR] Missing required input parameters!</div>");
                 return this;
-                
+
             }
-            
+
             // Store instance object and mark element "loading"
             ele.addClass("loadingSPShowBoard").data("SPShowBoardOptions", opt);
-            
+
             // get board states from the table definition
             opt.getBoardStates().then(function(){
-                
+
                 // If user did not define CAMLViewFields or the definition
                 // by the user did not include the Board column then either
                 // define it here or add on to the set.
                 if (opt.CAMLViewFields === "") {
-                    
-                    opt.CAMLViewFields = 
+
+                    opt.CAMLViewFields =
                         '<ViewFields>' +
                             '<FieldRef Name="ID" />' +
                             '<FieldRef Name="Title" />' +
                             '<FieldRef Name="' + opt.field + '" />' +
                         '</ViewFields>';
-                    
+
                 } else if (opt.CAMLViewFields.indexOf(opt.field) < 0){
-                    
+
                     opt.CAMLViewFields = opt.CAMLViewFields.replace(
                                     /\<\/ViewFields\>/i,
-                                    '<FieldRef Name="' + 
+                                    '<FieldRef Name="' +
                                         opt.field + '" /></ViewFields>'
                                 );
-                    
+
                 }
-                
+
                 // Populate the element with the board template
                 ele.html($(Board.htmlTemplate).filter("div.spwidget-board"));
-                
+
                 // Get a copy of the state column for both headers and values
                 opt.tmpltHeader  = $("<div/>")
                                     .append(
                                         ele.find("div.spwidget-board-headers-cntr div.spwidget-board-state").clone()
                                     ).html();
-                                
+
                 opt.tmpltState   = $("<div/>")
                                 .append(
                                     ele.find("div.spwidget-board-states-cntr div.spwidget-board-state")
                                 )
                                 .html();
-                
+
                 // Set the number of columns to display
                 // If less then 11, then set it to that number
                 if (opt.states.length <= opt.maxColumnVisible) {
-                    
+
                     opt.showNumberOfColumns = opt.states.length;
-                    
+
                 }
-                
+
                 // Get pointers to the containers in the UI
                 opt.statesCntr  = ele
                                     .find("div.spwidget-board-states-cntr")
                                         .addClass(
-                                            "spwidget-states-" + 
+                                            "spwidget-states-" +
                                             opt.showNumberOfColumns
                                         )
                                         .empty();
-                                
+
                 opt.headersCntr = ele
                                     .find("div.spwidget-board-headers-cntr")
                                         .addClass(
-                                            "spwidget-states-" + 
+                                            "spwidget-states-" +
                                             opt.showNumberOfColumns
                                         )
                                         .empty();
-                
+
                 // Build the board columns
                 $.each(opt.states, function(i,v){
-                    
+
                     v.headerEle = $(opt.tmpltHeader)
                                     .appendTo(opt.headersCntr)
                                     .attr("data-boardstate", v.name)
@@ -2807,97 +2988,105 @@
                                     .find(".spwidget-board-header-title")
                                         .html(v.title)
                                         .end();
-                                    
+
                     v.dataEle = $(opt.tmpltState).appendTo(opt.statesCntr)
                                     .attr("data-boardindex", i)
                                     .attr("data-boardstate", v.name);
-                    
+
                     // Create the header element that holds the total
                     v.headerTotalEle = v.headerEle
                                         .find("span.spwidget-state-item-total");
-                    
+
                     // Create variable to track if column is visible
                     v.isVisible = true;
-                    
+
                     // If the index is greater than 9 (10 columns) then Column
                     // must be hidden - only support 10 columns.
                     if (i > (opt.maxColumnVisible - 1) ) {
-                        
+
                         v.headerEle.css("display", "none");
                         v.dataEle.css("display", "none");
                         v.isVisible = false;
-                        
+
                     }
-                    
+
                 }); //end: .each()
-                
+
                 // Insert element to clear float elements
                 $(opt.headersCntr,opt.statesCntr)
                     .append('<div style="clear:both;"></div>');
-                
+
                 // If showColPicker is true, then show the column selector
                 if (opt.showColPicker === true) {
-                    
+
                     opt.setupColumnPicker();
-                    
+
                 }
-               
+
+                // If user defined colPickerVisible on input, then
+                // make only those items visible
+                if ($.isArray(opt.colPickerVisible) && opt.colPickerVisible.length) {
+
+                    opt.setUserDefinedVisibleCol(opt.colPickerVisible);
+
+                }
+
                 // Create listeners on the board.
                 ele
                     // Bind function to sortable events so that headers stay updated
                     .on("sortreceive sortremove", function(ev, ui){
-                    
+
                         opt.updBoardHeaders();
                         $(ui.item).removeClass("ui-state-hover");
-                        
+
                     })
-                    
+
                     // On Sortreceive: update item
                     .on("sortreceive", function(ev, ui){
-                        
+
                         var evData  = opt.getEventObject(ui.item),
                             dfd     = $.Deferred(),
                             itemId  = '';
-                        
+
                         // Handle possibly the itemObject being a knockout object
                         if ($.isFunction(evData.itemObj.ID)) {
-                            
+
                             itemId = evData.itemObj.ID();
-                            
+
                         } else {
-                            
+
                             itemId = evData.itemObj.ID;
-                            
+
                         }
-                        
+
                         // Make the update to the state in SP
                         evData.updates       = []; // Format = SPService UpdateListItems
                         evData.updatePromise = dfd.promise();
                         evData.updates.push([ opt.field, evData.currentState ]);
-                        
+
                         // TODO: need to normalize evData by adding values to itemsModified
-                        
+
                         // Call any onPreUpdate event. If TRUE (boolean) is returned,
-                        // update is canceled. Note that the UI is not updated to 
+                        // update is canceled. Note that the UI is not updated to
                         // reflect a canceled update (ex. item is not moved back to
                         // original position)
                         if ($.isFunction(opt.onPreUpdate)) {
-                            
+
                             if (opt.onPreUpdate.call(ui.item, ev, ui.item, evData) === true) {
-                                
+
                                 return this;
-                                
+
                             }
-                            
+
                         }
-                        
+
                         // If no updates to make, exit here.
                         if (!evData.updates.length) {
-                            
+
                             return this;
-                            
+
                         }
-                        
+
                         // Make update to SP item
                         $().SPServices({
                             operation:      "UpdateListItems",
@@ -2907,47 +3096,47 @@
                             valuepairs:     evData.updates,
                             webURL:         opt.webURL,
                             completefunc:   function(xData, status){
-                                
+
                                 // Process Errors
                                 if (status === "error") {
-                                    
+
                                     dfd.rejectWith(
                                             ele,
                                             [ 'Communications Error!', xData, status ]);
-                                    
+
                                     return;
-                                    
+
                                 }
-                                
+
                                 var resp = $(xData.responseXML),
                                     row  = null;
-                                
+
                                 if ( resp.SPMsgHasError() ) {
-                                     
+
                                      dfd.rejectWith(
                                             ele,
                                             [ resp.SPGetMsgError(), xData, status ]);
-                                    
+
                                     return;
-                                    
+
                                 }
-                                
+
                                 row = $(xData.responseXML).SPFilterNode("z:row")
                                             .SPXmlToJson({includeAllAttrs: true});
-                                
+
                                 $(ev.target).trigger(
                                     "spwidget:boardchange", [ ui.item, evData ] );
-                                
+
                                 dfd.resolveWith(ev.target, [row[0], evData.itemObj, xData]);
-                                
+
                             }//end: completefunc()
                         });
-                        
+
                     }) // end: ele.on("sortreceive")
-                    
+
                     // Buind event to catch board actions
                     .on("click", "a.spwidgets-board-action", function(ev){
-                        
+
                         var $actionEle  = $(ev.currentTarget),
                             action      = String(
                                                 $actionEle
@@ -2955,50 +3144,50 @@
                                             )
                                             .toLowerCase(),
                             gotoUrl     = "",
-                            thisPageUrl = $.pt.getEscapedUrl(window.location.href); 
-                        
+                            thisPageUrl = $.pt.getEscapedUrl(window.location.href);
+
                         // TODO: enhance to open item in dialog (SP2010) if that feature is on
-                        
+
                         switch (action) {
-                            
-                            case "edit-item": 
-                                
+
+                            case "edit-item":
+
                                 gotoUrl = opt.getListFormUrl("EditForm");
-                                
+
                                 break;
-    
-                            case "view-item": 
-                                
+
+                            case "view-item":
+
                                 gotoUrl = opt.getListFormUrl("DisplayForm");
-                                
+
                                 break;
-                            
-                            
+
+
                         } //end: switch()
-                        
-                        window.location.href = gotoUrl + 
+
+                        window.location.href = gotoUrl +
                             "?ID=" + $actionEle.data("spwidgets_id") +
                             "&Source=" + thisPageUrl;
-                            
+
                         return this;
-                            
+
                     }); //end: ele.on()
-                    
+
                 // If no template was defined, use default
                 if (opt.template === null) {
-                    
+
                     opt.template = $( Board.htmlTemplate )
                                     .filter("div.spwidget-item-template");
-                    
+
                 }
-                
+
                 // Retrieve the items from the List and then
                 // Display items retrieved on the board
                 opt._getListItems()
                     .then(function(){
-                        
+
                         opt.showItemsOnBoard();
-                        
+
                         // Make the columns "sortable"
                         opt.statesCntr.find("div.spwidget-board-state").each(function(){
                             var thisState = $(this);
@@ -3011,52 +3200,55 @@
                                 placeholder:    "ui-state-highlight spwidget-board-placeholder",
                                 forcePlaceholderSize: true,
                                 remove:         function(ev, ui){
-                                    
+
                                     opt.setBoardColumnHeight();
-                                    
+
                                 }//end: remove()
                             });
-                            
+
                         });
-                        
-                        
+
+
                         // Make text inside the states container un-selectable.
                         opt.statesCntr.disableSelection();
-                        
+
                         opt.initDone = true;
-                        
+
                         opt.setBoardColumnHeight();
-                        
+
                         // remove temp class and add the hasSPShowBoard to it.
-                        ele.addClass("hasSPShowBoard")
-                            .removeClass("loadingSPShowBoard");
-                            
+                        ele.addClass("hasSPShowBoard").removeClass("loadingSPShowBoard");
+
                         // Call any user defined callback and trigger create event
                         if ($.isFunction(opt.onBoardCreate)) {
-                            
+
                             opt.onBoardCreate.call(ele, opt.getEventObject());
-                            
+
                         }
-                        
+
                         $(ele).trigger(
-                            "spwidget:boardcreate", 
+                            "spwidget:boardcreate",
                             [ ele, opt.getEventObject() ] );
-                        
+
                     });
-            
+
             }) //end: .then() (get board states)
             .fail(function(failureMsg, xData, status){
-                
+
                 ele.append('<div class="ui-state-error"><p>' + failureMsg + '</p></div>');
-                
+
             }); //end: .fail() (get board states)
-            
+
             return this;
-            
+
         });//end: return .each()
-        
+
+        // return the original jQuery selection OR whatever
+        // a method might have generated if one was called.
+        return retVal;
+
     };//end: $.fn.SPShowBoard()
-    
+
     /**
      * @property
      * Stores the Style sheet that is inserted into the page the first
@@ -3201,8 +3393,8 @@
 + "    width: 9.1%;\n"
 + "}\n";
 //_HAS_BOARD_CSS_TEMPLATE_
-    
-    
+
+
     /**
      * @property
      * Stores the HTML template for each Board widget.
@@ -3257,8 +3449,8 @@
 + "    </div>\n"
 + "</div>\n";
 //_HAS_BOARD_HTML_TEMPLATE_
-    
-    
+
+
 })(jQuery);
 /**
  * Widget that turn an input field into a lookup field. The
@@ -3267,7 +3459,7 @@
  * THe user, however, is presented with the existing items
  * and has the ability to Remove them and add new ones.
  * 
- * BUILD: Paul:March 15, 2014 11:21 AM
+ * BUILD: Paul:June 06, 2014 07:26 PM
  * 
  */
 
@@ -4829,24 +5021,24 @@
  * jQuery plugin that attaches to an input field and provide a people
  * picker widget for interaction by the user. This Plugin is dependent
  * on jQuery UI's Autocomplete and SPServices library.
- *      
- *  
- * @version 20140315112156NUMBER_
+ *
+ *
+ * @version 20140614082134NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
- * 
+ *
  * @requires jQuery.js {@link http://jquery.com}
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
- * 
- * Build Date Paul:March 15, 2014 11:21 AM
- * 
+ *
+ * Build Date Paul:June 14, 2014 08:21 PM
+ *
  */
 (function(){
-    
+
     /*jslint nomen: true, plusplus: true */
     /*global SPWidgets */
-    
+
     /**
      * Namespace for pickSPUser specific methods.
      * @name        pickSPUser
@@ -4856,49 +5048,74 @@
     $.pt.pickSPUser = {
         _isPickSPUserCssDone: false
     };
-    
+
+    // Store defaults in SPWidgets object.
+    $.SPWidgets.defaults.peoplePicker = {
+        allowMultiples:     true,
+        maxSearchResults:   50,
+        webURL:             null,
+        type:               'User',
+        onPickUser:         null,
+        onCreate:           null,
+        onRemoveUser:       null,
+        inputPlaceholder:   "Type and Pick",
+        appendTo:           null,
+        minLength:          3,
+        resolvePrincipals:  true,
+        meKeyword:          "[me]",
+        meKeywordLabel:     "Current User"
+    };
+
     /**
      * Given an input field, this method will display an interface that
      * allows the users to select one or more users from SharePoint and
      * stores the selected user information into the intput field in the
      * format expected when making an update via webservices.
-     * 
+     *
      * The input field will be hidden in its current position and a UI
      * will displayed instead. As the user picks or removes users, the
      * input field will be updated at the same time, thus it will always
      * be ready to be submitted as part of an update to the server.
-     * 
+     *
      * @alias $.pickSPUser()
      * @alias jQuery.pickSPUser()
      * @alias $().pickSPUser()
      * @alias jQuery().pickSPUser()
-     * 
-     * 
+     *
+     *
      * @param {Object} options
      *                      Object with the options. See below.
-     * 
+     *
      * @param {Boolean} [options.allowMultiples=true]
      *                      Determine whether multiple users can be picked.
-     * 
+     *
      * @param {String} [options.webURL=$().SPServices.SPGetCurrentSite()]
      *                  The URL of the site
-     * 
+     *
      * @param {String} [options.type='User']
      *                  The type of search to conduct. Default is User. Others
-     *                  include: None, DistributionList, SecurityGroup, 
+     *                  include: None, DistributionList, SecurityGroup,
      *                  SharePointGroup, All
-     * 
+     *
      * @param {Interger} [options.maxSearchResults=50]
      *                      The max number of results to be returned from the
      *                      server.
-     * 
+     *
+     * @param {jQuery}  [options.appendTo=null]
+     *                      The container where to where the autocomplete suggestion
+     *                      should be appended.
+     *
+     * @param {Number} [minLength=3]
+     *                      The minimum number of characters the user must type before
+     *                      suggestions are retrieved. Given directly to jQuery UI's
+     *                      Autocomplete widget.
      * @param {Function} [onPickUser=null]
      *                      Function that is called when user makes a selection.
      *                      Function will have a context (this keyword) of the
      *                      input field to which this plugin is called on, and
      *                      will be given one input param; an object containing
      *                      information about the selected user.
-     *   
+     *
      * @param {Function} [onCreate=null]
      *                      Function that is called after the widget has been
      *                      initiated on an input element.
@@ -4906,7 +5123,7 @@
      *                      input field to which this plugin is called on, which
      *                      will also be provided as the first argument to the
      *                      function.
-     * 
+     *
      * @param {Function} [onRemoveUser=null]
      *                      Function called when removing a user from the selected
      *                      list. Returning false (boolean) will cancel the removal
@@ -4914,42 +5131,46 @@
      *                      Function will have a context (this keyword) of the
      *                      input field to which this plugin is called on, and is
      *                      given 3 input params: $input, $personUI, personObj
-     * 
+     *
      * @param {String} [inputPlaceholder="Type and Pick"]
      *                      The text to appear in the HTML5 placeholder attribute
-     *                      of the input field. 
-     * 
+     *                      of the input field.
+     * @param {String} [resolvePrincipals=true]
+     *                      If set to true, any user that is suggested but not yet
+     *                      part of the site collection user info list (their id
+     *                      is -1) will be automatically added.
+     *
      * @return {jQuery} selection
-     * 
-     * 
-     * 
+     *
+     *
+     *
      * METHODS:
-     * 
+     *
      * $().pickSPUser("method", "clear")
      *      Clears the currently selected users.
-     * 
+     *
      * $().pickSPUser("method", "destroy")
      *      Destroys the widget.
-     * 
+     *
      * $().pickSPUser("method", "add", "person in id;#name format")
      *      adds a person
-     * 
+     *
      * $().pickSPUser("method", "remove", "person id or displayed name")
      *      removes a person
-     * 
+     *
      * $().pickSPUser("method", "getSelected")
      *      Returns array of people selecte.
-     * 
-     * 
+     *
+     *
      * EVENTS:
-     * 
+     *
      * spwidget:peoplePickerCreate
      *          Triggered when the widget is initiated. Event will received
      *          a scope of the input element or whatever object it bubled to
      *          as well as the following input parameter:
      *          1. jQuery Event object
      *          2. Input element that widget was attached to (as jQuery object)
-     * 
+     *
      * spwidget:peoplePickerAdd
      *          Triggered when an item is added to the input field. Event will
      *          receive a scope of the input element or whatever object it
@@ -4957,7 +5178,7 @@
      *          1. jQuery Event Object
      *          2. Input element (as jQuery object)
      *          3. Object with information on the user that was added.
-     * 
+     *
      * spwidget:peoplePickerRemove
      *          Triggered when an item is removed from the selected list. Event will
      *          receive a scope of the input element or whatever object it
@@ -4965,11 +5186,11 @@
      *          1. jQuery Event Object
      *          2. Input element (as jQuery object)
      *          3. Object with information on the user that was added.
-     *          
-     * 
+     *
+     *
      */
     $.fn.pickSPUser = function(options) {
-        
+
         // if the global styles have not yet been inserted into the page, do it now
         if (!$.pt.pickSPUser._isPickSPUserCssDone) {
             $.pt.pickSPUser._isPickSPUserCssDone = true;
@@ -4978,161 +5199,193 @@
                     "\n\n</style>")
                 .prependTo("head");
         }
-        
+
         // Store the arguments given to this function. Used later if the
         // user is trying to execute a method of this plugin.
         var arg     = arguments,
             $this   = this;
-        
+
         // If input is a string, then it must be an action (method).
         // Process only the first element in the selection.
         if (typeof options === "string") {
-            
+
             // TODO: should methods support actions on all items in selection?
-            
+
             return (function(ele){
-                
+
                 if (ele.is("input") && ele.hasClass("hasPickSPUser")){
-                    
+
                     return $.pt.pickSPUser.handleAction.apply(ele, arg);
-                    
+
                 }
-                
+
                 return $this;
-                
+
             })( $this.eq(0) );
-            
+
         }
-        
+
         // Define options with globals
         // var options = $.extend({}, options2);
-     
+
         // Initiate each selection as a pickSPUser element
         this.each(function(){
-            
+
             var ele = $(this);
-            
+
             // Options for this element
             var o   = $.extend({},
+                    $.SPWidgets.defaults.peoplePicker,
+                    options,
                     {
-                        allowMultiples:     true,
-                        maxSearchResults:   50,
-                        webURL:             $().SPServices.SPGetCurrentSite(),
-                        type:               'User',
-                        onPickUser:         null,
-                        onCreate:           null,
-                        onRemoveUser:       null,
-                        inputPlaceholder:   "Type and Pick"
-                    },
-                    options, 
-                    {
-                        eleUserInput: ele.css("display", "none").addClass("hasPickSPUser") 
+                        eleUserInput: ele.css("display", "none").addClass("hasPickSPUser")
                     });
-    
+
+            // If no webURL, define it now
+            if (!o.webURL) {
+
+                o.webURL = $().SPServices.SPGetCurrentSite();
+            }
+
             // insure that maxsearchResults is an interger
             o.maxSearchResults = parseInt(o.maxSearchResults) || 50;
-            
+
             // Create pick user container and insert it after the input element
-            // TODO: Clean up
-            // var cntr        = $(o.htmlTemplateSelector + " .pt-pickSPUser")
-                                // .clone(1).insertAfter(ele);
             var cntr        = $($.pt.pickSPUser.htmlTemplate)
                                 .find(".pt-pickSPUser").clone(1).insertAfter(ele);
-            
+
             o.eleSelected   = cntr.find("div.pt-pickSPUser-selected")
                                 .empty()
                                 .on("click", ".tt-delete-icon", function(){
-                                    
+
                                     $.pt.pickSPUser.removeUser(this);
-                                    
+
                                 });
-            
+
             o.elePickInput  = cntr.find("div.pt-pickSPUser-input");
-            
+
             /**
-             * Adds people to the selected list. 
-             * 
+             * Checks if a user is already included in the list of selected people
+             * in the People Picker widget.
+             *
+             * @param {String} id
+             * @param {String} [name]
+             *
+             * @return {Boolean}
+             */
+            o.isUserAlreadySelected = function(id, name) {
+
+                var selector = "div[data-pickspuserid='" + id + "']";
+
+                if (name) {
+
+                    selector += "[data-pickspusername='" + name + "']";
+
+                }
+
+                return (o.eleSelected.find(selector).length > 0);
+
+            };
+
+            /**
+             * Adds people to the selected list.
+             *
              * @param {String} peopleString
              * @param {Boolean} noEvents
-             * 
+             *
              */
             o.addPeopleToList = function(peopleString, noEvents) {
-                
-                var curUsers    = new String(peopleString).split(';#'), 
+
+                var curUsers    = new String(peopleString).split(';#'),
                     total       = curUsers.length,
                     i,id,user, $ui;
-                
+
+                // TODO: use $.SPWidgets.parseLookupFieldValue instead of local logic to parse values
+
                 for (i=0; i<total; i++){
-                    
+
                     id = curUsers[i];
-                    
                     i++;
-                    
                     user    = curUsers[i];
+
+                    if (id.toLowerCase() === "<userid/>") {
+
+                        user = o.meKeywordLabel;
+
+                    }
+
                     $ui     = $.pt.pickSPUser
                                 .getUserHtmlElement(o, id, user)
                                 .appendTo( o.eleSelected );
-                    
+
                     // Get this user's info. and store it in the input element
-                    (function($thisUserUI, thisUserName){
-                        
-                        o.getSearchResults(thisUserName)
+                    (function($thisUserUI, thisUserName, thisUserId){
+
+                        var searchString = thisUserName;
+
+                        if (id.toLowerCase() === "<userid/>") {
+
+                            searchString = o.meKeyword;
+
+                        }
+
+                        o.getSearchResults(searchString)
                             .done(function(rows, xData, status){
-                                
+
                                 var personName = String(thisUserName).toLowerCase();
-                                
+
                                 $.each(rows, function(i,v){
-                                    
+
                                     // TODO: Should we instead try to match on the ID?
                                     // SP is not consistent how the name is displayed on people pickers.
                                     // trying to get the Person record.
-                                    
+
                                     var thisName = String(v.displayName).toLowerCase();
-                                    
+
                                     if (thisName === personName) {
-                                        
+
                                         $thisUserUI.data("pickspuser_object", v);
-                                        
+
                                         return false;
-                                        
+
                                     }
-                                    
+
                                 });
-                                
+
                                 // TODO: should something be done if we're unable to find user?
-                                
+
                             });
-                        
-                    })($ui, user);
-                    
+
+                    })($ui, user, id);
+
                 }
-                
+
                 $.pt.addHoverEffect(
                     o.eleSelected.find("div.pt-pickSPUser-person-cntr") );
-            
+
                 // if we don't allow multiple, then hide the input area
                 if (o.allowMultiples === false) {
-                    
+
                     o.elePickInput.css("display", "none");
-                    
+
                 }
-                
+
                 $.pt.pickSPUser.storeListOfUsers(o.eleSelected, noEvents);
-                
+
             }; //end: o.addPeopleToList()
-            
+
             /**
-             * Searches SP for the value providedon input
-             * 
+             * Searches SP for the value provided on input
+             *
              * @param {String} searchString
-             * 
+             *
              * @return {jQuery.Promise}
-             *  
+             *
              */
             o.getSearchResults = function(searchString) {
-                
+
                 return $.Deferred(function(dfd){
-                    
+
                     $().SPServices({
                         operation:      "SearchPrincipals",
                         searchText:     searchString,
@@ -5141,12 +5394,29 @@
                         async:          true,
                         webURL:         o.webURL,
                         completefunc:   function(xData, status){
-                            
+
                             var resp = $(xData.responseXML),
                                 rows = [];
-                            
+
+                            // If searchString is part of the keyword [me],
+                            // then add <UserID>;#current user to the list
+                            // of suggestions
+                            if (String(o.meKeyword).indexOf(searchString.toLowerCase()) > -1) {
+
+                                rows.push({
+                                    displayName:    o.meKeywordLabel,
+                                    accountId:      '<UserID/>',
+                                    accountName:    o.meKeywordLabel,
+                                    accountType:    'User',
+                                    // needed attributes for autocomplete
+                                    value:          o.meKeywordLabel,
+                                    label:          o.meKeywordLabel
+                                });
+
+                            }
+
                             resp.find("PrincipalInfo").each(function(){
-                                
+
                                 var thisEle     = $(this),
                                     thisUser    = {
                                         displayName:    thisEle.find("DisplayName").text(),
@@ -5157,79 +5427,80 @@
                                         value:          thisEle.find("DisplayName").text(),
                                         label:          ''
                                     };
-                                
+
                                 // TODO: in the future, need to find a way to show type icon on the suggestions
                                 // if (thisUser.accountType === "User") {
-//                                     
+//
                                     // thisUser.label = "<img src='/_layouts/images/CheckNames.gif' /> ";
-//                                     
+//
                                 // } else {
-//                                     
+//
                                     // thisUser.label = "<img src='/_layouts/images/ALLUSR.GIF' /> ";
-//                                     
+//
                                 // }
-                                
+
                                 thisUser.label += thisUser.displayName;
-                                
-                                
+
+
                                 rows.push(thisUser);
-                                
+
                             });
-                            
+
+
                             dfd.resolveWith(xData, [rows, xData, status]);
-                            
+
                         }
                     });
-                    
+
                 })
                 .promise();
-                
+
             }; //end: o.getSearchResults()
-            
+
             // If multiple user are allowed to be picked, then add style to
             // selected input area
             if (o.allowMultiples === true) {
-                
+
                 o.eleSelected.addClass("pt-pickSPUser-selected-multiple");
-                
+
             }
-            
+
             // Variable that store all search results
             var cache = {};
-            
+
             // Add the AutoComplete functionality to the input field
             o.elePickInput.find("input[name='pickSPUserInputField']")
                 .attr("placeholder", o.inputPlaceholder)
                 .autocomplete({
-                    minLength:  3,
-                    appendTo:   o.elePickInput,
+                    minLength:  o.minLength,
+                    appendTo:   o.appendTo || o.elePickInput,
                     source:     function(request, response){
                         // If search term is in cache, return it now
                         if (request.term in cache) {
                             response(cache[request.term]);
                             return;
                         }
-                        
+
                         cache[request.term] = [];
-                        
+
                         // Search SP
                         o.getSearchResults(request.term)
                             .then(function(rows, xData, status){
-                                
+
                                 cache[request.term].push
                                     .apply(
                                         cache[request.term],
                                         rows
                                    );
-                                   
+
                                 response(cache[request.term]);
-                                
+
                             });
-                        
+
                     },//end:source()
                     /**
                      * Event bound to an autocomplete suggestion.
-                     * 
+                     *
                      * @param {jQuery} ev   -   jQuery event.
                      * @param {Object} u    -   An object containing the element generated above
                      *                          by the <source> method that represents the person
@@ -5238,99 +5509,219 @@
                     select: function(ev, u){
                         // If we store only 1 user, then clear out the current values
                         if (o.allowMultiples === false) {
-                            
+
                             o.eleSelected.empty();
-                            
+
                         // Check if already displayed.
                         } else if (
-                            o.eleSelected.find(
-                                "div[data-pickspuserid='" + 
-                                u.item.accountId + "']" ).length
+                            o.isUserAlreadySelected(
+                                u.item.accountId,
+                                u.item.displayName
+                            )
                         ) {
-                            
+
+                            setTimeout(function(){ev.target.value = "";}, 50);
                             return;
-                            
+
                         }
-                        
-                        var $newPersonUI = $.pt.pickSPUser.getUserHtmlElement(
-                                    o, u.item.accountId, u.item.displayName
-                                )
-                                .appendTo( o.eleSelected );
-                        
-                        // Store a copy of the user object on the UI
-                        $newPersonUI.data("pickspuser_object", u.item);
-                        
-                        $.pt.pickSPUser.storeListOfUsers(cntr);
-                        
-                        $.pt.addHoverEffect(
-                            cntr.find("div.pt-pickSPUser-person-cntr") );
-                        
-                        // clear out the autocomplete box
-                        setTimeout(function(){ev.target.value = "";}, 50);
-                        
-                        if (o.allowMultiples === false) {
-                            o.elePickInput.hide();
+
+                        /**
+                         * Add the user to the list of selected user
+                         */
+                        var addToSelectionList = function() {
+
+                            var $newPersonUI = $.pt.pickSPUser.getUserHtmlElement(
+                                        o, u.item.accountId, u.item.displayName
+                                    )
+                                    .appendTo( o.eleSelected );
+
+                            // Store a copy of the user object on the UI
+                            $newPersonUI.data("pickspuser_object", u.item);
+
+                            $.pt.pickSPUser.storeListOfUsers(cntr);
+
+                            $.pt.addHoverEffect(
+                                cntr.find("div.pt-pickSPUser-person-cntr") );
+
+                            // clear out the autocomplete box
+                            setTimeout(function(){ev.target.value = "";}, 50);
+
+                            if (o.allowMultiples === false) {
+                                o.elePickInput.hide();
+                            }
+
+                            // if a callback was defined, call it now
+                            if ($.isFunction(o.onPickUser)) {
+                                o.onPickUser.call(o.eleUserInput, $.extend({},u.item));
+                            }
+
+                            // Triggere event
+                            ele.trigger(
+                                $.Event("spwidget:peoplePickerAdd"),
+                                [ o.eleUserInput, $.extend({},u.item) ]
+                            );
+
+                        };
+
+                        // If the user id is NOT -1 (is resolved) or resolvePrincipals
+                        // is false, then add user to list now.
+                        if (u.item.accountId !== "-1" || !o.resolvePrincipals) {
+
+                            addToSelectionList();
+
+                        // Else, let's resolve the user before we add them.
+                        } else {
+
+                            $.fn.pickSPUser.resolvePrincipals({
+                                principalKeys: u.item.accountName
+                            })
+                            .then(function(xmlDoc, status){
+
+                                // TODO: handle error conditions? (low risk of ocuring)
+
+                                u.item.accountId = $(xmlDoc)
+                                    .find("AccountName:contains('" + u.item.accountName + "')")
+                                        .parent()
+                                        .find("UserInfoID")
+                                        .text();
+
+                                addToSelectionList();
+
+
+                            });
+
                         }
-                        
-                        // if a callback was defined, call it now
-                        if ($.isFunction(o.onPickUser)) {
-                            o.onPickUser.call(o.eleUserInput, $.extend({},u.item));
-                        }
-                        
-                        // Triggere event
-                        ele.trigger(
-                            $.Event("spwidget:peoplePickerAdd"),
-                            [ o.eleUserInput, $.extend({},u.item) ]
-                        );
-                        
+
                     }
-                });//end:autocomplete 
-            
+                });//end:autocomplete
+
             // Store the options for this call on the container and include a pointer
             // in the input field to this element
             cntr.data("pickSPUserContainerOpt", o);
             ele.data("pickSPUserContainer", cntr);
-            
+
             // If the current input field has a value defined, then parse it
             // and display the currently defined values
             if (ele.val()) {
-                
+
                 o.addPeopleToList(ele.val(), true);
-                
+
             }
-            
+
             // call onCreate if defined
             if ($.isFunction(o.onCreate)) {
-                
+
                 o.onCreate.call(ele, ele);
-                
+
             }
-            
+
             // Trigger create event on this instance
             ele.trigger(
                 $.Event("spwidget:peoplePickerCreate"),
                 [o.eleUserInput]
             );
-            
+
             return this;
         });
-        
+
         return this;
-        
+
     };// $.fn.pickSPUser()
-    
+
+    /**
+     * Given a list of users, this method will resolve those if they
+     * are not part of the site collection user list info.
+     *
+     * TODO: make this method generic and dependency free.
+     *
+     * @param {Object} options
+     * @param {Array|String} options.principalKeys
+     *      The principal key (login name/Account Name/email) to be resolved.
+     *      An array of values can also be used on input.
+     * @param {String} [options.principalType='All']
+     *      The type of principal that is being resolved.
+     * @param {Boolean} [options.addToUserInfoList=true]
+     *      If true, then principal will be added to the site collection
+     *      user info list.
+     * @param {Boolean} [options.async=true]
+     *      If true, call to the service will be made async.
+     *
+     *
+     * @return {jQuery.Promise}
+     *      The jquery .ajax() Promise is returned.
+     */
+    $.fn.pickSPUser.resolvePrincipals = function(options) {
+
+        var opt = $.extend({}, {
+                principalKeys:      [],
+                principalType:      'All',
+                addToUserInfoList:  true,
+                async:              true
+            }, options);
+
+        if (!$.isArray(opt.principalKeys)) {
+
+            opt.principalKeys = [opt.principalKeys];
+
+        }
+
+        opt.principalXml    = "";
+        var hasStringTag        = /<string>/i,
+            i,j;
+
+        for(i=0,j=opt.principalKeys.length; i<j; i++){
+
+            if (!hasStringTag.test(opt.principalKeys[i])) {
+
+                opt.principalXml += '<string>' + opt.principalKeys[i] + '</string>';
+
+            } else {
+
+                opt.principalXml += opt.principalKeys[i];
+
+            }
+
+        }
+
+        // Make ajax call
+        // We don't use SPServices because of: https://spservices.codeplex.com/workitem/10146
+        return $.ajax({
+            type:           "POST",
+            cache:          false,
+            async:          opt.async,
+            url:            $().SPServices.SPGetCurrentSite() + "/_vti_bin/People.asmx",
+            contentType:    "text/xml;charset=utf-8",
+            beforeSend:     function(xhr) {
+
+                xhr.setRequestHeader(
+                    'SOAPAction',
+                    'http://schemas.microsoft.com/sharepoint/soap/ResolvePrincipals'
+                );
+
+            },
+            dataType:       "xml",
+            data:           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
+                '<soap:Body><ResolvePrincipals xmlns="http://schemas.microsoft.com/sharepoint/soap/">' +
+                    '<principalKeys>' + opt.principalXml + '</principalKeys>' +
+                    '<principalType>' + opt.principalType + '</principalType>' +
+                    '<addToUserInfoList>' + opt.addToUserInfoList + '</addToUserInfoList>' +
+                '</ResolvePrincipals></soap:Body></soap:Envelope>'
+        });
+
+    };
+
     /**
      * Builds the html element that surrounds a user for display on the page.
-     * 
+     *
      * @param {Object} opt     -   The options object given to <jQuery.fn.pickSPUser()>
      * @param {String} id      -   The User's Sharepoint UID
      * @param {String} name    -   The User's name.
-     * 
+     *
      * @return {jQuery} Html element
-     * 
+     *
      */
     $.pt.pickSPUser.getUserHtmlElement = function(opt, id, name){
-        
+
         var ele = $($.pt.pickSPUser.htmlTemplate)
                     .find(".pt-pickSPUser-person").clone(1);
         ele.attr("data-pickSPUserID", id);
@@ -5338,226 +5729,241 @@
                 .append(name)
                 .end()
             .attr("data-pickSPUserNAME", name);
-        return ele;    
-        
+        return ele;
+
     };// $.pt.pickSPUser.getUserHtmlElement()
-    
-    
+
+
     /**
-     * Method is bound to the X (remove) button that appears when the one 
+     * Method is bound to the X (remove) button that appears when the one
      * hovers over the names curerntly displayed. Removes the user from
      * the UI and updates the input field to reflect what is currently
-     * displayed. 
-     * 
+     * displayed.
+     *
      * @param {Object} ele -   The HTML element from where this method was
      *                         called. Used to find both the div.pt-pickSPUser
      *                         overall parent element as well as the specific
      *                         .pt-pickSPUser-person element for the user that
      *                         was clicked on.
-     * 
+     *
      * @return {undefined}
-     * 
+     *
      */
     $.pt.pickSPUser.removeUser = function(ele){
-        
+
         var cntr        = $(ele).closest("div.pt-pickSPUser"),
             o           = cntr.data("pickSPUserContainerOpt"),
             $personUI   = $(ele).closest("div.pt-pickSPUser-person"),
             personObj   = $personUI.data("pickspuser_object"),
             doRemove    = true;
-        
+
         // If an onRemoveUser is defined, then call method
         // and capture response
         if ($.isFunction(o.onRemoveUser)) {
-            
+
             o.onRemoveUser.call(
-                o.ele, 
-                o.ele, 
-                $personUI, 
+                o.ele,
+                o.ele,
+                $personUI,
                 personObj );
-            
+
         }
-        
+
         if (doRemove === false) {
-            
+
             return;
-            
+
         }
-        
+
         // remove user from the view
         $personUI.fadeOut('fast', function(){
             $(this).remove();
             $.pt.pickSPUser.storeListOfUsers(cntr);
         });
-        
+
         // if AllowMultiple is false, then make the picker input visible
         if (o.allowMultiples === false) {
             o.elePickInput.show("fast", function(){
                 o.elePickInput.find("input").focus();
             });
         }
-        
+
         // trigger event
         o.eleUserInput.trigger(
             $.Event("spwidget:peoplePickerRemove"),
             [ o.eleUserInput, personObj ]
         );
-        
+
         return;
     };// $.pt.pickSPUser.removeUser()
-    
-    
+
+
     /**
      * Method will look at the container that holds the currently selected
      * users and will populate the initial input field given to
      * <jQuery.fn.pickSPUser()> with a sting representing those users.
-     *   
-     * 
+     *
+     *
      * @param {Object} ele -   The HTML element from where this method was
      *                         called. Used to find both the div.pt-pickSPUser
      *                         overall parent element as well as the specific
      *                         .pt-pickSPUser-person element for the user that
      *                         was clicked on.
-     * 
+     *
      * @return {undefined}
-     * 
+     *
      */
     $.pt.pickSPUser.storeListOfUsers = function(ele, noEvents){
-        
+
         var cntr    = $(ele).closest("div.pt-pickSPUser"),
             opt     = cntr.data("pickSPUserContainerOpt"),
             newVal  = "",
             // isDone: keep track of the user already selected,
             // so we don't add them twice to the input field.
-            isDone  = {}; 
-        
+            isDone  = {};
+
         cntr.find("div.pt-pickSPUser-selected div.pt-pickSPUser-person")
             .each(function(){
-                if (isDone[$(this).attr("data-pickSPUserID")]) {return;};
-                isDone[$(this).attr("data-pickSPUserID")] = true;
+
+                var
+                $this           = $(this),
+                thisUserString  = $this.attr("data-pickSPUserID") + ";#" +
+                                    $(this).attr("data-pickSPUserNAME");
+
+                if (isDone[thisUserString]) {
+
+                    return;
+
+                };
+
+                isDone[thisUserString] = true;
+
                 if (newVal) {
+
                     newVal += ";#";
+
                 }
-                newVal += $(this).attr("data-pickSPUserID");
-                newVal += ";#";
-                newVal += $(this).attr("data-pickSPUserNAME");
+
+                newVal += thisUserString;
+
             });
+
         opt.eleUserInput.val(newVal);
-        
+
         if (!noEvents) {
-            
+
             opt.eleUserInput.change();
-            
-        } 
-        
+
+        }
+
         return;
     };// $.pt.pickSPUser.storeListOfUsers()
-    
+
     /**
      * Handles method actions given to $().pickSPUser()
-     * 
-     * @param {String} type1
+     *
+     * @param {String} type
      * @param {String} action
      * @param {Object} options
-     * 
+     *
      * @return {this}
-     * 
+     *
      */
     $.pt.pickSPUser.handleAction = function(type, action, options) {
-        
+
         type    = String(type).toLowerCase();
         action  = String(action).toLowerCase();
         var o   = $(this)
                         .data("pickSPUserContainer")
                         .data("pickSPUserContainerOpt"),
             ret     = this;
-        
+
         if (type === "method") {
-            
+
             switch (action) {
-                
+
                 case "clear":
-                    
+
                     o.eleUserInput.val("");
                     o.eleSelected.empty();
-                    
+
                     if (o.allowMultiples === false) {
-                        
+
                         o.eleSelected.css("display", "none");
                         o.elePickInput.show();
-                        
+
                     }
-                    
+
                     break;
-                    
+
                 case "destroy":
-                    
+
                     if ( $(this).hasClass('hasPickSPUser')) {
-                        
+
                         $(this).removeClass('hasPickSPUser')
                                 .next('.pt-pickSPUser').remove()
                                 .show()
                                 .trigger('change');
-                                
+
                     }
-                    
+
                     break;
-                
+
                 case "add":
-                    
+
                     o.addPeopleToList(options);
-                
+
                     break;
-                
+
                 case "remove":
-                    
+
                     if (options) {
-                        
+
                         var rmEle = o.eleSelected
                                 .find(
-                                    "div[data-pickspuserid='" + 
+                                    "div[data-pickspuserid='" +
                                     options + "']" );
-                        
+
                         if (!rmEle.length) {
-                            
+
                             rmEle = o.eleSelected
                                 .find(
-                                    "div[data-pickspusername='" + 
+                                    "div[data-pickspusername='" +
                                     options + "']" );
-                            
+
                         }
-                        
+
                         if (rmEle.length) {
-                            
+
                             $.pt.pickSPUser.removeUser(rmEle);
-                            
+
                         }
-                        
+
                     }
-                    
+
                     break;
-                
+
                 case "getselected":
-                    
+
                     ret = $.SPWidgets.parseLookupFieldValue(o.eleUserInput.val());
-                    
+
                     break;
-                    
+
             }
-            
+
         }//end:type===method
-        
+
         return ret;
-        
-    };// $.pt.pickSPUser.handleAction() 
-    
-    
+
+    };// $.pt.pickSPUser.handleAction()
+
+
     /**
      * @property
      * Stores the Style sheet that is inserted into the page the first
      * time pickSPUser is called.
      * Value is set at build time.
-     * 
+     *
      */
     $.pt.pickSPUser.styleSheet = "/**\n"
 + " * Styles for the Pick User Widget\n"
@@ -5619,13 +6025,13 @@
 + "\n"
 + "\n";
 //_HAS_PICKSPUSER_CSS_TEMPLATE_
-    
-    
+
+
     /**
      * @property
      * Stores the HTML template for each people picker.
      * Value is set at build time.
-     * 
+     *
      */
     $.pt.pickSPUser.htmlTemplate = "<!--\n"
 + "    Html Templates for the PickSPUser plugin.\n"
@@ -5665,23 +6071,23 @@
 + "    </div>\n"
 + "</div>\n";
 //_HAS_PICKSPUSER_HTML_TEMPLATE_
-    
+
     /**
-     * Given a list of elements, this will add a hover affect to 
+     * Given a list of elements, this will add a hover affect to
      * those elements by toggling some classes from jQuery UI
-     * 
+     *
      * @memberof jQuery.pt
-     * 
+     *
      * @param {jQuery|String} ele   A jQuery selector or object containing
      *                              the list of elements to receive the hover
      *                              effect.
      * @return {jQuery}
-     * 
+     *
      * @example
-     * 
+     *
      *      $(".tt-hover-animate").addHoverEffect();
      *      $(".container a").addHoverEffect();
-     * 
+     *
      */
     $.pt.addHoverEffect = function(ele){
         return $(ele).each(function(){
@@ -5695,7 +6101,7 @@
                 $(e).mouseleave(function(){$(e).toggleClass("ui-state-hover");});
             });
     };// $.pt.addHoverEffect()
-    
+
 })(jQuery);
 
 /**
@@ -5707,14 +6113,14 @@
  * through the many SP pages and without having to leave the user's current page.
  *      
  *  
- * @version 20140315112156NUMBER_
+ * @version 20140606072611NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * 
  * @requires jQuery.js {@link http://jquery.com}
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  * 
- * Build Date Paul:March 15, 2014 11:21 AM
+ * Build Date Paul:June 06, 2014 07:26 PM
  * 
  */
 ;(function($){
@@ -7391,7 +7797,7 @@
  * jquery.SPDateField.js
  * The SPDateField widget. Introduced with v2.2, August 2013
  * 
- * BUILD: Paul:March 15, 2014 11:21 AM
+ * BUILD: Paul:June 06, 2014 07:26 PM
  * 
  */
 ;(function($){
@@ -8931,50 +9337,53 @@
 
 /**
  * @fileOverview - List filter panel widget
- * 
- * BUILD: Paul:March 15, 2014 11:21 AM
- * 
+ *
+ * BUILD: Paul:June 14, 2014 08:33 PM
+ *
  */
 (function($){
-    
+
     "use strict";
     /*jslint nomen: true, plusplus: true */
     /*global SPWidgets */
-    
+
     /**
      * @class Filter
      */
     var Filter  = {};
-    
+
     /** @property {Boolean} Is initialization done */
     Filter.isInitDone = false;
-    
+
     /** @property {jQuery} jQuery object with templates. Loaded from Filter.htmlTemplate during initialization */
-    Filter.templates = null; 
-    
+    Filter.templates = null;
+
     /**
-     * Default options. 
+     * Default options.
      */
     $.SPWidgets.defaults.filter = {
         list:                   '',
         webURL:                 $().SPServices.SPGetCurrentSite(),
         columns:                ['Title'],
         textFieldTooltip:       'Use a semicolon to delimiter multiple keywords.',
+        peopleFieldTooltip:     'Use [me] keyword to represent current user',
         definedClass:           'spwidget-column-dirty',
         showFilterButton:       true,
         showFilterButtonTop:    true,
+        showSortButton:         true,
         filterButtonLabel:      "Filter",
+        orderButtonLabel:       "Sort",
         onFilterClick:          null,
         onReady:                null,
         onReset:                null,
         ignoreKeywords:         /^(of|and|a|an|to|by|the|or|from)$/i,
         delimeter:              ';'
     };
-    
+
     /**
      * Given a container, this jQuery plugin will attach a user interface
      * that allows the user to define filter criteria for a list.
-     * 
+     *
      * @param {Object}  options
      * @param {String}  options.list
      * @param {String}  [options.webURL=current site]
@@ -8988,135 +9397,138 @@
      * @param {String}  [options.onReady=null]
      * @param {String}  [options.ignoreKeywords=RegEx]
      * @param {String}  [options.delimeter=';']
-     * 
+     *
      * @return {jQuery} this
-     * 
+     *
      * METHODS
-     * 
-     *  All methods must be executed on single element. 
-     * 
+     *
+     *  All methods must be executed on single element.
+     *
      *  $(ele).SPFilterPanel("getFilter");
-     * 
+     *
      *      Returns an object with the filter information entered by the user.
-     * 
+     *
      *  $(ele).SPFilterPanel("setFilter", {column: { matchType: "eq", values: [ '1', '2' ]} });
-     * 
+     *
      *      Returns an object with the filter information entered by the user.
-     * 
+     *
      * $(ele).SPFilterPanel("destroy");
-     * 
+     *
      *      Removes the widget from the page.
-     * 
+     *
      */
     $.fn.SPFilterPanel = function(options){
-        
+
         var arg = arguments;
-        
+
         // If initialization is not yet done, then do it now
         if ( !Filter.isInitDone ) {
-            
+
             Filter.isInitDone = true;
-            
+
             if ( Filter.styleSheet !== "" ) {
-                
+
                 $('<style type="text/css">' + "\n\n" +
                         Filter.styleSheet + "\n\n</style>" )
                     .prependTo("head");
-                
+
             }
-            
+
             Filter.templates = $( Filter.htmlTemplate );
-            
+
         }
-        
+
         // If input was a string, then must be a method.
         if (typeof options === "string") {
-            
+
             if (!this.eq(0).hasClass("hasSPFilterPanel")) {
-                
+
                 return;
-                
+
             }
-            
+
             return (function(ele){
-                
+
                 // Get the instance object
                 var Inst        = ele.eq(0)
                                     .find("div.spwidget-filter")
                                     .data("SPFilterPanelInst"),
                     method      = options.toLowerCase(),
                     response    = Inst.$ele;
-                
+
                 switch (method) {
-                    
+
                     // METHOD----------> getFilter
                     //      Return: {Object}
                     case "getfilter":
-                        
+
                         response = Filter.getFilterValues(Inst);
-                        
+
                         break;
-                        
+
                     // METHOD----------> setFilter("url param")
                     //      Return: $ele
                     case "setfilter":
-                        
+
                         Filter.setFilterValues(Inst, arg[1]);
-                        
+
                         break;
-                        
+
                     // METHOD----------> reset
                     case "reset":
-                        
+
                         Filter.doResetFilter( Inst );
-                        
+
                         break;
-                        
+
                     // METHOD----------> destroy
                     case "destroy":
-                        
+
                         Inst.$ele
                             .removeClass("hasSPFilterPanel")
                             .empty();
-                        
+
                         break;
-                        
+
                 } //end: switch()
-                
+
                 return response;
-                
+
             })(this);
-            
+
         } //end: if(): options === string
-        
+
         // --------------------------------
         // Build the plugin on each element
         // --------------------------------
         return this.each(function(){
-            
+
             var opt     = $.extend({}, $.SPWidgets.defaults.filter, options),
                 /**
                  * @class Inst
                  * Widget instance
                  */
                 Inst    = {
-                    $ele:   $(this),
-                    $ui:    null,
-                    opt:    opt
+                    $ele:                   $(this),
+                    $ui:                    null,
+                    $uiFilterSortCntr:      null,
+                    $uiFilterColumnCntr:    null,
+                    $uiSortButtons:         null,
+                    opt:                    opt
                 };
-            
+
             /**
              * Retrieves the list definition.
-             * 
+             *
              * @return {jQuery.Deferred}
              *      Deferred is resolved with a scope of the jQuery message
              *      object and given 2 parameters - xData and status
-             * 
+             *
              */
             Inst.getListDefinition = function() {
-                
+
                 return $.Deferred(function(dfd){
-                    
+
                     // Get List Definition
                     $().SPServices({
                         operation:      "GetList",
@@ -9125,110 +9537,132 @@
                         async:          true,
                         webURL:         opt.webURL,
                         completefunc:   function(xData, status) {
-                            
+
                             var $msg    = $(xData.responseXML);
-                            
+
                             if (status === "error") {
-                                
+
                                 dfd.rejectWith($msg, [xData, status]);
                                 return;
-                                
+
                             }
-                            
+
                             if ($msg.SPMsgHasError()) {
-                                
+
                                 dfd.rejectWith($msg, [xData, status]);
                                 return;
-                                
+
                             }
-                            
+
                             dfd.resolveWith($msg, [xData, status]);
-                            
+
                         } //end: completefunc
                     });
-                    
+
                 }).promise();
-                
+
             }; //end: getListDefinition
-            
+
+            /**
+             * Shows the column sort order UI on the panel.
+             */
+            Inst.showSortOrder = function() {
+
+                Inst.$uiFilterColumnCntr.hide();
+                Inst.$uiFilterSortCntr.show();
+
+            };
+
+            /**
+             * Shows the column filters UI on the panel.
+             */
+            Inst.showFilterColumns = function() {
+
+                Inst.$uiFilterSortCntr.hide();
+                Inst.$uiFilterColumnCntr.show();
+
+            };
+
             /**
              * Builds the widget in the container element.
-             * 
+             *
              * @return {jQuery.Deferred}
              */
             Inst.buildWidget = function() {
-                
+
                 return $.Deferred(function(dfd){
-                    
+
                     Inst.getListDefinition().then(function(xData, status){
-                        
+
                         var $list   = this,
                             columns = '',
                             colUI   = Filter.templates.filter("#filter_column").html();
-                        
-                        // Insert the UI into the page and set 
+
+                        // Insert the UI into the page and set
                         // pointer ($ui) to it.
                         Inst.$ui = $(
                                 Filter.templates
                                     .filter("#filter_main_ui").html()
                             )
-                            .appendTo( 
+                            .appendTo(
                                 Inst.$ele
                                     .empty()
                                     .addClass("hasSPFilterPanel")
                             );
-                        
+
+                        Inst.$uiFilterColumnCntr = Inst.$ui.find("div.spwidget-filter-column-cntr");
+                        Inst.$uiFilterSortCntr   = Inst.$ui.find("div.spwidget-filter-sort-cntr");
+
                         // Store list definition
                         Inst.$list = $list;
-                        
+
                         // Loop through list of columns to display and
                         // build the UI for them.
                         $.each(Inst.opt.columns, function(i,v){
-                            
+
                             // find column in the list definition
                             var $thisCol = $list
                                             .find(
-                                                "Field[DisplayName='" + 
+                                                "Field[DisplayName='" +
                                                 v + "']" ),
                                 thisColUI = colUI,
                                 inputUI   = '',
                                 values    = null,
                                 model     = null;
-                            
+
                             if (!$thisCol.length) {
-                                
+
                                 $thisCol = $list
                                             .find("Field[Name='" + v + "']");
-                                
+
                             }
-                            
+
                             if (!$thisCol.length){
-                                
+
                                 return;
-                                
+
                             }
-                            
+
                             // Now that we are sure we have a COl. definition,
                             // populate the model for this column
                             model = {
                                 type:               null,
                                 otherFilterTypes:   '',
                                 sp_type:            $thisCol.attr("Type"),
-                                sp_format:          $thisCol.attr("Format")
+                                sp_format:          $thisCol.attr("Format"),
+                                Name:               $thisCol.attr("Name"),
+                                DisplayName:        $thisCol.attr("DisplayName")
                             };
-                            
-                            // Set some default model values
-                            model.Name = $thisCol.attr("Name");
-                            
+
                             // Build the column ui based on its type
                             switch ($thisCol.attr("Type")) {
-                                
+
                                 // CHOICE: Show checkboxes allowing user to select multiple
                                 case "Choice":
                                 case "MultiChoice":
-                                    
+
                                     $thisCol.find("CHOICES CHOICE").each(function(i,v){
-                                        
+
                                         inputUI += $.SPWidgets.fillTemplate(
                                                 Filter.templates
                                                     .filter("#filter_choice_field")
@@ -9239,11 +9673,13 @@
                                                     value:          $(v).text()
                                                 }
                                             );
-                                        
+
                                     });
-                                    
-                                    thisColUI = thisColUI.replace(/__COLUMN__UI__/, inputUI);
-                                    
+
+                                    thisColUI = thisColUI
+                                                .replace(/__COLUMN__UI__/, inputUI)
+                                                .replace(/__OTHER_FILTER_TYPES__/, '');
+
                                     thisColUI = $.SPWidgets.fillTemplate(
                                         thisColUI,
                                         {
@@ -9252,91 +9688,112 @@
                                             Name:        $thisCol.attr("Name")
                                         }
                                     );
-                                    
+
                                     break;
-                                
+
+                                // Attachments
+                                // Is a Boolean type of field.
+                                case "Attachments":
+
+                                    model.type = "boolean";
+                                    model.input_ui = '<select name="' + model.Name +
+                                        '" class="spwidget-input spwidget-filter-input">' +
+                                        '<option value=""></option>' +
+                                        '<option value="1">Yes</option>' +
+                                        '<option value="0">No</option>' +
+                                        '</select>';
+
+                                    thisColUI = $.SPWidgets.fillTemplate(
+                                        thisColUI
+                                            .replace(/__COLUMN__UI__/, model.input_ui)
+                                            .replace(/__OTHER_FILTER_TYPES__/, ''),
+                                        model
+                                    );
+
+                                    break;
+
                                 //============================================
                                 // === all types below use the input field ===
                                 //============================================
-                                
+
                                 // From here until DEFAUL, we only set the type.
                                 case "Lookup":
                                 case "LookupMulti":
-                                    
+
                                     if (model.type === null) {
-                                        
+
                                         model.type = 'lookup';
                                         model.list = $thisCol.attr("List");
-                                        
+
                                         if ( model.list === "Self") {
-                                            
+
                                             model.list = $list.find("List").attr("Title");
-                                            
+
                                         }
-                                        
+
                                     }
-                                   
+
                                 case "User":
                                 case "UserMulti":
-                                    
+
                                     if (model.type === null) {
-                                        
+
                                         model.type = 'people';
-                                        
+
                                     }
-                                
+
                                 // COUNTER: Inser additional filter types
                                 case "Counter":
-                                    
+
                                     if (model.type === null) {
-                                        
+
                                         model.type = 'text';
-                                        
-                                        model.otherFilterTypes = 
-                                            '<option value="Gt">Greater Than</option>' + 
-                                            '<option value="Lt">Less Than</option>'; 
-                                            
+
+                                        model.otherFilterTypes =
+                                            '<option value="Gt">Greater Than</option>' +
+                                            '<option value="Lt">Less Than</option>';
+
                                     }
-                                
+
                                 // Date and Time: Inser additional filter types
                                 // We control which type of widget is displayed
                                 // by ensuring that the sp_format is set correctly
                                 // here.
                                 case "DateTime":
-                                    
+
                                     if (model.type === null) {
-                                        
+
                                         model.type = 'date';
-                                        
-                                        model.otherFilterTypes = 
-                                            '<option value="Gt">After</option>' + 
+
+                                        model.otherFilterTypes =
+                                            '<option value="Gt">After</option>' +
                                             '<option value="Lt">Before</option>';
-                                       
+
                                        model.sp_format = (
                                                 $thisCol.attr("Format") !== "DateOnly"
                                             ?   "DateTime"
                                             :   "DateOnly"
                                        );
-                                       
+
                                     }
-                                
+
                                 // DEFAULT: Show as a text field
                                 default:
-                                    
+
                                     if (model.type === null) {
-                                        
+
                                         model.type = 'text';
-                                        
+
                                     }
-                                    
+
                                     inputUI = Filter.templates
                                                 .filter("#filter_text_field")
                                                     .html();
-                                    
+
                                     thisColUI = thisColUI
                                                 .replace(/__COLUMN__UI__/, inputUI)
                                                 .replace(/__OTHER_FILTER_TYPES__/, model.otherFilterTypes);
-                                    
+
                                     thisColUI = $.SPWidgets.fillTemplate(
                                             thisColUI,
                                             $.extend(
@@ -9347,27 +9804,25 @@
                                                     tooltip:        Inst.opt.textFieldTooltip
                                                 })
                                         );
-                                    
+
                                     break;
-                                
+
                             } //end: switch()
-                            
+
                             // Add Column UI to list of columns
                             columns += thisColUI;
-                            
+
                         }); //end: .each() - column
-                        
+
                         // Insert the columns into the UI
-                        Inst.$ele
-                            .find("div.spwidget-filter-column-cntr")
-                            .html(columns);
-                        
+                        Inst.$uiFilterColumnCntr.html(columns);
+
                         // Setup Lookup field
                         Inst.$ele.find("div.spwidget-type-lookup input")
                             .each(function(){
-                                
+
                                 var $field = $(this);
-                                
+
                                 $field.SPLookupField({
                                     list:           $field
                                                         .closest("div.spwidget-column")
@@ -9379,43 +9834,44 @@
                                     filter:         '',
                                     showSelector:   true
                                 });
-                                
+
                                 $field.parent().find(".spwidget-tooltip").remove();
-                                
+
                             });
-                        
+
                         // Setup PEOPLE fields
                         Inst.$ele.find("div.spwidget-type-people input")
                             .each(function(){
-                                
+
                                 var $field      = $(this),
                                     colDef      = $list.find(
-                                                    "Field[Name='" + 
+                                                    "Field[Name='" +
                                                     $field.attr("name") + "']"),
                                     peopleType  = 'User';
-                                
+
                                 if (colDef.attr("UserSelectionMode") !== "PeopleOnly") {
-                                    
+
                                     peopleType = 'All';
-                                    
+
                                 }
-                                
+
                                 $field.pickSPUser({
                                     allowMultiple:  true,
                                     type:           peopleType
                                 });
-                                    
-                                $field.parent().find(".spwidget-tooltip").remove();
-                                
+
+                                $field.parent().find(".spwidget-tooltip")
+                                    .html(Inst.opt.peopleFieldTooltip);
+
                             });
-                        
+
                         // Setup DATE fields
                         Inst.$ele.find("div.spwidget-type-date")
                             .each(function(){
-                                
+
                                 var $column = $(this),
                                     $field  = $column.find("input");
-                                
+
                                 $field.SPDateField({
                                     allowMultiples: true,
                                     showTimepicker: (
@@ -9424,46 +9880,58 @@
                                             :   false
                                         )
                                 });
-                                
+
                                 $column.find(".spwidget-tooltip").remove();
                                 $column.find("select.spwidget-filter-type")
                                     .val("Eq")
                                     .find("option[value='Contains']").remove();
-                                
+
                                 return this;
-                                
+
                             });
-                        
+
+                        // Setup the Boolean fields
+                        Inst.$ele
+                            .find(".spwidget-type-boolean div.spwidget-filter-type-cntr")
+                                .css("display", "none");
+
+                        // Remove the sort button if input param is false
+                        if (!Inst.opt.showSortButton) {
+
+                            Inst.$ui.find("button[name='order']").remove();
+
+                        }
+
                         // Setup the Button on the UI (if applicable)
                         if (Inst.opt.showFilterButton || Inst.opt.showFilterButtonTop) {
-                            
+
                             Inst.$ui.find("div.spwidget-filter-button-cntr")
                                 .each(function(){
-                                    
+
                                     var $btnCntr  = $(this),
                                         $btn      = $();
-                                    
+
                                     // If Top button is true, clone adn insert at top
                                     if (Inst.opt.showFilterButtonTop) {
-                                        
+
                                         $btn = $btn
                                                 .add( $btnCntr.clone(true) )
                                                 .prependTo( Inst.$ui );
-                                        
+
                                     }
-                                    
+
                                     // If BOttom Button is true, then added to
                                     // group selection... if not, then remove it.
                                     if (Inst.opt.showFilterButton) {
-                                        
+
                                         $btn = $btn.add( $btnCntr );
-                                        
+
                                     } else {
-                                        
+
                                         $btnCntr.remove();
-                                        
+
                                     }
-                                    
+
                                     // Setup Filter button
                                     $btn.find("button[name='filter']")
                                         .button({
@@ -9473,7 +9941,7 @@
                                             label: Inst.opt.filterButtonLabel
                                         })
                                         .on("click", Filter.onFilterButtonClick);
-                                        
+
                                     // Setup Filter button
                                     $btn.find("button[name='reset']")
                                         .button({
@@ -9483,119 +9951,146 @@
                                             text: false
                                         })
                                         .on("click", function(ev){
-                                            
+
                                             Filter.doResetFilter( Inst );
-                                            
+
                                             return this;
-                                            
+
                                         });
-                                    
+
+                                    // setup order button
+                                    Inst.$uiSortButtons = $btn.find("button[name='order']")
+                                        .button({
+                                            icons: {
+                                                primary: "ui-icon-arrow-2-n-s"
+                                            },
+                                            label: Inst.opt.orderButtonLabel
+                                        })
+                                        .on("click", function(ev){
+
+                                            var $this = $(this);
+
+                                            if (Inst.$uiFilterSortCntr.is(":visible")) {
+
+                                                Inst.showFilterColumns();
+
+
+                                            } else {
+
+                                                Inst.showSortOrder();
+
+                                            }
+
+                                            return this;
+
+                                        });
+
                                 });
-                            
+
                         // Else, remove button container
                         } else {
-                            
+
                             Inst.$ui
                                 .find("div.spwidget-filter-button-cntr")
                                     .remove();
-                            
+
                         }
-                        
+
                         // Bind events
                         Inst.$ui
                             // Filter type change()
                             .on(
                                 "change.SPWigets.SPFilterPanel",
-                                "select.spwidget-filter-type", 
+                                "select.spwidget-filter-type",
                                 Filter.onFilterTypeChange
                             );
-                        
+
                         // If we have a DefinedClass specified, then
                         // listen to change events
                         if (Inst.opt.definedClass !== "") {
-                            
+
                             Inst.$ui
                                 .on(
                                     "change.SPWidgets.SPFilterPanel",
                                     ".spwidget-filter-input",
                                     Filter.onFilterInputChange
                                 );
-                                
+
                         }
-                        
+
                         // Store the Widget Inst object in the UI
                         Inst.$ui
                             .data("SPFilterPanelInst", Inst);
-                        
+
                         // If a onReady callback was defined, then
                         // execute it now
                         if ($.isFunction(Inst.opt.onReady)) {
-                            
+
                             Inst.opt.onReady.call(Inst.$ele, options);
-                            
+
                         }
-                        
+
                         // Make the UI visible
                         Inst.$ui
                             .fadeIn().promise().then(function(){
-                                
+
                                 $(this).css("display", "");
-                                
+
                                 dfd.resolve();
-                                
+
                             });
-                        
+
                     }) //end: .then()
                     // IF getting the List definition fails, then display error
                     // in the widget container element.
                     .fail(function(xData, status){
-                        
+
                         var $msg = this;
-                        
+
                         Inst.$ele
                             .html(
                                 '<div class="ui-state-error">Unable to retrieve list information. ' +
                                 $msg.SPGetMsgError() + '</div>' );
-                        
+
                         dfd.reject();
-                        
+
                     });
-                    
-                     
+
+
                 }).promise();
-                
+
             }; //end: Inst.buildWidget()
-            
+
             // A few validations
-            
-            if (    Inst.opt.ignoreKeywords 
+
+            if (    Inst.opt.ignoreKeywords
                 &&  !Inst.opt.ignoreKeywords instanceof RegExp
             ) {
-                
+
                 Inst.opt.ignoreKeywords = /Inst.opt.ignoreKeywords/i;
-                
+
             }
-            
+
             // build the widget
             Inst.buildWidget();
-            
+
             return this;
-            
+
         }); //end: return()
-        
+
     }; //end: $.fn.SPFilterPanel()
-    
+
     /**
      * Triggered when the change event is triggered on the
      * input elements that collect data from the user.
      * Sets the dirty class on the column if one is defined.
-     * 
+     *
      * @param {jQuery.Event} ev
-     * 
+     *
      * @return {HTMLElement} this
      */
     Filter.onFilterInputChange = function(ev){
-        
+
         var $input      = $(this),
             $cntr       = $input.closest("div.spwidget-filter-value-input"),
             $col        = $cntr.closest("div.spwidget-column"),
@@ -9604,41 +10099,41 @@
             Inst        = $cntr
                             .closest("div.spwidget-filter")
                             .data("SPFilterPanelInst");
-        
+
         if ($col.is(".spwidget-type-choice")) {
-            
+
             if (!$cntr.find(".spwidget-filter-input:checked").length) {
-                
+
                 val = "";
-                
+
             }
-            
+
         }
-        
+
         if (val !== "") {
-            
+
             $col.addClass(Inst.opt.definedClass);
-            
+
         } else if (matchType !== 'IsNull' && matchType !== 'IsNotNull') {
-            
+
             $col.removeClass(Inst.opt.definedClass);
-            
+
         }
-        
+
         return this;
-        
+
     }; //end: Filter.onFilterInputChange()
-    
+
     /**
      * Bound to the $ui. Listen for changes in the filter type
      * select element.
-     * 
+     *
      * @param {jQuery.Event} ev
-     * 
+     *
      * return {jQuery} this
      */
     Filter.onFilterTypeChange = function(ev) {
-        
+
         var $ele            = $(this),
             $col            = $ele.closest("div.spwidget-column"),
             $logicalType    = $col.find("div.spwidget-filter-type-cntr select.spwidget-match-type"),
@@ -9650,104 +10145,104 @@
             Inst            = $ele
                                 .closest("div.spwidget-filter")
                                 .data("SPFilterPanelInst");
-        
+
         if (eleValue === "IsNull" || eleValue === "IsNotNull") {
-            
+
             $colValCntr.addClass("spwidget-disabled");
             $colInput.attr("disabled", "disabled");
             $logicalType.attr("disabled", "disabled");
             $col.addClass(Inst.opt.definedClass);
-            
+
         } else {
-            
+
             $colValCntr.removeClass("spwidget-disabled");
             $colInput.removeAttr("disabled", "disabled");
             $logicalType.removeAttr("disabled");
-            
+
             // Remove the higlight class from the column if
             // no value is defined for it. For Checkboxes (choice)
             // we need to first grab the checkboxes and then see
             // if they are checked.
             if (colType === "choice" || colType === "multichoice") {
-                
+
                 $colInput.filter(":checkbox").each(function(){
-                    
+
                     var $this = $(this);
-                    
+
                     if ($this.is(":checked")) {
-                        
+
                         inputVal += $this.val();
                         return false;
-                        
+
                     }
-                    
+
                 });
-                
+
             } else {
-                
+
                 inputVal += $colInput.val();
-                
+
             }
-            
+
             if (!inputVal ) {
-                
+
                 $col.removeClass(Inst.opt.definedClass);
-                
+
             }
-            
+
         }
-        
+
         return this;
-        
+
     }; //end: Filter.onFilterTypeChange()
-    
+
     /**
      * Calls the user defined function when user clicks the filter button.
-     * 
+     *
      * @param {jQuery.Event} ev
-     * 
+     *
      * @return {HTMLElement} this
      */
     Filter.onFilterButtonClick = function(ev) {
-        
+
         var Inst    = $(this)
                         .closest("div.spwidget-filter")
                         .data("SPFilterPanelInst"),
             filters = null;
-        
+
         if ( $.isFunction( Inst.opt.onFilterClick ) ) {
-            
+
             filters = Filter.getFilterValues(Inst);
-            
+
             Inst.opt.onFilterClick.call( Inst.$ele, filters );
-            
+
         }
-        
+
         return this;
-        
+
     }; //end: Filter.onFilterButtonClick()
-    
+
     /**
      * Resets the filter panel, by removing all filters
-     * defined from the form. 
-     * 
+     * defined from the form.
+     *
      * @param {Object} Inst
      *      The widget instance object
-     * 
+     *
      * @return {Object} the instance object
      */
     Filter.doResetFilter = function(Inst) {
-        
+
         if ($.isFunction(Inst.onReset)) {
-            
+
             if (Inst.onReset.call(Inst.$ele, Filter.getFilterValues(Inst)) === true) {
-                
+
                 return Inst;
-                
+
             }
-            
+
         }
-        
+
         Inst.$ui
             // Reset regular text fields
             .find("div[data-spwidget_column_type='text'] input")
@@ -9756,6 +10251,10 @@
             // reset checkboxes for CHOICE columns
             .find("div[data-spwidget_column_type='choice'] input")
                 .prop("checked", false)
+                .end()
+            // reset dropdown boxes
+            .find("div[data-spwidget_column_type='boolean'] .spwidget-filter-value-input select")
+                .val("")
                 .end()
             // reset people fields
             .find(".hasPickSPUser")
@@ -9768,49 +10267,49 @@
             // reset lookup fields
             .find(".hasLookupSPField")
                 .SPLookupField("method", "clear");
-        
+
         // Remove the Defined class
         if (Inst.opt.definedClass !== "") {
-            
+
             Inst.$ui
                 .find("." + Inst.opt.definedClass)
                 .removeClass(Inst.opt.definedClass);
-            
+
         }
-        
+
         // Reset any IsNull and IsNotNull filters
         Inst.$ui.find("select.spwidget-filter-type").each(function(){
-            
+
             var $ele    = $(this),
                 value   = $ele.val();
-            
+
             if (value === "IsNull" || value === "IsNotNull") {
-                
+
                 $ele.val("Eq");
                 $ele.change();
-                
+
             }
-            
+
         });
-        
+
         return Inst;
-        
+
     }; // Filter.doResetFilter()
-    
+
     /**
      * Generates the filters from the values entered by the user.
-     * 
+     *
      * @param {SPFilterPanel.Instance} Inst
      *      The Instance object generated by the $().SPFilterPanel()
-     * 
+     *
      * @return {Object}
      *      An object with the filter information. See below for the
      *      structured of the object
-     * 
+     *
      * @example
-     * 
+     *
      *      Filter.getFilterValues(instObject);
-     * 
+     *
      *      {
      *          CAMLQuery: 'string with query wrapped in an <And> aggregate',
      *          URLParams: 'String with query in URL params style',
@@ -9829,11 +10328,11 @@
      *          },
      *          count: 2 // number of filters created
      *      }
-     * 
-     * 
+     *
+     *
      */
     Filter.getFilterValues = function(Inst) {
-        
+
         var filters = {
                 CAMLQuery:  '',
                 URLParams:  '',
@@ -9842,38 +10341,38 @@
             },
             $cols       = Inst.$ui.find("div.spwidget-column"),
             colFilters  = [];
-        
+
         /**
          * Returns a CAMLQuery for the set of individual column filters.
          * USed in fields of type Choice or Text.
-         * 
+         *
          * @param {Object} colFilterObj
          *          The object for the individual column
-         * 
+         *
          * @return {String} caml query
-         * 
+         *
          */
         function getColumnCAMLQuery(colFilterObj) {
-            
+
             return $.SPWidgets.getCamlLogical({
                     type:           colFilterObj.logicalType,
                     values:         colFilterObj.values,
                     onEachValue:    function(filterVal){
-                        
-                        return "<" + colFilterObj.matchType + 
-                                "><FieldRef Name='" + colFilterObj.columnName + 
+
+                        return "<" + colFilterObj.matchType +
+                                "><FieldRef Name='" + colFilterObj.columnName +
                                 "' /><Value Type='Text'>" +
-                                $.SPWidgets.escapeXML(filterVal) + 
+                                $.SPWidgets.escapeXML(filterVal) +
                                 "</Value></" + colFilterObj.matchType + ">";
-                        
+
                     }
                 });
-            
+
         } //end: getColumnCAMLQuery()
-        
-        // Loop through each column and build the data 
+
+        // Loop through each column and build the data
         $cols.each(function(i,v){
-            
+
             var $thisCol        = $(v),
                 $input          = $thisCol.find(".spwidget-input"),
                 colName         = $input.attr("name"),
@@ -9889,238 +10388,239 @@
                 colFilterWasSet = false,
                 colType         = $thisCol.data("spwidget_column_type"),
                 thisColUrlParam = {};
-            
+
             // If the match type is IsNull or IsNotNull, then
             // build the match now... don't need to know which type
             // of column for these.
             if (    thisColFilter.matchType === "IsNull"
                 ||  thisColFilter.matchType === "IsNotNull"
             ) {
-                
-                thisColFilter.CAMLQuery = 
-                    "<" + thisColFilter.matchType + "><FieldRef Name='" + 
+
+                thisColFilter.CAMLQuery =
+                    "<" + thisColFilter.matchType + "><FieldRef Name='" +
                     colName + "' /></" + thisColFilter.matchType + ">";
-                
+
                 thisColFilter.count += 1;
-                
-            // ELSE, process the column type    
+
+            // ELSE, process the column type
             } else {
-                
+
                 // Process column type user input
                 switch(colType) {
-                    
+
                     // -------------------- CHOICE COLUMNS
                     case "choice":
                     case "multichoice":
-                        
+
                         $input.each(function(){
-                            
+
                             var $checkbox   = $(this),
                                 checkboxVal = $checkbox.val();
-                                
+
                             if ($checkbox.is(":checked")) {
-                                
+
                                 thisColFilter.values.push(checkboxVal);
-                                
+
                             }
-                            
+
                         });
-                        
+
                         if (thisColFilter.values.length) {
-                            
+
                             thisColFilter.count = thisColFilter.values.length;
                             thisColFilter.CAMLQuery = getColumnCAMLQuery(thisColFilter);
-                            
+
                         }
-                        
+
                         break;
-                    
+
                     // -------------------- LOOKUP COLUMNS
                     // -------------------- PEOPLE COLUMNS
                     case "lookup":
                     case "people":
-                        
+
                         (function(){
-                            
+
                             var lookupIDs = [];
-                            
+
                             $input.each(function(){
-                                
-                                
+
+
                                 var $lookup     = $(this),
                                     lookupVals  = $.SPWidgets
                                                     .parseLookupFieldValue(
                                                         $lookup.val()
                                                     ),
                                     i,j;
-                                
+
                                 for(i=0,j=lookupVals.length; i<j; i++){
-                                    
+
                                     if (lookupVals[i].id) {
-                                        
+
                                         thisColFilter.values
                                             .push(
-                                                lookupVals[i].id + ";#" + 
+                                                lookupVals[i].id + ";#" +
                                                 lookupVals[i].title
                                             );
-                                        
+
                                         lookupIDs.push(lookupVals[i].id);
-                                         
+
                                     }
-                                    
+
                                 }
-                                
+
                             });
-                            
+
                             if (thisColFilter.values.length) {
-                                
+
                                 thisColFilter.count     = thisColFilter.values.length;
                                 thisColFilter.CAMLQuery = $.SPWidgets.getCamlLogical({
                                         type:           thisColFilter.logicalType,
                                         values:         lookupIDs,
                                         onEachValue:    function(filterVal){
-                                            
-                                            return "<" + thisColFilter.matchType + 
-                                                    "><FieldRef Name='" + thisColFilter.columnName + 
+
+                                            return "<" + thisColFilter.matchType +
+                                                    "><FieldRef Name='" + thisColFilter.columnName +
                                                     "' LookupId='True'/><Value Type='Lookup'>" +
                                                     filterVal + "</Value></" + thisColFilter.matchType + ">";
-                                            
+
                                         }
                                     });
-                                
+
                             }
-                            
-                            
+
+
                         })();
-                        
+
                         break;
-                    
+
                     // -------------------- DATE FIELDS
                     case "date":
-                        
+
                         $input.each(function(){
-                            
+
                             var dtObj = $input.SPDateField("getDate");
-                            
+
                             if (dtObj.dates.length) {
-                                
+
                                 thisColFilter.values    = dtObj.dates;
                                 thisColFilter.count     = thisColFilter.values.length;
                                 thisColFilter.CAMLQuery = $.SPWidgets.getCamlLogical({
                                     type:           thisColFilter.logicalType,
                                     values:         thisColFilter.values,
                                     onEachValue:    function(filterVal){
-                                        
-                                        return "<" + thisColFilter.matchType + 
-                                                "><FieldRef Name='" + 
-                                                thisColFilter.columnName + 
+
+                                        return "<" + thisColFilter.matchType +
+                                                "><FieldRef Name='" +
+                                                thisColFilter.columnName +
                                                 "'/><Value Type='DateTime'>" +
-                                                filterVal + "</Value></" + 
+                                                filterVal + "</Value></" +
                                                 thisColFilter.matchType + ">";
-                                        
+
                                     }
                                 });
-                                
+
                             }
-                            
+
                             return false;
-                            
+
                         });
-                        
+
                         break;
-                        
+
                     // -------------------- TEXT COLUMNS
                     case "text":
-                        
+                    case "boolean":
+
                         // ELSE, if user entered text, then parse it
                         if ( String( $.trim( $input.val() ) ).length ) {
-                            
+
                             (function(){
-                                
+
                                 var keywords = $input.val().split(Inst.opt.delimeter),
                                     i,j,
                                     thisKeyword;
-                                
-                                // Loop thorugh all keywords. 
+
+                                // Loop thorugh all keywords.
                                 for( i=0,j=keywords.length; i<j; i++ ){
-                                    
+
                                     thisKeyword = $.trim(keywords[i]);
-                                    
+
                                     if (    !Inst.opt.ignoreKeywords.test(thisKeyword)
                                         &&  thisKeyword
                                     ) {
-                                        
+
                                         thisColFilter.values.push(thisKeyword);
-                                        
+
                                     }
                                 }
-                                
+
                                 thisColFilter.CAMLQuery = getColumnCAMLQuery(thisColFilter);
-                                
+
                                 thisColFilter.count = thisColFilter.values.length;
-                                
+
                             })();
-                            
+
                         }
-                        
+
                         break;
-                    
+
                 } //end: switch() - type of column
-                
+
             } //end if()
-            
+
             // If filters where built for this column, then add it to the
             // list of column that the user entered values for.
             if (thisColFilter.count > 0) {
-                
+
                 colFilters.push(thisColFilter.CAMLQuery);
-            
+
                 filters.count           += thisColFilter.count;
                 filters.filters[colName] = thisColFilter;
-                
+
                 // Create the URLParams for this column
                 thisColUrlParam[ colName ] = {
                     matchType:      thisColFilter.matchType,
                     logicalType:    thisColFilter.logicalType,
                     values:         thisColFilter.values
                 };
-                
+
                 thisColFilter.URLParams = $.param(thisColUrlParam, false);
-                
+
                 if (filters.URLParams !== "") {
-                    
+
                     filters.URLParams += "&";
-                    
+
                 }
-                
+
                 filters.URLParams += thisColFilter.URLParams;
-                
+
             }
-            
+
         });
-        
+
         // Build the CAMLQuery
         if (filters.count > 1) {
-            
+
             filters.CAMLQuery = $.SPWidgets.getCamlLogical({
                                     type:   'AND',
                                     values: colFilters
                                 });
-            
+
         } else if (filters.count === 1 ) {
-            
+
             filters.CAMLQuery = colFilters[0];
-            
-        } 
-        
+
+        }
+
         return filters;
-        
+
     }; // Filter.getFilterValues()
-    
+
     /**
      * Clears the current panel and populates it with the
      * filter criteria defined on the input object
-     * 
+     *
      * @param {Object} Inst
      *      The instance object for the widget on the page
      * @param {String} filters
@@ -10135,147 +10635,156 @@
      *                  ]
      *              }
      *          }
-     * 
+     *
      * @return {Object} Inst
      */
     Filter.setFilterValues = function(Inst, filters) {
-        
+
         // If filters is not an object or is an empty object, exit
         if (typeof filters !== "object" || $.isEmptyObject(filters)) {
-            
+
             return Inst;
-            
+
         }
-        
+
         Filter.doResetFilter(Inst);
-        
+
         $.each(filters, function(column, filter){
-            
+
             var $input          = Inst.$ui.find(".spwidget-filter-input[name='" + column + "']"),
                 $colUI          = $input.closest("div.spwidget-column"),
                 type            = $colUI.data("spwidget_column_type"),
                 $match          = $colUI.find("select[name='" + column + "_type']"),
                 $logicalType    = $colUI.find("div.spwidget-filter-type-cntr select.spwidget-match-type"),
                 thisFilter      = new Filter.ColumnFilter();
-            
+
             $.extend(thisFilter, filter);
-            
+
             // If we have a matchType or logicalType, then set it
-            if (thisFilter.matchType) {
-                
-                $match.val(thisFilter.matchType);
-                
+            if (type !== "boolean") {
+
+                if (thisFilter.matchType && type !== "boolean") {
+
+                    $match.val(thisFilter.matchType);
+
+                }
+
+                if (thisFilter.logicalType) {
+
+                    $logicalType.val(thisFilter.logicalType);
+
+                }
+
             }
-            
-            if (thisFilter.logicalType) {
-                
-                $logicalType.val(thisFilter.logicalType);
-                
-            }
-            
+
             // if match type is IsNull or IsNotNull, then no need to set column value
-            if (filter.matchType !== "IsNull" && filter.matchType !== "IsNotNull") {
-                
+            if (    type === "boolean"
+                || (    filter.matchType !== "IsNull"
+                    &&  filter.matchType !== "IsNotNull"
+                    )
+            ) {
+
                 // Populate the values
                 switch (type) {
-                    
+
                     case "text":
-                    
+                    case "boolean":
+
                         if (thisFilter.values instanceof Array) {
-                            
+
                             $input.val(thisFilter.values.join(Inst.opt.delimeter));
-                            
+
                         } else {
-                            
+
                             $input.val(thisFilter.values);
-                            
+
                         }
-                        
+
                         break;
-                    
+
                     case "choice":
                     case "multichoice":
-                        
+
                         $.each(thisFilter.values, function(i, colVal){
-                            
+
                             $input
                                 .filter("[value='" + colVal + "']")
                                     .prop("checked", true);
-                            
+
                         });
-                        
+
                         break;
-                    
+
                     case "lookup":
-                        
-                        $input.SPLookupField("method", "add", 
+
+                        $input.SPLookupField("method", "add",
                             thisFilter.values.join(";#") );
-                        
+
                         break;
-                    
+
                     case "people":
-                        
-                        $input.pickSPUser("method", "add", 
+
+                        $input.pickSPUser("method", "add",
                             thisFilter.values.join(";#") );
-                        
+
                         break;
-                    
+
                     case "date":
-                        
+
                         // If dateTime value, then let SPDateField parse values
                         if ($colUI.data("spwidget_sp_format") === "DateTime") {
-                            
+
                             $input.SPDateField('setDate', thisFilter.values);
-                            
+
                         // Regular dates - Provide format input
                         } else {
-                            
+
                             $input.SPDateField('setDate', thisFilter.values, 'yy-mm-dd');
-                            
+
                         }
-                        
+
                         break;
-                    
+
                 }
-                
-            // ELSE: Must have been IsNull or IsNotNull. trigger change 
+
+            // ELSE: Must have been IsNull or IsNotNull. trigger change
             // event on dropdown so that column can be properly highlighted.
             } else {
-                
+
                 $match.change();
-                
+
             } //end: if()
-            
+
             $input.change();
-            
+
         }); //end: each(): thisFilter
-        
+
         return Inst;
-        
+
     }; //end: Filter.setFilterValues()
-    
+
     /**
      * Create a new instance of a Column object.
-     * 
+     *
      * @constructor
-     * 
+     *
      * @param {Object} inst
-     *      The initial object of values 
-     * 
+     *      The initial object of values
+     *
      * @return {Filter.ColumnFilter}
-     * 
+     *
      */
     Filter.ColumnFilter = function(inst) {
-        
+
         var Column = function(){},
             newCol = new Column();
-        
+
         if (typeof inst !== "object") {
-            
+
             inst = {};
-            
+
         }
-        
+
         newCol.columnName   = inst.columnName || '';
         newCol.matchType    = inst.matchType || '';
         newCol.logicalType  = inst.logicalType || '';
@@ -10283,21 +10792,21 @@
         newCol.CAMLQuery    = inst.CAMLQuery || '';
         newCol.URLParams    = inst.URLParams || '';
         newCol.count        = inst.count || 0;
-        
+
         return newCol;
-        
+
     }; //end: ColumnFilter()
-    
+
     /**
      * @property
      * Stores the Style sheet that is inserted into the page the first
      * time SPFilterPanel() is called.
      * Value is set at build time.
      */
-    Filter.styleSheet = "/** \n"
+    Filter.styleSheet = "/**\n"
 + " * Stylesheet for the Board widget\n"
-+ " * \n"
-+ " * BUILD: September 07, 2013 - 03:52 PM\n"
++ " *\n"
++ " * BUILD: Paul:June 06, 2014 07:26 PM\n"
 + " */\n"
 + "div.spwidget-filter {\n"
 + "    width: 100%;\n"
@@ -10395,9 +10904,14 @@
 + "    margin-top: .5em;\n"
 + "    text-align: right;\n"
 + "}\n"
-+ "\n";
++ "\n"
++ "\n"
++ "/** Sort Panel */\n"
++ "div.spwidget-filter div.spwidget-filter-sort-cntr {\n"
++ "    position: relative;\n"
++ "}\n";
 //_HAS_FILTER_CSS_TEMPLATE_
-    
+
     /**
      * @property
      * Stores the HTML template for each Filter widget.
@@ -10406,17 +10920,23 @@
     Filter.htmlTemplate = "<div id=\"filter_main_ui\">\n"
 + "    <div class=\"spwidget-filter\" style=\"display: none;\">\n"
 + "        <div class=\"spwidget-filter-column-cntr\"></div>\n"
++ "        <div class=\"spwidget-filter-sort-cntr\" style=\"display:none;\">\n"
++ "            <div>Add...</div>\n"
++ "            <div>Order here</div>\n"
++ "            <div>Close</div>\n"
++ "        </div>\n"
 + "        <div class=\"spwidget-filter-button-cntr\">\n"
-+ "            <button type=\"button\" class=\"spwidget-button\" name='reset'>Reset</button>\n"
++ "            <button type=\"button\" class=\"spwidget-button ui-priority-secondary\" name='order'>Order</button>\n"
++ "            <button type=\"button\" class=\"spwidget-button ui-priority-secondary\" name='reset'>Reset</button>\n"
 + "            <button type=\"button\" class=\"spwidget-button\" name='filter'>Filter</button>\n"
 + "        </div>\n"
 + "    </div>\n"
 + "</div>\n"
 + "<div id=\"filter_column\">\n"
-+ "    <div class=\"spwidget-column spwidget-type-{{type}}\" \n"
-+ "            data-spwidget_column_type=\"{{type}}\" \n"
-+ "            data-spwidget_list=\"{{list}}\" \n"
-+ "            data-spwidget_sp_type=\"{{sp_type}}\" \n"
++ "    <div class=\"spwidget-column spwidget-type-{{type}}\"\n"
++ "            data-spwidget_column_type=\"{{type}}\"\n"
++ "            data-spwidget_list=\"{{list}}\"\n"
++ "            data-spwidget_sp_type=\"{{sp_type}}\"\n"
 + "            data-spwidget_sp_format=\"{{sp_format}}\" >\n"
 + "        <div class=\"spwidget-filter-value-cntr\">\n"
 + "            <label>{{DisplayName}}</label>\n"
@@ -10429,7 +10949,7 @@
 + "                <option value=\"Contains\">Contains</option>\n"
 + "                <option value=\"Eq\" selected=\"selected\">Equal</option>\n"
 + "                <option value=\"Neq\">Not Equal</option>\n"
-+ "                <option value=\"IsNull\">Is Blank</option> \n"
++ "                <option value=\"IsNull\">Is Blank</option>\n"
 + "                <option value=\"IsNotNull\">Is Not Blank</option>\n"
 + "                __OTHER_FILTER_TYPES__\n"
 + "            </select>\n"
@@ -10451,7 +10971,7 @@
 + "    </label>\n"
 + "</div>\n";
 //_HAS_FILTER_HTML_TEMPLATE_
-    
+
 })(jQuery); /***** End of module: jquery.SPFilterPanel.js */
 
 
