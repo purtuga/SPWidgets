@@ -14,7 +14,7 @@
 }
 
 .pt-widget-menu {
-    max-height: 10em;
+    max-height: 15em;
     overflow: auto;
 }
 .pt-widget-menu > a {
