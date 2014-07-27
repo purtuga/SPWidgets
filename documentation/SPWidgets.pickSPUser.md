@@ -81,6 +81,10 @@ This method takes as input an object containing the options below. These can als
         }
 
 
+-   **filterSuggestions**    :   *Function. Optional. Default=null* <br />
+    A callback function to be used to filter the list of suggestions retrieved from the server. Method, if defined, must return an array (either empty or of Objects). (Since 2.4);
+
+
 -   **inputPlaceholder**    :   *String. Optional. Default=Type and Pick.* <br />
     The text to appear in the HTML5 placeholder attribute of the input field.  Since v2.1.
 

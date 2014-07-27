@@ -45,7 +45,8 @@
         minLength:          3,
         resolvePrincipals:  true,
         meKeyword:          "[me]",
-        meKeywordLabel:     "Current User"
+        meKeywordLabel:     "Current User",
+        filterSuggestions:  null
     };
 
     /**
@@ -87,18 +88,18 @@
      *                      The container where to where the autocomplete suggestion
      *                      should be appended.
      *
-     * @param {Number} [minLength=3]
+     * @param {Number} [options.minLength=3]
      *                      The minimum number of characters the user must type before
      *                      suggestions are retrieved. Given directly to jQuery UI's
      *                      Autocomplete widget.
-     * @param {Function} [onPickUser=null]
+     * @param {Function} [options.onPickUser=null]
      *                      Function that is called when user makes a selection.
      *                      Function will have a context (this keyword) of the
      *                      input field to which this plugin is called on, and
      *                      will be given one input param; an object containing
      *                      information about the selected user.
      *
-     * @param {Function} [onCreate=null]
+     * @param {Function} [options.onCreate=null]
      *                      Function that is called after the widget has been
      *                      initiated on an input element.
      *                      Function will have a context (this keyword) of the
@@ -106,7 +107,7 @@
      *                      will also be provided as the first argument to the
      *                      function.
      *
-     * @param {Function} [onRemoveUser=null]
+     * @param {Function} [options.onRemoveUser=null]
      *                      Function called when removing a user from the selected
      *                      list. Returning false (boolean) will cancel the removal
      *                      of the person from the selected list.
@@ -114,13 +115,19 @@
      *                      input field to which this plugin is called on, and is
      *                      given 3 input params: $input, $personUI, personObj
      *
-     * @param {String} [inputPlaceholder="Type and Pick"]
+     * @param {String} [options.inputPlaceholder="Type and Pick"]
      *                      The text to appear in the HTML5 placeholder attribute
      *                      of the input field.
-     * @param {String} [resolvePrincipals=true]
+     * @param {String} [options.resolvePrincipals=true]
      *                      If set to true, any user that is suggested but not yet
      *                      part of the site collection user info list (their id
      *                      is -1) will be automatically added.
+     *
+     * @param {Function} [options.filterSuggestions=null]
+     *                      A callback function to be used in filtering the
+     *                      suggestions values retrieved from the server. This
+     *                      callback, if defined, must return an array of objects.
+     *
      *
      * @return {jQuery} selection
      *
@@ -428,6 +435,13 @@
 
                             });
 
+                            // If a suggestion filter was defined, call it now
+                            if (o.filterSuggestions) {
+
+
+                                rows = o.filterSuggestions(rows);
+
+                            }
 
                             dfd.resolveWith(xData, [rows, xData, status]);
 
