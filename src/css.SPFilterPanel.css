@@ -1,6 +1,6 @@
-/** 
+/**
  * Stylesheet for the Board widget
- * 
+ *
  * BUILD: _BUILD_VERSION_DATE_
  */
 div.spwidget-filter {
@@ -10,6 +10,10 @@ div.spwidget-filter {
 div.spwidget-filter .spwidget-date-cntr,
 div.spwidget-filter .spwidgets-lookup-cntr {
     display: block;
+}
+div.spwidget-filter .spwidget-filter-column-cntr {
+    overflow:auto;
+    position: relative;
 }
 /* Adjust the width of the widget inputs inside the filter panel */
 div.spwidget-filter .spwidget-type-text input.spwidget-filter-input,
@@ -25,6 +29,7 @@ div.spwidget-filter .spwidget-date-cntr div.spwidget-date-input-cntr {
     width: 97%
 }
 
+/* FIELD CONTAINER */
 div.spwidget-filter div.spwidget-column {
     padding: .5em;
     margin: .5em;
@@ -32,19 +37,50 @@ div.spwidget-filter div.spwidget-column {
     border-bottom: 1px solid  darkgray;
     box-shadow: 1px 1px 1px 0 lightgray inset;
 }
-div.spwidget-filter div.spwidget-filter-type-cntr {
-    right: 4%;
+
+/* FIELD ACTIONS */
+div.spwidget-filter div.spwidget-column-actions {
     position: absolute;
-    font-size: .8em;
-    top: .6em;
+    right: 1%;
+    top: 10%;
+}
+div.spwidget-filter div.spwidget-column-actions a {
+    display:block;
+}
+
+div.spwidget-filter div.spwidget-column-sort-actions {
+    display:none
+}
+
+div.spwidget-filter div.spwidget-has-sort-order div.spwidget-column-sort-actions {
+    display: block;
+}
+
+/* DIMED ITEMS - FULL OPACITY ON HOVER */
+div.spwidget-filter div.spwidget-filter-type-cntr,
+div.spwidget-filter div.spwidget-column-actions a {
     opacity: .6;
     filter: Alpha(opacity=60);
 }
-div.spwidget-filter div.spwidget-filter-type-cntr:hover {
+div.spwidget-filter div.spwidget-filter-type-cntr:hover,
+div.spwidget-filter div.spwidget-column-actions a:hover {
     opacity: 1;
 }
+/* FILTER OPTIONS */
+div.spwidget-filter div.spwidget-filter-type-cntr {
+    position: absolute;
+    font-size: .8em;
+    top: .6em;
+    right: 8%;
+}
+div.spwidget-filter div.spwidget-filter-type-cntr select {
+    text-overflow: ellipsis;
+    width: 5em;
+}
+
+/* FILTER VALUE CONTAINER */
 div.spwidget-filter div.spwidget-filter-value-cntr {
-    width: 100%;
+    width: 96%;
 }
 
 div.spwidget-filter div.spwidget-filter-value-cntr > label {

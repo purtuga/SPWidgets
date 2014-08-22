@@ -1,7 +1,7 @@
 SPFilterPanel Widget
 ====================
 
-Given a selector (an html element), this method will insert a UI that allows the user to enter filter criteria for a list. The widgets generates CAML filters from that data that can then be used by the hosting application to do further processing (ex. retrieve data). 
+Given a selector (an html element), this method will insert a UI that allows the user to enter filter criteria for a list. The widgets generates CAML filters from that data that can then be used by the hosting application to do further processing (ex. retrieve data).
 
 For columns that will be displayed to the user with a text input field (ex. Text, Note, Computed, etc.) the user can enter multiple keywords by delimitering them with a semicolon.  In addition, the following columns are displayed using widgets provided by this library:
 
@@ -15,7 +15,7 @@ For columns that will be displayed to the user with a text input field (ex. Text
     Displayed using the SPDateField widget. Multiple values can be selected.
 
 -   Choice Columns<br/>
-    Each choice value is displayed in a scrollable area as checkboxes, thus allowing the user to pick multiples. 
+    Each choice value is displayed in a scrollable area as checkboxes, thus allowing the user to pick multiples.
 
 
 Below is a screen capture from the available demo:
@@ -34,12 +34,12 @@ Usage
             'Title', 'Status', 'AssignedTo', 'Predecessors'
         ],
         onFilterClick: function(filters){
-            
+
             alert("Number of filters entered by the user: " + filters.count);
-            
+
         }
     });
-    
+
 
 Input Parameters
 ----------------
@@ -55,7 +55,8 @@ This method takes as input an object containing the supported options:
             filterButtonLabel:  "Filter",
             onFilterClick:      null,
             onReady:            null,
-            ignoreKeywords:     /^(of|and|a|an|to|by|the|or|from)$/i
+            ignoreKeywords:     /^(of|and|a|an|to|by|the|or|from)$/i,
+            height:             null
         });
 
 The default options for this widget can be manipulated/set via the following object:
@@ -87,19 +88,19 @@ The default options for this widget can be manipulated/set via the following obj
     The CSS class name for columns that have received filtering criteria from the user. The default class (*spwidget-column-dirty*) highlights the column label in red.
 
 -   **filterButtonLabel**   :   *String. Optional. Default='Filter'* <br />
-    The text that will be used in the button at the bottom of the filter panel. Used only when _showFilterButton_ is set to true. 
-    
+    The text that will be used in the button at the bottom of the filter panel. Used only when _showFilterButton_ is set to true.
+
 -   **onFilterClick**       :   *Function. Optional. Default=null* <br />
     Used when _showFilterButton_ is set to true.  Function is executed when the button is clicked. Function is have a scope of the original container HTML element (the one where the widget was inserted) and be given one parameter: A _Filter_ object (see the getFilter method of this widget).
-    
+
         onFilterClick: function(FilterObj) {
             // this = original container element
         }
 
-    If a _onFilterClick_ function is not set, a click event can be set on _button.spwidget-button_ and the _getFilter_ method used to retrieve the defined criteria. 
-    
+    If a _onFilterClick_ function is not set, a click event can be set on _button.spwidget-button_ and the _getFilter_ method used to retrieve the defined criteria.
+
     Example:
-        
+
         $filterPanel = $("#listFilter").SPFilterPanel({ list: "Tasks" });
         $("body").on("click", "button.spwidget-button", function(){
             // this = button
@@ -111,26 +112,29 @@ The default options for this widget can be manipulated/set via the following obj
 
 -   **onReset**      :   *Function. Optional. Default=null* <br />
     A function to be executed when the widget is reset, either by the user clicking the reset button or by code calling the reset method. The function will have a scope of the original element where the filter widget was inserted and be given the following as input:
-    
+
     -   {Object} An object with the currently defined filters on the widget. See *getFilter* method below for an example of the object structure.
-    
+
     Return Value:
-    
+
     If function return a Boolean *true*, the reset action will be canceled (form will not be reset and will maintain the currently defined values).
-    
+
     Example:
-    
+
         onReset: function(filters) {
             // this = HTML element
         }
-    
+
 
 -   **ignoreKeywords**      :   *RegEx. Optional. Default=/^(of|and|a|an|to|by|the|or|from)$/i* <br />
     A regular expression with the list of keywords to ignore. RegEx is used when parsing the values entered by the user in text fields. Default setting ignores the following: of, and, a, an, to, by, the, or, from
 
--   **delimeter**      :   *String. Optional. Default=;* <br />
+-   **delimeter**      :   *String. Optional. Default=";"* <br />
     The delimeter that should be used by the user when entering multiple keywords into a text input field. Note, if changing this from the default semicolon, the _textFieldTooltip_ input parameter should also be adjusted. Since v2.2
-    
+
+-   **height**      :   *String. Optional. Default=null* <br />
+    The height for the filter panel. Must be a valid css value. This will be applied only to the area that displays the column filters. The button panels will not be impacted by this value.
+
 
 Return Value
 ------------
@@ -144,15 +148,16 @@ Methods
 
 -   **getFilter()**<br />
     Returns a Filter object with the values entered by the user. The object will have CAML Query ready string values as well as properties that hold the individual values entered by the user.
-    
+
     Usage:
 
         $("#listFilter").SPFilterPanel("getFilter");
-    
+
     The Filter object return will contain the following:
-    
+
         {
             CAMLQuery: 'string with query of all columns filters wrapped in an <And> aggregate',
+            CAMLOrderBy: 'String with OrderBy elements',
             URLParams: 'String of items in URL param style',
             filters: {
                 columnInternalName: {
@@ -164,8 +169,10 @@ Methods
                         etc...
                     ],
                     CAMLQuery: 'string with query wrapped in an <Or> aggregate',
+                    CAMLOrderBy: 'String with OrderBy elements',
                     URLParams: 'String in URL param style',
-                    count: 0
+                    count: 0,
+                    sortOder: 'empty or a string value of Des or Asc'
                 },
                 etc...
            },
@@ -175,14 +182,14 @@ Methods
 
 -   **setFilter(ObjectWithFilters)**<br />
     Clears the existing set of filters defind on the panel and sets the filter panel with the criteria defined on input to this method.  Input will be an object with similar format as the _filters_ attribute of the _getFilter_ method.
-    
+
     Usage:
-    
+
         $("#listFilter")
             .SPFilterPanel(
                 "setFilter",
                 {
-                    ID: { 
+                    ID: {
                         values: [ 3, 4, 5],
                         matchType: 'Eq'
                     },
@@ -192,11 +199,11 @@ Methods
                     }
                 }
             );
-    
+
     Input:
-    
+
     -   _{Object} ObjectWithFilters_ An object with the list of columns internal names and the defined criteria to be set. Format of the object is:
-        
+
             {
                 columns_internal_name: {
                     matchType: 'String. Match type. Optional',
@@ -204,7 +211,8 @@ Methods
                         'value 1',
                         'value 2',
                         'value 3'
-                    ]
+                    ],
+                    sortOrder: 'asc'
                 },
                 ...etc...
             }
@@ -212,9 +220,9 @@ Methods
 
 -   **destroy()**<br />
     Removes the widget from the UI.
-    
+
     Usage:
- 
+
         $("#listFilter").SPFilterPanel("destroy");
 
 
@@ -231,9 +239,9 @@ Examples
                 'Title', 'Status', 'AssignedTo', 'Predecessors'
             ],
             onFilterClick: function(filters){
-                
+
                 alert("Number of filters entered by the user: " + fitlers.count);
-                
+
             }
         });
 

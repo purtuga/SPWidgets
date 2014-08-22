@@ -1,10 +1,6 @@
 /**
  * Styles for the Pick User Widget
  */
-.pt-pickSPUser .pt-pickSPUser-selected-multiple {
-    min-height: 3em;
-}
-
 .pt-pickSPUser .pt-pickSPUser-selected .pt-pickSPUser-person {
     float: left;
     margin-left: .2em;
