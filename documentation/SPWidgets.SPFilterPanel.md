@@ -48,7 +48,7 @@ This method takes as input an object containing the supported options:
 
         $("#listFilter").SPFilterPanel({
             list:               '',
-            webURL:             $().SPServices.SPGetCurrentSite(),
+            webURL:             'current/site/url/',
             columns:            ['Title'],
             textFieldTooltip:   'Use a semicolon to delimiter multiple keywords.',
             showFilterButton:   true,

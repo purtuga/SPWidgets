@@ -58,21 +58,14 @@
 
                             // Retrieve data from this list using the
                             // filter defined by the user
-                            $().SPServices({
-                                operation:      "GetListItems",
+                            $.SPWidgets.SPAPI.getListItems({
                                 listName:       listName,
                                 async:          true,
                                 cacheXML:       true,
                                 CAMLQuery:      query,
                                 CAMLRowLimit:   10,
                                 CAMLViewFields: camlFields,
-                                completefunc:   function(xData, status){
-
-                                    var rows = $(xData.responseXML)
-                                                .SPFilterNode("z:row")
-                                                .SPXmlToJson({
-                                                    includeAllAttrs: true
-                                                });
+                                completefunc:   function(xData, status, rows){
 
                                     $results.html(
                                         "<table width='98%' class='ui-widget-content'>" +
@@ -96,8 +89,7 @@
 
                 // Get the list definition and build the template for the
                 // output of what was found.
-                $().SPServices({
-                    operation:  "GetList",
+                $.SPWidgets.SPAPI.getList({
                     listName:   listName,
                     cacheXML:   false,
                     async:      true,

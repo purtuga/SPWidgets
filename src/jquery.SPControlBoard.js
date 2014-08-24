@@ -19,7 +19,8 @@
     /**
      * @class Baard
      */
-    var Board   = {};
+    var Board   = {},
+        SPAPI   = $.SPWidgets.SPAPI;
 
     /** @property {Boolean} */
     Board.initDone = false;
@@ -38,7 +39,7 @@
         fieldFilter:            null,
         optionalLabel:          '(none)',
         template:               null,
-        webURL:                 $().SPServices.SPGetCurrentSite(),
+        webURL:                 SPAPI.getSiteUrl(),
         showColPicker:          false,
         colPickerLabel:         "Columns",
         colPickerVisible:       [],
@@ -58,7 +59,7 @@
      * Given a selector, this method will insert a Kan-Ban board inside
      * of it with data retrieved from a specific list.
      * This widget will retrieve the List definition upon first call
-     * using SPServices and setting cache = true. In some implementations
+     * and setting cache = true. In some implementations
      * it may be desirable to get these defintions ahead of calling this
      * widget so that a cached version is used.
      *
@@ -125,7 +126,7 @@
      *                          // this = jQuery - the container of the board.
      *                      }
      *
-     * @param {String} [options.webURL=$().SPServices.SPGetCurrentSite()]
+     * @param {String} [options.webURL=currentSiteUrl]
      *                  The WebURL for the list.
      *
      * @param {Boolean} [options.showColPicker=false]
@@ -186,8 +187,14 @@
      *                          The array will have, to start, the update to the
      *                          state that was triggered by the move in the board.
      *                          Additional updates can be added.
-     *                          Format will be identical to what SPServices uses:
-     *                          ["field", "value"]. Example:
+     *                          Format will be an Array-of-Arrays, where each sub-array
+     *                          must have 2 items: the column name (index 0) and
+     *                          the column value (index 1). Example:<br/>
+     *
+     *                          data.updates = [
+     *                              ["Status", "Done"]
+     *                          ];
+     *                          // insert additional update
      *                          data.updates.push(["Title", "New title here"]);
      *
      *                      data.updatePromise - A jQuery.Promise that represents
@@ -463,8 +470,7 @@
 
                             // Get List information (use cached if already done in prior calls)
                             // and get list of States to build
-                            $().SPServices({
-                                operation:  "GetList",
+                            SPAPI.getList({
                                 listName:   opt.list,
                                 cacheXML:   true,
                                 async:      false,
@@ -588,8 +594,7 @@
 
                                             // Query the lookup table and get the rows that
                                             // should be used to build the states
-                                            $().SPServices({
-                                                operation:      "GetListItems",
+                                            SPAPI.getListItems({
                                                 listName:       f.attr("List"),
                                                 async:          true,
                                                 cacheXML:       true,
@@ -613,7 +618,8 @@
 
                                                     }
 
-                                                    var resp = $(xData.responseXML);
+                                                    var resp = $(xData.responseXML),
+                                                        $rows;
 
                                                     if ( resp.SPMsgHasError() ) {
 
@@ -640,7 +646,13 @@
 
                                                     // Loop thorugh all rows and build the
                                                     // array of states.
-                                                    resp.SPFilterNode("z:row").each(function(i,v){
+                                                    $rows = SPAPI.getNodesFromXml({
+                                                        xDoc: xData.responseXML,
+                                                        node: "z:row",
+                                                        asJQuery: true
+                                                    });
+
+                                                    $rows.each(function(i,v){
 
                                                         // If we reached a max column number, exit here.
                                                         if (i >= Board.maxColumns){
@@ -699,7 +711,7 @@
                                     return;
 
                                 }//end: completefunc()
-                            });//end: spservices
+                            });//end: getList
 
                         })
                         .promise();
@@ -767,15 +779,14 @@
                             // call GetListItems operation.
                             } else {
 
-                                $().SPServices({
-                                    operation:      "GetListItems",
+                                SPAPI.getListItems({
                                     listName:       opt.list,
                                     async:          true,
                                     CAMLQuery:      opt.CAMLQuery,
                                     CAMLRowLimit:   0, // FIXME: SP data should be paged??
                                     CAMLViewFields: opt.CAMLViewFields,
                                     webURL:         opt.webURL,
-                                    completefunc:   function(xData, status){
+                                    completefunc:   function(xData, status, rows){
 
                                         // Process Errors
                                         if (status === "error") {
@@ -801,20 +812,14 @@
                                         }
 
                                         // Store the list of items
-                                        opt.listItems   = resp
-                                                            .SPFilterNode("z:row")
-                                                            .SPXmlToJson({
-                                                                includeAllAttrs: true
-                                                            });
+                                        opt.listItems   = rows;
 
                                         resolveDeferred( resp );
 
-
-
                                     }//end: completefunc()
-                                });//end: SPServices
+                                });//end: getListItems
 
-                            } //end: else: do SPServices call
+                            } //end: else: get list items
 
                         }).promise();
 
@@ -1309,8 +1314,7 @@
 
                         function loadFormCollection() {
 
-                            $().SPServices({
-                                operation:      "GetFormCollection",
+                            SPAPI.getListFormCollection({
                                 listName:       opt.list,
                                 webURL:         opt.webURL,
                                 cacheXML:       true,
@@ -2267,8 +2271,7 @@
                         }
 
                         // Make update to SP item
-                        $().SPServices({
-                            operation:      "UpdateListItems",
+                        SPAPI.updateListItems({
                             listName:       opt.list,
                             async:          true,
                             ID:             itemId,
@@ -2300,8 +2303,10 @@
 
                                 }
 
-                                row = $(xData.responseXML).SPFilterNode("z:row")
-                                            .SPXmlToJson({includeAllAttrs: true});
+                                row = SPAPI.getNodesFromXml({
+                                    xDoc: xData.responseXML,
+                                    nodeName: "z:row"
+                                });
 
                                 $(ev.target).trigger(
                                     "spwidget:boardchange", [ ui.item, evData ] );

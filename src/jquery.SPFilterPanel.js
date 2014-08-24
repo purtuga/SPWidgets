@@ -13,7 +13,8 @@
     /**
      * @class Filter
      */
-    var Filter  = {};
+    var Filter  = {},
+        SPAPI   = $.SPWidgets.SPAPI;
 
     /** @property {Boolean} Is initialization done */
     Filter.isInitDone = false;
@@ -26,7 +27,7 @@
      */
     $.SPWidgets.defaults.filter = {
         list:                   '',
-        webURL:                 $().SPServices.SPGetCurrentSite(),
+        webURL:                 SPAPI.getSiteUrl(),
         columns:                ['Title'],
         textFieldTooltip:       'Use a semicolon to delimiter multiple keywords.',
         peopleFieldTooltip:     'Use [me] keyword to represent current user.',
@@ -193,8 +194,7 @@
                 return $.Deferred(function(dfd){
 
                     // Get List Definition
-                    $().SPServices({
-                        operation:      "GetList",
+                    SPAPI.getList({
                         listName:       opt.list,
                         cacheXML:       true,
                         async:          true,

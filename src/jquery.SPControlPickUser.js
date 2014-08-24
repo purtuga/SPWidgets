@@ -2,7 +2,7 @@
  * @fileOverview jquery.SPControlPickUser.js
  * jQuery plugin that attaches to an input field and provide a people
  * picker widget for interaction by the user. This Plugin is dependent
- * on jQuery UI's Autocomplete and SPServices library.
+ * on jQuery UI's Autocomplete.
  *
  *
  * @version _BUILD_VERSION_NUMBER_NUMBER_
@@ -11,15 +11,16 @@
  *
  * @requires jQuery.js {@link http://jquery.com}
  * @requires jQuery-ui.js {@link http://jqueryui.com}
- * @requires jquery.SPServices.js {@link http://spservices.codeplex.com}
  *
  * Build Date _BUILD_VERSION_DATE_
  *
  */
-(function(){
+(function($){
 
     /*jslint nomen: true, plusplus: true */
     /*global SPWidgets */
+
+    var SPAPI   = $.SPWidgets.SPAPI;
 
     /**
      * Namespace for pickSPUser specific methods.
@@ -72,7 +73,7 @@
      * @param {Boolean} [options.allowMultiples=true]
      *                      Determine whether multiple users can be picked.
      *
-     * @param {String} [options.webURL=$().SPServices.SPGetCurrentSite()]
+     * @param {String} [options.webURL=currentSiteUrl]
      *                  The URL of the site
      *
      * @param {String} [options.type='User']
@@ -233,7 +234,7 @@
             // If no webURL, define it now
             if (!o.webURL) {
 
-                o.webURL = $().SPServices.SPGetCurrentSite();
+                o.webURL = SPAPI.getSiteUrl();
             }
 
             // insure that maxsearchResults is an interger
@@ -375,8 +376,7 @@
 
                 return $.Deferred(function(dfd){
 
-                    $().SPServices({
-                        operation:      "SearchPrincipals",
+                    SPAPI.searchPrincipals({
                         searchText:     searchString,
                         maxResults:     o.maxSearchResults,
                         principalType:  o.type,
@@ -568,7 +568,7 @@
                         // Else, let's resolve the user before we add them.
                         } else {
 
-                            $.fn.pickSPUser.resolvePrincipals({
+                            SPAPI.resolvePrincipals({
                                 principalKeys: u.item.accountName
                             })
                             .then(function(xmlDoc, status){
@@ -582,7 +582,6 @@
                                         .text();
 
                                 addToSelectionList();
-
 
                             });
 
@@ -623,88 +622,6 @@
         return this;
 
     };// $.fn.pickSPUser()
-
-    /**
-     * Given a list of users, this method will resolve those if they
-     * are not part of the site collection user list info.
-     *
-     * TODO: make this method generic and dependency free.
-     *
-     * @param {Object} options
-     * @param {Array|String} options.principalKeys
-     *      The principal key (login name/Account Name/email) to be resolved.
-     *      An array of values can also be used on input.
-     * @param {String} [options.principalType='All']
-     *      The type of principal that is being resolved.
-     * @param {Boolean} [options.addToUserInfoList=true]
-     *      If true, then principal will be added to the site collection
-     *      user info list.
-     * @param {Boolean} [options.async=true]
-     *      If true, call to the service will be made async.
-     *
-     *
-     * @return {jQuery.Promise}
-     *      The jquery .ajax() Promise is returned.
-     */
-    $.fn.pickSPUser.resolvePrincipals = function(options) {
-
-        var opt = $.extend({}, {
-                principalKeys:      [],
-                principalType:      'All',
-                addToUserInfoList:  true,
-                async:              true
-            }, options);
-
-        if (!$.isArray(opt.principalKeys)) {
-
-            opt.principalKeys = [opt.principalKeys];
-
-        }
-
-        opt.principalXml    = "";
-        var hasStringTag        = /<string>/i,
-            i,j;
-
-        for(i=0,j=opt.principalKeys.length; i<j; i++){
-
-            if (!hasStringTag.test(opt.principalKeys[i])) {
-
-                opt.principalXml += '<string>' + opt.principalKeys[i] + '</string>';
-
-            } else {
-
-                opt.principalXml += opt.principalKeys[i];
-
-            }
-
-        }
-
-        // Make ajax call
-        // We don't use SPServices because of: https://spservices.codeplex.com/workitem/10146
-        return $.ajax({
-            type:           "POST",
-            cache:          false,
-            async:          opt.async,
-            url:            $().SPServices.SPGetCurrentSite() + "/_vti_bin/People.asmx",
-            contentType:    "text/xml;charset=utf-8",
-            beforeSend:     function(xhr) {
-
-                xhr.setRequestHeader(
-                    'SOAPAction',
-                    'http://schemas.microsoft.com/sharepoint/soap/ResolvePrincipals'
-                );
-
-            },
-            dataType:       "xml",
-            data:           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
-                '<soap:Body><ResolvePrincipals xmlns="http://schemas.microsoft.com/sharepoint/soap/">' +
-                    '<principalKeys>' + opt.principalXml + '</principalKeys>' +
-                    '<principalType>' + opt.principalType + '</principalType>' +
-                    '<addToUserInfoList>' + opt.addToUserInfoList + '</addToUserInfoList>' +
-                '</ResolvePrincipals></soap:Body></soap:Envelope>'
-        });
-
-    };
 
     /**
      * Builds the html element that surrounds a user for display on the page.

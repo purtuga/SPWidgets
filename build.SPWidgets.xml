@@ -898,8 +898,6 @@ DEPLOYING TO: ${me.deploy.location}
                 ${demo.spacer.file} 
                 ${build.demo.src}${/}ext${/}jquery-ui.js 
                 ${demo.spacer.file} 
-                ${build.demo.src}${/}ext${/}jquery.SPServices.js 
-                ${demo.spacer.file} 
                 ${build.demo.src}${/}ext${/}vkBeautify.js 
                 ${demo.spacer.file} 
                 " />

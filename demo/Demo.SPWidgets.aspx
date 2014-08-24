@@ -1,5 +1,5 @@
 <%-- SPWIDGETS DEMO PAGE --%>
-<%-- BUILD 20140822044255 --%>
+<%-- BUILD 20140824033307 --%>
 <%@ Page language="C#" MasterPageFile="~masterurl/default.master"    Inherits="Microsoft.SharePoint.WebPartPages.WebPartPage,Microsoft.SharePoint,Version=12.0.0.0,Culture=neutral,PublicKeyToken=71e9bce111e9429c" %> 
 <%@ Register Tagprefix="SharePoint" Namespace="Microsoft.SharePoint.WebControls" Assembly="Microsoft.SharePoint, Version=12.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %>
 <%@ Register Tagprefix="Utilities" Namespace="Microsoft.SharePoint.Utilities" Assembly="Microsoft.SharePoint, Version=12.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %>
@@ -44,8 +44,8 @@ SPWidgets - Widgets for building custom UIs
 /** 
  * SPWidgets Demo
  * 
- * Build Date:  Paul:August 22, 2014 04:42 PM
- * Version:     20140822044255 
+ * Build Date:  Paul:August 24, 2014 03:33 PM
+ * Version:     20140824033307 
  * 
  */
 </script>
@@ -553,7 +553,7 @@ SPWidgets - Widgets for building custom UIs
         
     </div>
     <div>
-        <span>Build: </span><span>20140822044255</span>
+        <span>Build: </span><span>20140824033307</span>
     </div>
     <div>
         <div id="themeSwitchWidget"></div>
@@ -585,24 +585,24 @@ setTimeout(function(){
 /**
  * @fileOverview demo.common.js
  * Common file for all demos. Initiates the UI on the page.
- * 
- * @version 20140822044255
- * 
+ *
+ * @version 20140824033307
+ *
  */
 (function($){
-    
+
     var Main    = SPWIDGET_DEMO;
-    
-    Main.debug = (  String(window.location.search).indexOf("debug=1") > -1 
+
+    Main.debug = (  String(window.location.search).indexOf("debug=1") > -1
                     ?   true
                     :   false
                 );
-    
+
     /**
      * Given a container element, this method will insert a
      * list of List and/or Libraries in the current site
      * for the user to select/pick one.
-     * 
+     *
      * @param {Object} options
      * @param {HTMLElement|jQuery} options.container
      * @param {Boolean} [options.includeLibraries=true]
@@ -612,12 +612,12 @@ setTimeout(function(){
      *      HTML element (as a jQuery object) and given 2 input
      *      parameters - 1) jQuery object with the list definition
      *      and 2) the html element that the user clicked on.
-     * 
+     *
      * @return {Object} Main
-     * 
+     *
      */
     Main.insertListSelector = function(options) {
-        
+
         var opt = $.extend({}, {
                 container:          null,
                 includeLibraries:   true,
@@ -625,82 +625,81 @@ setTimeout(function(){
                 onListSelect:       null
             },
             options);
-        
+
         if (!opt.container) {
-            
+
             return Main;
-            
+
         }
-        
+
         opt.container = $(opt.container);
-        
+
         // Have the user pick which library to use in the demo.
-        $().SPServices({
-            operation:  "SiteDataGetListCollection",
+        $.SPWidgets.SPAPI.getSiteListCollection({
             async:      false,
             cacheXML:   true,
             completefunc: function (xData, Status) {
-                
+
                 var $siteLists  = $(xData.responseXML),
                     htmlList    = '';
-                
+
                 opt._lists = null;
-                
+
                 // Get a set (array) of lists to work with
                 if (opt.includeLibraries && opt.includeLists) {
-                    
+
                     opt._lists = $siteLists.find("_sList");
-                    
+
                 } else if (opt.includeLibraries) {
-                    
+
                     opt._lists = $siteLists
                                 .find("_sList BaseType:contains('DocumentLibrary')")
                                     .parent();
-                    
+
                 } else if (opt.includeLists) {
-                    
+
                     opt._lists = $siteLists
                                 .find("_sList BaseType:contains('GenericList')")
                                     .parent();
-                    
+
                 } else {
-                    
+
                     return Main;
-                    
+
                 }
-                
+
                 // If no lists define, then exit
                 if (!opt._lists || !opt._lists.length) {
-                    
+
                     return Main;
-                    
+
                 }
-                
+
                 // Loop through all lists and build the UI for it.
                 opt._lists.each(function(){
-                    
+
                     var $list = $(this);
-                    
+
                     htmlList +=
                         '<a href="javascript:" class="ui-state-default" data-list_uid="' +
                          $.trim($list.find("InternalName").text()) +
                          '" data-list_name="' +
                          $list.find("Title").text() + '">' +
                          $list.find("Title").text() + ' </a>';
-                         
+
                 });
-                
+
                 opt._widget = $('<div class="spwidgets-demo-list-picker">' +
                         '<div class="ui-state-active spwidgets-demo-list-selected">Select List...</div>' +
                         '</div>')
                     .appendTo(opt.container)
                     .append(
-                        '<div class="spwidgets-demo-list-selector ui-widget-content" style="display:none;">' + 
+                        '<div class="spwidgets-demo-list-selector ui-widget-content" style="display:none;">' +
                         htmlList + '</div>' )
                     .on("click", "div.spwidgets-demo-list-selected", function(ev){
-                        
+
                         var $this = $(this).html("Select...");
-                        
+
                         opt._widgetSelector
                             .css("display", "")
                             .position({
@@ -708,61 +707,61 @@ setTimeout(function(){
                                 at: "left top",
                                 of: $this
                             });
-                        
+
                     })
                     .on("click", "a", function(ev){
-                        
+
                         var $this   = $(this),
                             $list   = opt._lists
                                         .find(
                                             "_sList InternalName:contains('" +
-                                            $this.data("list_uid") + "')" 
+                                            $this.data("list_uid") + "')"
                                         )
                                         .parent();
-                        
+
                         opt._widgetSelector.hide();
-                        
+
                         opt._widgetSelected.html("List: " + $list.find("Title").text());
-                        
+
                         if ($.isFunction(opt.onListSelect)) {
-                            
+
                             opt.onListSelect.call(
                                 opt.container, $list, $this);
-                            
+
                         }
-                        
+
                     });
-                
+
                 opt._widgetSelector = opt._widget.find("div.spwidgets-demo-list-selector");
                 opt._widgetSelected = opt._widget.find("div.spwidgets-demo-list-selected");
-                
+
             }//end: completefunc()
         });
-        
+
         return Main;
-        
+
     }; //end: Main.insertListSelector();
-    
-    
+
+
     /**
      * Inserts a list column selector into the defined container.
-     * 
+     *
      * @param {Object} options
      * @param {Object} options
      * @param {Object} options
      * @param {Object} [options.onColumnSelect=null]
      *          Called with a scope of container and 3 params:
      *          thisCol, opt.listName, html a element
-     *          
-     * 
+     *
+     *
      * @return {jQuery.Promise}
      *          Resolved with scope of the container
-     * 
+     *
      */
     Main.insertListColumnSelector = function(options) {
-        
+
         return $.Deferred(function(dfd){
-            
+
              var opt = $.extend({}, {
                     container:      null,
                     listName:       "",
@@ -770,49 +769,49 @@ setTimeout(function(){
                     onColumnSelect: null
                 },
                 options);
-            
+
             if (!opt.container) {
-                
+
                 dfd.resolve();
                 return;
-                
+
             }
-            
+
             opt.container = $(opt.container).empty();
-            
+
             Main.getListColumns(opt.listName)
                 .then(function(columns){
-                    
+
                     var htmlList = "";
-                    
+
                     // Loop through all lists and build the UI for it.
                     $.each(columns, function(i, column){
-                        
+
                         htmlList +=
                             '<a href="javascript:" class="ui-state-default" data-list_name="' +
                              opt.listName + '" data-column_name="' + column + '">' +
                              column + ' </a>';
-                             
+
                     });
-                    
+
                     // If no columns, entere default message
                     if (htmlList === "") {
-                        
+
                         htmlList += '<div>No Columns!</div>';
-                        
+
                     }
-                    
+
                     opt._widget = $('<div class="spwidgets-demo-list-picker">' +
                             '<div class="ui-state-active spwidgets-demo-list-selected">Select Column...</div>' +
                             '</div>')
                         .appendTo(opt.container)
                         .append(
-                            '<div class="spwidgets-demo-list-selector ui-widget-content" style="display:none;">' + 
+                            '<div class="spwidgets-demo-list-selector ui-widget-content" style="display:none;">' +
                             htmlList + '</div>' )
                         .on("click", "div.spwidgets-demo-list-selected", function(ev){
-                            
+
                             var $this = $(this).html("Column: Select...");
-                            
+
                             opt._widgetSelector
                                 .css("display", "")
                                 .position({
@@ -820,88 +819,88 @@ setTimeout(function(){
                                     at: "left top",
                                     of: $this
                                 });
-                            
+
                         })
                         .on("click", "a", function(ev){
-                            
+
                             var $this   = $(this),
                                 thisCol  = $this.data("column_name");
-                            
+
                             opt._widgetSelector.hide();
-                            
+
                             opt._widgetSelected.html( "Column: " + thisCol );
-                            
+
                             if ($.isFunction(opt.onColumnSelect)) {
-                                
+
                                 opt.onColumnSelect.call(
                                     opt.container, thisCol, opt.listName, $this);
-                                
+
                             }
-                            
+
                         });
-                    
+
                     opt._widgetSelector = opt._widget.find("div.spwidgets-demo-list-selector");
                     opt._widgetSelected = opt._widget.find("div.spwidgets-demo-list-selected");
-                    
+
                     dfd.resolveWith(opt.container);
-                    
+
                 });
-            
+
         })
         .promise();
-        
-        
+
+
     }; //end: Main.insertListColumnSelector()
-    
-    
+
+
     /**
      * Gets the list of columns names by using the Edit form
-     * 
+     *
      * @param {Object} listName
-     * 
+     *
      * @return {jQuery.Promise}
      */
     Main.getListColumns = function(listName){
-        
+
         return $.Deferred(function(dfd){
-            
+
             $('<div style="display:none;"/>')
                 .load(
                     String(
-                            $().SPServices.SPGetCurrentSite() +
-                            "/Lists/" + listName + "/NewForm.aspx"
+                            $.SPWidgets.SPAPI.getSiteUrl() +
+                            "Lists/" + listName + "/NewForm.aspx"
                         )
                         .replace(/ /, "%20") +
                         " .ms-formtable",
                     function(){
-                        
+
                         var $ele = $(this),
                             cols = ['ID'];
-                        
+
                         $ele.find(".ms-standardheader").each(function(){
-                            
+
                             cols.push( $.trim( $(this).text().replace(/ \*/, "") ) );
-                            
+
                         });
-                        
+
                         dfd.resolveWith($, [cols]);
-                        
-                        $ele.remove();  
-                        
+
+                        $ele.remove();
+
                     }
                 );
-            
+
         })
         .promise();
-        
+
     }; //end: getListColumns()
-    
+
     /**
      * Given an element, this method will setup it up for logging data,
      * and return an object ready to interact with it.
      */
     Main.setupLogOutput = function(options) {
-        
+
         var opt     = $.extend({}, {
                         container: null,
                         fixHeight: true,
@@ -912,85 +911,85 @@ setTimeout(function(){
                         padding: ".2em",
                         position: "relative"
                     };
-        
+
         if (!opt.container) {
-            
+
             return;
-            
+
         }
-        
+
         opt.container = $(opt.container);
-        
+
         if (opt.fixHeight){
-            
+
             css.height      = opt.height;
             css.overflow    = "auto";
-            
+
         }
-        
+
         opt.container
             .addClass("ui-widget-content")
             .css(css);
-        
+
         Inst.log = function(data) {
-            
+
             opt.container.append('<div>' + data + '<div>');
             opt.container.scrollTop(opt.container.children(":last").position().top);
-            
+
         }; //end: log()
-        
+
         return Inst;
-        
+
     }; //end: Main.setupLogOutput()
-    
+
     Main.$ui = $("#spwidgets_demo_cntr")
             .css("display", "")
             .on("keyup", function(ev){
-                
+
                 if (ev.which === 13) {
                     ev.preventDefault();
                     ev.stopPropagation();
                 }
-                
+
             });
-    
+
     // Create TABs and make ui visible
     Main.$ui.find("#ptTabsCntr")
         .tabs()
         .fadeIn("slow");
-    
+
     // Populate the About page
     $("#SPWidgetsAbout ul.spwidgets-demo-info-cntr").each(function(){
-        
+
         var $ul     = $(this);
-        
+
         setTimeout(function(){
-            
+
             var info    = $.SPWidgets.getRuntimeInfo(),
                 display = '',
                 key;
-            
+
             for (key in info){
-                
+
                 if (info.hasOwnProperty(key)) {
-                    
+
                     display += '<li>' + key + ': ' + info[key] + '</li>';
-                    
+
                 }
-                
+
             }
-            
+
             $ul.append(display);
-            
-            
+
+
         }, 2000);
-        
+
     });
-    
-    
+
+
  /* function return jQuery to closure above */
 })( (function($){
-    
+
     var styles = "/**\n"
 + " * Stylesheet for the demo area\n"
 + " */\n"
@@ -1517,12 +1516,12 @@ setTimeout(function(){
 + "}\n"
 + "\n"; 
 //__HAS_EMBEDED_DATA_FROM_BUILD__
-    
+
     $('<style type="text/css">' + styles + "</style>")
         .appendTo(document.head || document.getElementsByTagName('head')[0]);
-    
+
     return $;
-    
+
 })(SPWIDGET_DEMO.JQUERY || jQuery) );
 /**
  * widget.board.demo.js
@@ -1762,21 +1761,14 @@ setTimeout(function(){
 
                             // Retrieve data from this list using the
                             // filter defined by the user
-                            $().SPServices({
-                                operation:      "GetListItems",
+                            $.SPWidgets.SPAPI.getListItems({
                                 listName:       listName,
                                 async:          true,
                                 cacheXML:       true,
                                 CAMLQuery:      query,
                                 CAMLRowLimit:   10,
                                 CAMLViewFields: camlFields,
-                                completefunc:   function(xData, status){
-
-                                    var rows = $(xData.responseXML)
-                                                .SPFilterNode("z:row")
-                                                .SPXmlToJson({
-                                                    includeAllAttrs: true
-                                                });
+                                completefunc:   function(xData, status, rows){
 
                                     $results.html(
                                         "<table width='98%' class='ui-widget-content'>" +
@@ -1800,8 +1792,7 @@ setTimeout(function(){
 
                 // Get the list definition and build the template for the
                 // output of what was found.
-                $().SPServices({
-                    operation:  "GetList",
+                $.SPWidgets.SPAPI.getList({
                     listName:   listName,
                     cacheXML:   false,
                     async:      true,
@@ -2085,57 +2076,55 @@ setTimeout(function(){
  * Code for the upload widget demo.
  */
 (function($){
-    
+
     "use strict";
     /*jslint nomen: true, plusplus: true */
     /*global SPWidgets, SPWIDGET_DEMO */
-    
-    var Main        = SPWIDGET_DEMO,    
+
+    var Main        = SPWIDGET_DEMO,
         $ui         = Main.$ui.find("#SPControlUploadDemo"),
         $demoCntr   = $ui.find("div.spwidget-demo-upload-cntr"),
         $widgetCntr = $demoCntr.find("div.spwidget-demo-upload-widget"),
         $libFiles   = $demoCntr.find("div.spwidget-demo-library-files > table tbody"),
         $lastFile   = $demoCntr.find(".spwidget-demo-upload-last-file");
-    
-    
+
     /**
      * Removes the internal representation of a lookup value and
      * return only the expected visible value.
      */
     function getLookupFieldValue(xmlFieldValue, returnID){
-        
+
         if (!xmlFieldValue) {
-            
+
             return "";
-            
+
         }
-        
+
         if (xmlFieldValue.indexOf("#") < 0) {
-            
+
             return xmlFieldValue;
-            
+
         }
-        
+
         var field = xmlFieldValue.substring(xmlFieldValue.indexOf("#") + 1);
-        
+
         if (returnID) {
-            
+
             field = parseInt(xmlFieldValue.substring(0, xmlFieldValue.indexOf(";")));
-            
+
         }
-        
+
         return field;
-        
+
     } //end: getLookupFieldValue
-    
+
     /**
      *  Pulls in all files under th elibrary's root folder and displays them
      *  on the page, under the Files container.
      */
     function refreshFileList(listName) {
-        
-        $().SPServices({
-            operation:  "GetListItems",
+
+        $.SPWidgets.SPAPI.getListItems({
             async:      true,
             listName:   listName,
             CAMLQuery:  '<Query><Where>'
@@ -2159,70 +2148,74 @@ setTimeout(function(){
                     +   "</ViewFields>",
             CAMLRowLimit: 0,
             completefunc: function(xData, Status) {
-                
-                var r = $(xData.responseXML).SPFilterNode("z:row"),
+
+                var r = $.SPWidgets.SPAPI.getNodesFromXml({
+                            xDoc: xData.responseXML,
+                            nodeName: "z:row",
+                            asJQuery: true
+                        }),
                     s = "";
-                    
+
                 if (!r.length) {
-                    
+
                     $libFiles.append("<tr><td colspan='20' class='ui-widget-content'>No documents found at root of Document Library!</td></tr>");
-                    
+
                     return;
-                    
+
                 }
-                
+
                 r.each(function(){
-                    
+
                     var d = $(this);
-                    
+
                     s += '<tr>' +
                         '<td class="ui-widget-content">' + getLookupFieldValue(d.attr("ows_FileLeafRef")) + '</td>' +
                         '<td class="ui-widget-content">' + d.attr("ows_Modified") + '</td>' +
                         '<td class="ui-widget-content">' + getLookupFieldValue(d.attr("ows_Editor")) + '</td>' +
                     '</tr>';
-                    
+
                 });
-                
+
                 $libFiles.html(s);
-                
+
             }//end: completefunc()
         });
     }//end: refreshFileList()
-    
-    
+
+
     // Insert the list picker
     Main.insertListSelector({
         container:      $ui.find("div.spwidgets-demo-lists"),
         includeLists:   false,
         onListSelect:   function($library){
-            
+
             var libraryName = $library.find("Title").text();
-            
+
             refreshFileList(libraryName);
-            
+
             $demoCntr.show();
-            
+
             $widgetCntr
                 .empty()
                 .append("<h3>Upload with Overwrite = False</h3>");
-            
+
             $("<div/>")
                 .appendTo($widgetCntr)
                 .SPControlUpload({
                     listName:       libraryName,
                     debug:          Main.debug,
                     onUploadDone:   function(file){
-                        
+
                         refreshFileList(libraryName);
-                        
+
                         $lastFile.html(decodeURIComponent(file.EncodedAbsUrl));
-                        
+
                     }
                 });
-            
+
             $widgetCntr
                 .append("<h3>Upload with Overwrite = True</h3>");
-                
+
             $("<div/>")
                 .appendTo($widgetCntr)
                 .SPControlUpload({
@@ -2230,17 +2223,17 @@ setTimeout(function(){
                     debug:          Main.debug,
                     overwrite:      true,
                     onUploadDone:   function(file){
-                        
+
                         refreshFileList(libraryName);
-                        
+
                         $lastFile.html(decodeURIComponent(file.EncodedAbsUrl));
-                        
+
                     }
                 });
-            
+
         }//end: onListSelect()
     });
-    
+
 })(SPWIDGET_DEMO.JQUERY || jQuery);
 
 
@@ -2279,4461 +2272,6 @@ u[o]&&(delete u[o],c?delete n[l]:typeof n.removeAttribute!==i?n.removeAttribute(
 
 (function(e,t){function i(t,i){var a,n,r,o=t.nodeName.toLowerCase();return"area"===o?(a=t.parentNode,n=a.name,t.href&&n&&"map"===a.nodeName.toLowerCase()?(r=e("img[usemap=#"+n+"]")[0],!!r&&s(r)):!1):(/input|select|textarea|button|object/.test(o)?!t.disabled:"a"===o?t.href||i:i)&&s(t)}function s(t){return e.expr.filters.visible(t)&&!e(t).parents().addBack().filter(function(){return"hidden"===e.css(this,"visibility")}).length}var a=0,n=/^ui-id-\d+$/;e.ui=e.ui||{},e.extend(e.ui,{version:"1.10.2",keyCode:{BACKSPACE:8,COMMA:188,DELETE:46,DOWN:40,END:35,ENTER:13,ESCAPE:27,HOME:36,LEFT:37,NUMPAD_ADD:107,NUMPAD_DECIMAL:110,NUMPAD_DIVIDE:111,NUMPAD_ENTER:108,NUMPAD_MULTIPLY:106,NUMPAD_SUBTRACT:109,PAGE_DOWN:34,PAGE_UP:33,PERIOD:190,RIGHT:39,SPACE:32,TAB:9,UP:38}}),e.fn.extend({focus:function(t){return function(i,s){return"number"==typeof i?this.each(function(){var t=this;setTimeout(function(){e(t).focus(),s&&s.call(t)},i)}):t.apply(this,arguments)}}(e.fn.focus),scrollParent:function(){var t;return t=e.ui.ie&&/(static|relative)/.test(this.css("position"))||/absolute/.test(this.css("position"))?this.parents().filter(function(){return/(relative|absolute|fixed)/.test(e.css(this,"position"))&&/(auto|scroll)/.test(e.css(this,"overflow")+e.css(this,"overflow-y")+e.css(this,"overflow-x"))}).eq(0):this.parents().filter(function(){return/(auto|scroll)/.test(e.css(this,"overflow")+e.css(this,"overflow-y")+e.css(this,"overflow-x"))}).eq(0),/fixed/.test(this.css("position"))||!t.length?e(document):t},zIndex:function(i){if(i!==t)return this.css("zIndex",i);if(this.length)for(var s,a,n=e(this[0]);n.length&&n[0]!==document;){if(s=n.css("position"),("absolute"===s||"relative"===s||"fixed"===s)&&(a=parseInt(n.css("zIndex"),10),!isNaN(a)&&0!==a))return a;n=n.parent()}return 0},uniqueId:function(){return this.each(function(){this.id||(this.id="ui-id-"+ ++a)})},removeUniqueId:function(){return this.each(function(){n.test(this.id)&&e(this).removeAttr("id")})}}),e.extend(e.expr[":"],{data:e.expr.createPseudo?e.expr.createPseudo(function(t){return function(i){return!!e.data(i,t)}}):function(t,i,s){return!!e.data(t,s[3])},focusable:function(t){return i(t,!isNaN(e.attr(t,"tabindex")))},tabbable:function(t){var s=e.attr(t,"tabindex"),a=isNaN(s);return(a||s>=0)&&i(t,!a)}}),e("<a>").outerWidth(1).jquery||e.each(["Width","Height"],function(i,s){function a(t,i,s,a){return e.each(n,function(){i-=parseFloat(e.css(t,"padding"+this))||0,s&&(i-=parseFloat(e.css(t,"border"+this+"Width"))||0),a&&(i-=parseFloat(e.css(t,"margin"+this))||0)}),i}var n="Width"===s?["Left","Right"]:["Top","Bottom"],r=s.toLowerCase(),o={innerWidth:e.fn.innerWidth,innerHeight:e.fn.innerHeight,outerWidth:e.fn.outerWidth,outerHeight:e.fn.outerHeight};e.fn["inner"+s]=function(i){return i===t?o["inner"+s].call(this):this.each(function(){e(this).css(r,a(this,i)+"px")})},e.fn["outer"+s]=function(t,i){return"number"!=typeof t?o["outer"+s].call(this,t):this.each(function(){e(this).css(r,a(this,t,!0,i)+"px")})}}),e.fn.addBack||(e.fn.addBack=function(e){return this.add(null==e?this.prevObject:this.prevObject.filter(e))}),e("<a>").data("a-b","a").removeData("a-b").data("a-b")&&(e.fn.removeData=function(t){return function(i){return arguments.length?t.call(this,e.camelCase(i)):t.call(this)}}(e.fn.removeData)),e.ui.ie=!!/msie [\w.]+/.exec(navigator.userAgent.toLowerCase()),e.support.selectstart="onselectstart"in document.createElement("div"),e.fn.extend({disableSelection:function(){return this.bind((e.support.selectstart?"selectstart":"mousedown")+".ui-disableSelection",function(e){e.preventDefault()})},enableSelection:function(){return this.unbind(".ui-disableSelection")}}),e.extend(e.ui,{plugin:{add:function(t,i,s){var a,n=e.ui[t].prototype;for(a in s)n.plugins[a]=n.plugins[a]||[],n.plugins[a].push([i,s[a]])},call:function(e,t,i){var s,a=e.plugins[t];if(a&&e.element[0].parentNode&&11!==e.element[0].parentNode.nodeType)for(s=0;a.length>s;s++)e.options[a[s][0]]&&a[s][1].apply(e.element,i)}},hasScroll:function(t,i){if("hidden"===e(t).css("overflow"))return!1;var s=i&&"left"===i?"scrollLeft":"scrollTop",a=!1;return t[s]>0?!0:(t[s]=1,a=t[s]>0,t[s]=0,a)}})})(jQuery);(function(e,t){var i=0,s=Array.prototype.slice,n=e.cleanData;e.cleanData=function(t){for(var i,s=0;null!=(i=t[s]);s++)try{e(i).triggerHandler("remove")}catch(a){}n(t)},e.widget=function(i,s,n){var a,r,o,h,l={},u=i.split(".")[0];i=i.split(".")[1],a=u+"-"+i,n||(n=s,s=e.Widget),e.expr[":"][a.toLowerCase()]=function(t){return!!e.data(t,a)},e[u]=e[u]||{},r=e[u][i],o=e[u][i]=function(e,i){return this._createWidget?(arguments.length&&this._createWidget(e,i),t):new o(e,i)},e.extend(o,r,{version:n.version,_proto:e.extend({},n),_childConstructors:[]}),h=new s,h.options=e.widget.extend({},h.options),e.each(n,function(i,n){return e.isFunction(n)?(l[i]=function(){var e=function(){return s.prototype[i].apply(this,arguments)},t=function(e){return s.prototype[i].apply(this,e)};return function(){var i,s=this._super,a=this._superApply;return this._super=e,this._superApply=t,i=n.apply(this,arguments),this._super=s,this._superApply=a,i}}(),t):(l[i]=n,t)}),o.prototype=e.widget.extend(h,{widgetEventPrefix:r?h.widgetEventPrefix:i},l,{constructor:o,namespace:u,widgetName:i,widgetFullName:a}),r?(e.each(r._childConstructors,function(t,i){var s=i.prototype;e.widget(s.namespace+"."+s.widgetName,o,i._proto)}),delete r._childConstructors):s._childConstructors.push(o),e.widget.bridge(i,o)},e.widget.extend=function(i){for(var n,a,r=s.call(arguments,1),o=0,h=r.length;h>o;o++)for(n in r[o])a=r[o][n],r[o].hasOwnProperty(n)&&a!==t&&(i[n]=e.isPlainObject(a)?e.isPlainObject(i[n])?e.widget.extend({},i[n],a):e.widget.extend({},a):a);return i},e.widget.bridge=function(i,n){var a=n.prototype.widgetFullName||i;e.fn[i]=function(r){var o="string"==typeof r,h=s.call(arguments,1),l=this;return r=!o&&h.length?e.widget.extend.apply(null,[r].concat(h)):r,o?this.each(function(){var s,n=e.data(this,a);return n?e.isFunction(n[r])&&"_"!==r.charAt(0)?(s=n[r].apply(n,h),s!==n&&s!==t?(l=s&&s.jquery?l.pushStack(s.get()):s,!1):t):e.error("no such method '"+r+"' for "+i+" widget instance"):e.error("cannot call methods on "+i+" prior to initialization; "+"attempted to call method '"+r+"'")}):this.each(function(){var t=e.data(this,a);t?t.option(r||{})._init():e.data(this,a,new n(r,this))}),l}},e.Widget=function(){},e.Widget._childConstructors=[],e.Widget.prototype={widgetName:"widget",widgetEventPrefix:"",defaultElement:"<div>",options:{disabled:!1,create:null},_createWidget:function(t,s){s=e(s||this.defaultElement||this)[0],this.element=e(s),this.uuid=i++,this.eventNamespace="."+this.widgetName+this.uuid,this.options=e.widget.extend({},this.options,this._getCreateOptions(),t),this.bindings=e(),this.hoverable=e(),this.focusable=e(),s!==this&&(e.data(s,this.widgetFullName,this),this._on(!0,this.element,{remove:function(e){e.target===s&&this.destroy()}}),this.document=e(s.style?s.ownerDocument:s.document||s),this.window=e(this.document[0].defaultView||this.document[0].parentWindow)),this._create(),this._trigger("create",null,this._getCreateEventData()),this._init()},_getCreateOptions:e.noop,_getCreateEventData:e.noop,_create:e.noop,_init:e.noop,destroy:function(){this._destroy(),this.element.unbind(this.eventNamespace).removeData(this.widgetName).removeData(this.widgetFullName).removeData(e.camelCase(this.widgetFullName)),this.widget().unbind(this.eventNamespace).removeAttr("aria-disabled").removeClass(this.widgetFullName+"-disabled "+"ui-state-disabled"),this.bindings.unbind(this.eventNamespace),this.hoverable.removeClass("ui-state-hover"),this.focusable.removeClass("ui-state-focus")},_destroy:e.noop,widget:function(){return this.element},option:function(i,s){var n,a,r,o=i;if(0===arguments.length)return e.widget.extend({},this.options);if("string"==typeof i)if(o={},n=i.split("."),i=n.shift(),n.length){for(a=o[i]=e.widget.extend({},this.options[i]),r=0;n.length-1>r;r++)a[n[r]]=a[n[r]]||{},a=a[n[r]];if(i=n.pop(),s===t)return a[i]===t?null:a[i];a[i]=s}else{if(s===t)return this.options[i]===t?null:this.options[i];o[i]=s}return this._setOptions(o),this},_setOptions:function(e){var t;for(t in e)this._setOption(t,e[t]);return this},_setOption:function(e,t){return this.options[e]=t,"disabled"===e&&(this.widget().toggleClass(this.widgetFullName+"-disabled ui-state-disabled",!!t).attr("aria-disabled",t),this.hoverable.removeClass("ui-state-hover"),this.focusable.removeClass("ui-state-focus")),this},enable:function(){return this._setOption("disabled",!1)},disable:function(){return this._setOption("disabled",!0)},_on:function(i,s,n){var a,r=this;"boolean"!=typeof i&&(n=s,s=i,i=!1),n?(s=a=e(s),this.bindings=this.bindings.add(s)):(n=s,s=this.element,a=this.widget()),e.each(n,function(n,o){function h(){return i||r.options.disabled!==!0&&!e(this).hasClass("ui-state-disabled")?("string"==typeof o?r[o]:o).apply(r,arguments):t}"string"!=typeof o&&(h.guid=o.guid=o.guid||h.guid||e.guid++);var l=n.match(/^(\w+)\s*(.*)$/),u=l[1]+r.eventNamespace,c=l[2];c?a.delegate(c,u,h):s.bind(u,h)})},_off:function(e,t){t=(t||"").split(" ").join(this.eventNamespace+" ")+this.eventNamespace,e.unbind(t).undelegate(t)},_delay:function(e,t){function i(){return("string"==typeof e?s[e]:e).apply(s,arguments)}var s=this;return setTimeout(i,t||0)},_hoverable:function(t){this.hoverable=this.hoverable.add(t),this._on(t,{mouseenter:function(t){e(t.currentTarget).addClass("ui-state-hover")},mouseleave:function(t){e(t.currentTarget).removeClass("ui-state-hover")}})},_focusable:function(t){this.focusable=this.focusable.add(t),this._on(t,{focusin:function(t){e(t.currentTarget).addClass("ui-state-focus")},focusout:function(t){e(t.currentTarget).removeClass("ui-state-focus")}})},_trigger:function(t,i,s){var n,a,r=this.options[t];if(s=s||{},i=e.Event(i),i.type=(t===this.widgetEventPrefix?t:this.widgetEventPrefix+t).toLowerCase(),i.target=this.element[0],a=i.originalEvent)for(n in a)n in i||(i[n]=a[n]);return this.element.trigger(i,s),!(e.isFunction(r)&&r.apply(this.element[0],[i].concat(s))===!1||i.isDefaultPrevented())}},e.each({show:"fadeIn",hide:"fadeOut"},function(t,i){e.Widget.prototype["_"+t]=function(s,n,a){"string"==typeof n&&(n={effect:n});var r,o=n?n===!0||"number"==typeof n?i:n.effect||i:t;n=n||{},"number"==typeof n&&(n={duration:n}),r=!e.isEmptyObject(n),n.complete=a,n.delay&&s.delay(n.delay),r&&e.effects&&e.effects.effect[o]?s[t](n):o!==t&&s[o]?s[o](n.duration,n.easing,a):s.queue(function(i){e(this)[t](),a&&a.call(s[0]),i()})}})})(jQuery);(function(e){var t=!1;e(document).mouseup(function(){t=!1}),e.widget("ui.mouse",{version:"1.10.2",options:{cancel:"input,textarea,button,select,option",distance:1,delay:0},_mouseInit:function(){var t=this;this.element.bind("mousedown."+this.widgetName,function(e){return t._mouseDown(e)}).bind("click."+this.widgetName,function(i){return!0===e.data(i.target,t.widgetName+".preventClickEvent")?(e.removeData(i.target,t.widgetName+".preventClickEvent"),i.stopImmediatePropagation(),!1):undefined}),this.started=!1},_mouseDestroy:function(){this.element.unbind("."+this.widgetName),this._mouseMoveDelegate&&e(document).unbind("mousemove."+this.widgetName,this._mouseMoveDelegate).unbind("mouseup."+this.widgetName,this._mouseUpDelegate)},_mouseDown:function(i){if(!t){this._mouseStarted&&this._mouseUp(i),this._mouseDownEvent=i;var s=this,n=1===i.which,a="string"==typeof this.options.cancel&&i.target.nodeName?e(i.target).closest(this.options.cancel).length:!1;return n&&!a&&this._mouseCapture(i)?(this.mouseDelayMet=!this.options.delay,this.mouseDelayMet||(this._mouseDelayTimer=setTimeout(function(){s.mouseDelayMet=!0},this.options.delay)),this._mouseDistanceMet(i)&&this._mouseDelayMet(i)&&(this._mouseStarted=this._mouseStart(i)!==!1,!this._mouseStarted)?(i.preventDefault(),!0):(!0===e.data(i.target,this.widgetName+".preventClickEvent")&&e.removeData(i.target,this.widgetName+".preventClickEvent"),this._mouseMoveDelegate=function(e){return s._mouseMove(e)},this._mouseUpDelegate=function(e){return s._mouseUp(e)},e(document).bind("mousemove."+this.widgetName,this._mouseMoveDelegate).bind("mouseup."+this.widgetName,this._mouseUpDelegate),i.preventDefault(),t=!0,!0)):!0}},_mouseMove:function(t){return e.ui.ie&&(!document.documentMode||9>document.documentMode)&&!t.button?this._mouseUp(t):this._mouseStarted?(this._mouseDrag(t),t.preventDefault()):(this._mouseDistanceMet(t)&&this._mouseDelayMet(t)&&(this._mouseStarted=this._mouseStart(this._mouseDownEvent,t)!==!1,this._mouseStarted?this._mouseDrag(t):this._mouseUp(t)),!this._mouseStarted)},_mouseUp:function(t){return e(document).unbind("mousemove."+this.widgetName,this._mouseMoveDelegate).unbind("mouseup."+this.widgetName,this._mouseUpDelegate),this._mouseStarted&&(this._mouseStarted=!1,t.target===this._mouseDownEvent.target&&e.data(t.target,this.widgetName+".preventClickEvent",!0),this._mouseStop(t)),!1},_mouseDistanceMet:function(e){return Math.max(Math.abs(this._mouseDownEvent.pageX-e.pageX),Math.abs(this._mouseDownEvent.pageY-e.pageY))>=this.options.distance},_mouseDelayMet:function(){return this.mouseDelayMet},_mouseStart:function(){},_mouseDrag:function(){},_mouseStop:function(){},_mouseCapture:function(){return!0}})})(jQuery);(function(t,e){function i(t,e,i){return[parseFloat(t[0])*(p.test(t[0])?e/100:1),parseFloat(t[1])*(p.test(t[1])?i/100:1)]}function s(e,i){return parseInt(t.css(e,i),10)||0}function n(e){var i=e[0];return 9===i.nodeType?{width:e.width(),height:e.height(),offset:{top:0,left:0}}:t.isWindow(i)?{width:e.width(),height:e.height(),offset:{top:e.scrollTop(),left:e.scrollLeft()}}:i.preventDefault?{width:0,height:0,offset:{top:i.pageY,left:i.pageX}}:{width:e.outerWidth(),height:e.outerHeight(),offset:e.offset()}}t.ui=t.ui||{};var a,o=Math.max,r=Math.abs,h=Math.round,l=/left|center|right/,c=/top|center|bottom/,u=/[\+\-]\d+(\.[\d]+)?%?/,d=/^\w+/,p=/%$/,f=t.fn.position;t.position={scrollbarWidth:function(){if(a!==e)return a;var i,s,n=t("<div style='display:block;width:50px;height:50px;overflow:hidden;'><div style='height:100px;width:auto;'></div></div>"),o=n.children()[0];return t("body").append(n),i=o.offsetWidth,n.css("overflow","scroll"),s=o.offsetWidth,i===s&&(s=n[0].clientWidth),n.remove(),a=i-s},getScrollInfo:function(e){var i=e.isWindow?"":e.element.css("overflow-x"),s=e.isWindow?"":e.element.css("overflow-y"),n="scroll"===i||"auto"===i&&e.width<e.element[0].scrollWidth,a="scroll"===s||"auto"===s&&e.height<e.element[0].scrollHeight;return{width:a?t.position.scrollbarWidth():0,height:n?t.position.scrollbarWidth():0}},getWithinInfo:function(e){var i=t(e||window),s=t.isWindow(i[0]);return{element:i,isWindow:s,offset:i.offset()||{left:0,top:0},scrollLeft:i.scrollLeft(),scrollTop:i.scrollTop(),width:s?i.width():i.outerWidth(),height:s?i.height():i.outerHeight()}}},t.fn.position=function(e){if(!e||!e.of)return f.apply(this,arguments);e=t.extend({},e);var a,p,m,g,v,_,b=t(e.of),y=t.position.getWithinInfo(e.within),w=t.position.getScrollInfo(y),x=(e.collision||"flip").split(" "),k={};return _=n(b),b[0].preventDefault&&(e.at="left top"),p=_.width,m=_.height,g=_.offset,v=t.extend({},g),t.each(["my","at"],function(){var t,i,s=(e[this]||"").split(" ");1===s.length&&(s=l.test(s[0])?s.concat(["center"]):c.test(s[0])?["center"].concat(s):["center","center"]),s[0]=l.test(s[0])?s[0]:"center",s[1]=c.test(s[1])?s[1]:"center",t=u.exec(s[0]),i=u.exec(s[1]),k[this]=[t?t[0]:0,i?i[0]:0],e[this]=[d.exec(s[0])[0],d.exec(s[1])[0]]}),1===x.length&&(x[1]=x[0]),"right"===e.at[0]?v.left+=p:"center"===e.at[0]&&(v.left+=p/2),"bottom"===e.at[1]?v.top+=m:"center"===e.at[1]&&(v.top+=m/2),a=i(k.at,p,m),v.left+=a[0],v.top+=a[1],this.each(function(){var n,l,c=t(this),u=c.outerWidth(),d=c.outerHeight(),f=s(this,"marginLeft"),_=s(this,"marginTop"),D=u+f+s(this,"marginRight")+w.width,T=d+_+s(this,"marginBottom")+w.height,C=t.extend({},v),M=i(k.my,c.outerWidth(),c.outerHeight());"right"===e.my[0]?C.left-=u:"center"===e.my[0]&&(C.left-=u/2),"bottom"===e.my[1]?C.top-=d:"center"===e.my[1]&&(C.top-=d/2),C.left+=M[0],C.top+=M[1],t.support.offsetFractions||(C.left=h(C.left),C.top=h(C.top)),n={marginLeft:f,marginTop:_},t.each(["left","top"],function(i,s){t.ui.position[x[i]]&&t.ui.position[x[i]][s](C,{targetWidth:p,targetHeight:m,elemWidth:u,elemHeight:d,collisionPosition:n,collisionWidth:D,collisionHeight:T,offset:[a[0]+M[0],a[1]+M[1]],my:e.my,at:e.at,within:y,elem:c})}),e.using&&(l=function(t){var i=g.left-C.left,s=i+p-u,n=g.top-C.top,a=n+m-d,h={target:{element:b,left:g.left,top:g.top,width:p,height:m},element:{element:c,left:C.left,top:C.top,width:u,height:d},horizontal:0>s?"left":i>0?"right":"center",vertical:0>a?"top":n>0?"bottom":"middle"};u>p&&p>r(i+s)&&(h.horizontal="center"),d>m&&m>r(n+a)&&(h.vertical="middle"),h.important=o(r(i),r(s))>o(r(n),r(a))?"horizontal":"vertical",e.using.call(this,t,h)}),c.offset(t.extend(C,{using:l}))})},t.ui.position={fit:{left:function(t,e){var i,s=e.within,n=s.isWindow?s.scrollLeft:s.offset.left,a=s.width,r=t.left-e.collisionPosition.marginLeft,h=n-r,l=r+e.collisionWidth-a-n;e.collisionWidth>a?h>0&&0>=l?(i=t.left+h+e.collisionWidth-a-n,t.left+=h-i):t.left=l>0&&0>=h?n:h>l?n+a-e.collisionWidth:n:h>0?t.left+=h:l>0?t.left-=l:t.left=o(t.left-r,t.left)},top:function(t,e){var i,s=e.within,n=s.isWindow?s.scrollTop:s.offset.top,a=e.within.height,r=t.top-e.collisionPosition.marginTop,h=n-r,l=r+e.collisionHeight-a-n;e.collisionHeight>a?h>0&&0>=l?(i=t.top+h+e.collisionHeight-a-n,t.top+=h-i):t.top=l>0&&0>=h?n:h>l?n+a-e.collisionHeight:n:h>0?t.top+=h:l>0?t.top-=l:t.top=o(t.top-r,t.top)}},flip:{left:function(t,e){var i,s,n=e.within,a=n.offset.left+n.scrollLeft,o=n.width,h=n.isWindow?n.scrollLeft:n.offset.left,l=t.left-e.collisionPosition.marginLeft,c=l-h,u=l+e.collisionWidth-o-h,d="left"===e.my[0]?-e.elemWidth:"right"===e.my[0]?e.elemWidth:0,p="left"===e.at[0]?e.targetWidth:"right"===e.at[0]?-e.targetWidth:0,f=-2*e.offset[0];0>c?(i=t.left+d+p+f+e.collisionWidth-o-a,(0>i||r(c)>i)&&(t.left+=d+p+f)):u>0&&(s=t.left-e.collisionPosition.marginLeft+d+p+f-h,(s>0||u>r(s))&&(t.left+=d+p+f))},top:function(t,e){var i,s,n=e.within,a=n.offset.top+n.scrollTop,o=n.height,h=n.isWindow?n.scrollTop:n.offset.top,l=t.top-e.collisionPosition.marginTop,c=l-h,u=l+e.collisionHeight-o-h,d="top"===e.my[1],p=d?-e.elemHeight:"bottom"===e.my[1]?e.elemHeight:0,f="top"===e.at[1]?e.targetHeight:"bottom"===e.at[1]?-e.targetHeight:0,m=-2*e.offset[1];0>c?(s=t.top+p+f+m+e.collisionHeight-o-a,t.top+p+f+m>c&&(0>s||r(c)>s)&&(t.top+=p+f+m)):u>0&&(i=t.top-e.collisionPosition.marginTop+p+f+m-h,t.top+p+f+m>u&&(i>0||u>r(i))&&(t.top+=p+f+m))}},flipfit:{left:function(){t.ui.position.flip.left.apply(this,arguments),t.ui.position.fit.left.apply(this,arguments)},top:function(){t.ui.position.flip.top.apply(this,arguments),t.ui.position.fit.top.apply(this,arguments)}}},function(){var e,i,s,n,a,o=document.getElementsByTagName("body")[0],r=document.createElement("div");e=document.createElement(o?"div":"body"),s={visibility:"hidden",width:0,height:0,border:0,margin:0,background:"none"},o&&t.extend(s,{position:"absolute",left:"-1000px",top:"-1000px"});for(a in s)e.style[a]=s[a];e.appendChild(r),i=o||document.documentElement,i.insertBefore(e,i.firstChild),r.style.cssText="position: absolute; left: 10.7432222px;",n=t(r).offset().left,t.support.offsetFractions=n>10&&11>n,e.innerHTML="",i.removeChild(e)}()})(jQuery);(function(e){e.widget("ui.draggable",e.ui.mouse,{version:"1.10.2",widgetEventPrefix:"drag",options:{addClasses:!0,appendTo:"parent",axis:!1,connectToSortable:!1,containment:!1,cursor:"auto",cursorAt:!1,grid:!1,handle:!1,helper:"original",iframeFix:!1,opacity:!1,refreshPositions:!1,revert:!1,revertDuration:500,scope:"default",scroll:!0,scrollSensitivity:20,scrollSpeed:20,snap:!1,snapMode:"both",snapTolerance:20,stack:!1,zIndex:!1,drag:null,start:null,stop:null},_create:function(){"original"!==this.options.helper||/^(?:r|a|f)/.test(this.element.css("position"))||(this.element[0].style.position="relative"),this.options.addClasses&&this.element.addClass("ui-draggable"),this.options.disabled&&this.element.addClass("ui-draggable-disabled"),this._mouseInit()},_destroy:function(){this.element.removeClass("ui-draggable ui-draggable-dragging ui-draggable-disabled"),this._mouseDestroy()},_mouseCapture:function(t){var i=this.options;return this.helper||i.disabled||e(t.target).closest(".ui-resizable-handle").length>0?!1:(this.handle=this._getHandle(t),this.handle?(e(i.iframeFix===!0?"iframe":i.iframeFix).each(function(){e("<div class='ui-draggable-iframeFix' style='background: #fff;'></div>").css({width:this.offsetWidth+"px",height:this.offsetHeight+"px",position:"absolute",opacity:"0.001",zIndex:1e3}).css(e(this).offset()).appendTo("body")}),!0):!1)},_mouseStart:function(t){var i=this.options;return this.helper=this._createHelper(t),this.helper.addClass("ui-draggable-dragging"),this._cacheHelperProportions(),e.ui.ddmanager&&(e.ui.ddmanager.current=this),this._cacheMargins(),this.cssPosition=this.helper.css("position"),this.scrollParent=this.helper.scrollParent(),this.offset=this.positionAbs=this.element.offset(),this.offset={top:this.offset.top-this.margins.top,left:this.offset.left-this.margins.left},e.extend(this.offset,{click:{left:t.pageX-this.offset.left,top:t.pageY-this.offset.top},parent:this._getParentOffset(),relative:this._getRelativeOffset()}),this.originalPosition=this.position=this._generatePosition(t),this.originalPageX=t.pageX,this.originalPageY=t.pageY,i.cursorAt&&this._adjustOffsetFromHelper(i.cursorAt),i.containment&&this._setContainment(),this._trigger("start",t)===!1?(this._clear(),!1):(this._cacheHelperProportions(),e.ui.ddmanager&&!i.dropBehaviour&&e.ui.ddmanager.prepareOffsets(this,t),this._mouseDrag(t,!0),e.ui.ddmanager&&e.ui.ddmanager.dragStart(this,t),!0)},_mouseDrag:function(t,i){if(this.position=this._generatePosition(t),this.positionAbs=this._convertPositionTo("absolute"),!i){var s=this._uiHash();if(this._trigger("drag",t,s)===!1)return this._mouseUp({}),!1;this.position=s.position}return this.options.axis&&"y"===this.options.axis||(this.helper[0].style.left=this.position.left+"px"),this.options.axis&&"x"===this.options.axis||(this.helper[0].style.top=this.position.top+"px"),e.ui.ddmanager&&e.ui.ddmanager.drag(this,t),!1},_mouseStop:function(t){var i,s=this,n=!1,a=!1;for(e.ui.ddmanager&&!this.options.dropBehaviour&&(a=e.ui.ddmanager.drop(this,t)),this.dropped&&(a=this.dropped,this.dropped=!1),i=this.element[0];i&&(i=i.parentNode);)i===document&&(n=!0);return n||"original"!==this.options.helper?("invalid"===this.options.revert&&!a||"valid"===this.options.revert&&a||this.options.revert===!0||e.isFunction(this.options.revert)&&this.options.revert.call(this.element,a)?e(this.helper).animate(this.originalPosition,parseInt(this.options.revertDuration,10),function(){s._trigger("stop",t)!==!1&&s._clear()}):this._trigger("stop",t)!==!1&&this._clear(),!1):!1},_mouseUp:function(t){return e("div.ui-draggable-iframeFix").each(function(){this.parentNode.removeChild(this)}),e.ui.ddmanager&&e.ui.ddmanager.dragStop(this,t),e.ui.mouse.prototype._mouseUp.call(this,t)},cancel:function(){return this.helper.is(".ui-draggable-dragging")?this._mouseUp({}):this._clear(),this},_getHandle:function(t){return this.options.handle?!!e(t.target).closest(this.element.find(this.options.handle)).length:!0},_createHelper:function(t){var i=this.options,s=e.isFunction(i.helper)?e(i.helper.apply(this.element[0],[t])):"clone"===i.helper?this.element.clone().removeAttr("id"):this.element;return s.parents("body").length||s.appendTo("parent"===i.appendTo?this.element[0].parentNode:i.appendTo),s[0]===this.element[0]||/(fixed|absolute)/.test(s.css("position"))||s.css("position","absolute"),s},_adjustOffsetFromHelper:function(t){"string"==typeof t&&(t=t.split(" ")),e.isArray(t)&&(t={left:+t[0],top:+t[1]||0}),"left"in t&&(this.offset.click.left=t.left+this.margins.left),"right"in t&&(this.offset.click.left=this.helperProportions.width-t.right+this.margins.left),"top"in t&&(this.offset.click.top=t.top+this.margins.top),"bottom"in t&&(this.offset.click.top=this.helperProportions.height-t.bottom+this.margins.top)},_getParentOffset:function(){this.offsetParent=this.helper.offsetParent();var t=this.offsetParent.offset();return"absolute"===this.cssPosition&&this.scrollParent[0]!==document&&e.contains(this.scrollParent[0],this.offsetParent[0])&&(t.left+=this.scrollParent.scrollLeft(),t.top+=this.scrollParent.scrollTop()),(this.offsetParent[0]===document.body||this.offsetParent[0].tagName&&"html"===this.offsetParent[0].tagName.toLowerCase()&&e.ui.ie)&&(t={top:0,left:0}),{top:t.top+(parseInt(this.offsetParent.css("borderTopWidth"),10)||0),left:t.left+(parseInt(this.offsetParent.css("borderLeftWidth"),10)||0)}},_getRelativeOffset:function(){if("relative"===this.cssPosition){var e=this.element.position();return{top:e.top-(parseInt(this.helper.css("top"),10)||0)+this.scrollParent.scrollTop(),left:e.left-(parseInt(this.helper.css("left"),10)||0)+this.scrollParent.scrollLeft()}}return{top:0,left:0}},_cacheMargins:function(){this.margins={left:parseInt(this.element.css("marginLeft"),10)||0,top:parseInt(this.element.css("marginTop"),10)||0,right:parseInt(this.element.css("marginRight"),10)||0,bottom:parseInt(this.element.css("marginBottom"),10)||0}},_cacheHelperProportions:function(){this.helperProportions={width:this.helper.outerWidth(),height:this.helper.outerHeight()}},_setContainment:function(){var t,i,s,n=this.options;if("parent"===n.containment&&(n.containment=this.helper[0].parentNode),("document"===n.containment||"window"===n.containment)&&(this.containment=["document"===n.containment?0:e(window).scrollLeft()-this.offset.relative.left-this.offset.parent.left,"document"===n.containment?0:e(window).scrollTop()-this.offset.relative.top-this.offset.parent.top,("document"===n.containment?0:e(window).scrollLeft())+e("document"===n.containment?document:window).width()-this.helperProportions.width-this.margins.left,("document"===n.containment?0:e(window).scrollTop())+(e("document"===n.containment?document:window).height()||document.body.parentNode.scrollHeight)-this.helperProportions.height-this.margins.top]),/^(document|window|parent)$/.test(n.containment)||n.containment.constructor===Array)n.containment.constructor===Array&&(this.containment=n.containment);else{if(i=e(n.containment),s=i[0],!s)return;t="hidden"!==e(s).css("overflow"),this.containment=[(parseInt(e(s).css("borderLeftWidth"),10)||0)+(parseInt(e(s).css("paddingLeft"),10)||0),(parseInt(e(s).css("borderTopWidth"),10)||0)+(parseInt(e(s).css("paddingTop"),10)||0),(t?Math.max(s.scrollWidth,s.offsetWidth):s.offsetWidth)-(parseInt(e(s).css("borderRightWidth"),10)||0)-(parseInt(e(s).css("paddingRight"),10)||0)-this.helperProportions.width-this.margins.left-this.margins.right,(t?Math.max(s.scrollHeight,s.offsetHeight):s.offsetHeight)-(parseInt(e(s).css("borderBottomWidth"),10)||0)-(parseInt(e(s).css("paddingBottom"),10)||0)-this.helperProportions.height-this.margins.top-this.margins.bottom],this.relative_container=i}},_convertPositionTo:function(t,i){i||(i=this.position);var s="absolute"===t?1:-1,n="absolute"!==this.cssPosition||this.scrollParent[0]!==document&&e.contains(this.scrollParent[0],this.offsetParent[0])?this.scrollParent:this.offsetParent,a=/(html|body)/i.test(n[0].tagName);return{top:i.top+this.offset.relative.top*s+this.offset.parent.top*s-("fixed"===this.cssPosition?-this.scrollParent.scrollTop():a?0:n.scrollTop())*s,left:i.left+this.offset.relative.left*s+this.offset.parent.left*s-("fixed"===this.cssPosition?-this.scrollParent.scrollLeft():a?0:n.scrollLeft())*s}},_generatePosition:function(t){var i,s,n,a,o=this.options,r="absolute"!==this.cssPosition||this.scrollParent[0]!==document&&e.contains(this.scrollParent[0],this.offsetParent[0])?this.scrollParent:this.offsetParent,h=/(html|body)/i.test(r[0].tagName),l=t.pageX,u=t.pageY;return this.originalPosition&&(this.containment&&(this.relative_container?(s=this.relative_container.offset(),i=[this.containment[0]+s.left,this.containment[1]+s.top,this.containment[2]+s.left,this.containment[3]+s.top]):i=this.containment,t.pageX-this.offset.click.left<i[0]&&(l=i[0]+this.offset.click.left),t.pageY-this.offset.click.top<i[1]&&(u=i[1]+this.offset.click.top),t.pageX-this.offset.click.left>i[2]&&(l=i[2]+this.offset.click.left),t.pageY-this.offset.click.top>i[3]&&(u=i[3]+this.offset.click.top)),o.grid&&(n=o.grid[1]?this.originalPageY+Math.round((u-this.originalPageY)/o.grid[1])*o.grid[1]:this.originalPageY,u=i?n-this.offset.click.top>=i[1]||n-this.offset.click.top>i[3]?n:n-this.offset.click.top>=i[1]?n-o.grid[1]:n+o.grid[1]:n,a=o.grid[0]?this.originalPageX+Math.round((l-this.originalPageX)/o.grid[0])*o.grid[0]:this.originalPageX,l=i?a-this.offset.click.left>=i[0]||a-this.offset.click.left>i[2]?a:a-this.offset.click.left>=i[0]?a-o.grid[0]:a+o.grid[0]:a)),{top:u-this.offset.click.top-this.offset.relative.top-this.offset.parent.top+("fixed"===this.cssPosition?-this.scrollParent.scrollTop():h?0:r.scrollTop()),left:l-this.offset.click.left-this.offset.relative.left-this.offset.parent.left+("fixed"===this.cssPosition?-this.scrollParent.scrollLeft():h?0:r.scrollLeft())}},_clear:function(){this.helper.removeClass("ui-draggable-dragging"),this.helper[0]===this.element[0]||this.cancelHelperRemoval||this.helper.remove(),this.helper=null,this.cancelHelperRemoval=!1},_trigger:function(t,i,s){return s=s||this._uiHash(),e.ui.plugin.call(this,t,[i,s]),"drag"===t&&(this.positionAbs=this._convertPositionTo("absolute")),e.Widget.prototype._trigger.call(this,t,i,s)},plugins:{},_uiHash:function(){return{helper:this.helper,position:this.position,originalPosition:this.originalPosition,offset:this.positionAbs}}}),e.ui.plugin.add("draggable","connectToSortable",{start:function(t,i){var s=e(this).data("ui-draggable"),n=s.options,a=e.extend({},i,{item:s.element});s.sortables=[],e(n.connectToSortable).each(function(){var i=e.data(this,"ui-sortable");i&&!i.options.disabled&&(s.sortables.push({instance:i,shouldRevert:i.options.revert}),i.refreshPositions(),i._trigger("activate",t,a))})},stop:function(t,i){var s=e(this).data("ui-draggable"),n=e.extend({},i,{item:s.element});e.each(s.sortables,function(){this.instance.isOver?(this.instance.isOver=0,s.cancelHelperRemoval=!0,this.instance.cancelHelperRemoval=!1,this.shouldRevert&&(this.instance.options.revert=this.shouldRevert),this.instance._mouseStop(t),this.instance.options.helper=this.instance.options._helper,"original"===s.options.helper&&this.instance.currentItem.css({top:"auto",left:"auto"})):(this.instance.cancelHelperRemoval=!1,this.instance._trigger("deactivate",t,n))})},drag:function(t,i){var s=e(this).data("ui-draggable"),n=this;e.each(s.sortables,function(){var a=!1,o=this;this.instance.positionAbs=s.positionAbs,this.instance.helperProportions=s.helperProportions,this.instance.offset.click=s.offset.click,this.instance._intersectsWith(this.instance.containerCache)&&(a=!0,e.each(s.sortables,function(){return this.instance.positionAbs=s.positionAbs,this.instance.helperProportions=s.helperProportions,this.instance.offset.click=s.offset.click,this!==o&&this.instance._intersectsWith(this.instance.containerCache)&&e.contains(o.instance.element[0],this.instance.element[0])&&(a=!1),a})),a?(this.instance.isOver||(this.instance.isOver=1,this.instance.currentItem=e(n).clone().removeAttr("id").appendTo(this.instance.element).data("ui-sortable-item",!0),this.instance.options._helper=this.instance.options.helper,this.instance.options.helper=function(){return i.helper[0]},t.target=this.instance.currentItem[0],this.instance._mouseCapture(t,!0),this.instance._mouseStart(t,!0,!0),this.instance.offset.click.top=s.offset.click.top,this.instance.offset.click.left=s.offset.click.left,this.instance.offset.parent.left-=s.offset.parent.left-this.instance.offset.parent.left,this.instance.offset.parent.top-=s.offset.parent.top-this.instance.offset.parent.top,s._trigger("toSortable",t),s.dropped=this.instance.element,s.currentItem=s.element,this.instance.fromOutside=s),this.instance.currentItem&&this.instance._mouseDrag(t)):this.instance.isOver&&(this.instance.isOver=0,this.instance.cancelHelperRemoval=!0,this.instance.options.revert=!1,this.instance._trigger("out",t,this.instance._uiHash(this.instance)),this.instance._mouseStop(t,!0),this.instance.options.helper=this.instance.options._helper,this.instance.currentItem.remove(),this.instance.placeholder&&this.instance.placeholder.remove(),s._trigger("fromSortable",t),s.dropped=!1)})}}),e.ui.plugin.add("draggable","cursor",{start:function(){var t=e("body"),i=e(this).data("ui-draggable").options;t.css("cursor")&&(i._cursor=t.css("cursor")),t.css("cursor",i.cursor)},stop:function(){var t=e(this).data("ui-draggable").options;t._cursor&&e("body").css("cursor",t._cursor)}}),e.ui.plugin.add("draggable","opacity",{start:function(t,i){var s=e(i.helper),n=e(this).data("ui-draggable").options;s.css("opacity")&&(n._opacity=s.css("opacity")),s.css("opacity",n.opacity)},stop:function(t,i){var s=e(this).data("ui-draggable").options;s._opacity&&e(i.helper).css("opacity",s._opacity)}}),e.ui.plugin.add("draggable","scroll",{start:function(){var t=e(this).data("ui-draggable");t.scrollParent[0]!==document&&"HTML"!==t.scrollParent[0].tagName&&(t.overflowOffset=t.scrollParent.offset())},drag:function(t){var i=e(this).data("ui-draggable"),s=i.options,n=!1;i.scrollParent[0]!==document&&"HTML"!==i.scrollParent[0].tagName?(s.axis&&"x"===s.axis||(i.overflowOffset.top+i.scrollParent[0].offsetHeight-t.pageY<s.scrollSensitivity?i.scrollParent[0].scrollTop=n=i.scrollParent[0].scrollTop+s.scrollSpeed:t.pageY-i.overflowOffset.top<s.scrollSensitivity&&(i.scrollParent[0].scrollTop=n=i.scrollParent[0].scrollTop-s.scrollSpeed)),s.axis&&"y"===s.axis||(i.overflowOffset.left+i.scrollParent[0].offsetWidth-t.pageX<s.scrollSensitivity?i.scrollParent[0].scrollLeft=n=i.scrollParent[0].scrollLeft+s.scrollSpeed:t.pageX-i.overflowOffset.left<s.scrollSensitivity&&(i.scrollParent[0].scrollLeft=n=i.scrollParent[0].scrollLeft-s.scrollSpeed))):(s.axis&&"x"===s.axis||(t.pageY-e(document).scrollTop()<s.scrollSensitivity?n=e(document).scrollTop(e(document).scrollTop()-s.scrollSpeed):e(window).height()-(t.pageY-e(document).scrollTop())<s.scrollSensitivity&&(n=e(document).scrollTop(e(document).scrollTop()+s.scrollSpeed))),s.axis&&"y"===s.axis||(t.pageX-e(document).scrollLeft()<s.scrollSensitivity?n=e(document).scrollLeft(e(document).scrollLeft()-s.scrollSpeed):e(window).width()-(t.pageX-e(document).scrollLeft())<s.scrollSensitivity&&(n=e(document).scrollLeft(e(document).scrollLeft()+s.scrollSpeed)))),n!==!1&&e.ui.ddmanager&&!s.dropBehaviour&&e.ui.ddmanager.prepareOffsets(i,t)}}),e.ui.plugin.add("draggable","snap",{start:function(){var t=e(this).data("ui-draggable"),i=t.options;t.snapElements=[],e(i.snap.constructor!==String?i.snap.items||":data(ui-draggable)":i.snap).each(function(){var i=e(this),s=i.offset();this!==t.element[0]&&t.snapElements.push({item:this,width:i.outerWidth(),height:i.outerHeight(),top:s.top,left:s.left})})},drag:function(t,i){var s,n,a,o,r,h,l,u,c,d,p=e(this).data("ui-draggable"),f=p.options,m=f.snapTolerance,g=i.offset.left,v=g+p.helperProportions.width,y=i.offset.top,b=y+p.helperProportions.height;for(c=p.snapElements.length-1;c>=0;c--)r=p.snapElements[c].left,h=r+p.snapElements[c].width,l=p.snapElements[c].top,u=l+p.snapElements[c].height,g>r-m&&h+m>g&&y>l-m&&u+m>y||g>r-m&&h+m>g&&b>l-m&&u+m>b||v>r-m&&h+m>v&&y>l-m&&u+m>y||v>r-m&&h+m>v&&b>l-m&&u+m>b?("inner"!==f.snapMode&&(s=m>=Math.abs(l-b),n=m>=Math.abs(u-y),a=m>=Math.abs(r-v),o=m>=Math.abs(h-g),s&&(i.position.top=p._convertPositionTo("relative",{top:l-p.helperProportions.height,left:0}).top-p.margins.top),n&&(i.position.top=p._convertPositionTo("relative",{top:u,left:0}).top-p.margins.top),a&&(i.position.left=p._convertPositionTo("relative",{top:0,left:r-p.helperProportions.width}).left-p.margins.left),o&&(i.position.left=p._convertPositionTo("relative",{top:0,left:h}).left-p.margins.left)),d=s||n||a||o,"outer"!==f.snapMode&&(s=m>=Math.abs(l-y),n=m>=Math.abs(u-b),a=m>=Math.abs(r-g),o=m>=Math.abs(h-v),s&&(i.position.top=p._convertPositionTo("relative",{top:l,left:0}).top-p.margins.top),n&&(i.position.top=p._convertPositionTo("relative",{top:u-p.helperProportions.height,left:0}).top-p.margins.top),a&&(i.position.left=p._convertPositionTo("relative",{top:0,left:r}).left-p.margins.left),o&&(i.position.left=p._convertPositionTo("relative",{top:0,left:h-p.helperProportions.width}).left-p.margins.left)),!p.snapElements[c].snapping&&(s||n||a||o||d)&&p.options.snap.snap&&p.options.snap.snap.call(p.element,t,e.extend(p._uiHash(),{snapItem:p.snapElements[c].item})),p.snapElements[c].snapping=s||n||a||o||d):(p.snapElements[c].snapping&&p.options.snap.release&&p.options.snap.release.call(p.element,t,e.extend(p._uiHash(),{snapItem:p.snapElements[c].item})),p.snapElements[c].snapping=!1)}}),e.ui.plugin.add("draggable","stack",{start:function(){var t,i=this.data("ui-draggable").options,s=e.makeArray(e(i.stack)).sort(function(t,i){return(parseInt(e(t).css("zIndex"),10)||0)-(parseInt(e(i).css("zIndex"),10)||0)});s.length&&(t=parseInt(e(s[0]).css("zIndex"),10)||0,e(s).each(function(i){e(this).css("zIndex",t+i)}),this.css("zIndex",t+s.length))}}),e.ui.plugin.add("draggable","zIndex",{start:function(t,i){var s=e(i.helper),n=e(this).data("ui-draggable").options;s.css("zIndex")&&(n._zIndex=s.css("zIndex")),s.css("zIndex",n.zIndex)},stop:function(t,i){var s=e(this).data("ui-draggable").options;s._zIndex&&e(i.helper).css("zIndex",s._zIndex)}})})(jQuery);(function(e){function t(e,t,i){return e>t&&t+i>e}e.widget("ui.droppable",{version:"1.10.2",widgetEventPrefix:"drop",options:{accept:"*",activeClass:!1,addClasses:!0,greedy:!1,hoverClass:!1,scope:"default",tolerance:"intersect",activate:null,deactivate:null,drop:null,out:null,over:null},_create:function(){var t=this.options,i=t.accept;this.isover=!1,this.isout=!0,this.accept=e.isFunction(i)?i:function(e){return e.is(i)},this.proportions={width:this.element[0].offsetWidth,height:this.element[0].offsetHeight},e.ui.ddmanager.droppables[t.scope]=e.ui.ddmanager.droppables[t.scope]||[],e.ui.ddmanager.droppables[t.scope].push(this),t.addClasses&&this.element.addClass("ui-droppable")},_destroy:function(){for(var t=0,i=e.ui.ddmanager.droppables[this.options.scope];i.length>t;t++)i[t]===this&&i.splice(t,1);this.element.removeClass("ui-droppable ui-droppable-disabled")},_setOption:function(t,i){"accept"===t&&(this.accept=e.isFunction(i)?i:function(e){return e.is(i)}),e.Widget.prototype._setOption.apply(this,arguments)},_activate:function(t){var i=e.ui.ddmanager.current;this.options.activeClass&&this.element.addClass(this.options.activeClass),i&&this._trigger("activate",t,this.ui(i))},_deactivate:function(t){var i=e.ui.ddmanager.current;this.options.activeClass&&this.element.removeClass(this.options.activeClass),i&&this._trigger("deactivate",t,this.ui(i))},_over:function(t){var i=e.ui.ddmanager.current;i&&(i.currentItem||i.element)[0]!==this.element[0]&&this.accept.call(this.element[0],i.currentItem||i.element)&&(this.options.hoverClass&&this.element.addClass(this.options.hoverClass),this._trigger("over",t,this.ui(i)))},_out:function(t){var i=e.ui.ddmanager.current;i&&(i.currentItem||i.element)[0]!==this.element[0]&&this.accept.call(this.element[0],i.currentItem||i.element)&&(this.options.hoverClass&&this.element.removeClass(this.options.hoverClass),this._trigger("out",t,this.ui(i)))},_drop:function(t,i){var s=i||e.ui.ddmanager.current,n=!1;return s&&(s.currentItem||s.element)[0]!==this.element[0]?(this.element.find(":data(ui-droppable)").not(".ui-draggable-dragging").each(function(){var t=e.data(this,"ui-droppable");return t.options.greedy&&!t.options.disabled&&t.options.scope===s.options.scope&&t.accept.call(t.element[0],s.currentItem||s.element)&&e.ui.intersect(s,e.extend(t,{offset:t.element.offset()}),t.options.tolerance)?(n=!0,!1):undefined}),n?!1:this.accept.call(this.element[0],s.currentItem||s.element)?(this.options.activeClass&&this.element.removeClass(this.options.activeClass),this.options.hoverClass&&this.element.removeClass(this.options.hoverClass),this._trigger("drop",t,this.ui(s)),this.element):!1):!1},ui:function(e){return{draggable:e.currentItem||e.element,helper:e.helper,position:e.position,offset:e.positionAbs}}}),e.ui.intersect=function(e,i,s){if(!i.offset)return!1;var n,a,o=(e.positionAbs||e.position.absolute).left,r=o+e.helperProportions.width,h=(e.positionAbs||e.position.absolute).top,l=h+e.helperProportions.height,u=i.offset.left,c=u+i.proportions.width,d=i.offset.top,p=d+i.proportions.height;switch(s){case"fit":return o>=u&&c>=r&&h>=d&&p>=l;case"intersect":return o+e.helperProportions.width/2>u&&c>r-e.helperProportions.width/2&&h+e.helperProportions.height/2>d&&p>l-e.helperProportions.height/2;case"pointer":return n=(e.positionAbs||e.position.absolute).left+(e.clickOffset||e.offset.click).left,a=(e.positionAbs||e.position.absolute).top+(e.clickOffset||e.offset.click).top,t(a,d,i.proportions.height)&&t(n,u,i.proportions.width);case"touch":return(h>=d&&p>=h||l>=d&&p>=l||d>h&&l>p)&&(o>=u&&c>=o||r>=u&&c>=r||u>o&&r>c);default:return!1}},e.ui.ddmanager={current:null,droppables:{"default":[]},prepareOffsets:function(t,i){var s,n,a=e.ui.ddmanager.droppables[t.options.scope]||[],o=i?i.type:null,r=(t.currentItem||t.element).find(":data(ui-droppable)").addBack();e:for(s=0;a.length>s;s++)if(!(a[s].options.disabled||t&&!a[s].accept.call(a[s].element[0],t.currentItem||t.element))){for(n=0;r.length>n;n++)if(r[n]===a[s].element[0]){a[s].proportions.height=0;continue e}a[s].visible="none"!==a[s].element.css("display"),a[s].visible&&("mousedown"===o&&a[s]._activate.call(a[s],i),a[s].offset=a[s].element.offset(),a[s].proportions={width:a[s].element[0].offsetWidth,height:a[s].element[0].offsetHeight})}},drop:function(t,i){var s=!1;return e.each((e.ui.ddmanager.droppables[t.options.scope]||[]).slice(),function(){this.options&&(!this.options.disabled&&this.visible&&e.ui.intersect(t,this,this.options.tolerance)&&(s=this._drop.call(this,i)||s),!this.options.disabled&&this.visible&&this.accept.call(this.element[0],t.currentItem||t.element)&&(this.isout=!0,this.isover=!1,this._deactivate.call(this,i)))}),s},dragStart:function(t,i){t.element.parentsUntil("body").bind("scroll.droppable",function(){t.options.refreshPositions||e.ui.ddmanager.prepareOffsets(t,i)})},drag:function(t,i){t.options.refreshPositions&&e.ui.ddmanager.prepareOffsets(t,i),e.each(e.ui.ddmanager.droppables[t.options.scope]||[],function(){if(!this.options.disabled&&!this.greedyChild&&this.visible){var s,n,a,o=e.ui.intersect(t,this,this.options.tolerance),r=!o&&this.isover?"isout":o&&!this.isover?"isover":null;r&&(this.options.greedy&&(n=this.options.scope,a=this.element.parents(":data(ui-droppable)").filter(function(){return e.data(this,"ui-droppable").options.scope===n}),a.length&&(s=e.data(a[0],"ui-droppable"),s.greedyChild="isover"===r)),s&&"isover"===r&&(s.isover=!1,s.isout=!0,s._out.call(s,i)),this[r]=!0,this["isout"===r?"isover":"isout"]=!1,this["isover"===r?"_over":"_out"].call(this,i),s&&"isout"===r&&(s.isout=!1,s.isover=!0,s._over.call(s,i)))}})},dragStop:function(t,i){t.element.parentsUntil("body").unbind("scroll.droppable"),t.options.refreshPositions||e.ui.ddmanager.prepareOffsets(t,i)}}})(jQuery);(function(e){function t(e){return parseInt(e,10)||0}function i(e){return!isNaN(parseInt(e,10))}e.widget("ui.resizable",e.ui.mouse,{version:"1.10.2",widgetEventPrefix:"resize",options:{alsoResize:!1,animate:!1,animateDuration:"slow",animateEasing:"swing",aspectRatio:!1,autoHide:!1,containment:!1,ghost:!1,grid:!1,handles:"e,s,se",helper:!1,maxHeight:null,maxWidth:null,minHeight:10,minWidth:10,zIndex:90,resize:null,start:null,stop:null},_create:function(){var t,i,s,n,a,o=this,r=this.options;if(this.element.addClass("ui-resizable"),e.extend(this,{_aspectRatio:!!r.aspectRatio,aspectRatio:r.aspectRatio,originalElement:this.element,_proportionallyResizeElements:[],_helper:r.helper||r.ghost||r.animate?r.helper||"ui-resizable-helper":null}),this.element[0].nodeName.match(/canvas|textarea|input|select|button|img/i)&&(this.element.wrap(e("<div class='ui-wrapper' style='overflow: hidden;'></div>").css({position:this.element.css("position"),width:this.element.outerWidth(),height:this.element.outerHeight(),top:this.element.css("top"),left:this.element.css("left")})),this.element=this.element.parent().data("ui-resizable",this.element.data("ui-resizable")),this.elementIsWrapper=!0,this.element.css({marginLeft:this.originalElement.css("marginLeft"),marginTop:this.originalElement.css("marginTop"),marginRight:this.originalElement.css("marginRight"),marginBottom:this.originalElement.css("marginBottom")}),this.originalElement.css({marginLeft:0,marginTop:0,marginRight:0,marginBottom:0}),this.originalResizeStyle=this.originalElement.css("resize"),this.originalElement.css("resize","none"),this._proportionallyResizeElements.push(this.originalElement.css({position:"static",zoom:1,display:"block"})),this.originalElement.css({margin:this.originalElement.css("margin")}),this._proportionallyResize()),this.handles=r.handles||(e(".ui-resizable-handle",this.element).length?{n:".ui-resizable-n",e:".ui-resizable-e",s:".ui-resizable-s",w:".ui-resizable-w",se:".ui-resizable-se",sw:".ui-resizable-sw",ne:".ui-resizable-ne",nw:".ui-resizable-nw"}:"e,s,se"),this.handles.constructor===String)for("all"===this.handles&&(this.handles="n,e,s,w,se,sw,ne,nw"),t=this.handles.split(","),this.handles={},i=0;t.length>i;i++)s=e.trim(t[i]),a="ui-resizable-"+s,n=e("<div class='ui-resizable-handle "+a+"'></div>"),n.css({zIndex:r.zIndex}),"se"===s&&n.addClass("ui-icon ui-icon-gripsmall-diagonal-se"),this.handles[s]=".ui-resizable-"+s,this.element.append(n);this._renderAxis=function(t){var i,s,n,a;t=t||this.element;for(i in this.handles)this.handles[i].constructor===String&&(this.handles[i]=e(this.handles[i],this.element).show()),this.elementIsWrapper&&this.originalElement[0].nodeName.match(/textarea|input|select|button/i)&&(s=e(this.handles[i],this.element),a=/sw|ne|nw|se|n|s/.test(i)?s.outerHeight():s.outerWidth(),n=["padding",/ne|nw|n/.test(i)?"Top":/se|sw|s/.test(i)?"Bottom":/^e$/.test(i)?"Right":"Left"].join(""),t.css(n,a),this._proportionallyResize()),e(this.handles[i]).length},this._renderAxis(this.element),this._handles=e(".ui-resizable-handle",this.element).disableSelection(),this._handles.mouseover(function(){o.resizing||(this.className&&(n=this.className.match(/ui-resizable-(se|sw|ne|nw|n|e|s|w)/i)),o.axis=n&&n[1]?n[1]:"se")}),r.autoHide&&(this._handles.hide(),e(this.element).addClass("ui-resizable-autohide").mouseenter(function(){r.disabled||(e(this).removeClass("ui-resizable-autohide"),o._handles.show())}).mouseleave(function(){r.disabled||o.resizing||(e(this).addClass("ui-resizable-autohide"),o._handles.hide())})),this._mouseInit()},_destroy:function(){this._mouseDestroy();var t,i=function(t){e(t).removeClass("ui-resizable ui-resizable-disabled ui-resizable-resizing").removeData("resizable").removeData("ui-resizable").unbind(".resizable").find(".ui-resizable-handle").remove()};return this.elementIsWrapper&&(i(this.element),t=this.element,this.originalElement.css({position:t.css("position"),width:t.outerWidth(),height:t.outerHeight(),top:t.css("top"),left:t.css("left")}).insertAfter(t),t.remove()),this.originalElement.css("resize",this.originalResizeStyle),i(this.originalElement),this},_mouseCapture:function(t){var i,s,n=!1;for(i in this.handles)s=e(this.handles[i])[0],(s===t.target||e.contains(s,t.target))&&(n=!0);return!this.options.disabled&&n},_mouseStart:function(i){var s,n,a,o=this.options,r=this.element.position(),h=this.element;return this.resizing=!0,/absolute/.test(h.css("position"))?h.css({position:"absolute",top:h.css("top"),left:h.css("left")}):h.is(".ui-draggable")&&h.css({position:"absolute",top:r.top,left:r.left}),this._renderProxy(),s=t(this.helper.css("left")),n=t(this.helper.css("top")),o.containment&&(s+=e(o.containment).scrollLeft()||0,n+=e(o.containment).scrollTop()||0),this.offset=this.helper.offset(),this.position={left:s,top:n},this.size=this._helper?{width:h.outerWidth(),height:h.outerHeight()}:{width:h.width(),height:h.height()},this.originalSize=this._helper?{width:h.outerWidth(),height:h.outerHeight()}:{width:h.width(),height:h.height()},this.originalPosition={left:s,top:n},this.sizeDiff={width:h.outerWidth()-h.width(),height:h.outerHeight()-h.height()},this.originalMousePosition={left:i.pageX,top:i.pageY},this.aspectRatio="number"==typeof o.aspectRatio?o.aspectRatio:this.originalSize.width/this.originalSize.height||1,a=e(".ui-resizable-"+this.axis).css("cursor"),e("body").css("cursor","auto"===a?this.axis+"-resize":a),h.addClass("ui-resizable-resizing"),this._propagate("start",i),!0},_mouseDrag:function(t){var i,s=this.helper,n={},a=this.originalMousePosition,o=this.axis,r=this.position.top,h=this.position.left,l=this.size.width,u=this.size.height,c=t.pageX-a.left||0,d=t.pageY-a.top||0,p=this._change[o];return p?(i=p.apply(this,[t,c,d]),this._updateVirtualBoundaries(t.shiftKey),(this._aspectRatio||t.shiftKey)&&(i=this._updateRatio(i,t)),i=this._respectSize(i,t),this._updateCache(i),this._propagate("resize",t),this.position.top!==r&&(n.top=this.position.top+"px"),this.position.left!==h&&(n.left=this.position.left+"px"),this.size.width!==l&&(n.width=this.size.width+"px"),this.size.height!==u&&(n.height=this.size.height+"px"),s.css(n),!this._helper&&this._proportionallyResizeElements.length&&this._proportionallyResize(),e.isEmptyObject(n)||this._trigger("resize",t,this.ui()),!1):!1},_mouseStop:function(t){this.resizing=!1;var i,s,n,a,o,r,h,l=this.options,u=this;return this._helper&&(i=this._proportionallyResizeElements,s=i.length&&/textarea/i.test(i[0].nodeName),n=s&&e.ui.hasScroll(i[0],"left")?0:u.sizeDiff.height,a=s?0:u.sizeDiff.width,o={width:u.helper.width()-a,height:u.helper.height()-n},r=parseInt(u.element.css("left"),10)+(u.position.left-u.originalPosition.left)||null,h=parseInt(u.element.css("top"),10)+(u.position.top-u.originalPosition.top)||null,l.animate||this.element.css(e.extend(o,{top:h,left:r})),u.helper.height(u.size.height),u.helper.width(u.size.width),this._helper&&!l.animate&&this._proportionallyResize()),e("body").css("cursor","auto"),this.element.removeClass("ui-resizable-resizing"),this._propagate("stop",t),this._helper&&this.helper.remove(),!1},_updateVirtualBoundaries:function(e){var t,s,n,a,o,r=this.options;o={minWidth:i(r.minWidth)?r.minWidth:0,maxWidth:i(r.maxWidth)?r.maxWidth:1/0,minHeight:i(r.minHeight)?r.minHeight:0,maxHeight:i(r.maxHeight)?r.maxHeight:1/0},(this._aspectRatio||e)&&(t=o.minHeight*this.aspectRatio,n=o.minWidth/this.aspectRatio,s=o.maxHeight*this.aspectRatio,a=o.maxWidth/this.aspectRatio,t>o.minWidth&&(o.minWidth=t),n>o.minHeight&&(o.minHeight=n),o.maxWidth>s&&(o.maxWidth=s),o.maxHeight>a&&(o.maxHeight=a)),this._vBoundaries=o},_updateCache:function(e){this.offset=this.helper.offset(),i(e.left)&&(this.position.left=e.left),i(e.top)&&(this.position.top=e.top),i(e.height)&&(this.size.height=e.height),i(e.width)&&(this.size.width=e.width)},_updateRatio:function(e){var t=this.position,s=this.size,n=this.axis;return i(e.height)?e.width=e.height*this.aspectRatio:i(e.width)&&(e.height=e.width/this.aspectRatio),"sw"===n&&(e.left=t.left+(s.width-e.width),e.top=null),"nw"===n&&(e.top=t.top+(s.height-e.height),e.left=t.left+(s.width-e.width)),e},_respectSize:function(e){var t=this._vBoundaries,s=this.axis,n=i(e.width)&&t.maxWidth&&t.maxWidth<e.width,a=i(e.height)&&t.maxHeight&&t.maxHeight<e.height,o=i(e.width)&&t.minWidth&&t.minWidth>e.width,r=i(e.height)&&t.minHeight&&t.minHeight>e.height,h=this.originalPosition.left+this.originalSize.width,l=this.position.top+this.size.height,u=/sw|nw|w/.test(s),c=/nw|ne|n/.test(s);return o&&(e.width=t.minWidth),r&&(e.height=t.minHeight),n&&(e.width=t.maxWidth),a&&(e.height=t.maxHeight),o&&u&&(e.left=h-t.minWidth),n&&u&&(e.left=h-t.maxWidth),r&&c&&(e.top=l-t.minHeight),a&&c&&(e.top=l-t.maxHeight),e.width||e.height||e.left||!e.top?e.width||e.height||e.top||!e.left||(e.left=null):e.top=null,e},_proportionallyResize:function(){if(this._proportionallyResizeElements.length){var e,t,i,s,n,a=this.helper||this.element;for(e=0;this._proportionallyResizeElements.length>e;e++){if(n=this._proportionallyResizeElements[e],!this.borderDif)for(this.borderDif=[],i=[n.css("borderTopWidth"),n.css("borderRightWidth"),n.css("borderBottomWidth"),n.css("borderLeftWidth")],s=[n.css("paddingTop"),n.css("paddingRight"),n.css("paddingBottom"),n.css("paddingLeft")],t=0;i.length>t;t++)this.borderDif[t]=(parseInt(i[t],10)||0)+(parseInt(s[t],10)||0);n.css({height:a.height()-this.borderDif[0]-this.borderDif[2]||0,width:a.width()-this.borderDif[1]-this.borderDif[3]||0})}}},_renderProxy:function(){var t=this.element,i=this.options;this.elementOffset=t.offset(),this._helper?(this.helper=this.helper||e("<div style='overflow:hidden;'></div>"),this.helper.addClass(this._helper).css({width:this.element.outerWidth()-1,height:this.element.outerHeight()-1,position:"absolute",left:this.elementOffset.left+"px",top:this.elementOffset.top+"px",zIndex:++i.zIndex}),this.helper.appendTo("body").disableSelection()):this.helper=this.element},_change:{e:function(e,t){return{width:this.originalSize.width+t}},w:function(e,t){var i=this.originalSize,s=this.originalPosition;return{left:s.left+t,width:i.width-t}},n:function(e,t,i){var s=this.originalSize,n=this.originalPosition;return{top:n.top+i,height:s.height-i}},s:function(e,t,i){return{height:this.originalSize.height+i}},se:function(t,i,s){return e.extend(this._change.s.apply(this,arguments),this._change.e.apply(this,[t,i,s]))},sw:function(t,i,s){return e.extend(this._change.s.apply(this,arguments),this._change.w.apply(this,[t,i,s]))},ne:function(t,i,s){return e.extend(this._change.n.apply(this,arguments),this._change.e.apply(this,[t,i,s]))},nw:function(t,i,s){return e.extend(this._change.n.apply(this,arguments),this._change.w.apply(this,[t,i,s]))}},_propagate:function(t,i){e.ui.plugin.call(this,t,[i,this.ui()]),"resize"!==t&&this._trigger(t,i,this.ui())},plugins:{},ui:function(){return{originalElement:this.originalElement,element:this.element,helper:this.helper,position:this.position,size:this.size,originalSize:this.originalSize,originalPosition:this.originalPosition}}}),e.ui.plugin.add("resizable","animate",{stop:function(t){var i=e(this).data("ui-resizable"),s=i.options,n=i._proportionallyResizeElements,a=n.length&&/textarea/i.test(n[0].nodeName),o=a&&e.ui.hasScroll(n[0],"left")?0:i.sizeDiff.height,r=a?0:i.sizeDiff.width,h={width:i.size.width-r,height:i.size.height-o},l=parseInt(i.element.css("left"),10)+(i.position.left-i.originalPosition.left)||null,u=parseInt(i.element.css("top"),10)+(i.position.top-i.originalPosition.top)||null;i.element.animate(e.extend(h,u&&l?{top:u,left:l}:{}),{duration:s.animateDuration,easing:s.animateEasing,step:function(){var s={width:parseInt(i.element.css("width"),10),height:parseInt(i.element.css("height"),10),top:parseInt(i.element.css("top"),10),left:parseInt(i.element.css("left"),10)};n&&n.length&&e(n[0]).css({width:s.width,height:s.height}),i._updateCache(s),i._propagate("resize",t)}})}}),e.ui.plugin.add("resizable","containment",{start:function(){var i,s,n,a,o,r,h,l=e(this).data("ui-resizable"),u=l.options,c=l.element,d=u.containment,p=d instanceof e?d.get(0):/parent/.test(d)?c.parent().get(0):d;p&&(l.containerElement=e(p),/document/.test(d)||d===document?(l.containerOffset={left:0,top:0},l.containerPosition={left:0,top:0},l.parentData={element:e(document),left:0,top:0,width:e(document).width(),height:e(document).height()||document.body.parentNode.scrollHeight}):(i=e(p),s=[],e(["Top","Right","Left","Bottom"]).each(function(e,n){s[e]=t(i.css("padding"+n))}),l.containerOffset=i.offset(),l.containerPosition=i.position(),l.containerSize={height:i.innerHeight()-s[3],width:i.innerWidth()-s[1]},n=l.containerOffset,a=l.containerSize.height,o=l.containerSize.width,r=e.ui.hasScroll(p,"left")?p.scrollWidth:o,h=e.ui.hasScroll(p)?p.scrollHeight:a,l.parentData={element:p,left:n.left,top:n.top,width:r,height:h}))},resize:function(t){var i,s,n,a,o=e(this).data("ui-resizable"),r=o.options,h=o.containerOffset,l=o.position,u=o._aspectRatio||t.shiftKey,c={top:0,left:0},d=o.containerElement;d[0]!==document&&/static/.test(d.css("position"))&&(c=h),l.left<(o._helper?h.left:0)&&(o.size.width=o.size.width+(o._helper?o.position.left-h.left:o.position.left-c.left),u&&(o.size.height=o.size.width/o.aspectRatio),o.position.left=r.helper?h.left:0),l.top<(o._helper?h.top:0)&&(o.size.height=o.size.height+(o._helper?o.position.top-h.top:o.position.top),u&&(o.size.width=o.size.height*o.aspectRatio),o.position.top=o._helper?h.top:0),o.offset.left=o.parentData.left+o.position.left,o.offset.top=o.parentData.top+o.position.top,i=Math.abs((o._helper?o.offset.left-c.left:o.offset.left-c.left)+o.sizeDiff.width),s=Math.abs((o._helper?o.offset.top-c.top:o.offset.top-h.top)+o.sizeDiff.height),n=o.containerElement.get(0)===o.element.parent().get(0),a=/relative|absolute/.test(o.containerElement.css("position")),n&&a&&(i-=o.parentData.left),i+o.size.width>=o.parentData.width&&(o.size.width=o.parentData.width-i,u&&(o.size.height=o.size.width/o.aspectRatio)),s+o.size.height>=o.parentData.height&&(o.size.height=o.parentData.height-s,u&&(o.size.width=o.size.height*o.aspectRatio))},stop:function(){var t=e(this).data("ui-resizable"),i=t.options,s=t.containerOffset,n=t.containerPosition,a=t.containerElement,o=e(t.helper),r=o.offset(),h=o.outerWidth()-t.sizeDiff.width,l=o.outerHeight()-t.sizeDiff.height;t._helper&&!i.animate&&/relative/.test(a.css("position"))&&e(this).css({left:r.left-n.left-s.left,width:h,height:l}),t._helper&&!i.animate&&/static/.test(a.css("position"))&&e(this).css({left:r.left-n.left-s.left,width:h,height:l})}}),e.ui.plugin.add("resizable","alsoResize",{start:function(){var t=e(this).data("ui-resizable"),i=t.options,s=function(t){e(t).each(function(){var t=e(this);t.data("ui-resizable-alsoresize",{width:parseInt(t.width(),10),height:parseInt(t.height(),10),left:parseInt(t.css("left"),10),top:parseInt(t.css("top"),10)})})};"object"!=typeof i.alsoResize||i.alsoResize.parentNode?s(i.alsoResize):i.alsoResize.length?(i.alsoResize=i.alsoResize[0],s(i.alsoResize)):e.each(i.alsoResize,function(e){s(e)})},resize:function(t,i){var s=e(this).data("ui-resizable"),n=s.options,a=s.originalSize,o=s.originalPosition,r={height:s.size.height-a.height||0,width:s.size.width-a.width||0,top:s.position.top-o.top||0,left:s.position.left-o.left||0},h=function(t,s){e(t).each(function(){var t=e(this),n=e(this).data("ui-resizable-alsoresize"),a={},o=s&&s.length?s:t.parents(i.originalElement[0]).length?["width","height"]:["width","height","top","left"];e.each(o,function(e,t){var i=(n[t]||0)+(r[t]||0);i&&i>=0&&(a[t]=i||null)}),t.css(a)})};"object"!=typeof n.alsoResize||n.alsoResize.nodeType?h(n.alsoResize):e.each(n.alsoResize,function(e,t){h(e,t)})},stop:function(){e(this).removeData("resizable-alsoresize")}}),e.ui.plugin.add("resizable","ghost",{start:function(){var t=e(this).data("ui-resizable"),i=t.options,s=t.size;t.ghost=t.originalElement.clone(),t.ghost.css({opacity:.25,display:"block",position:"relative",height:s.height,width:s.width,margin:0,left:0,top:0}).addClass("ui-resizable-ghost").addClass("string"==typeof i.ghost?i.ghost:""),t.ghost.appendTo(t.helper)},resize:function(){var t=e(this).data("ui-resizable");t.ghost&&t.ghost.css({position:"relative",height:t.size.height,width:t.size.width})},stop:function(){var t=e(this).data("ui-resizable");t.ghost&&t.helper&&t.helper.get(0).removeChild(t.ghost.get(0))}}),e.ui.plugin.add("resizable","grid",{resize:function(){var t=e(this).data("ui-resizable"),i=t.options,s=t.size,n=t.originalSize,a=t.originalPosition,o=t.axis,r="number"==typeof i.grid?[i.grid,i.grid]:i.grid,h=r[0]||1,l=r[1]||1,u=Math.round((s.width-n.width)/h)*h,c=Math.round((s.height-n.height)/l)*l,d=n.width+u,p=n.height+c,f=i.maxWidth&&d>i.maxWidth,m=i.maxHeight&&p>i.maxHeight,g=i.minWidth&&i.minWidth>d,v=i.minHeight&&i.minHeight>p;i.grid=r,g&&(d+=h),v&&(p+=l),f&&(d-=h),m&&(p-=l),/^(se|s|e)$/.test(o)?(t.size.width=d,t.size.height=p):/^(ne)$/.test(o)?(t.size.width=d,t.size.height=p,t.position.top=a.top-c):/^(sw)$/.test(o)?(t.size.width=d,t.size.height=p,t.position.left=a.left-u):(t.size.width=d,t.size.height=p,t.position.top=a.top-c,t.position.left=a.left-u)}})})(jQuery);(function(e){e.widget("ui.selectable",e.ui.mouse,{version:"1.10.2",options:{appendTo:"body",autoRefresh:!0,distance:0,filter:"*",tolerance:"touch",selected:null,selecting:null,start:null,stop:null,unselected:null,unselecting:null},_create:function(){var t,i=this;this.element.addClass("ui-selectable"),this.dragged=!1,this.refresh=function(){t=e(i.options.filter,i.element[0]),t.addClass("ui-selectee"),t.each(function(){var t=e(this),i=t.offset();e.data(this,"selectable-item",{element:this,$element:t,left:i.left,top:i.top,right:i.left+t.outerWidth(),bottom:i.top+t.outerHeight(),startselected:!1,selected:t.hasClass("ui-selected"),selecting:t.hasClass("ui-selecting"),unselecting:t.hasClass("ui-unselecting")})})},this.refresh(),this.selectees=t.addClass("ui-selectee"),this._mouseInit(),this.helper=e("<div class='ui-selectable-helper'></div>")},_destroy:function(){this.selectees.removeClass("ui-selectee").removeData("selectable-item"),this.element.removeClass("ui-selectable ui-selectable-disabled"),this._mouseDestroy()},_mouseStart:function(t){var i=this,s=this.options;this.opos=[t.pageX,t.pageY],this.options.disabled||(this.selectees=e(s.filter,this.element[0]),this._trigger("start",t),e(s.appendTo).append(this.helper),this.helper.css({left:t.pageX,top:t.pageY,width:0,height:0}),s.autoRefresh&&this.refresh(),this.selectees.filter(".ui-selected").each(function(){var s=e.data(this,"selectable-item");s.startselected=!0,t.metaKey||t.ctrlKey||(s.$element.removeClass("ui-selected"),s.selected=!1,s.$element.addClass("ui-unselecting"),s.unselecting=!0,i._trigger("unselecting",t,{unselecting:s.element}))}),e(t.target).parents().addBack().each(function(){var s,n=e.data(this,"selectable-item");return n?(s=!t.metaKey&&!t.ctrlKey||!n.$element.hasClass("ui-selected"),n.$element.removeClass(s?"ui-unselecting":"ui-selected").addClass(s?"ui-selecting":"ui-unselecting"),n.unselecting=!s,n.selecting=s,n.selected=s,s?i._trigger("selecting",t,{selecting:n.element}):i._trigger("unselecting",t,{unselecting:n.element}),!1):undefined}))},_mouseDrag:function(t){if(this.dragged=!0,!this.options.disabled){var i,s=this,n=this.options,a=this.opos[0],o=this.opos[1],r=t.pageX,h=t.pageY;return a>r&&(i=r,r=a,a=i),o>h&&(i=h,h=o,o=i),this.helper.css({left:a,top:o,width:r-a,height:h-o}),this.selectees.each(function(){var i=e.data(this,"selectable-item"),l=!1;i&&i.element!==s.element[0]&&("touch"===n.tolerance?l=!(i.left>r||a>i.right||i.top>h||o>i.bottom):"fit"===n.tolerance&&(l=i.left>a&&r>i.right&&i.top>o&&h>i.bottom),l?(i.selected&&(i.$element.removeClass("ui-selected"),i.selected=!1),i.unselecting&&(i.$element.removeClass("ui-unselecting"),i.unselecting=!1),i.selecting||(i.$element.addClass("ui-selecting"),i.selecting=!0,s._trigger("selecting",t,{selecting:i.element}))):(i.selecting&&((t.metaKey||t.ctrlKey)&&i.startselected?(i.$element.removeClass("ui-selecting"),i.selecting=!1,i.$element.addClass("ui-selected"),i.selected=!0):(i.$element.removeClass("ui-selecting"),i.selecting=!1,i.startselected&&(i.$element.addClass("ui-unselecting"),i.unselecting=!0),s._trigger("unselecting",t,{unselecting:i.element}))),i.selected&&(t.metaKey||t.ctrlKey||i.startselected||(i.$element.removeClass("ui-selected"),i.selected=!1,i.$element.addClass("ui-unselecting"),i.unselecting=!0,s._trigger("unselecting",t,{unselecting:i.element})))))}),!1}},_mouseStop:function(t){var i=this;return this.dragged=!1,e(".ui-unselecting",this.element[0]).each(function(){var s=e.data(this,"selectable-item");s.$element.removeClass("ui-unselecting"),s.unselecting=!1,s.startselected=!1,i._trigger("unselected",t,{unselected:s.element})}),e(".ui-selecting",this.element[0]).each(function(){var s=e.data(this,"selectable-item");s.$element.removeClass("ui-selecting").addClass("ui-selected"),s.selecting=!1,s.selected=!0,s.startselected=!0,i._trigger("selected",t,{selected:s.element})}),this._trigger("stop",t),this.helper.remove(),!1}})})(jQuery);(function(t){function e(t,e,i){return t>e&&e+i>t}function i(t){return/left|right/.test(t.css("float"))||/inline|table-cell/.test(t.css("display"))}t.widget("ui.sortable",t.ui.mouse,{version:"1.10.2",widgetEventPrefix:"sort",ready:!1,options:{appendTo:"parent",axis:!1,connectWith:!1,containment:!1,cursor:"auto",cursorAt:!1,dropOnEmpty:!0,forcePlaceholderSize:!1,forceHelperSize:!1,grid:!1,handle:!1,helper:"original",items:"> *",opacity:!1,placeholder:!1,revert:!1,scroll:!0,scrollSensitivity:20,scrollSpeed:20,scope:"default",tolerance:"intersect",zIndex:1e3,activate:null,beforeStop:null,change:null,deactivate:null,out:null,over:null,receive:null,remove:null,sort:null,start:null,stop:null,update:null},_create:function(){var t=this.options;this.containerCache={},this.element.addClass("ui-sortable"),this.refresh(),this.floating=this.items.length?"x"===t.axis||i(this.items[0].item):!1,this.offset=this.element.offset(),this._mouseInit(),this.ready=!0},_destroy:function(){this.element.removeClass("ui-sortable ui-sortable-disabled"),this._mouseDestroy();for(var t=this.items.length-1;t>=0;t--)this.items[t].item.removeData(this.widgetName+"-item");return this},_setOption:function(e,i){"disabled"===e?(this.options[e]=i,this.widget().toggleClass("ui-sortable-disabled",!!i)):t.Widget.prototype._setOption.apply(this,arguments)},_mouseCapture:function(e,i){var s=null,n=!1,a=this;return this.reverting?!1:this.options.disabled||"static"===this.options.type?!1:(this._refreshItems(e),t(e.target).parents().each(function(){return t.data(this,a.widgetName+"-item")===a?(s=t(this),!1):undefined}),t.data(e.target,a.widgetName+"-item")===a&&(s=t(e.target)),s?!this.options.handle||i||(t(this.options.handle,s).find("*").addBack().each(function(){this===e.target&&(n=!0)}),n)?(this.currentItem=s,this._removeCurrentsFromItems(),!0):!1:!1)},_mouseStart:function(e,i,s){var n,a,o=this.options;if(this.currentContainer=this,this.refreshPositions(),this.helper=this._createHelper(e),this._cacheHelperProportions(),this._cacheMargins(),this.scrollParent=this.helper.scrollParent(),this.offset=this.currentItem.offset(),this.offset={top:this.offset.top-this.margins.top,left:this.offset.left-this.margins.left},t.extend(this.offset,{click:{left:e.pageX-this.offset.left,top:e.pageY-this.offset.top},parent:this._getParentOffset(),relative:this._getRelativeOffset()}),this.helper.css("position","absolute"),this.cssPosition=this.helper.css("position"),this.originalPosition=this._generatePosition(e),this.originalPageX=e.pageX,this.originalPageY=e.pageY,o.cursorAt&&this._adjustOffsetFromHelper(o.cursorAt),this.domPosition={prev:this.currentItem.prev()[0],parent:this.currentItem.parent()[0]},this.helper[0]!==this.currentItem[0]&&this.currentItem.hide(),this._createPlaceholder(),o.containment&&this._setContainment(),o.cursor&&"auto"!==o.cursor&&(a=this.document.find("body"),this.storedCursor=a.css("cursor"),a.css("cursor",o.cursor),this.storedStylesheet=t("<style>*{ cursor: "+o.cursor+" !important; }</style>").appendTo(a)),o.opacity&&(this.helper.css("opacity")&&(this._storedOpacity=this.helper.css("opacity")),this.helper.css("opacity",o.opacity)),o.zIndex&&(this.helper.css("zIndex")&&(this._storedZIndex=this.helper.css("zIndex")),this.helper.css("zIndex",o.zIndex)),this.scrollParent[0]!==document&&"HTML"!==this.scrollParent[0].tagName&&(this.overflowOffset=this.scrollParent.offset()),this._trigger("start",e,this._uiHash()),this._preserveHelperProportions||this._cacheHelperProportions(),!s)for(n=this.containers.length-1;n>=0;n--)this.containers[n]._trigger("activate",e,this._uiHash(this));return t.ui.ddmanager&&(t.ui.ddmanager.current=this),t.ui.ddmanager&&!o.dropBehaviour&&t.ui.ddmanager.prepareOffsets(this,e),this.dragging=!0,this.helper.addClass("ui-sortable-helper"),this._mouseDrag(e),!0},_mouseDrag:function(e){var i,s,n,a,o=this.options,r=!1;for(this.position=this._generatePosition(e),this.positionAbs=this._convertPositionTo("absolute"),this.lastPositionAbs||(this.lastPositionAbs=this.positionAbs),this.options.scroll&&(this.scrollParent[0]!==document&&"HTML"!==this.scrollParent[0].tagName?(this.overflowOffset.top+this.scrollParent[0].offsetHeight-e.pageY<o.scrollSensitivity?this.scrollParent[0].scrollTop=r=this.scrollParent[0].scrollTop+o.scrollSpeed:e.pageY-this.overflowOffset.top<o.scrollSensitivity&&(this.scrollParent[0].scrollTop=r=this.scrollParent[0].scrollTop-o.scrollSpeed),this.overflowOffset.left+this.scrollParent[0].offsetWidth-e.pageX<o.scrollSensitivity?this.scrollParent[0].scrollLeft=r=this.scrollParent[0].scrollLeft+o.scrollSpeed:e.pageX-this.overflowOffset.left<o.scrollSensitivity&&(this.scrollParent[0].scrollLeft=r=this.scrollParent[0].scrollLeft-o.scrollSpeed)):(e.pageY-t(document).scrollTop()<o.scrollSensitivity?r=t(document).scrollTop(t(document).scrollTop()-o.scrollSpeed):t(window).height()-(e.pageY-t(document).scrollTop())<o.scrollSensitivity&&(r=t(document).scrollTop(t(document).scrollTop()+o.scrollSpeed)),e.pageX-t(document).scrollLeft()<o.scrollSensitivity?r=t(document).scrollLeft(t(document).scrollLeft()-o.scrollSpeed):t(window).width()-(e.pageX-t(document).scrollLeft())<o.scrollSensitivity&&(r=t(document).scrollLeft(t(document).scrollLeft()+o.scrollSpeed))),r!==!1&&t.ui.ddmanager&&!o.dropBehaviour&&t.ui.ddmanager.prepareOffsets(this,e)),this.positionAbs=this._convertPositionTo("absolute"),this.options.axis&&"y"===this.options.axis||(this.helper[0].style.left=this.position.left+"px"),this.options.axis&&"x"===this.options.axis||(this.helper[0].style.top=this.position.top+"px"),i=this.items.length-1;i>=0;i--)if(s=this.items[i],n=s.item[0],a=this._intersectsWithPointer(s),a&&s.instance===this.currentContainer&&n!==this.currentItem[0]&&this.placeholder[1===a?"next":"prev"]()[0]!==n&&!t.contains(this.placeholder[0],n)&&("semi-dynamic"===this.options.type?!t.contains(this.element[0],n):!0)){if(this.direction=1===a?"down":"up","pointer"!==this.options.tolerance&&!this._intersectsWithSides(s))break;this._rearrange(e,s),this._trigger("change",e,this._uiHash());break}return this._contactContainers(e),t.ui.ddmanager&&t.ui.ddmanager.drag(this,e),this._trigger("sort",e,this._uiHash()),this.lastPositionAbs=this.positionAbs,!1},_mouseStop:function(e,i){if(e){if(t.ui.ddmanager&&!this.options.dropBehaviour&&t.ui.ddmanager.drop(this,e),this.options.revert){var s=this,n=this.placeholder.offset(),a=this.options.axis,o={};a&&"x"!==a||(o.left=n.left-this.offset.parent.left-this.margins.left+(this.offsetParent[0]===document.body?0:this.offsetParent[0].scrollLeft)),a&&"y"!==a||(o.top=n.top-this.offset.parent.top-this.margins.top+(this.offsetParent[0]===document.body?0:this.offsetParent[0].scrollTop)),this.reverting=!0,t(this.helper).animate(o,parseInt(this.options.revert,10)||500,function(){s._clear(e)})}else this._clear(e,i);return!1}},cancel:function(){if(this.dragging){this._mouseUp({target:null}),"original"===this.options.helper?this.currentItem.css(this._storedCSS).removeClass("ui-sortable-helper"):this.currentItem.show();for(var e=this.containers.length-1;e>=0;e--)this.containers[e]._trigger("deactivate",null,this._uiHash(this)),this.containers[e].containerCache.over&&(this.containers[e]._trigger("out",null,this._uiHash(this)),this.containers[e].containerCache.over=0)}return this.placeholder&&(this.placeholder[0].parentNode&&this.placeholder[0].parentNode.removeChild(this.placeholder[0]),"original"!==this.options.helper&&this.helper&&this.helper[0].parentNode&&this.helper.remove(),t.extend(this,{helper:null,dragging:!1,reverting:!1,_noFinalSort:null}),this.domPosition.prev?t(this.domPosition.prev).after(this.currentItem):t(this.domPosition.parent).prepend(this.currentItem)),this},serialize:function(e){var i=this._getItemsAsjQuery(e&&e.connected),s=[];return e=e||{},t(i).each(function(){var i=(t(e.item||this).attr(e.attribute||"id")||"").match(e.expression||/(.+)[\-=_](.+)/);i&&s.push((e.key||i[1]+"[]")+"="+(e.key&&e.expression?i[1]:i[2]))}),!s.length&&e.key&&s.push(e.key+"="),s.join("&")},toArray:function(e){var i=this._getItemsAsjQuery(e&&e.connected),s=[];return e=e||{},i.each(function(){s.push(t(e.item||this).attr(e.attribute||"id")||"")}),s},_intersectsWith:function(t){var e=this.positionAbs.left,i=e+this.helperProportions.width,s=this.positionAbs.top,n=s+this.helperProportions.height,a=t.left,o=a+t.width,r=t.top,h=r+t.height,l=this.offset.click.top,c=this.offset.click.left,u=s+l>r&&h>s+l&&e+c>a&&o>e+c;return"pointer"===this.options.tolerance||this.options.forcePointerForContainers||"pointer"!==this.options.tolerance&&this.helperProportions[this.floating?"width":"height"]>t[this.floating?"width":"height"]?u:e+this.helperProportions.width/2>a&&o>i-this.helperProportions.width/2&&s+this.helperProportions.height/2>r&&h>n-this.helperProportions.height/2},_intersectsWithPointer:function(t){var i="x"===this.options.axis||e(this.positionAbs.top+this.offset.click.top,t.top,t.height),s="y"===this.options.axis||e(this.positionAbs.left+this.offset.click.left,t.left,t.width),n=i&&s,a=this._getDragVerticalDirection(),o=this._getDragHorizontalDirection();return n?this.floating?o&&"right"===o||"down"===a?2:1:a&&("down"===a?2:1):!1},_intersectsWithSides:function(t){var i=e(this.positionAbs.top+this.offset.click.top,t.top+t.height/2,t.height),s=e(this.positionAbs.left+this.offset.click.left,t.left+t.width/2,t.width),n=this._getDragVerticalDirection(),a=this._getDragHorizontalDirection();return this.floating&&a?"right"===a&&s||"left"===a&&!s:n&&("down"===n&&i||"up"===n&&!i)},_getDragVerticalDirection:function(){var t=this.positionAbs.top-this.lastPositionAbs.top;return 0!==t&&(t>0?"down":"up")},_getDragHorizontalDirection:function(){var t=this.positionAbs.left-this.lastPositionAbs.left;return 0!==t&&(t>0?"right":"left")},refresh:function(t){return this._refreshItems(t),this.refreshPositions(),this},_connectWith:function(){var t=this.options;return t.connectWith.constructor===String?[t.connectWith]:t.connectWith},_getItemsAsjQuery:function(e){var i,s,n,a,o=[],r=[],h=this._connectWith();if(h&&e)for(i=h.length-1;i>=0;i--)for(n=t(h[i]),s=n.length-1;s>=0;s--)a=t.data(n[s],this.widgetFullName),a&&a!==this&&!a.options.disabled&&r.push([t.isFunction(a.options.items)?a.options.items.call(a.element):t(a.options.items,a.element).not(".ui-sortable-helper").not(".ui-sortable-placeholder"),a]);for(r.push([t.isFunction(this.options.items)?this.options.items.call(this.element,null,{options:this.options,item:this.currentItem}):t(this.options.items,this.element).not(".ui-sortable-helper").not(".ui-sortable-placeholder"),this]),i=r.length-1;i>=0;i--)r[i][0].each(function(){o.push(this)});return t(o)},_removeCurrentsFromItems:function(){var e=this.currentItem.find(":data("+this.widgetName+"-item)");this.items=t.grep(this.items,function(t){for(var i=0;e.length>i;i++)if(e[i]===t.item[0])return!1;return!0})},_refreshItems:function(e){this.items=[],this.containers=[this];var i,s,n,a,o,r,h,l,c=this.items,u=[[t.isFunction(this.options.items)?this.options.items.call(this.element[0],e,{item:this.currentItem}):t(this.options.items,this.element),this]],d=this._connectWith();if(d&&this.ready)for(i=d.length-1;i>=0;i--)for(n=t(d[i]),s=n.length-1;s>=0;s--)a=t.data(n[s],this.widgetFullName),a&&a!==this&&!a.options.disabled&&(u.push([t.isFunction(a.options.items)?a.options.items.call(a.element[0],e,{item:this.currentItem}):t(a.options.items,a.element),a]),this.containers.push(a));for(i=u.length-1;i>=0;i--)for(o=u[i][1],r=u[i][0],s=0,l=r.length;l>s;s++)h=t(r[s]),h.data(this.widgetName+"-item",o),c.push({item:h,instance:o,width:0,height:0,left:0,top:0})},refreshPositions:function(e){this.offsetParent&&this.helper&&(this.offset.parent=this._getParentOffset());var i,s,n,a;for(i=this.items.length-1;i>=0;i--)s=this.items[i],s.instance!==this.currentContainer&&this.currentContainer&&s.item[0]!==this.currentItem[0]||(n=this.options.toleranceElement?t(this.options.toleranceElement,s.item):s.item,e||(s.width=n.outerWidth(),s.height=n.outerHeight()),a=n.offset(),s.left=a.left,s.top=a.top);if(this.options.custom&&this.options.custom.refreshContainers)this.options.custom.refreshContainers.call(this);else for(i=this.containers.length-1;i>=0;i--)a=this.containers[i].element.offset(),this.containers[i].containerCache.left=a.left,this.containers[i].containerCache.top=a.top,this.containers[i].containerCache.width=this.containers[i].element.outerWidth(),this.containers[i].containerCache.height=this.containers[i].element.outerHeight();return this},_createPlaceholder:function(e){e=e||this;var i,s=e.options;s.placeholder&&s.placeholder.constructor!==String||(i=s.placeholder,s.placeholder={element:function(){var s=e.currentItem[0].nodeName.toLowerCase(),n=t(e.document[0].createElement(s)).addClass(i||e.currentItem[0].className+" ui-sortable-placeholder").removeClass("ui-sortable-helper");return"tr"===s?n.append("<td colspan='99'>&#160;</td>"):"img"===s&&n.attr("src",e.currentItem.attr("src")),i||n.css("visibility","hidden"),n},update:function(t,n){(!i||s.forcePlaceholderSize)&&(n.height()||n.height(e.currentItem.innerHeight()-parseInt(e.currentItem.css("paddingTop")||0,10)-parseInt(e.currentItem.css("paddingBottom")||0,10)),n.width()||n.width(e.currentItem.innerWidth()-parseInt(e.currentItem.css("paddingLeft")||0,10)-parseInt(e.currentItem.css("paddingRight")||0,10)))}}),e.placeholder=t(s.placeholder.element.call(e.element,e.currentItem)),e.currentItem.after(e.placeholder),s.placeholder.update(e,e.placeholder)},_contactContainers:function(s){var n,a,o,r,h,l,c,u,d,p,f=null,m=null;for(n=this.containers.length-1;n>=0;n--)if(!t.contains(this.currentItem[0],this.containers[n].element[0]))if(this._intersectsWith(this.containers[n].containerCache)){if(f&&t.contains(this.containers[n].element[0],f.element[0]))continue;f=this.containers[n],m=n}else this.containers[n].containerCache.over&&(this.containers[n]._trigger("out",s,this._uiHash(this)),this.containers[n].containerCache.over=0);if(f)if(1===this.containers.length)this.containers[m].containerCache.over||(this.containers[m]._trigger("over",s,this._uiHash(this)),this.containers[m].containerCache.over=1);else{for(o=1e4,r=null,p=f.floating||i(this.currentItem),h=p?"left":"top",l=p?"width":"height",c=this.positionAbs[h]+this.offset.click[h],a=this.items.length-1;a>=0;a--)t.contains(this.containers[m].element[0],this.items[a].item[0])&&this.items[a].item[0]!==this.currentItem[0]&&(!p||e(this.positionAbs.top+this.offset.click.top,this.items[a].top,this.items[a].height))&&(u=this.items[a].item.offset()[h],d=!1,Math.abs(u-c)>Math.abs(u+this.items[a][l]-c)&&(d=!0,u+=this.items[a][l]),o>Math.abs(u-c)&&(o=Math.abs(u-c),r=this.items[a],this.direction=d?"up":"down"));if(!r&&!this.options.dropOnEmpty)return;if(this.currentContainer===this.containers[m])return;r?this._rearrange(s,r,null,!0):this._rearrange(s,null,this.containers[m].element,!0),this._trigger("change",s,this._uiHash()),this.containers[m]._trigger("change",s,this._uiHash(this)),this.currentContainer=this.containers[m],this.options.placeholder.update(this.currentContainer,this.placeholder),this.containers[m]._trigger("over",s,this._uiHash(this)),this.containers[m].containerCache.over=1}},_createHelper:function(e){var i=this.options,s=t.isFunction(i.helper)?t(i.helper.apply(this.element[0],[e,this.currentItem])):"clone"===i.helper?this.currentItem.clone():this.currentItem;return s.parents("body").length||t("parent"!==i.appendTo?i.appendTo:this.currentItem[0].parentNode)[0].appendChild(s[0]),s[0]===this.currentItem[0]&&(this._storedCSS={width:this.currentItem[0].style.width,height:this.currentItem[0].style.height,position:this.currentItem.css("position"),top:this.currentItem.css("top"),left:this.currentItem.css("left")}),(!s[0].style.width||i.forceHelperSize)&&s.width(this.currentItem.width()),(!s[0].style.height||i.forceHelperSize)&&s.height(this.currentItem.height()),s},_adjustOffsetFromHelper:function(e){"string"==typeof e&&(e=e.split(" ")),t.isArray(e)&&(e={left:+e[0],top:+e[1]||0}),"left"in e&&(this.offset.click.left=e.left+this.margins.left),"right"in e&&(this.offset.click.left=this.helperProportions.width-e.right+this.margins.left),"top"in e&&(this.offset.click.top=e.top+this.margins.top),"bottom"in e&&(this.offset.click.top=this.helperProportions.height-e.bottom+this.margins.top)},_getParentOffset:function(){this.offsetParent=this.helper.offsetParent();var e=this.offsetParent.offset();return"absolute"===this.cssPosition&&this.scrollParent[0]!==document&&t.contains(this.scrollParent[0],this.offsetParent[0])&&(e.left+=this.scrollParent.scrollLeft(),e.top+=this.scrollParent.scrollTop()),(this.offsetParent[0]===document.body||this.offsetParent[0].tagName&&"html"===this.offsetParent[0].tagName.toLowerCase()&&t.ui.ie)&&(e={top:0,left:0}),{top:e.top+(parseInt(this.offsetParent.css("borderTopWidth"),10)||0),left:e.left+(parseInt(this.offsetParent.css("borderLeftWidth"),10)||0)}},_getRelativeOffset:function(){if("relative"===this.cssPosition){var t=this.currentItem.position();return{top:t.top-(parseInt(this.helper.css("top"),10)||0)+this.scrollParent.scrollTop(),left:t.left-(parseInt(this.helper.css("left"),10)||0)+this.scrollParent.scrollLeft()}}return{top:0,left:0}},_cacheMargins:function(){this.margins={left:parseInt(this.currentItem.css("marginLeft"),10)||0,top:parseInt(this.currentItem.css("marginTop"),10)||0}},_cacheHelperProportions:function(){this.helperProportions={width:this.helper.outerWidth(),height:this.helper.outerHeight()}},_setContainment:function(){var e,i,s,n=this.options;"parent"===n.containment&&(n.containment=this.helper[0].parentNode),("document"===n.containment||"window"===n.containment)&&(this.containment=[0-this.offset.relative.left-this.offset.parent.left,0-this.offset.relative.top-this.offset.parent.top,t("document"===n.containment?document:window).width()-this.helperProportions.width-this.margins.left,(t("document"===n.containment?document:window).height()||document.body.parentNode.scrollHeight)-this.helperProportions.height-this.margins.top]),/^(document|window|parent)$/.test(n.containment)||(e=t(n.containment)[0],i=t(n.containment).offset(),s="hidden"!==t(e).css("overflow"),this.containment=[i.left+(parseInt(t(e).css("borderLeftWidth"),10)||0)+(parseInt(t(e).css("paddingLeft"),10)||0)-this.margins.left,i.top+(parseInt(t(e).css("borderTopWidth"),10)||0)+(parseInt(t(e).css("paddingTop"),10)||0)-this.margins.top,i.left+(s?Math.max(e.scrollWidth,e.offsetWidth):e.offsetWidth)-(parseInt(t(e).css("borderLeftWidth"),10)||0)-(parseInt(t(e).css("paddingRight"),10)||0)-this.helperProportions.width-this.margins.left,i.top+(s?Math.max(e.scrollHeight,e.offsetHeight):e.offsetHeight)-(parseInt(t(e).css("borderTopWidth"),10)||0)-(parseInt(t(e).css("paddingBottom"),10)||0)-this.helperProportions.height-this.margins.top])},_convertPositionTo:function(e,i){i||(i=this.position);var s="absolute"===e?1:-1,n="absolute"!==this.cssPosition||this.scrollParent[0]!==document&&t.contains(this.scrollParent[0],this.offsetParent[0])?this.scrollParent:this.offsetParent,a=/(html|body)/i.test(n[0].tagName);return{top:i.top+this.offset.relative.top*s+this.offset.parent.top*s-("fixed"===this.cssPosition?-this.scrollParent.scrollTop():a?0:n.scrollTop())*s,left:i.left+this.offset.relative.left*s+this.offset.parent.left*s-("fixed"===this.cssPosition?-this.scrollParent.scrollLeft():a?0:n.scrollLeft())*s}},_generatePosition:function(e){var i,s,n=this.options,a=e.pageX,o=e.pageY,r="absolute"!==this.cssPosition||this.scrollParent[0]!==document&&t.contains(this.scrollParent[0],this.offsetParent[0])?this.scrollParent:this.offsetParent,h=/(html|body)/i.test(r[0].tagName);return"relative"!==this.cssPosition||this.scrollParent[0]!==document&&this.scrollParent[0]!==this.offsetParent[0]||(this.offset.relative=this._getRelativeOffset()),this.originalPosition&&(this.containment&&(e.pageX-this.offset.click.left<this.containment[0]&&(a=this.containment[0]+this.offset.click.left),e.pageY-this.offset.click.top<this.containment[1]&&(o=this.containment[1]+this.offset.click.top),e.pageX-this.offset.click.left>this.containment[2]&&(a=this.containment[2]+this.offset.click.left),e.pageY-this.offset.click.top>this.containment[3]&&(o=this.containment[3]+this.offset.click.top)),n.grid&&(i=this.originalPageY+Math.round((o-this.originalPageY)/n.grid[1])*n.grid[1],o=this.containment?i-this.offset.click.top>=this.containment[1]&&i-this.offset.click.top<=this.containment[3]?i:i-this.offset.click.top>=this.containment[1]?i-n.grid[1]:i+n.grid[1]:i,s=this.originalPageX+Math.round((a-this.originalPageX)/n.grid[0])*n.grid[0],a=this.containment?s-this.offset.click.left>=this.containment[0]&&s-this.offset.click.left<=this.containment[2]?s:s-this.offset.click.left>=this.containment[0]?s-n.grid[0]:s+n.grid[0]:s)),{top:o-this.offset.click.top-this.offset.relative.top-this.offset.parent.top+("fixed"===this.cssPosition?-this.scrollParent.scrollTop():h?0:r.scrollTop()),left:a-this.offset.click.left-this.offset.relative.left-this.offset.parent.left+("fixed"===this.cssPosition?-this.scrollParent.scrollLeft():h?0:r.scrollLeft())}},_rearrange:function(t,e,i,s){i?i[0].appendChild(this.placeholder[0]):e.item[0].parentNode.insertBefore(this.placeholder[0],"down"===this.direction?e.item[0]:e.item[0].nextSibling),this.counter=this.counter?++this.counter:1;var n=this.counter;this._delay(function(){n===this.counter&&this.refreshPositions(!s)})},_clear:function(t,e){this.reverting=!1;var i,s=[];if(!this._noFinalSort&&this.currentItem.parent().length&&this.placeholder.before(this.currentItem),this._noFinalSort=null,this.helper[0]===this.currentItem[0]){for(i in this._storedCSS)("auto"===this._storedCSS[i]||"static"===this._storedCSS[i])&&(this._storedCSS[i]="");this.currentItem.css(this._storedCSS).removeClass("ui-sortable-helper")}else this.currentItem.show();for(this.fromOutside&&!e&&s.push(function(t){this._trigger("receive",t,this._uiHash(this.fromOutside))}),!this.fromOutside&&this.domPosition.prev===this.currentItem.prev().not(".ui-sortable-helper")[0]&&this.domPosition.parent===this.currentItem.parent()[0]||e||s.push(function(t){this._trigger("update",t,this._uiHash())}),this!==this.currentContainer&&(e||(s.push(function(t){this._trigger("remove",t,this._uiHash())}),s.push(function(t){return function(e){t._trigger("receive",e,this._uiHash(this))}}.call(this,this.currentContainer)),s.push(function(t){return function(e){t._trigger("update",e,this._uiHash(this))}}.call(this,this.currentContainer)))),i=this.containers.length-1;i>=0;i--)e||s.push(function(t){return function(e){t._trigger("deactivate",e,this._uiHash(this))}}.call(this,this.containers[i])),this.containers[i].containerCache.over&&(s.push(function(t){return function(e){t._trigger("out",e,this._uiHash(this))}}.call(this,this.containers[i])),this.containers[i].containerCache.over=0);if(this.storedCursor&&(this.document.find("body").css("cursor",this.storedCursor),this.storedStylesheet.remove()),this._storedOpacity&&this.helper.css("opacity",this._storedOpacity),this._storedZIndex&&this.helper.css("zIndex","auto"===this._storedZIndex?"":this._storedZIndex),this.dragging=!1,this.cancelHelperRemoval){if(!e){for(this._trigger("beforeStop",t,this._uiHash()),i=0;s.length>i;i++)s[i].call(this,t);this._trigger("stop",t,this._uiHash())}return this.fromOutside=!1,!1}if(e||this._trigger("beforeStop",t,this._uiHash()),this.placeholder[0].parentNode.removeChild(this.placeholder[0]),this.helper[0]!==this.currentItem[0]&&this.helper.remove(),this.helper=null,!e){for(i=0;s.length>i;i++)s[i].call(this,t);this._trigger("stop",t,this._uiHash())}return this.fromOutside=!1,!0},_trigger:function(){t.Widget.prototype._trigger.apply(this,arguments)===!1&&this.cancel()},_uiHash:function(e){var i=e||this;return{helper:i.helper,placeholder:i.placeholder||t([]),position:i.position,originalPosition:i.originalPosition,offset:i.positionAbs,item:i.currentItem,sender:e?e.element:null}}})})(jQuery);(function(t){var e=0,i={},s={};i.height=i.paddingTop=i.paddingBottom=i.borderTopWidth=i.borderBottomWidth="hide",s.height=s.paddingTop=s.paddingBottom=s.borderTopWidth=s.borderBottomWidth="show",t.widget("ui.accordion",{version:"1.10.2",options:{active:0,animate:{},collapsible:!1,event:"click",header:"> li > :first-child,> :not(li):even",heightStyle:"auto",icons:{activeHeader:"ui-icon-triangle-1-s",header:"ui-icon-triangle-1-e"},activate:null,beforeActivate:null},_create:function(){var e=this.options;this.prevShow=this.prevHide=t(),this.element.addClass("ui-accordion ui-widget ui-helper-reset").attr("role","tablist"),e.collapsible||e.active!==!1&&null!=e.active||(e.active=0),this._processPanels(),0>e.active&&(e.active+=this.headers.length),this._refresh()},_getCreateEventData:function(){return{header:this.active,panel:this.active.length?this.active.next():t(),content:this.active.length?this.active.next():t()}},_createIcons:function(){var e=this.options.icons;e&&(t("<span>").addClass("ui-accordion-header-icon ui-icon "+e.header).prependTo(this.headers),this.active.children(".ui-accordion-header-icon").removeClass(e.header).addClass(e.activeHeader),this.headers.addClass("ui-accordion-icons"))},_destroyIcons:function(){this.headers.removeClass("ui-accordion-icons").children(".ui-accordion-header-icon").remove()},_destroy:function(){var t;this.element.removeClass("ui-accordion ui-widget ui-helper-reset").removeAttr("role"),this.headers.removeClass("ui-accordion-header ui-accordion-header-active ui-helper-reset ui-state-default ui-corner-all ui-state-active ui-state-disabled ui-corner-top").removeAttr("role").removeAttr("aria-selected").removeAttr("aria-controls").removeAttr("tabIndex").each(function(){/^ui-accordion/.test(this.id)&&this.removeAttribute("id")}),this._destroyIcons(),t=this.headers.next().css("display","").removeAttr("role").removeAttr("aria-expanded").removeAttr("aria-hidden").removeAttr("aria-labelledby").removeClass("ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content ui-accordion-content-active ui-state-disabled").each(function(){/^ui-accordion/.test(this.id)&&this.removeAttribute("id")}),"content"!==this.options.heightStyle&&t.css("height","")},_setOption:function(t,e){return"active"===t?(this._activate(e),undefined):("event"===t&&(this.options.event&&this._off(this.headers,this.options.event),this._setupEvents(e)),this._super(t,e),"collapsible"!==t||e||this.options.active!==!1||this._activate(0),"icons"===t&&(this._destroyIcons(),e&&this._createIcons()),"disabled"===t&&this.headers.add(this.headers.next()).toggleClass("ui-state-disabled",!!e),undefined)},_keydown:function(e){if(!e.altKey&&!e.ctrlKey){var i=t.ui.keyCode,s=this.headers.length,n=this.headers.index(e.target),a=!1;switch(e.keyCode){case i.RIGHT:case i.DOWN:a=this.headers[(n+1)%s];break;case i.LEFT:case i.UP:a=this.headers[(n-1+s)%s];break;case i.SPACE:case i.ENTER:this._eventHandler(e);break;case i.HOME:a=this.headers[0];break;case i.END:a=this.headers[s-1]}a&&(t(e.target).attr("tabIndex",-1),t(a).attr("tabIndex",0),a.focus(),e.preventDefault())}},_panelKeyDown:function(e){e.keyCode===t.ui.keyCode.UP&&e.ctrlKey&&t(e.currentTarget).prev().focus()},refresh:function(){var e=this.options;this._processPanels(),(e.active===!1&&e.collapsible===!0||!this.headers.length)&&(e.active=!1,this.active=t()),e.active===!1?this._activate(0):this.active.length&&!t.contains(this.element[0],this.active[0])?this.headers.length===this.headers.find(".ui-state-disabled").length?(e.active=!1,this.active=t()):this._activate(Math.max(0,e.active-1)):e.active=this.headers.index(this.active),this._destroyIcons(),this._refresh()},_processPanels:function(){this.headers=this.element.find(this.options.header).addClass("ui-accordion-header ui-helper-reset ui-state-default ui-corner-all"),this.headers.next().addClass("ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom").filter(":not(.ui-accordion-content-active)").hide()},_refresh:function(){var i,s=this.options,n=s.heightStyle,a=this.element.parent(),o=this.accordionId="ui-accordion-"+(this.element.attr("id")||++e);this.active=this._findActive(s.active).addClass("ui-accordion-header-active ui-state-active ui-corner-top").removeClass("ui-corner-all"),this.active.next().addClass("ui-accordion-content-active").show(),this.headers.attr("role","tab").each(function(e){var i=t(this),s=i.attr("id"),n=i.next(),a=n.attr("id");s||(s=o+"-header-"+e,i.attr("id",s)),a||(a=o+"-panel-"+e,n.attr("id",a)),i.attr("aria-controls",a),n.attr("aria-labelledby",s)}).next().attr("role","tabpanel"),this.headers.not(this.active).attr({"aria-selected":"false",tabIndex:-1}).next().attr({"aria-expanded":"false","aria-hidden":"true"}).hide(),this.active.length?this.active.attr({"aria-selected":"true",tabIndex:0}).next().attr({"aria-expanded":"true","aria-hidden":"false"}):this.headers.eq(0).attr("tabIndex",0),this._createIcons(),this._setupEvents(s.event),"fill"===n?(i=a.height(),this.element.siblings(":visible").each(function(){var e=t(this),s=e.css("position");"absolute"!==s&&"fixed"!==s&&(i-=e.outerHeight(!0))}),this.headers.each(function(){i-=t(this).outerHeight(!0)}),this.headers.next().each(function(){t(this).height(Math.max(0,i-t(this).innerHeight()+t(this).height()))}).css("overflow","auto")):"auto"===n&&(i=0,this.headers.next().each(function(){i=Math.max(i,t(this).css("height","").height())}).height(i))},_activate:function(e){var i=this._findActive(e)[0];i!==this.active[0]&&(i=i||this.active[0],this._eventHandler({target:i,currentTarget:i,preventDefault:t.noop}))},_findActive:function(e){return"number"==typeof e?this.headers.eq(e):t()},_setupEvents:function(e){var i={keydown:"_keydown"};e&&t.each(e.split(" "),function(t,e){i[e]="_eventHandler"}),this._off(this.headers.add(this.headers.next())),this._on(this.headers,i),this._on(this.headers.next(),{keydown:"_panelKeyDown"}),this._hoverable(this.headers),this._focusable(this.headers)},_eventHandler:function(e){var i=this.options,s=this.active,n=t(e.currentTarget),a=n[0]===s[0],o=a&&i.collapsible,r=o?t():n.next(),h=s.next(),l={oldHeader:s,oldPanel:h,newHeader:o?t():n,newPanel:r};e.preventDefault(),a&&!i.collapsible||this._trigger("beforeActivate",e,l)===!1||(i.active=o?!1:this.headers.index(n),this.active=a?t():n,this._toggle(l),s.removeClass("ui-accordion-header-active ui-state-active"),i.icons&&s.children(".ui-accordion-header-icon").removeClass(i.icons.activeHeader).addClass(i.icons.header),a||(n.removeClass("ui-corner-all").addClass("ui-accordion-header-active ui-state-active ui-corner-top"),i.icons&&n.children(".ui-accordion-header-icon").removeClass(i.icons.header).addClass(i.icons.activeHeader),n.next().addClass("ui-accordion-content-active")))},_toggle:function(e){var i=e.newPanel,s=this.prevShow.length?this.prevShow:e.oldPanel;this.prevShow.add(this.prevHide).stop(!0,!0),this.prevShow=i,this.prevHide=s,this.options.animate?this._animate(i,s,e):(s.hide(),i.show(),this._toggleComplete(e)),s.attr({"aria-expanded":"false","aria-hidden":"true"}),s.prev().attr("aria-selected","false"),i.length&&s.length?s.prev().attr("tabIndex",-1):i.length&&this.headers.filter(function(){return 0===t(this).attr("tabIndex")}).attr("tabIndex",-1),i.attr({"aria-expanded":"true","aria-hidden":"false"}).prev().attr({"aria-selected":"true",tabIndex:0})},_animate:function(t,e,n){var a,o,r,h=this,l=0,c=t.length&&(!e.length||t.index()<e.index()),u=this.options.animate||{},d=c&&u.down||u,p=function(){h._toggleComplete(n)};return"number"==typeof d&&(r=d),"string"==typeof d&&(o=d),o=o||d.easing||u.easing,r=r||d.duration||u.duration,e.length?t.length?(a=t.show().outerHeight(),e.animate(i,{duration:r,easing:o,step:function(t,e){e.now=Math.round(t)}}),t.hide().animate(s,{duration:r,easing:o,complete:p,step:function(t,i){i.now=Math.round(t),"height"!==i.prop?l+=i.now:"content"!==h.options.heightStyle&&(i.now=Math.round(a-e.outerHeight()-l),l=0)}}),undefined):e.animate(i,r,o,p):t.animate(s,r,o,p)},_toggleComplete:function(t){var e=t.oldPanel;e.removeClass("ui-accordion-content-active").prev().removeClass("ui-corner-top").addClass("ui-corner-all"),e.length&&(e.parent()[0].className=e.parent()[0].className),this._trigger("activate",null,t)}})})(jQuery);(function(e){var t=0;e.widget("ui.autocomplete",{version:"1.10.2",defaultElement:"<input>",options:{appendTo:null,autoFocus:!1,delay:300,minLength:1,position:{my:"left top",at:"left bottom",collision:"none"},source:null,change:null,close:null,focus:null,open:null,response:null,search:null,select:null},pending:0,_create:function(){var t,i,s,n=this.element[0].nodeName.toLowerCase(),a="textarea"===n,o="input"===n;this.isMultiLine=a?!0:o?!1:this.element.prop("isContentEditable"),this.valueMethod=this.element[a||o?"val":"text"],this.isNewMenu=!0,this.element.addClass("ui-autocomplete-input").attr("autocomplete","off"),this._on(this.element,{keydown:function(n){if(this.element.prop("readOnly"))return t=!0,s=!0,i=!0,undefined;t=!1,s=!1,i=!1;var a=e.ui.keyCode;switch(n.keyCode){case a.PAGE_UP:t=!0,this._move("previousPage",n);break;case a.PAGE_DOWN:t=!0,this._move("nextPage",n);break;case a.UP:t=!0,this._keyEvent("previous",n);break;case a.DOWN:t=!0,this._keyEvent("next",n);break;case a.ENTER:case a.NUMPAD_ENTER:this.menu.active&&(t=!0,n.preventDefault(),this.menu.select(n));break;case a.TAB:this.menu.active&&this.menu.select(n);break;case a.ESCAPE:this.menu.element.is(":visible")&&(this._value(this.term),this.close(n),n.preventDefault());break;default:i=!0,this._searchTimeout(n)}},keypress:function(s){if(t)return t=!1,s.preventDefault(),undefined;if(!i){var n=e.ui.keyCode;switch(s.keyCode){case n.PAGE_UP:this._move("previousPage",s);break;case n.PAGE_DOWN:this._move("nextPage",s);break;case n.UP:this._keyEvent("previous",s);break;case n.DOWN:this._keyEvent("next",s)}}},input:function(e){return s?(s=!1,e.preventDefault(),undefined):(this._searchTimeout(e),undefined)},focus:function(){this.selectedItem=null,this.previous=this._value()},blur:function(e){return this.cancelBlur?(delete this.cancelBlur,undefined):(clearTimeout(this.searching),this.close(e),this._change(e),undefined)}}),this._initSource(),this.menu=e("<ul>").addClass("ui-autocomplete ui-front").appendTo(this._appendTo()).menu({input:e(),role:null}).hide().data("ui-menu"),this._on(this.menu.element,{mousedown:function(t){t.preventDefault(),this.cancelBlur=!0,this._delay(function(){delete this.cancelBlur});var i=this.menu.element[0];e(t.target).closest(".ui-menu-item").length||this._delay(function(){var t=this;this.document.one("mousedown",function(s){s.target===t.element[0]||s.target===i||e.contains(i,s.target)||t.close()})})},menufocus:function(t,i){if(this.isNewMenu&&(this.isNewMenu=!1,t.originalEvent&&/^mouse/.test(t.originalEvent.type)))return this.menu.blur(),this.document.one("mousemove",function(){e(t.target).trigger(t.originalEvent)}),undefined;var s=i.item.data("ui-autocomplete-item");!1!==this._trigger("focus",t,{item:s})?t.originalEvent&&/^key/.test(t.originalEvent.type)&&this._value(s.value):this.liveRegion.text(s.value)},menuselect:function(e,t){var i=t.item.data("ui-autocomplete-item"),s=this.previous;this.element[0]!==this.document[0].activeElement&&(this.element.focus(),this.previous=s,this._delay(function(){this.previous=s,this.selectedItem=i})),!1!==this._trigger("select",e,{item:i})&&this._value(i.value),this.term=this._value(),this.close(e),this.selectedItem=i}}),this.liveRegion=e("<span>",{role:"status","aria-live":"polite"}).addClass("ui-helper-hidden-accessible").insertAfter(this.element),this._on(this.window,{beforeunload:function(){this.element.removeAttr("autocomplete")}})},_destroy:function(){clearTimeout(this.searching),this.element.removeClass("ui-autocomplete-input").removeAttr("autocomplete"),this.menu.element.remove(),this.liveRegion.remove()},_setOption:function(e,t){this._super(e,t),"source"===e&&this._initSource(),"appendTo"===e&&this.menu.element.appendTo(this._appendTo()),"disabled"===e&&t&&this.xhr&&this.xhr.abort()},_appendTo:function(){var t=this.options.appendTo;return t&&(t=t.jquery||t.nodeType?e(t):this.document.find(t).eq(0)),t||(t=this.element.closest(".ui-front")),t.length||(t=this.document[0].body),t},_initSource:function(){var t,i,s=this;e.isArray(this.options.source)?(t=this.options.source,this.source=function(i,s){s(e.ui.autocomplete.filter(t,i.term))}):"string"==typeof this.options.source?(i=this.options.source,this.source=function(t,n){s.xhr&&s.xhr.abort(),s.xhr=e.ajax({url:i,data:t,dataType:"json",success:function(e){n(e)},error:function(){n([])}})}):this.source=this.options.source},_searchTimeout:function(e){clearTimeout(this.searching),this.searching=this._delay(function(){this.term!==this._value()&&(this.selectedItem=null,this.search(null,e))},this.options.delay)},search:function(e,t){return e=null!=e?e:this._value(),this.term=this._value(),e.length<this.options.minLength?this.close(t):this._trigger("search",t)!==!1?this._search(e):undefined},_search:function(e){this.pending++,this.element.addClass("ui-autocomplete-loading"),this.cancelSearch=!1,this.source({term:e},this._response())},_response:function(){var e=this,i=++t;return function(s){i===t&&e.__response(s),e.pending--,e.pending||e.element.removeClass("ui-autocomplete-loading")}},__response:function(e){e&&(e=this._normalize(e)),this._trigger("response",null,{content:e}),!this.options.disabled&&e&&e.length&&!this.cancelSearch?(this._suggest(e),this._trigger("open")):this._close()},close:function(e){this.cancelSearch=!0,this._close(e)},_close:function(e){this.menu.element.is(":visible")&&(this.menu.element.hide(),this.menu.blur(),this.isNewMenu=!0,this._trigger("close",e))},_change:function(e){this.previous!==this._value()&&this._trigger("change",e,{item:this.selectedItem})},_normalize:function(t){return t.length&&t[0].label&&t[0].value?t:e.map(t,function(t){return"string"==typeof t?{label:t,value:t}:e.extend({label:t.label||t.value,value:t.value||t.label},t)})},_suggest:function(t){var i=this.menu.element.empty();this._renderMenu(i,t),this.isNewMenu=!0,this.menu.refresh(),i.show(),this._resizeMenu(),i.position(e.extend({of:this.element},this.options.position)),this.options.autoFocus&&this.menu.next()},_resizeMenu:function(){var e=this.menu.element;e.outerWidth(Math.max(e.width("").outerWidth()+1,this.element.outerWidth()))},_renderMenu:function(t,i){var s=this;e.each(i,function(e,i){s._renderItemData(t,i)})},_renderItemData:function(e,t){return this._renderItem(e,t).data("ui-autocomplete-item",t)},_renderItem:function(t,i){return e("<li>").append(e("<a>").text(i.label)).appendTo(t)},_move:function(e,t){return this.menu.element.is(":visible")?this.menu.isFirstItem()&&/^previous/.test(e)||this.menu.isLastItem()&&/^next/.test(e)?(this._value(this.term),this.menu.blur(),undefined):(this.menu[e](t),undefined):(this.search(null,t),undefined)},widget:function(){return this.menu.element},_value:function(){return this.valueMethod.apply(this.element,arguments)},_keyEvent:function(e,t){(!this.isMultiLine||this.menu.element.is(":visible"))&&(this._move(e,t),t.preventDefault())}}),e.extend(e.ui.autocomplete,{escapeRegex:function(e){return e.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g,"\\$&")},filter:function(t,i){var s=RegExp(e.ui.autocomplete.escapeRegex(i),"i");return e.grep(t,function(e){return s.test(e.label||e.value||e)})}}),e.widget("ui.autocomplete",e.ui.autocomplete,{options:{messages:{noResults:"No search results.",results:function(e){return e+(e>1?" results are":" result is")+" available, use up and down arrow keys to navigate."}}},__response:function(e){var t;this._superApply(arguments),this.options.disabled||this.cancelSearch||(t=e&&e.length?this.options.messages.results(e.length):this.options.messages.noResults,this.liveRegion.text(t))}})})(jQuery);(function(t){var e,i,s,n,a="ui-button ui-widget ui-state-default ui-corner-all",o="ui-state-hover ui-state-active ",r="ui-button-icons-only ui-button-icon-only ui-button-text-icons ui-button-text-icon-primary ui-button-text-icon-secondary ui-button-text-only",h=function(){var e=t(this).find(":ui-button");setTimeout(function(){e.button("refresh")},1)},l=function(e){var i=e.name,s=e.form,n=t([]);return i&&(i=i.replace(/'/g,"\\'"),n=s?t(s).find("[name='"+i+"']"):t("[name='"+i+"']",e.ownerDocument).filter(function(){return!this.form})),n};t.widget("ui.button",{version:"1.10.2",defaultElement:"<button>",options:{disabled:null,text:!0,label:null,icons:{primary:null,secondary:null}},_create:function(){this.element.closest("form").unbind("reset"+this.eventNamespace).bind("reset"+this.eventNamespace,h),"boolean"!=typeof this.options.disabled?this.options.disabled=!!this.element.prop("disabled"):this.element.prop("disabled",this.options.disabled),this._determineButtonType(),this.hasTitle=!!this.buttonElement.attr("title");var o=this,r=this.options,c="checkbox"===this.type||"radio"===this.type,u=c?"":"ui-state-active",d="ui-state-focus";null===r.label&&(r.label="input"===this.type?this.buttonElement.val():this.buttonElement.html()),this._hoverable(this.buttonElement),this.buttonElement.addClass(a).attr("role","button").bind("mouseenter"+this.eventNamespace,function(){r.disabled||this===e&&t(this).addClass("ui-state-active")}).bind("mouseleave"+this.eventNamespace,function(){r.disabled||t(this).removeClass(u)}).bind("click"+this.eventNamespace,function(t){r.disabled&&(t.preventDefault(),t.stopImmediatePropagation())}),this.element.bind("focus"+this.eventNamespace,function(){o.buttonElement.addClass(d)}).bind("blur"+this.eventNamespace,function(){o.buttonElement.removeClass(d)}),c&&(this.element.bind("change"+this.eventNamespace,function(){n||o.refresh()}),this.buttonElement.bind("mousedown"+this.eventNamespace,function(t){r.disabled||(n=!1,i=t.pageX,s=t.pageY)}).bind("mouseup"+this.eventNamespace,function(t){r.disabled||(i!==t.pageX||s!==t.pageY)&&(n=!0)})),"checkbox"===this.type?this.buttonElement.bind("click"+this.eventNamespace,function(){return r.disabled||n?!1:undefined}):"radio"===this.type?this.buttonElement.bind("click"+this.eventNamespace,function(){if(r.disabled||n)return!1;t(this).addClass("ui-state-active"),o.buttonElement.attr("aria-pressed","true");var e=o.element[0];l(e).not(e).map(function(){return t(this).button("widget")[0]}).removeClass("ui-state-active").attr("aria-pressed","false")}):(this.buttonElement.bind("mousedown"+this.eventNamespace,function(){return r.disabled?!1:(t(this).addClass("ui-state-active"),e=this,o.document.one("mouseup",function(){e=null}),undefined)}).bind("mouseup"+this.eventNamespace,function(){return r.disabled?!1:(t(this).removeClass("ui-state-active"),undefined)}).bind("keydown"+this.eventNamespace,function(e){return r.disabled?!1:((e.keyCode===t.ui.keyCode.SPACE||e.keyCode===t.ui.keyCode.ENTER)&&t(this).addClass("ui-state-active"),undefined)}).bind("keyup"+this.eventNamespace+" blur"+this.eventNamespace,function(){t(this).removeClass("ui-state-active")}),this.buttonElement.is("a")&&this.buttonElement.keyup(function(e){e.keyCode===t.ui.keyCode.SPACE&&t(this).click()})),this._setOption("disabled",r.disabled),this._resetButton()},_determineButtonType:function(){var t,e,i;this.type=this.element.is("[type=checkbox]")?"checkbox":this.element.is("[type=radio]")?"radio":this.element.is("input")?"input":"button","checkbox"===this.type||"radio"===this.type?(t=this.element.parents().last(),e="label[for='"+this.element.attr("id")+"']",this.buttonElement=t.find(e),this.buttonElement.length||(t=t.length?t.siblings():this.element.siblings(),this.buttonElement=t.filter(e),this.buttonElement.length||(this.buttonElement=t.find(e))),this.element.addClass("ui-helper-hidden-accessible"),i=this.element.is(":checked"),i&&this.buttonElement.addClass("ui-state-active"),this.buttonElement.prop("aria-pressed",i)):this.buttonElement=this.element},widget:function(){return this.buttonElement},_destroy:function(){this.element.removeClass("ui-helper-hidden-accessible"),this.buttonElement.removeClass(a+" "+o+" "+r).removeAttr("role").removeAttr("aria-pressed").html(this.buttonElement.find(".ui-button-text").html()),this.hasTitle||this.buttonElement.removeAttr("title")},_setOption:function(t,e){return this._super(t,e),"disabled"===t?(e?this.element.prop("disabled",!0):this.element.prop("disabled",!1),undefined):(this._resetButton(),undefined)},refresh:function(){var e=this.element.is("input, button")?this.element.is(":disabled"):this.element.hasClass("ui-button-disabled");e!==this.options.disabled&&this._setOption("disabled",e),"radio"===this.type?l(this.element[0]).each(function(){t(this).is(":checked")?t(this).button("widget").addClass("ui-state-active").attr("aria-pressed","true"):t(this).button("widget").removeClass("ui-state-active").attr("aria-pressed","false")}):"checkbox"===this.type&&(this.element.is(":checked")?this.buttonElement.addClass("ui-state-active").attr("aria-pressed","true"):this.buttonElement.removeClass("ui-state-active").attr("aria-pressed","false"))},_resetButton:function(){if("input"===this.type)return this.options.label&&this.element.val(this.options.label),undefined;var e=this.buttonElement.removeClass(r),i=t("<span></span>",this.document[0]).addClass("ui-button-text").html(this.options.label).appendTo(e.empty()).text(),s=this.options.icons,n=s.primary&&s.secondary,a=[];s.primary||s.secondary?(this.options.text&&a.push("ui-button-text-icon"+(n?"s":s.primary?"-primary":"-secondary")),s.primary&&e.prepend("<span class='ui-button-icon-primary ui-icon "+s.primary+"'></span>"),s.secondary&&e.append("<span class='ui-button-icon-secondary ui-icon "+s.secondary+"'></span>"),this.options.text||(a.push(n?"ui-button-icons-only":"ui-button-icon-only"),this.hasTitle||e.attr("title",t.trim(i)))):a.push("ui-button-text-only"),e.addClass(a.join(" "))}}),t.widget("ui.buttonset",{version:"1.10.2",options:{items:"button, input[type=button], input[type=submit], input[type=reset], input[type=checkbox], input[type=radio], a, :data(ui-button)"},_create:function(){this.element.addClass("ui-buttonset")},_init:function(){this.refresh()},_setOption:function(t,e){"disabled"===t&&this.buttons.button("option",t,e),this._super(t,e)},refresh:function(){var e="rtl"===this.element.css("direction");this.buttons=this.element.find(this.options.items).filter(":ui-button").button("refresh").end().not(":ui-button").button().end().map(function(){return t(this).button("widget")[0]}).removeClass("ui-corner-all ui-corner-left ui-corner-right").filter(":first").addClass(e?"ui-corner-right":"ui-corner-left").end().filter(":last").addClass(e?"ui-corner-left":"ui-corner-right").end().end()},_destroy:function(){this.element.removeClass("ui-buttonset"),this.buttons.map(function(){return t(this).button("widget")[0]}).removeClass("ui-corner-left ui-corner-right").end().button("destroy")}})})(jQuery);(function(t,e){function i(){this._curInst=null,this._keyEvent=!1,this._disabledInputs=[],this._datepickerShowing=!1,this._inDialog=!1,this._mainDivId="ui-datepicker-div",this._inlineClass="ui-datepicker-inline",this._appendClass="ui-datepicker-append",this._triggerClass="ui-datepicker-trigger",this._dialogClass="ui-datepicker-dialog",this._disableClass="ui-datepicker-disabled",this._unselectableClass="ui-datepicker-unselectable",this._currentClass="ui-datepicker-current-day",this._dayOverClass="ui-datepicker-days-cell-over",this.regional=[],this.regional[""]={closeText:"Done",prevText:"Prev",nextText:"Next",currentText:"Today",monthNames:["January","February","March","April","May","June","July","August","September","October","November","December"],monthNamesShort:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],dayNames:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],dayNamesShort:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],dayNamesMin:["Su","Mo","Tu","We","Th","Fr","Sa"],weekHeader:"Wk",dateFormat:"mm/dd/yy",firstDay:0,isRTL:!1,showMonthAfterYear:!1,yearSuffix:""},this._defaults={showOn:"focus",showAnim:"fadeIn",showOptions:{},defaultDate:null,appendText:"",buttonText:"...",buttonImage:"",buttonImageOnly:!1,hideIfNoPrevNext:!1,navigationAsDateFormat:!1,gotoCurrent:!1,changeMonth:!1,changeYear:!1,yearRange:"c-10:c+10",showOtherMonths:!1,selectOtherMonths:!1,showWeek:!1,calculateWeek:this.iso8601Week,shortYearCutoff:"+10",minDate:null,maxDate:null,duration:"fast",beforeShowDay:null,beforeShow:null,onSelect:null,onChangeMonthYear:null,onClose:null,numberOfMonths:1,showCurrentAtPos:0,stepMonths:1,stepBigMonths:12,altField:"",altFormat:"",constrainInput:!0,showButtonPanel:!1,autoSize:!1,disabled:!1},t.extend(this._defaults,this.regional[""]),this.dpDiv=s(t("<div id='"+this._mainDivId+"' class='ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all'></div>"))}function s(e){var i="button, .ui-datepicker-prev, .ui-datepicker-next, .ui-datepicker-calendar td a";return e.delegate(i,"mouseout",function(){t(this).removeClass("ui-state-hover"),-1!==this.className.indexOf("ui-datepicker-prev")&&t(this).removeClass("ui-datepicker-prev-hover"),-1!==this.className.indexOf("ui-datepicker-next")&&t(this).removeClass("ui-datepicker-next-hover")}).delegate(i,"mouseover",function(){t.datepicker._isDisabledDatepicker(a.inline?e.parent()[0]:a.input[0])||(t(this).parents(".ui-datepicker-calendar").find("a").removeClass("ui-state-hover"),t(this).addClass("ui-state-hover"),-1!==this.className.indexOf("ui-datepicker-prev")&&t(this).addClass("ui-datepicker-prev-hover"),-1!==this.className.indexOf("ui-datepicker-next")&&t(this).addClass("ui-datepicker-next-hover"))})}function n(e,i){t.extend(e,i);for(var s in i)null==i[s]&&(e[s]=i[s]);return e}t.extend(t.ui,{datepicker:{version:"1.10.2"}});var a,r="datepicker",o=(new Date).getTime();t.extend(i.prototype,{markerClassName:"hasDatepicker",maxRows:4,_widgetDatepicker:function(){return this.dpDiv},setDefaults:function(t){return n(this._defaults,t||{}),this},_attachDatepicker:function(e,i){var s,n,a;s=e.nodeName.toLowerCase(),n="div"===s||"span"===s,e.id||(this.uuid+=1,e.id="dp"+this.uuid),a=this._newInst(t(e),n),a.settings=t.extend({},i||{}),"input"===s?this._connectDatepicker(e,a):n&&this._inlineDatepicker(e,a)},_newInst:function(e,i){var n=e[0].id.replace(/([^A-Za-z0-9_\-])/g,"\\\\$1");return{id:n,input:e,selectedDay:0,selectedMonth:0,selectedYear:0,drawMonth:0,drawYear:0,inline:i,dpDiv:i?s(t("<div class='"+this._inlineClass+" ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all'></div>")):this.dpDiv}},_connectDatepicker:function(e,i){var s=t(e);i.append=t([]),i.trigger=t([]),s.hasClass(this.markerClassName)||(this._attachments(s,i),s.addClass(this.markerClassName).keydown(this._doKeyDown).keypress(this._doKeyPress).keyup(this._doKeyUp),this._autoSize(i),t.data(e,r,i),i.settings.disabled&&this._disableDatepicker(e))},_attachments:function(e,i){var s,n,a,r=this._get(i,"appendText"),o=this._get(i,"isRTL");i.append&&i.append.remove(),r&&(i.append=t("<span class='"+this._appendClass+"'>"+r+"</span>"),e[o?"before":"after"](i.append)),e.unbind("focus",this._showDatepicker),i.trigger&&i.trigger.remove(),s=this._get(i,"showOn"),("focus"===s||"both"===s)&&e.focus(this._showDatepicker),("button"===s||"both"===s)&&(n=this._get(i,"buttonText"),a=this._get(i,"buttonImage"),i.trigger=t(this._get(i,"buttonImageOnly")?t("<img/>").addClass(this._triggerClass).attr({src:a,alt:n,title:n}):t("<button type='button'></button>").addClass(this._triggerClass).html(a?t("<img/>").attr({src:a,alt:n,title:n}):n)),e[o?"before":"after"](i.trigger),i.trigger.click(function(){return t.datepicker._datepickerShowing&&t.datepicker._lastInput===e[0]?t.datepicker._hideDatepicker():t.datepicker._datepickerShowing&&t.datepicker._lastInput!==e[0]?(t.datepicker._hideDatepicker(),t.datepicker._showDatepicker(e[0])):t.datepicker._showDatepicker(e[0]),!1}))},_autoSize:function(t){if(this._get(t,"autoSize")&&!t.inline){var e,i,s,n,a=new Date(2009,11,20),r=this._get(t,"dateFormat");r.match(/[DM]/)&&(e=function(t){for(i=0,s=0,n=0;t.length>n;n++)t[n].length>i&&(i=t[n].length,s=n);return s},a.setMonth(e(this._get(t,r.match(/MM/)?"monthNames":"monthNamesShort"))),a.setDate(e(this._get(t,r.match(/DD/)?"dayNames":"dayNamesShort"))+20-a.getDay())),t.input.attr("size",this._formatDate(t,a).length)}},_inlineDatepicker:function(e,i){var s=t(e);s.hasClass(this.markerClassName)||(s.addClass(this.markerClassName).append(i.dpDiv),t.data(e,r,i),this._setDate(i,this._getDefaultDate(i),!0),this._updateDatepicker(i),this._updateAlternate(i),i.settings.disabled&&this._disableDatepicker(e),i.dpDiv.css("display","block"))},_dialogDatepicker:function(e,i,s,a,o){var h,l,c,u,d,p=this._dialogInst;return p||(this.uuid+=1,h="dp"+this.uuid,this._dialogInput=t("<input type='text' id='"+h+"' style='position: absolute; top: -100px; width: 0px;'/>"),this._dialogInput.keydown(this._doKeyDown),t("body").append(this._dialogInput),p=this._dialogInst=this._newInst(this._dialogInput,!1),p.settings={},t.data(this._dialogInput[0],r,p)),n(p.settings,a||{}),i=i&&i.constructor===Date?this._formatDate(p,i):i,this._dialogInput.val(i),this._pos=o?o.length?o:[o.pageX,o.pageY]:null,this._pos||(l=document.documentElement.clientWidth,c=document.documentElement.clientHeight,u=document.documentElement.scrollLeft||document.body.scrollLeft,d=document.documentElement.scrollTop||document.body.scrollTop,this._pos=[l/2-100+u,c/2-150+d]),this._dialogInput.css("left",this._pos[0]+20+"px").css("top",this._pos[1]+"px"),p.settings.onSelect=s,this._inDialog=!0,this.dpDiv.addClass(this._dialogClass),this._showDatepicker(this._dialogInput[0]),t.blockUI&&t.blockUI(this.dpDiv),t.data(this._dialogInput[0],r,p),this},_destroyDatepicker:function(e){var i,s=t(e),n=t.data(e,r);s.hasClass(this.markerClassName)&&(i=e.nodeName.toLowerCase(),t.removeData(e,r),"input"===i?(n.append.remove(),n.trigger.remove(),s.removeClass(this.markerClassName).unbind("focus",this._showDatepicker).unbind("keydown",this._doKeyDown).unbind("keypress",this._doKeyPress).unbind("keyup",this._doKeyUp)):("div"===i||"span"===i)&&s.removeClass(this.markerClassName).empty())},_enableDatepicker:function(e){var i,s,n=t(e),a=t.data(e,r);n.hasClass(this.markerClassName)&&(i=e.nodeName.toLowerCase(),"input"===i?(e.disabled=!1,a.trigger.filter("button").each(function(){this.disabled=!1}).end().filter("img").css({opacity:"1.0",cursor:""})):("div"===i||"span"===i)&&(s=n.children("."+this._inlineClass),s.children().removeClass("ui-state-disabled"),s.find("select.ui-datepicker-month, select.ui-datepicker-year").prop("disabled",!1)),this._disabledInputs=t.map(this._disabledInputs,function(t){return t===e?null:t}))},_disableDatepicker:function(e){var i,s,n=t(e),a=t.data(e,r);n.hasClass(this.markerClassName)&&(i=e.nodeName.toLowerCase(),"input"===i?(e.disabled=!0,a.trigger.filter("button").each(function(){this.disabled=!0}).end().filter("img").css({opacity:"0.5",cursor:"default"})):("div"===i||"span"===i)&&(s=n.children("."+this._inlineClass),s.children().addClass("ui-state-disabled"),s.find("select.ui-datepicker-month, select.ui-datepicker-year").prop("disabled",!0)),this._disabledInputs=t.map(this._disabledInputs,function(t){return t===e?null:t}),this._disabledInputs[this._disabledInputs.length]=e)},_isDisabledDatepicker:function(t){if(!t)return!1;for(var e=0;this._disabledInputs.length>e;e++)if(this._disabledInputs[e]===t)return!0;return!1},_getInst:function(e){try{return t.data(e,r)}catch(i){throw"Missing instance data for this datepicker"}},_optionDatepicker:function(i,s,a){var r,o,h,l,c=this._getInst(i);return 2===arguments.length&&"string"==typeof s?"defaults"===s?t.extend({},t.datepicker._defaults):c?"all"===s?t.extend({},c.settings):this._get(c,s):null:(r=s||{},"string"==typeof s&&(r={},r[s]=a),c&&(this._curInst===c&&this._hideDatepicker(),o=this._getDateDatepicker(i,!0),h=this._getMinMaxDate(c,"min"),l=this._getMinMaxDate(c,"max"),n(c.settings,r),null!==h&&r.dateFormat!==e&&r.minDate===e&&(c.settings.minDate=this._formatDate(c,h)),null!==l&&r.dateFormat!==e&&r.maxDate===e&&(c.settings.maxDate=this._formatDate(c,l)),"disabled"in r&&(r.disabled?this._disableDatepicker(i):this._enableDatepicker(i)),this._attachments(t(i),c),this._autoSize(c),this._setDate(c,o),this._updateAlternate(c),this._updateDatepicker(c)),e)},_changeDatepicker:function(t,e,i){this._optionDatepicker(t,e,i)},_refreshDatepicker:function(t){var e=this._getInst(t);e&&this._updateDatepicker(e)},_setDateDatepicker:function(t,e){var i=this._getInst(t);i&&(this._setDate(i,e),this._updateDatepicker(i),this._updateAlternate(i))},_getDateDatepicker:function(t,e){var i=this._getInst(t);return i&&!i.inline&&this._setDateFromField(i,e),i?this._getDate(i):null},_doKeyDown:function(e){var i,s,n,a=t.datepicker._getInst(e.target),r=!0,o=a.dpDiv.is(".ui-datepicker-rtl");if(a._keyEvent=!0,t.datepicker._datepickerShowing)switch(e.keyCode){case 9:t.datepicker._hideDatepicker(),r=!1;break;case 13:return n=t("td."+t.datepicker._dayOverClass+":not(."+t.datepicker._currentClass+")",a.dpDiv),n[0]&&t.datepicker._selectDay(e.target,a.selectedMonth,a.selectedYear,n[0]),i=t.datepicker._get(a,"onSelect"),i?(s=t.datepicker._formatDate(a),i.apply(a.input?a.input[0]:null,[s,a])):t.datepicker._hideDatepicker(),!1;case 27:t.datepicker._hideDatepicker();break;case 33:t.datepicker._adjustDate(e.target,e.ctrlKey?-t.datepicker._get(a,"stepBigMonths"):-t.datepicker._get(a,"stepMonths"),"M");break;case 34:t.datepicker._adjustDate(e.target,e.ctrlKey?+t.datepicker._get(a,"stepBigMonths"):+t.datepicker._get(a,"stepMonths"),"M");break;case 35:(e.ctrlKey||e.metaKey)&&t.datepicker._clearDate(e.target),r=e.ctrlKey||e.metaKey;break;case 36:(e.ctrlKey||e.metaKey)&&t.datepicker._gotoToday(e.target),r=e.ctrlKey||e.metaKey;break;case 37:(e.ctrlKey||e.metaKey)&&t.datepicker._adjustDate(e.target,o?1:-1,"D"),r=e.ctrlKey||e.metaKey,e.originalEvent.altKey&&t.datepicker._adjustDate(e.target,e.ctrlKey?-t.datepicker._get(a,"stepBigMonths"):-t.datepicker._get(a,"stepMonths"),"M");break;case 38:(e.ctrlKey||e.metaKey)&&t.datepicker._adjustDate(e.target,-7,"D"),r=e.ctrlKey||e.metaKey;break;case 39:(e.ctrlKey||e.metaKey)&&t.datepicker._adjustDate(e.target,o?-1:1,"D"),r=e.ctrlKey||e.metaKey,e.originalEvent.altKey&&t.datepicker._adjustDate(e.target,e.ctrlKey?+t.datepicker._get(a,"stepBigMonths"):+t.datepicker._get(a,"stepMonths"),"M");break;case 40:(e.ctrlKey||e.metaKey)&&t.datepicker._adjustDate(e.target,7,"D"),r=e.ctrlKey||e.metaKey;break;default:r=!1}else 36===e.keyCode&&e.ctrlKey?t.datepicker._showDatepicker(this):r=!1;r&&(e.preventDefault(),e.stopPropagation())},_doKeyPress:function(i){var s,n,a=t.datepicker._getInst(i.target);return t.datepicker._get(a,"constrainInput")?(s=t.datepicker._possibleChars(t.datepicker._get(a,"dateFormat")),n=String.fromCharCode(null==i.charCode?i.keyCode:i.charCode),i.ctrlKey||i.metaKey||" ">n||!s||s.indexOf(n)>-1):e},_doKeyUp:function(e){var i,s=t.datepicker._getInst(e.target);if(s.input.val()!==s.lastVal)try{i=t.datepicker.parseDate(t.datepicker._get(s,"dateFormat"),s.input?s.input.val():null,t.datepicker._getFormatConfig(s)),i&&(t.datepicker._setDateFromField(s),t.datepicker._updateAlternate(s),t.datepicker._updateDatepicker(s))}catch(n){}return!0},_showDatepicker:function(e){if(e=e.target||e,"input"!==e.nodeName.toLowerCase()&&(e=t("input",e.parentNode)[0]),!t.datepicker._isDisabledDatepicker(e)&&t.datepicker._lastInput!==e){var i,s,a,r,o,h,l;i=t.datepicker._getInst(e),t.datepicker._curInst&&t.datepicker._curInst!==i&&(t.datepicker._curInst.dpDiv.stop(!0,!0),i&&t.datepicker._datepickerShowing&&t.datepicker._hideDatepicker(t.datepicker._curInst.input[0])),s=t.datepicker._get(i,"beforeShow"),a=s?s.apply(e,[e,i]):{},a!==!1&&(n(i.settings,a),i.lastVal=null,t.datepicker._lastInput=e,t.datepicker._setDateFromField(i),t.datepicker._inDialog&&(e.value=""),t.datepicker._pos||(t.datepicker._pos=t.datepicker._findPos(e),t.datepicker._pos[1]+=e.offsetHeight),r=!1,t(e).parents().each(function(){return r|="fixed"===t(this).css("position"),!r}),o={left:t.datepicker._pos[0],top:t.datepicker._pos[1]},t.datepicker._pos=null,i.dpDiv.empty(),i.dpDiv.css({position:"absolute",display:"block",top:"-1000px"}),t.datepicker._updateDatepicker(i),o=t.datepicker._checkOffset(i,o,r),i.dpDiv.css({position:t.datepicker._inDialog&&t.blockUI?"static":r?"fixed":"absolute",display:"none",left:o.left+"px",top:o.top+"px"}),i.inline||(h=t.datepicker._get(i,"showAnim"),l=t.datepicker._get(i,"duration"),i.dpDiv.zIndex(t(e).zIndex()+1),t.datepicker._datepickerShowing=!0,t.effects&&t.effects.effect[h]?i.dpDiv.show(h,t.datepicker._get(i,"showOptions"),l):i.dpDiv[h||"show"](h?l:null),i.input.is(":visible")&&!i.input.is(":disabled")&&i.input.focus(),t.datepicker._curInst=i))}},_updateDatepicker:function(e){this.maxRows=4,a=e,e.dpDiv.empty().append(this._generateHTML(e)),this._attachHandlers(e),e.dpDiv.find("."+this._dayOverClass+" a").mouseover();var i,s=this._getNumberOfMonths(e),n=s[1],r=17;e.dpDiv.removeClass("ui-datepicker-multi-2 ui-datepicker-multi-3 ui-datepicker-multi-4").width(""),n>1&&e.dpDiv.addClass("ui-datepicker-multi-"+n).css("width",r*n+"em"),e.dpDiv[(1!==s[0]||1!==s[1]?"add":"remove")+"Class"]("ui-datepicker-multi"),e.dpDiv[(this._get(e,"isRTL")?"add":"remove")+"Class"]("ui-datepicker-rtl"),e===t.datepicker._curInst&&t.datepicker._datepickerShowing&&e.input&&e.input.is(":visible")&&!e.input.is(":disabled")&&e.input[0]!==document.activeElement&&e.input.focus(),e.yearshtml&&(i=e.yearshtml,setTimeout(function(){i===e.yearshtml&&e.yearshtml&&e.dpDiv.find("select.ui-datepicker-year:first").replaceWith(e.yearshtml),i=e.yearshtml=null},0))},_getBorders:function(t){var e=function(t){return{thin:1,medium:2,thick:3}[t]||t};return[parseFloat(e(t.css("border-left-width"))),parseFloat(e(t.css("border-top-width")))]},_checkOffset:function(e,i,s){var n=e.dpDiv.outerWidth(),a=e.dpDiv.outerHeight(),r=e.input?e.input.outerWidth():0,o=e.input?e.input.outerHeight():0,h=document.documentElement.clientWidth+(s?0:t(document).scrollLeft()),l=document.documentElement.clientHeight+(s?0:t(document).scrollTop());return i.left-=this._get(e,"isRTL")?n-r:0,i.left-=s&&i.left===e.input.offset().left?t(document).scrollLeft():0,i.top-=s&&i.top===e.input.offset().top+o?t(document).scrollTop():0,i.left-=Math.min(i.left,i.left+n>h&&h>n?Math.abs(i.left+n-h):0),i.top-=Math.min(i.top,i.top+a>l&&l>a?Math.abs(a+o):0),i},_findPos:function(e){for(var i,s=this._getInst(e),n=this._get(s,"isRTL");e&&("hidden"===e.type||1!==e.nodeType||t.expr.filters.hidden(e));)e=e[n?"previousSibling":"nextSibling"];return i=t(e).offset(),[i.left,i.top]},_hideDatepicker:function(e){var i,s,n,a,o=this._curInst;!o||e&&o!==t.data(e,r)||this._datepickerShowing&&(i=this._get(o,"showAnim"),s=this._get(o,"duration"),n=function(){t.datepicker._tidyDialog(o)},t.effects&&(t.effects.effect[i]||t.effects[i])?o.dpDiv.hide(i,t.datepicker._get(o,"showOptions"),s,n):o.dpDiv["slideDown"===i?"slideUp":"fadeIn"===i?"fadeOut":"hide"](i?s:null,n),i||n(),this._datepickerShowing=!1,a=this._get(o,"onClose"),a&&a.apply(o.input?o.input[0]:null,[o.input?o.input.val():"",o]),this._lastInput=null,this._inDialog&&(this._dialogInput.css({position:"absolute",left:"0",top:"-100px"}),t.blockUI&&(t.unblockUI(),t("body").append(this.dpDiv))),this._inDialog=!1)},_tidyDialog:function(t){t.dpDiv.removeClass(this._dialogClass).unbind(".ui-datepicker-calendar")},_checkExternalClick:function(e){if(t.datepicker._curInst){var i=t(e.target),s=t.datepicker._getInst(i[0]);(i[0].id!==t.datepicker._mainDivId&&0===i.parents("#"+t.datepicker._mainDivId).length&&!i.hasClass(t.datepicker.markerClassName)&&!i.closest("."+t.datepicker._triggerClass).length&&t.datepicker._datepickerShowing&&(!t.datepicker._inDialog||!t.blockUI)||i.hasClass(t.datepicker.markerClassName)&&t.datepicker._curInst!==s)&&t.datepicker._hideDatepicker()}},_adjustDate:function(e,i,s){var n=t(e),a=this._getInst(n[0]);this._isDisabledDatepicker(n[0])||(this._adjustInstDate(a,i+("M"===s?this._get(a,"showCurrentAtPos"):0),s),this._updateDatepicker(a))},_gotoToday:function(e){var i,s=t(e),n=this._getInst(s[0]);this._get(n,"gotoCurrent")&&n.currentDay?(n.selectedDay=n.currentDay,n.drawMonth=n.selectedMonth=n.currentMonth,n.drawYear=n.selectedYear=n.currentYear):(i=new Date,n.selectedDay=i.getDate(),n.drawMonth=n.selectedMonth=i.getMonth(),n.drawYear=n.selectedYear=i.getFullYear()),this._notifyChange(n),this._adjustDate(s)},_selectMonthYear:function(e,i,s){var n=t(e),a=this._getInst(n[0]);a["selected"+("M"===s?"Month":"Year")]=a["draw"+("M"===s?"Month":"Year")]=parseInt(i.options[i.selectedIndex].value,10),this._notifyChange(a),this._adjustDate(n)},_selectDay:function(e,i,s,n){var a,r=t(e);t(n).hasClass(this._unselectableClass)||this._isDisabledDatepicker(r[0])||(a=this._getInst(r[0]),a.selectedDay=a.currentDay=t("a",n).html(),a.selectedMonth=a.currentMonth=i,a.selectedYear=a.currentYear=s,this._selectDate(e,this._formatDate(a,a.currentDay,a.currentMonth,a.currentYear)))},_clearDate:function(e){var i=t(e);this._selectDate(i,"")},_selectDate:function(e,i){var s,n=t(e),a=this._getInst(n[0]);i=null!=i?i:this._formatDate(a),a.input&&a.input.val(i),this._updateAlternate(a),s=this._get(a,"onSelect"),s?s.apply(a.input?a.input[0]:null,[i,a]):a.input&&a.input.trigger("change"),a.inline?this._updateDatepicker(a):(this._hideDatepicker(),this._lastInput=a.input[0],"object"!=typeof a.input[0]&&a.input.focus(),this._lastInput=null)},_updateAlternate:function(e){var i,s,n,a=this._get(e,"altField");a&&(i=this._get(e,"altFormat")||this._get(e,"dateFormat"),s=this._getDate(e),n=this.formatDate(i,s,this._getFormatConfig(e)),t(a).each(function(){t(this).val(n)}))},noWeekends:function(t){var e=t.getDay();return[e>0&&6>e,""]},iso8601Week:function(t){var e,i=new Date(t.getTime());return i.setDate(i.getDate()+4-(i.getDay()||7)),e=i.getTime(),i.setMonth(0),i.setDate(1),Math.floor(Math.round((e-i)/864e5)/7)+1},parseDate:function(i,s,n){if(null==i||null==s)throw"Invalid arguments";if(s="object"==typeof s?""+s:s+"",""===s)return null;var a,r,o,h,l=0,c=(n?n.shortYearCutoff:null)||this._defaults.shortYearCutoff,u="string"!=typeof c?c:(new Date).getFullYear()%100+parseInt(c,10),d=(n?n.dayNamesShort:null)||this._defaults.dayNamesShort,p=(n?n.dayNames:null)||this._defaults.dayNames,f=(n?n.monthNamesShort:null)||this._defaults.monthNamesShort,m=(n?n.monthNames:null)||this._defaults.monthNames,g=-1,v=-1,_=-1,b=-1,y=!1,w=function(t){var e=i.length>a+1&&i.charAt(a+1)===t;return e&&a++,e},k=function(t){var e=w(t),i="@"===t?14:"!"===t?20:"y"===t&&e?4:"o"===t?3:2,n=RegExp("^\\d{1,"+i+"}"),a=s.substring(l).match(n);if(!a)throw"Missing number at position "+l;return l+=a[0].length,parseInt(a[0],10)},x=function(i,n,a){var r=-1,o=t.map(w(i)?a:n,function(t,e){return[[e,t]]}).sort(function(t,e){return-(t[1].length-e[1].length)});if(t.each(o,function(t,i){var n=i[1];return s.substr(l,n.length).toLowerCase()===n.toLowerCase()?(r=i[0],l+=n.length,!1):e}),-1!==r)return r+1;throw"Unknown name at position "+l},D=function(){if(s.charAt(l)!==i.charAt(a))throw"Unexpected literal at position "+l;l++};for(a=0;i.length>a;a++)if(y)"'"!==i.charAt(a)||w("'")?D():y=!1;else switch(i.charAt(a)){case"d":_=k("d");break;case"D":x("D",d,p);break;case"o":b=k("o");break;case"m":v=k("m");break;case"M":v=x("M",f,m);break;case"y":g=k("y");break;case"@":h=new Date(k("@")),g=h.getFullYear(),v=h.getMonth()+1,_=h.getDate();break;case"!":h=new Date((k("!")-this._ticksTo1970)/1e4),g=h.getFullYear(),v=h.getMonth()+1,_=h.getDate();break;case"'":w("'")?D():y=!0;break;default:D()}if(s.length>l&&(o=s.substr(l),!/^\s+/.test(o)))throw"Extra/unparsed characters found in date: "+o;if(-1===g?g=(new Date).getFullYear():100>g&&(g+=(new Date).getFullYear()-(new Date).getFullYear()%100+(u>=g?0:-100)),b>-1)for(v=1,_=b;;){if(r=this._getDaysInMonth(g,v-1),r>=_)break;v++,_-=r}if(h=this._daylightSavingAdjust(new Date(g,v-1,_)),h.getFullYear()!==g||h.getMonth()+1!==v||h.getDate()!==_)throw"Invalid date";return h},ATOM:"yy-mm-dd",COOKIE:"D, dd M yy",ISO_8601:"yy-mm-dd",RFC_822:"D, d M y",RFC_850:"DD, dd-M-y",RFC_1036:"D, d M y",RFC_1123:"D, d M yy",RFC_2822:"D, d M yy",RSS:"D, d M y",TICKS:"!",TIMESTAMP:"@",W3C:"yy-mm-dd",_ticksTo1970:1e7*60*60*24*(718685+Math.floor(492.5)-Math.floor(19.7)+Math.floor(4.925)),formatDate:function(t,e,i){if(!e)return"";var s,n=(i?i.dayNamesShort:null)||this._defaults.dayNamesShort,a=(i?i.dayNames:null)||this._defaults.dayNames,r=(i?i.monthNamesShort:null)||this._defaults.monthNamesShort,o=(i?i.monthNames:null)||this._defaults.monthNames,h=function(e){var i=t.length>s+1&&t.charAt(s+1)===e;return i&&s++,i},l=function(t,e,i){var s=""+e;if(h(t))for(;i>s.length;)s="0"+s;return s},c=function(t,e,i,s){return h(t)?s[e]:i[e]},u="",d=!1;if(e)for(s=0;t.length>s;s++)if(d)"'"!==t.charAt(s)||h("'")?u+=t.charAt(s):d=!1;else switch(t.charAt(s)){case"d":u+=l("d",e.getDate(),2);break;case"D":u+=c("D",e.getDay(),n,a);break;case"o":u+=l("o",Math.round((new Date(e.getFullYear(),e.getMonth(),e.getDate()).getTime()-new Date(e.getFullYear(),0,0).getTime())/864e5),3);break;case"m":u+=l("m",e.getMonth()+1,2);break;case"M":u+=c("M",e.getMonth(),r,o);break;case"y":u+=h("y")?e.getFullYear():(10>e.getYear()%100?"0":"")+e.getYear()%100;break;case"@":u+=e.getTime();break;case"!":u+=1e4*e.getTime()+this._ticksTo1970;break;case"'":h("'")?u+="'":d=!0;break;default:u+=t.charAt(s)}return u},_possibleChars:function(t){var e,i="",s=!1,n=function(i){var s=t.length>e+1&&t.charAt(e+1)===i;return s&&e++,s};for(e=0;t.length>e;e++)if(s)"'"!==t.charAt(e)||n("'")?i+=t.charAt(e):s=!1;else switch(t.charAt(e)){case"d":case"m":case"y":case"@":i+="0123456789";break;case"D":case"M":return null;case"'":n("'")?i+="'":s=!0;break;default:i+=t.charAt(e)}return i},_get:function(t,i){return t.settings[i]!==e?t.settings[i]:this._defaults[i]},_setDateFromField:function(t,e){if(t.input.val()!==t.lastVal){var i=this._get(t,"dateFormat"),s=t.lastVal=t.input?t.input.val():null,n=this._getDefaultDate(t),a=n,r=this._getFormatConfig(t);try{a=this.parseDate(i,s,r)||n}catch(o){s=e?"":s}t.selectedDay=a.getDate(),t.drawMonth=t.selectedMonth=a.getMonth(),t.drawYear=t.selectedYear=a.getFullYear(),t.currentDay=s?a.getDate():0,t.currentMonth=s?a.getMonth():0,t.currentYear=s?a.getFullYear():0,this._adjustInstDate(t)}},_getDefaultDate:function(t){return this._restrictMinMax(t,this._determineDate(t,this._get(t,"defaultDate"),new Date))},_determineDate:function(e,i,s){var n=function(t){var e=new Date;return e.setDate(e.getDate()+t),e},a=function(i){try{return t.datepicker.parseDate(t.datepicker._get(e,"dateFormat"),i,t.datepicker._getFormatConfig(e))}catch(s){}for(var n=(i.toLowerCase().match(/^c/)?t.datepicker._getDate(e):null)||new Date,a=n.getFullYear(),r=n.getMonth(),o=n.getDate(),h=/([+\-]?[0-9]+)\s*(d|D|w|W|m|M|y|Y)?/g,l=h.exec(i);l;){switch(l[2]||"d"){case"d":case"D":o+=parseInt(l[1],10);break;case"w":case"W":o+=7*parseInt(l[1],10);break;case"m":case"M":r+=parseInt(l[1],10),o=Math.min(o,t.datepicker._getDaysInMonth(a,r));break;case"y":case"Y":a+=parseInt(l[1],10),o=Math.min(o,t.datepicker._getDaysInMonth(a,r))}l=h.exec(i)}return new Date(a,r,o)},r=null==i||""===i?s:"string"==typeof i?a(i):"number"==typeof i?isNaN(i)?s:n(i):new Date(i.getTime());return r=r&&"Invalid Date"==""+r?s:r,r&&(r.setHours(0),r.setMinutes(0),r.setSeconds(0),r.setMilliseconds(0)),this._daylightSavingAdjust(r)},_daylightSavingAdjust:function(t){return t?(t.setHours(t.getHours()>12?t.getHours()+2:0),t):null},_setDate:function(t,e,i){var s=!e,n=t.selectedMonth,a=t.selectedYear,r=this._restrictMinMax(t,this._determineDate(t,e,new Date));t.selectedDay=t.currentDay=r.getDate(),t.drawMonth=t.selectedMonth=t.currentMonth=r.getMonth(),t.drawYear=t.selectedYear=t.currentYear=r.getFullYear(),n===t.selectedMonth&&a===t.selectedYear||i||this._notifyChange(t),this._adjustInstDate(t),t.input&&t.input.val(s?"":this._formatDate(t))},_getDate:function(t){var e=!t.currentYear||t.input&&""===t.input.val()?null:this._daylightSavingAdjust(new Date(t.currentYear,t.currentMonth,t.currentDay));return e},_attachHandlers:function(e){var i=this._get(e,"stepMonths"),s="#"+e.id.replace(/\\\\/g,"\\");e.dpDiv.find("[data-handler]").map(function(){var e={prev:function(){window["DP_jQuery_"+o].datepicker._adjustDate(s,-i,"M")},next:function(){window["DP_jQuery_"+o].datepicker._adjustDate(s,+i,"M")},hide:function(){window["DP_jQuery_"+o].datepicker._hideDatepicker()},today:function(){window["DP_jQuery_"+o].datepicker._gotoToday(s)},selectDay:function(){return window["DP_jQuery_"+o].datepicker._selectDay(s,+this.getAttribute("data-month"),+this.getAttribute("data-year"),this),!1},selectMonth:function(){return window["DP_jQuery_"+o].datepicker._selectMonthYear(s,this,"M"),!1},selectYear:function(){return window["DP_jQuery_"+o].datepicker._selectMonthYear(s,this,"Y"),!1}};t(this).bind(this.getAttribute("data-event"),e[this.getAttribute("data-handler")])})},_generateHTML:function(t){var e,i,s,n,a,r,o,h,l,c,u,d,p,f,m,g,v,_,b,y,w,k,x,D,T,C,S,M,N,I,P,A,z,H,E,F,O,W,j,R=new Date,L=this._daylightSavingAdjust(new Date(R.getFullYear(),R.getMonth(),R.getDate())),Y=this._get(t,"isRTL"),B=this._get(t,"showButtonPanel"),J=this._get(t,"hideIfNoPrevNext"),Q=this._get(t,"navigationAsDateFormat"),K=this._getNumberOfMonths(t),V=this._get(t,"showCurrentAtPos"),U=this._get(t,"stepMonths"),q=1!==K[0]||1!==K[1],X=this._daylightSavingAdjust(t.currentDay?new Date(t.currentYear,t.currentMonth,t.currentDay):new Date(9999,9,9)),G=this._getMinMaxDate(t,"min"),$=this._getMinMaxDate(t,"max"),Z=t.drawMonth-V,te=t.drawYear;if(0>Z&&(Z+=12,te--),$)for(e=this._daylightSavingAdjust(new Date($.getFullYear(),$.getMonth()-K[0]*K[1]+1,$.getDate())),e=G&&G>e?G:e;this._daylightSavingAdjust(new Date(te,Z,1))>e;)Z--,0>Z&&(Z=11,te--);for(t.drawMonth=Z,t.drawYear=te,i=this._get(t,"prevText"),i=Q?this.formatDate(i,this._daylightSavingAdjust(new Date(te,Z-U,1)),this._getFormatConfig(t)):i,s=this._canAdjustMonth(t,-1,te,Z)?"<a class='ui-datepicker-prev ui-corner-all' data-handler='prev' data-event='click' title='"+i+"'><span class='ui-icon ui-icon-circle-triangle-"+(Y?"e":"w")+"'>"+i+"</span></a>":J?"":"<a class='ui-datepicker-prev ui-corner-all ui-state-disabled' title='"+i+"'><span class='ui-icon ui-icon-circle-triangle-"+(Y?"e":"w")+"'>"+i+"</span></a>",n=this._get(t,"nextText"),n=Q?this.formatDate(n,this._daylightSavingAdjust(new Date(te,Z+U,1)),this._getFormatConfig(t)):n,a=this._canAdjustMonth(t,1,te,Z)?"<a class='ui-datepicker-next ui-corner-all' data-handler='next' data-event='click' title='"+n+"'><span class='ui-icon ui-icon-circle-triangle-"+(Y?"w":"e")+"'>"+n+"</span></a>":J?"":"<a class='ui-datepicker-next ui-corner-all ui-state-disabled' title='"+n+"'><span class='ui-icon ui-icon-circle-triangle-"+(Y?"w":"e")+"'>"+n+"</span></a>",r=this._get(t,"currentText"),o=this._get(t,"gotoCurrent")&&t.currentDay?X:L,r=Q?this.formatDate(r,o,this._getFormatConfig(t)):r,h=t.inline?"":"<button type='button' class='ui-datepicker-close ui-state-default ui-priority-primary ui-corner-all' data-handler='hide' data-event='click'>"+this._get(t,"closeText")+"</button>",l=B?"<div class='ui-datepicker-buttonpane ui-widget-content'>"+(Y?h:"")+(this._isInRange(t,o)?"<button type='button' class='ui-datepicker-current ui-state-default ui-priority-secondary ui-corner-all' data-handler='today' data-event='click'>"+r+"</button>":"")+(Y?"":h)+"</div>":"",c=parseInt(this._get(t,"firstDay"),10),c=isNaN(c)?0:c,u=this._get(t,"showWeek"),d=this._get(t,"dayNames"),p=this._get(t,"dayNamesMin"),f=this._get(t,"monthNames"),m=this._get(t,"monthNamesShort"),g=this._get(t,"beforeShowDay"),v=this._get(t,"showOtherMonths"),_=this._get(t,"selectOtherMonths"),b=this._getDefaultDate(t),y="",k=0;K[0]>k;k++){for(x="",this.maxRows=4,D=0;K[1]>D;D++){if(T=this._daylightSavingAdjust(new Date(te,Z,t.selectedDay)),C=" ui-corner-all",S="",q){if(S+="<div class='ui-datepicker-group",K[1]>1)switch(D){case 0:S+=" ui-datepicker-group-first",C=" ui-corner-"+(Y?"right":"left");break;case K[1]-1:S+=" ui-datepicker-group-last",C=" ui-corner-"+(Y?"left":"right");break;default:S+=" ui-datepicker-group-middle",C=""}S+="'>"}for(S+="<div class='ui-datepicker-header ui-widget-header ui-helper-clearfix"+C+"'>"+(/all|left/.test(C)&&0===k?Y?a:s:"")+(/all|right/.test(C)&&0===k?Y?s:a:"")+this._generateMonthYearHeader(t,Z,te,G,$,k>0||D>0,f,m)+"</div><table class='ui-datepicker-calendar'><thead>"+"<tr>",M=u?"<th class='ui-datepicker-week-col'>"+this._get(t,"weekHeader")+"</th>":"",w=0;7>w;w++)N=(w+c)%7,M+="<th"+((w+c+6)%7>=5?" class='ui-datepicker-week-end'":"")+">"+"<span title='"+d[N]+"'>"+p[N]+"</span></th>";for(S+=M+"</tr></thead><tbody>",I=this._getDaysInMonth(te,Z),te===t.selectedYear&&Z===t.selectedMonth&&(t.selectedDay=Math.min(t.selectedDay,I)),P=(this._getFirstDayOfMonth(te,Z)-c+7)%7,A=Math.ceil((P+I)/7),z=q?this.maxRows>A?this.maxRows:A:A,this.maxRows=z,H=this._daylightSavingAdjust(new Date(te,Z,1-P)),E=0;z>E;E++){for(S+="<tr>",F=u?"<td class='ui-datepicker-week-col'>"+this._get(t,"calculateWeek")(H)+"</td>":"",w=0;7>w;w++)O=g?g.apply(t.input?t.input[0]:null,[H]):[!0,""],W=H.getMonth()!==Z,j=W&&!_||!O[0]||G&&G>H||$&&H>$,F+="<td class='"+((w+c+6)%7>=5?" ui-datepicker-week-end":"")+(W?" ui-datepicker-other-month":"")+(H.getTime()===T.getTime()&&Z===t.selectedMonth&&t._keyEvent||b.getTime()===H.getTime()&&b.getTime()===T.getTime()?" "+this._dayOverClass:"")+(j?" "+this._unselectableClass+" ui-state-disabled":"")+(W&&!v?"":" "+O[1]+(H.getTime()===X.getTime()?" "+this._currentClass:"")+(H.getTime()===L.getTime()?" ui-datepicker-today":""))+"'"+(W&&!v||!O[2]?"":" title='"+O[2].replace(/'/g,"&#39;")+"'")+(j?"":" data-handler='selectDay' data-event='click' data-month='"+H.getMonth()+"' data-year='"+H.getFullYear()+"'")+">"+(W&&!v?"&#xa0;":j?"<span class='ui-state-default'>"+H.getDate()+"</span>":"<a class='ui-state-default"+(H.getTime()===L.getTime()?" ui-state-highlight":"")+(H.getTime()===X.getTime()?" ui-state-active":"")+(W?" ui-priority-secondary":"")+"' href='#'>"+H.getDate()+"</a>")+"</td>",H.setDate(H.getDate()+1),H=this._daylightSavingAdjust(H);S+=F+"</tr>"}Z++,Z>11&&(Z=0,te++),S+="</tbody></table>"+(q?"</div>"+(K[0]>0&&D===K[1]-1?"<div class='ui-datepicker-row-break'></div>":""):""),x+=S}y+=x}return y+=l,t._keyEvent=!1,y},_generateMonthYearHeader:function(t,e,i,s,n,a,r,o){var h,l,c,u,d,p,f,m,g=this._get(t,"changeMonth"),v=this._get(t,"changeYear"),_=this._get(t,"showMonthAfterYear"),b="<div class='ui-datepicker-title'>",y="";if(a||!g)y+="<span class='ui-datepicker-month'>"+r[e]+"</span>";else{for(h=s&&s.getFullYear()===i,l=n&&n.getFullYear()===i,y+="<select class='ui-datepicker-month' data-handler='selectMonth' data-event='change'>",c=0;12>c;c++)(!h||c>=s.getMonth())&&(!l||n.getMonth()>=c)&&(y+="<option value='"+c+"'"+(c===e?" selected='selected'":"")+">"+o[c]+"</option>");
 y+="</select>"}if(_||(b+=y+(!a&&g&&v?"":"&#xa0;")),!t.yearshtml)if(t.yearshtml="",a||!v)b+="<span class='ui-datepicker-year'>"+i+"</span>";else{for(u=this._get(t,"yearRange").split(":"),d=(new Date).getFullYear(),p=function(t){var e=t.match(/c[+\-].*/)?i+parseInt(t.substring(1),10):t.match(/[+\-].*/)?d+parseInt(t,10):parseInt(t,10);return isNaN(e)?d:e},f=p(u[0]),m=Math.max(f,p(u[1]||"")),f=s?Math.max(f,s.getFullYear()):f,m=n?Math.min(m,n.getFullYear()):m,t.yearshtml+="<select class='ui-datepicker-year' data-handler='selectYear' data-event='change'>";m>=f;f++)t.yearshtml+="<option value='"+f+"'"+(f===i?" selected='selected'":"")+">"+f+"</option>";t.yearshtml+="</select>",b+=t.yearshtml,t.yearshtml=null}return b+=this._get(t,"yearSuffix"),_&&(b+=(!a&&g&&v?"":"&#xa0;")+y),b+="</div>"},_adjustInstDate:function(t,e,i){var s=t.drawYear+("Y"===i?e:0),n=t.drawMonth+("M"===i?e:0),a=Math.min(t.selectedDay,this._getDaysInMonth(s,n))+("D"===i?e:0),r=this._restrictMinMax(t,this._daylightSavingAdjust(new Date(s,n,a)));t.selectedDay=r.getDate(),t.drawMonth=t.selectedMonth=r.getMonth(),t.drawYear=t.selectedYear=r.getFullYear(),("M"===i||"Y"===i)&&this._notifyChange(t)},_restrictMinMax:function(t,e){var i=this._getMinMaxDate(t,"min"),s=this._getMinMaxDate(t,"max"),n=i&&i>e?i:e;return s&&n>s?s:n},_notifyChange:function(t){var e=this._get(t,"onChangeMonthYear");e&&e.apply(t.input?t.input[0]:null,[t.selectedYear,t.selectedMonth+1,t])},_getNumberOfMonths:function(t){var e=this._get(t,"numberOfMonths");return null==e?[1,1]:"number"==typeof e?[1,e]:e},_getMinMaxDate:function(t,e){return this._determineDate(t,this._get(t,e+"Date"),null)},_getDaysInMonth:function(t,e){return 32-this._daylightSavingAdjust(new Date(t,e,32)).getDate()},_getFirstDayOfMonth:function(t,e){return new Date(t,e,1).getDay()},_canAdjustMonth:function(t,e,i,s){var n=this._getNumberOfMonths(t),a=this._daylightSavingAdjust(new Date(i,s+(0>e?e:n[0]*n[1]),1));return 0>e&&a.setDate(this._getDaysInMonth(a.getFullYear(),a.getMonth())),this._isInRange(t,a)},_isInRange:function(t,e){var i,s,n=this._getMinMaxDate(t,"min"),a=this._getMinMaxDate(t,"max"),r=null,o=null,h=this._get(t,"yearRange");return h&&(i=h.split(":"),s=(new Date).getFullYear(),r=parseInt(i[0],10),o=parseInt(i[1],10),i[0].match(/[+\-].*/)&&(r+=s),i[1].match(/[+\-].*/)&&(o+=s)),(!n||e.getTime()>=n.getTime())&&(!a||e.getTime()<=a.getTime())&&(!r||e.getFullYear()>=r)&&(!o||o>=e.getFullYear())},_getFormatConfig:function(t){var e=this._get(t,"shortYearCutoff");return e="string"!=typeof e?e:(new Date).getFullYear()%100+parseInt(e,10),{shortYearCutoff:e,dayNamesShort:this._get(t,"dayNamesShort"),dayNames:this._get(t,"dayNames"),monthNamesShort:this._get(t,"monthNamesShort"),monthNames:this._get(t,"monthNames")}},_formatDate:function(t,e,i,s){e||(t.currentDay=t.selectedDay,t.currentMonth=t.selectedMonth,t.currentYear=t.selectedYear);var n=e?"object"==typeof e?e:this._daylightSavingAdjust(new Date(s,i,e)):this._daylightSavingAdjust(new Date(t.currentYear,t.currentMonth,t.currentDay));return this.formatDate(this._get(t,"dateFormat"),n,this._getFormatConfig(t))}}),t.fn.datepicker=function(e){if(!this.length)return this;t.datepicker.initialized||(t(document).mousedown(t.datepicker._checkExternalClick),t.datepicker.initialized=!0),0===t("#"+t.datepicker._mainDivId).length&&t("body").append(t.datepicker.dpDiv);var i=Array.prototype.slice.call(arguments,1);return"string"!=typeof e||"isDisabled"!==e&&"getDate"!==e&&"widget"!==e?"option"===e&&2===arguments.length&&"string"==typeof arguments[1]?t.datepicker["_"+e+"Datepicker"].apply(t.datepicker,[this[0]].concat(i)):this.each(function(){"string"==typeof e?t.datepicker["_"+e+"Datepicker"].apply(t.datepicker,[this].concat(i)):t.datepicker._attachDatepicker(this,e)}):t.datepicker["_"+e+"Datepicker"].apply(t.datepicker,[this[0]].concat(i))},t.datepicker=new i,t.datepicker.initialized=!1,t.datepicker.uuid=(new Date).getTime(),t.datepicker.version="1.10.2",window["DP_jQuery_"+o]=t})(jQuery);(function(t){var e={buttons:!0,height:!0,maxHeight:!0,maxWidth:!0,minHeight:!0,minWidth:!0,width:!0},i={maxHeight:!0,maxWidth:!0,minHeight:!0,minWidth:!0};t.widget("ui.dialog",{version:"1.10.2",options:{appendTo:"body",autoOpen:!0,buttons:[],closeOnEscape:!0,closeText:"close",dialogClass:"",draggable:!0,hide:null,height:"auto",maxHeight:null,maxWidth:null,minHeight:150,minWidth:150,modal:!1,position:{my:"center",at:"center",of:window,collision:"fit",using:function(e){var i=t(this).css(e).offset().top;0>i&&t(this).css("top",e.top-i)}},resizable:!0,show:null,title:null,width:300,beforeClose:null,close:null,drag:null,dragStart:null,dragStop:null,focus:null,open:null,resize:null,resizeStart:null,resizeStop:null},_create:function(){this.originalCss={display:this.element[0].style.display,width:this.element[0].style.width,minHeight:this.element[0].style.minHeight,maxHeight:this.element[0].style.maxHeight,height:this.element[0].style.height},this.originalPosition={parent:this.element.parent(),index:this.element.parent().children().index(this.element)},this.originalTitle=this.element.attr("title"),this.options.title=this.options.title||this.originalTitle,this._createWrapper(),this.element.show().removeAttr("title").addClass("ui-dialog-content ui-widget-content").appendTo(this.uiDialog),this._createTitlebar(),this._createButtonPane(),this.options.draggable&&t.fn.draggable&&this._makeDraggable(),this.options.resizable&&t.fn.resizable&&this._makeResizable(),this._isOpen=!1},_init:function(){this.options.autoOpen&&this.open()},_appendTo:function(){var e=this.options.appendTo;return e&&(e.jquery||e.nodeType)?t(e):this.document.find(e||"body").eq(0)},_destroy:function(){var t,e=this.originalPosition;this._destroyOverlay(),this.element.removeUniqueId().removeClass("ui-dialog-content ui-widget-content").css(this.originalCss).detach(),this.uiDialog.stop(!0,!0).remove(),this.originalTitle&&this.element.attr("title",this.originalTitle),t=e.parent.children().eq(e.index),t.length&&t[0]!==this.element[0]?t.before(this.element):e.parent.append(this.element)},widget:function(){return this.uiDialog},disable:t.noop,enable:t.noop,close:function(e){var i=this;this._isOpen&&this._trigger("beforeClose",e)!==!1&&(this._isOpen=!1,this._destroyOverlay(),this.opener.filter(":focusable").focus().length||t(this.document[0].activeElement).blur(),this._hide(this.uiDialog,this.options.hide,function(){i._trigger("close",e)}))},isOpen:function(){return this._isOpen},moveToTop:function(){this._moveToTop()},_moveToTop:function(t,e){var i=!!this.uiDialog.nextAll(":visible").insertBefore(this.uiDialog).length;return i&&!e&&this._trigger("focus",t),i},open:function(){var e=this;return this._isOpen?(this._moveToTop()&&this._focusTabbable(),undefined):(this._isOpen=!0,this.opener=t(this.document[0].activeElement),this._size(),this._position(),this._createOverlay(),this._moveToTop(null,!0),this._show(this.uiDialog,this.options.show,function(){e._focusTabbable(),e._trigger("focus")}),this._trigger("open"),undefined)},_focusTabbable:function(){var t=this.element.find("[autofocus]");t.length||(t=this.element.find(":tabbable")),t.length||(t=this.uiDialogButtonPane.find(":tabbable")),t.length||(t=this.uiDialogTitlebarClose.filter(":tabbable")),t.length||(t=this.uiDialog),t.eq(0).focus()},_keepFocus:function(e){function i(){var e=this.document[0].activeElement,i=this.uiDialog[0]===e||t.contains(this.uiDialog[0],e);i||this._focusTabbable()}e.preventDefault(),i.call(this),this._delay(i)},_createWrapper:function(){this.uiDialog=t("<div>").addClass("ui-dialog ui-widget ui-widget-content ui-corner-all ui-front "+this.options.dialogClass).hide().attr({tabIndex:-1,role:"dialog"}).appendTo(this._appendTo()),this._on(this.uiDialog,{keydown:function(e){if(this.options.closeOnEscape&&!e.isDefaultPrevented()&&e.keyCode&&e.keyCode===t.ui.keyCode.ESCAPE)return e.preventDefault(),this.close(e),undefined;if(e.keyCode===t.ui.keyCode.TAB){var i=this.uiDialog.find(":tabbable"),s=i.filter(":first"),n=i.filter(":last");e.target!==n[0]&&e.target!==this.uiDialog[0]||e.shiftKey?e.target!==s[0]&&e.target!==this.uiDialog[0]||!e.shiftKey||(n.focus(1),e.preventDefault()):(s.focus(1),e.preventDefault())}},mousedown:function(t){this._moveToTop(t)&&this._focusTabbable()}}),this.element.find("[aria-describedby]").length||this.uiDialog.attr({"aria-describedby":this.element.uniqueId().attr("id")})},_createTitlebar:function(){var e;this.uiDialogTitlebar=t("<div>").addClass("ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix").prependTo(this.uiDialog),this._on(this.uiDialogTitlebar,{mousedown:function(e){t(e.target).closest(".ui-dialog-titlebar-close")||this.uiDialog.focus()}}),this.uiDialogTitlebarClose=t("<button></button>").button({label:this.options.closeText,icons:{primary:"ui-icon-closethick"},text:!1}).addClass("ui-dialog-titlebar-close").appendTo(this.uiDialogTitlebar),this._on(this.uiDialogTitlebarClose,{click:function(t){t.preventDefault(),this.close(t)}}),e=t("<span>").uniqueId().addClass("ui-dialog-title").prependTo(this.uiDialogTitlebar),this._title(e),this.uiDialog.attr({"aria-labelledby":e.attr("id")})},_title:function(t){this.options.title||t.html("&#160;"),t.text(this.options.title)},_createButtonPane:function(){this.uiDialogButtonPane=t("<div>").addClass("ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"),this.uiButtonSet=t("<div>").addClass("ui-dialog-buttonset").appendTo(this.uiDialogButtonPane),this._createButtons()},_createButtons:function(){var e=this,i=this.options.buttons;return this.uiDialogButtonPane.remove(),this.uiButtonSet.empty(),t.isEmptyObject(i)||t.isArray(i)&&!i.length?(this.uiDialog.removeClass("ui-dialog-buttons"),undefined):(t.each(i,function(i,s){var n,a;s=t.isFunction(s)?{click:s,text:i}:s,s=t.extend({type:"button"},s),n=s.click,s.click=function(){n.apply(e.element[0],arguments)},a={icons:s.icons,text:s.showText},delete s.icons,delete s.showText,t("<button></button>",s).button(a).appendTo(e.uiButtonSet)}),this.uiDialog.addClass("ui-dialog-buttons"),this.uiDialogButtonPane.appendTo(this.uiDialog),undefined)},_makeDraggable:function(){function e(t){return{position:t.position,offset:t.offset}}var i=this,s=this.options;this.uiDialog.draggable({cancel:".ui-dialog-content, .ui-dialog-titlebar-close",handle:".ui-dialog-titlebar",containment:"document",start:function(s,n){t(this).addClass("ui-dialog-dragging"),i._blockFrames(),i._trigger("dragStart",s,e(n))},drag:function(t,s){i._trigger("drag",t,e(s))},stop:function(n,a){s.position=[a.position.left-i.document.scrollLeft(),a.position.top-i.document.scrollTop()],t(this).removeClass("ui-dialog-dragging"),i._unblockFrames(),i._trigger("dragStop",n,e(a))}})},_makeResizable:function(){function e(t){return{originalPosition:t.originalPosition,originalSize:t.originalSize,position:t.position,size:t.size}}var i=this,s=this.options,n=s.resizable,a=this.uiDialog.css("position"),o="string"==typeof n?n:"n,e,s,w,se,sw,ne,nw";this.uiDialog.resizable({cancel:".ui-dialog-content",containment:"document",alsoResize:this.element,maxWidth:s.maxWidth,maxHeight:s.maxHeight,minWidth:s.minWidth,minHeight:this._minHeight(),handles:o,start:function(s,n){t(this).addClass("ui-dialog-resizing"),i._blockFrames(),i._trigger("resizeStart",s,e(n))},resize:function(t,s){i._trigger("resize",t,e(s))},stop:function(n,a){s.height=t(this).height(),s.width=t(this).width(),t(this).removeClass("ui-dialog-resizing"),i._unblockFrames(),i._trigger("resizeStop",n,e(a))}}).css("position",a)},_minHeight:function(){var t=this.options;return"auto"===t.height?t.minHeight:Math.min(t.minHeight,t.height)},_position:function(){var t=this.uiDialog.is(":visible");t||this.uiDialog.show(),this.uiDialog.position(this.options.position),t||this.uiDialog.hide()},_setOptions:function(s){var n=this,a=!1,o={};t.each(s,function(t,s){n._setOption(t,s),t in e&&(a=!0),t in i&&(o[t]=s)}),a&&(this._size(),this._position()),this.uiDialog.is(":data(ui-resizable)")&&this.uiDialog.resizable("option",o)},_setOption:function(t,e){var i,s,n=this.uiDialog;"dialogClass"===t&&n.removeClass(this.options.dialogClass).addClass(e),"disabled"!==t&&(this._super(t,e),"appendTo"===t&&this.uiDialog.appendTo(this._appendTo()),"buttons"===t&&this._createButtons(),"closeText"===t&&this.uiDialogTitlebarClose.button({label:""+e}),"draggable"===t&&(i=n.is(":data(ui-draggable)"),i&&!e&&n.draggable("destroy"),!i&&e&&this._makeDraggable()),"position"===t&&this._position(),"resizable"===t&&(s=n.is(":data(ui-resizable)"),s&&!e&&n.resizable("destroy"),s&&"string"==typeof e&&n.resizable("option","handles",e),s||e===!1||this._makeResizable()),"title"===t&&this._title(this.uiDialogTitlebar.find(".ui-dialog-title")))},_size:function(){var t,e,i,s=this.options;this.element.show().css({width:"auto",minHeight:0,maxHeight:"none",height:0}),s.minWidth>s.width&&(s.width=s.minWidth),t=this.uiDialog.css({height:"auto",width:s.width}).outerHeight(),e=Math.max(0,s.minHeight-t),i="number"==typeof s.maxHeight?Math.max(0,s.maxHeight-t):"none","auto"===s.height?this.element.css({minHeight:e,maxHeight:i,height:"auto"}):this.element.height(Math.max(0,s.height-t)),this.uiDialog.is(":data(ui-resizable)")&&this.uiDialog.resizable("option","minHeight",this._minHeight())},_blockFrames:function(){this.iframeBlocks=this.document.find("iframe").map(function(){var e=t(this);return t("<div>").css({position:"absolute",width:e.outerWidth(),height:e.outerHeight()}).appendTo(e.parent()).offset(e.offset())[0]})},_unblockFrames:function(){this.iframeBlocks&&(this.iframeBlocks.remove(),delete this.iframeBlocks)},_allowInteraction:function(e){return t(e.target).closest(".ui-dialog").length?!0:!!t(e.target).closest(".ui-datepicker").length},_createOverlay:function(){if(this.options.modal){var e=this,i=this.widgetFullName;t.ui.dialog.overlayInstances||this._delay(function(){t.ui.dialog.overlayInstances&&this.document.bind("focusin.dialog",function(s){e._allowInteraction(s)||(s.preventDefault(),t(".ui-dialog:visible:last .ui-dialog-content").data(i)._focusTabbable())})}),this.overlay=t("<div>").addClass("ui-widget-overlay ui-front").appendTo(this._appendTo()),this._on(this.overlay,{mousedown:"_keepFocus"}),t.ui.dialog.overlayInstances++}},_destroyOverlay:function(){this.options.modal&&this.overlay&&(t.ui.dialog.overlayInstances--,t.ui.dialog.overlayInstances||this.document.unbind("focusin.dialog"),this.overlay.remove(),this.overlay=null)}}),t.ui.dialog.overlayInstances=0,t.uiBackCompat!==!1&&t.widget("ui.dialog",t.ui.dialog,{_position:function(){var e,i=this.options.position,s=[],n=[0,0];i?(("string"==typeof i||"object"==typeof i&&"0"in i)&&(s=i.split?i.split(" "):[i[0],i[1]],1===s.length&&(s[1]=s[0]),t.each(["left","top"],function(t,e){+s[t]===s[t]&&(n[t]=s[t],s[t]=e)}),i={my:s[0]+(0>n[0]?n[0]:"+"+n[0])+" "+s[1]+(0>n[1]?n[1]:"+"+n[1]),at:s.join(" ")}),i=t.extend({},t.ui.dialog.prototype.options.position,i)):i=t.ui.dialog.prototype.options.position,e=this.uiDialog.is(":visible"),e||this.uiDialog.show(),this.uiDialog.position(i),e||this.uiDialog.hide()}})})(jQuery);(function(t){t.widget("ui.menu",{version:"1.10.2",defaultElement:"<ul>",delay:300,options:{icons:{submenu:"ui-icon-carat-1-e"},menus:"ul",position:{my:"left top",at:"right top"},role:"menu",blur:null,focus:null,select:null},_create:function(){this.activeMenu=this.element,this.mouseHandled=!1,this.element.uniqueId().addClass("ui-menu ui-widget ui-widget-content ui-corner-all").toggleClass("ui-menu-icons",!!this.element.find(".ui-icon").length).attr({role:this.options.role,tabIndex:0}).bind("click"+this.eventNamespace,t.proxy(function(t){this.options.disabled&&t.preventDefault()},this)),this.options.disabled&&this.element.addClass("ui-state-disabled").attr("aria-disabled","true"),this._on({"mousedown .ui-menu-item > a":function(t){t.preventDefault()},"click .ui-state-disabled > a":function(t){t.preventDefault()},"click .ui-menu-item:has(a)":function(e){var i=t(e.target).closest(".ui-menu-item");!this.mouseHandled&&i.not(".ui-state-disabled").length&&(this.mouseHandled=!0,this.select(e),i.has(".ui-menu").length?this.expand(e):this.element.is(":focus")||(this.element.trigger("focus",[!0]),this.active&&1===this.active.parents(".ui-menu").length&&clearTimeout(this.timer)))},"mouseenter .ui-menu-item":function(e){var i=t(e.currentTarget);i.siblings().children(".ui-state-active").removeClass("ui-state-active"),this.focus(e,i)},mouseleave:"collapseAll","mouseleave .ui-menu":"collapseAll",focus:function(t,e){var i=this.active||this.element.children(".ui-menu-item").eq(0);e||this.focus(t,i)},blur:function(e){this._delay(function(){t.contains(this.element[0],this.document[0].activeElement)||this.collapseAll(e)})},keydown:"_keydown"}),this.refresh(),this._on(this.document,{click:function(e){t(e.target).closest(".ui-menu").length||this.collapseAll(e),this.mouseHandled=!1}})},_destroy:function(){this.element.removeAttr("aria-activedescendant").find(".ui-menu").addBack().removeClass("ui-menu ui-widget ui-widget-content ui-corner-all ui-menu-icons").removeAttr("role").removeAttr("tabIndex").removeAttr("aria-labelledby").removeAttr("aria-expanded").removeAttr("aria-hidden").removeAttr("aria-disabled").removeUniqueId().show(),this.element.find(".ui-menu-item").removeClass("ui-menu-item").removeAttr("role").removeAttr("aria-disabled").children("a").removeUniqueId().removeClass("ui-corner-all ui-state-hover").removeAttr("tabIndex").removeAttr("role").removeAttr("aria-haspopup").children().each(function(){var e=t(this);e.data("ui-menu-submenu-carat")&&e.remove()}),this.element.find(".ui-menu-divider").removeClass("ui-menu-divider ui-widget-content")},_keydown:function(e){function i(t){return t.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g,"\\$&")}var s,n,a,o,r,h=!0;switch(e.keyCode){case t.ui.keyCode.PAGE_UP:this.previousPage(e);break;case t.ui.keyCode.PAGE_DOWN:this.nextPage(e);break;case t.ui.keyCode.HOME:this._move("first","first",e);break;case t.ui.keyCode.END:this._move("last","last",e);break;case t.ui.keyCode.UP:this.previous(e);break;case t.ui.keyCode.DOWN:this.next(e);break;case t.ui.keyCode.LEFT:this.collapse(e);break;case t.ui.keyCode.RIGHT:this.active&&!this.active.is(".ui-state-disabled")&&this.expand(e);break;case t.ui.keyCode.ENTER:case t.ui.keyCode.SPACE:this._activate(e);break;case t.ui.keyCode.ESCAPE:this.collapse(e);break;default:h=!1,n=this.previousFilter||"",a=String.fromCharCode(e.keyCode),o=!1,clearTimeout(this.filterTimer),a===n?o=!0:a=n+a,r=RegExp("^"+i(a),"i"),s=this.activeMenu.children(".ui-menu-item").filter(function(){return r.test(t(this).children("a").text())}),s=o&&-1!==s.index(this.active.next())?this.active.nextAll(".ui-menu-item"):s,s.length||(a=String.fromCharCode(e.keyCode),r=RegExp("^"+i(a),"i"),s=this.activeMenu.children(".ui-menu-item").filter(function(){return r.test(t(this).children("a").text())})),s.length?(this.focus(e,s),s.length>1?(this.previousFilter=a,this.filterTimer=this._delay(function(){delete this.previousFilter},1e3)):delete this.previousFilter):delete this.previousFilter}h&&e.preventDefault()},_activate:function(t){this.active.is(".ui-state-disabled")||(this.active.children("a[aria-haspopup='true']").length?this.expand(t):this.select(t))},refresh:function(){var e,i=this.options.icons.submenu,s=this.element.find(this.options.menus);s.filter(":not(.ui-menu)").addClass("ui-menu ui-widget ui-widget-content ui-corner-all").hide().attr({role:this.options.role,"aria-hidden":"true","aria-expanded":"false"}).each(function(){var e=t(this),s=e.prev("a"),n=t("<span>").addClass("ui-menu-icon ui-icon "+i).data("ui-menu-submenu-carat",!0);s.attr("aria-haspopup","true").prepend(n),e.attr("aria-labelledby",s.attr("id"))}),e=s.add(this.element),e.children(":not(.ui-menu-item):has(a)").addClass("ui-menu-item").attr("role","presentation").children("a").uniqueId().addClass("ui-corner-all").attr({tabIndex:-1,role:this._itemRole()}),e.children(":not(.ui-menu-item)").each(function(){var e=t(this);/[^\-\u2014\u2013\s]/.test(e.text())||e.addClass("ui-widget-content ui-menu-divider")}),e.children(".ui-state-disabled").attr("aria-disabled","true"),this.active&&!t.contains(this.element[0],this.active[0])&&this.blur()},_itemRole:function(){return{menu:"menuitem",listbox:"option"}[this.options.role]},_setOption:function(t,e){"icons"===t&&this.element.find(".ui-menu-icon").removeClass(this.options.icons.submenu).addClass(e.submenu),this._super(t,e)},focus:function(t,e){var i,s;this.blur(t,t&&"focus"===t.type),this._scrollIntoView(e),this.active=e.first(),s=this.active.children("a").addClass("ui-state-focus"),this.options.role&&this.element.attr("aria-activedescendant",s.attr("id")),this.active.parent().closest(".ui-menu-item").children("a:first").addClass("ui-state-active"),t&&"keydown"===t.type?this._close():this.timer=this._delay(function(){this._close()},this.delay),i=e.children(".ui-menu"),i.length&&/^mouse/.test(t.type)&&this._startOpening(i),this.activeMenu=e.parent(),this._trigger("focus",t,{item:e})},_scrollIntoView:function(e){var i,s,n,a,o,r;this._hasScroll()&&(i=parseFloat(t.css(this.activeMenu[0],"borderTopWidth"))||0,s=parseFloat(t.css(this.activeMenu[0],"paddingTop"))||0,n=e.offset().top-this.activeMenu.offset().top-i-s,a=this.activeMenu.scrollTop(),o=this.activeMenu.height(),r=e.height(),0>n?this.activeMenu.scrollTop(a+n):n+r>o&&this.activeMenu.scrollTop(a+n-o+r))},blur:function(t,e){e||clearTimeout(this.timer),this.active&&(this.active.children("a").removeClass("ui-state-focus"),this.active=null,this._trigger("blur",t,{item:this.active}))},_startOpening:function(t){clearTimeout(this.timer),"true"===t.attr("aria-hidden")&&(this.timer=this._delay(function(){this._close(),this._open(t)},this.delay))},_open:function(e){var i=t.extend({of:this.active},this.options.position);clearTimeout(this.timer),this.element.find(".ui-menu").not(e.parents(".ui-menu")).hide().attr("aria-hidden","true"),e.show().removeAttr("aria-hidden").attr("aria-expanded","true").position(i)},collapseAll:function(e,i){clearTimeout(this.timer),this.timer=this._delay(function(){var s=i?this.element:t(e&&e.target).closest(this.element.find(".ui-menu"));s.length||(s=this.element),this._close(s),this.blur(e),this.activeMenu=s},this.delay)},_close:function(t){t||(t=this.active?this.active.parent():this.element),t.find(".ui-menu").hide().attr("aria-hidden","true").attr("aria-expanded","false").end().find("a.ui-state-active").removeClass("ui-state-active")},collapse:function(t){var e=this.active&&this.active.parent().closest(".ui-menu-item",this.element);e&&e.length&&(this._close(),this.focus(t,e))},expand:function(t){var e=this.active&&this.active.children(".ui-menu ").children(".ui-menu-item").first();e&&e.length&&(this._open(e.parent()),this._delay(function(){this.focus(t,e)}))},next:function(t){this._move("next","first",t)},previous:function(t){this._move("prev","last",t)},isFirstItem:function(){return this.active&&!this.active.prevAll(".ui-menu-item").length},isLastItem:function(){return this.active&&!this.active.nextAll(".ui-menu-item").length},_move:function(t,e,i){var s;this.active&&(s="first"===t||"last"===t?this.active["first"===t?"prevAll":"nextAll"](".ui-menu-item").eq(-1):this.active[t+"All"](".ui-menu-item").eq(0)),s&&s.length&&this.active||(s=this.activeMenu.children(".ui-menu-item")[e]()),this.focus(i,s)},nextPage:function(e){var i,s,n;return this.active?(this.isLastItem()||(this._hasScroll()?(s=this.active.offset().top,n=this.element.height(),this.active.nextAll(".ui-menu-item").each(function(){return i=t(this),0>i.offset().top-s-n}),this.focus(e,i)):this.focus(e,this.activeMenu.children(".ui-menu-item")[this.active?"last":"first"]())),undefined):(this.next(e),undefined)},previousPage:function(e){var i,s,n;return this.active?(this.isFirstItem()||(this._hasScroll()?(s=this.active.offset().top,n=this.element.height(),this.active.prevAll(".ui-menu-item").each(function(){return i=t(this),i.offset().top-s+n>0}),this.focus(e,i)):this.focus(e,this.activeMenu.children(".ui-menu-item").first())),undefined):(this.next(e),undefined)},_hasScroll:function(){return this.element.outerHeight()<this.element.prop("scrollHeight")},select:function(e){this.active=this.active||t(e.target).closest(".ui-menu-item");var i={item:this.active};this.active.has(".ui-menu").length||this.collapseAll(e,!0),this._trigger("select",e,i)}})})(jQuery);(function(t,e){t.widget("ui.progressbar",{version:"1.10.2",options:{max:100,value:0,change:null,complete:null},min:0,_create:function(){this.oldValue=this.options.value=this._constrainedValue(),this.element.addClass("ui-progressbar ui-widget ui-widget-content ui-corner-all").attr({role:"progressbar","aria-valuemin":this.min}),this.valueDiv=t("<div class='ui-progressbar-value ui-widget-header ui-corner-left'></div>").appendTo(this.element),this._refreshValue()},_destroy:function(){this.element.removeClass("ui-progressbar ui-widget ui-widget-content ui-corner-all").removeAttr("role").removeAttr("aria-valuemin").removeAttr("aria-valuemax").removeAttr("aria-valuenow"),this.valueDiv.remove()},value:function(t){return t===e?this.options.value:(this.options.value=this._constrainedValue(t),this._refreshValue(),e)},_constrainedValue:function(t){return t===e&&(t=this.options.value),this.indeterminate=t===!1,"number"!=typeof t&&(t=0),this.indeterminate?!1:Math.min(this.options.max,Math.max(this.min,t))},_setOptions:function(t){var e=t.value;delete t.value,this._super(t),this.options.value=this._constrainedValue(e),this._refreshValue()},_setOption:function(t,e){"max"===t&&(e=Math.max(this.min,e)),this._super(t,e)},_percentage:function(){return this.indeterminate?100:100*(this.options.value-this.min)/(this.options.max-this.min)},_refreshValue:function(){var e=this.options.value,i=this._percentage();this.valueDiv.toggle(this.indeterminate||e>this.min).toggleClass("ui-corner-right",e===this.options.max).width(i.toFixed(0)+"%"),this.element.toggleClass("ui-progressbar-indeterminate",this.indeterminate),this.indeterminate?(this.element.removeAttr("aria-valuenow"),this.overlayDiv||(this.overlayDiv=t("<div class='ui-progressbar-overlay'></div>").appendTo(this.valueDiv))):(this.element.attr({"aria-valuemax":this.options.max,"aria-valuenow":e}),this.overlayDiv&&(this.overlayDiv.remove(),this.overlayDiv=null)),this.oldValue!==e&&(this.oldValue=e,this._trigger("change")),e===this.options.max&&this._trigger("complete")}})})(jQuery);(function(t){var e=5;t.widget("ui.slider",t.ui.mouse,{version:"1.10.2",widgetEventPrefix:"slide",options:{animate:!1,distance:0,max:100,min:0,orientation:"horizontal",range:!1,step:1,value:0,values:null,change:null,slide:null,start:null,stop:null},_create:function(){this._keySliding=!1,this._mouseSliding=!1,this._animateOff=!0,this._handleIndex=null,this._detectOrientation(),this._mouseInit(),this.element.addClass("ui-slider ui-slider-"+this.orientation+" ui-widget"+" ui-widget-content"+" ui-corner-all"),this._refresh(),this._setOption("disabled",this.options.disabled),this._animateOff=!1},_refresh:function(){this._createRange(),this._createHandles(),this._setupEvents(),this._refreshValue()},_createHandles:function(){var e,i,s=this.options,n=this.element.find(".ui-slider-handle").addClass("ui-state-default ui-corner-all"),a="<a class='ui-slider-handle ui-state-default ui-corner-all' href='#'></a>",o=[];for(i=s.values&&s.values.length||1,n.length>i&&(n.slice(i).remove(),n=n.slice(0,i)),e=n.length;i>e;e++)o.push(a);this.handles=n.add(t(o.join("")).appendTo(this.element)),this.handle=this.handles.eq(0),this.handles.each(function(e){t(this).data("ui-slider-handle-index",e)})},_createRange:function(){var e=this.options,i="";e.range?(e.range===!0&&(e.values?e.values.length&&2!==e.values.length?e.values=[e.values[0],e.values[0]]:t.isArray(e.values)&&(e.values=e.values.slice(0)):e.values=[this._valueMin(),this._valueMin()]),this.range&&this.range.length?this.range.removeClass("ui-slider-range-min ui-slider-range-max").css({left:"",bottom:""}):(this.range=t("<div></div>").appendTo(this.element),i="ui-slider-range ui-widget-header ui-corner-all"),this.range.addClass(i+("min"===e.range||"max"===e.range?" ui-slider-range-"+e.range:""))):this.range=t([])},_setupEvents:function(){var t=this.handles.add(this.range).filter("a");this._off(t),this._on(t,this._handleEvents),this._hoverable(t),this._focusable(t)},_destroy:function(){this.handles.remove(),this.range.remove(),this.element.removeClass("ui-slider ui-slider-horizontal ui-slider-vertical ui-widget ui-widget-content ui-corner-all"),this._mouseDestroy()},_mouseCapture:function(e){var i,s,n,a,o,r,h,l,u=this,c=this.options;return c.disabled?!1:(this.elementSize={width:this.element.outerWidth(),height:this.element.outerHeight()},this.elementOffset=this.element.offset(),i={x:e.pageX,y:e.pageY},s=this._normValueFromMouse(i),n=this._valueMax()-this._valueMin()+1,this.handles.each(function(e){var i=Math.abs(s-u.values(e));(n>i||n===i&&(e===u._lastChangedValue||u.values(e)===c.min))&&(n=i,a=t(this),o=e)}),r=this._start(e,o),r===!1?!1:(this._mouseSliding=!0,this._handleIndex=o,a.addClass("ui-state-active").focus(),h=a.offset(),l=!t(e.target).parents().addBack().is(".ui-slider-handle"),this._clickOffset=l?{left:0,top:0}:{left:e.pageX-h.left-a.width()/2,top:e.pageY-h.top-a.height()/2-(parseInt(a.css("borderTopWidth"),10)||0)-(parseInt(a.css("borderBottomWidth"),10)||0)+(parseInt(a.css("marginTop"),10)||0)},this.handles.hasClass("ui-state-hover")||this._slide(e,o,s),this._animateOff=!0,!0))},_mouseStart:function(){return!0},_mouseDrag:function(t){var e={x:t.pageX,y:t.pageY},i=this._normValueFromMouse(e);return this._slide(t,this._handleIndex,i),!1},_mouseStop:function(t){return this.handles.removeClass("ui-state-active"),this._mouseSliding=!1,this._stop(t,this._handleIndex),this._change(t,this._handleIndex),this._handleIndex=null,this._clickOffset=null,this._animateOff=!1,!1},_detectOrientation:function(){this.orientation="vertical"===this.options.orientation?"vertical":"horizontal"},_normValueFromMouse:function(t){var e,i,s,n,a;return"horizontal"===this.orientation?(e=this.elementSize.width,i=t.x-this.elementOffset.left-(this._clickOffset?this._clickOffset.left:0)):(e=this.elementSize.height,i=t.y-this.elementOffset.top-(this._clickOffset?this._clickOffset.top:0)),s=i/e,s>1&&(s=1),0>s&&(s=0),"vertical"===this.orientation&&(s=1-s),n=this._valueMax()-this._valueMin(),a=this._valueMin()+s*n,this._trimAlignValue(a)},_start:function(t,e){var i={handle:this.handles[e],value:this.value()};return this.options.values&&this.options.values.length&&(i.value=this.values(e),i.values=this.values()),this._trigger("start",t,i)},_slide:function(t,e,i){var s,n,a;this.options.values&&this.options.values.length?(s=this.values(e?0:1),2===this.options.values.length&&this.options.range===!0&&(0===e&&i>s||1===e&&s>i)&&(i=s),i!==this.values(e)&&(n=this.values(),n[e]=i,a=this._trigger("slide",t,{handle:this.handles[e],value:i,values:n}),s=this.values(e?0:1),a!==!1&&this.values(e,i,!0))):i!==this.value()&&(a=this._trigger("slide",t,{handle:this.handles[e],value:i}),a!==!1&&this.value(i))},_stop:function(t,e){var i={handle:this.handles[e],value:this.value()};this.options.values&&this.options.values.length&&(i.value=this.values(e),i.values=this.values()),this._trigger("stop",t,i)},_change:function(t,e){if(!this._keySliding&&!this._mouseSliding){var i={handle:this.handles[e],value:this.value()};this.options.values&&this.options.values.length&&(i.value=this.values(e),i.values=this.values()),this._lastChangedValue=e,this._trigger("change",t,i)}},value:function(t){return arguments.length?(this.options.value=this._trimAlignValue(t),this._refreshValue(),this._change(null,0),undefined):this._value()},values:function(e,i){var s,n,a;if(arguments.length>1)return this.options.values[e]=this._trimAlignValue(i),this._refreshValue(),this._change(null,e),undefined;if(!arguments.length)return this._values();if(!t.isArray(arguments[0]))return this.options.values&&this.options.values.length?this._values(e):this.value();for(s=this.options.values,n=arguments[0],a=0;s.length>a;a+=1)s[a]=this._trimAlignValue(n[a]),this._change(null,a);this._refreshValue()},_setOption:function(e,i){var s,n=0;switch("range"===e&&this.options.range===!0&&("min"===i?(this.options.value=this._values(0),this.options.values=null):"max"===i&&(this.options.value=this._values(this.options.values.length-1),this.options.values=null)),t.isArray(this.options.values)&&(n=this.options.values.length),t.Widget.prototype._setOption.apply(this,arguments),e){case"orientation":this._detectOrientation(),this.element.removeClass("ui-slider-horizontal ui-slider-vertical").addClass("ui-slider-"+this.orientation),this._refreshValue();break;case"value":this._animateOff=!0,this._refreshValue(),this._change(null,0),this._animateOff=!1;break;case"values":for(this._animateOff=!0,this._refreshValue(),s=0;n>s;s+=1)this._change(null,s);this._animateOff=!1;break;case"min":case"max":this._animateOff=!0,this._refreshValue(),this._animateOff=!1;break;case"range":this._animateOff=!0,this._refresh(),this._animateOff=!1}},_value:function(){var t=this.options.value;return t=this._trimAlignValue(t)},_values:function(t){var e,i,s;if(arguments.length)return e=this.options.values[t],e=this._trimAlignValue(e);if(this.options.values&&this.options.values.length){for(i=this.options.values.slice(),s=0;i.length>s;s+=1)i[s]=this._trimAlignValue(i[s]);return i}return[]},_trimAlignValue:function(t){if(this._valueMin()>=t)return this._valueMin();if(t>=this._valueMax())return this._valueMax();var e=this.options.step>0?this.options.step:1,i=(t-this._valueMin())%e,s=t-i;return 2*Math.abs(i)>=e&&(s+=i>0?e:-e),parseFloat(s.toFixed(5))},_valueMin:function(){return this.options.min},_valueMax:function(){return this.options.max},_refreshValue:function(){var e,i,s,n,a,o=this.options.range,r=this.options,h=this,l=this._animateOff?!1:r.animate,u={};this.options.values&&this.options.values.length?this.handles.each(function(s){i=100*((h.values(s)-h._valueMin())/(h._valueMax()-h._valueMin())),u["horizontal"===h.orientation?"left":"bottom"]=i+"%",t(this).stop(1,1)[l?"animate":"css"](u,r.animate),h.options.range===!0&&("horizontal"===h.orientation?(0===s&&h.range.stop(1,1)[l?"animate":"css"]({left:i+"%"},r.animate),1===s&&h.range[l?"animate":"css"]({width:i-e+"%"},{queue:!1,duration:r.animate})):(0===s&&h.range.stop(1,1)[l?"animate":"css"]({bottom:i+"%"},r.animate),1===s&&h.range[l?"animate":"css"]({height:i-e+"%"},{queue:!1,duration:r.animate}))),e=i}):(s=this.value(),n=this._valueMin(),a=this._valueMax(),i=a!==n?100*((s-n)/(a-n)):0,u["horizontal"===this.orientation?"left":"bottom"]=i+"%",this.handle.stop(1,1)[l?"animate":"css"](u,r.animate),"min"===o&&"horizontal"===this.orientation&&this.range.stop(1,1)[l?"animate":"css"]({width:i+"%"},r.animate),"max"===o&&"horizontal"===this.orientation&&this.range[l?"animate":"css"]({width:100-i+"%"},{queue:!1,duration:r.animate}),"min"===o&&"vertical"===this.orientation&&this.range.stop(1,1)[l?"animate":"css"]({height:i+"%"},r.animate),"max"===o&&"vertical"===this.orientation&&this.range[l?"animate":"css"]({height:100-i+"%"},{queue:!1,duration:r.animate}))},_handleEvents:{keydown:function(i){var s,n,a,o,r=t(i.target).data("ui-slider-handle-index");switch(i.keyCode){case t.ui.keyCode.HOME:case t.ui.keyCode.END:case t.ui.keyCode.PAGE_UP:case t.ui.keyCode.PAGE_DOWN:case t.ui.keyCode.UP:case t.ui.keyCode.RIGHT:case t.ui.keyCode.DOWN:case t.ui.keyCode.LEFT:if(i.preventDefault(),!this._keySliding&&(this._keySliding=!0,t(i.target).addClass("ui-state-active"),s=this._start(i,r),s===!1))return}switch(o=this.options.step,n=a=this.options.values&&this.options.values.length?this.values(r):this.value(),i.keyCode){case t.ui.keyCode.HOME:a=this._valueMin();break;case t.ui.keyCode.END:a=this._valueMax();break;case t.ui.keyCode.PAGE_UP:a=this._trimAlignValue(n+(this._valueMax()-this._valueMin())/e);break;case t.ui.keyCode.PAGE_DOWN:a=this._trimAlignValue(n-(this._valueMax()-this._valueMin())/e);break;case t.ui.keyCode.UP:case t.ui.keyCode.RIGHT:if(n===this._valueMax())return;a=this._trimAlignValue(n+o);break;case t.ui.keyCode.DOWN:case t.ui.keyCode.LEFT:if(n===this._valueMin())return;a=this._trimAlignValue(n-o)}this._slide(i,r,a)},click:function(t){t.preventDefault()},keyup:function(e){var i=t(e.target).data("ui-slider-handle-index");this._keySliding&&(this._keySliding=!1,this._stop(e,i),this._change(e,i),t(e.target).removeClass("ui-state-active"))}}})})(jQuery);(function(t){function e(t){return function(){var e=this.element.val();t.apply(this,arguments),this._refresh(),e!==this.element.val()&&this._trigger("change")}}t.widget("ui.spinner",{version:"1.10.2",defaultElement:"<input>",widgetEventPrefix:"spin",options:{culture:null,icons:{down:"ui-icon-triangle-1-s",up:"ui-icon-triangle-1-n"},incremental:!0,max:null,min:null,numberFormat:null,page:10,step:1,change:null,spin:null,start:null,stop:null},_create:function(){this._setOption("max",this.options.max),this._setOption("min",this.options.min),this._setOption("step",this.options.step),this._value(this.element.val(),!0),this._draw(),this._on(this._events),this._refresh(),this._on(this.window,{beforeunload:function(){this.element.removeAttr("autocomplete")}})},_getCreateOptions:function(){var e={},i=this.element;return t.each(["min","max","step"],function(t,s){var n=i.attr(s);void 0!==n&&n.length&&(e[s]=n)}),e},_events:{keydown:function(t){this._start(t)&&this._keydown(t)&&t.preventDefault()},keyup:"_stop",focus:function(){this.previous=this.element.val()},blur:function(t){return this.cancelBlur?(delete this.cancelBlur,void 0):(this._stop(),this._refresh(),this.previous!==this.element.val()&&this._trigger("change",t),void 0)},mousewheel:function(t,e){if(e){if(!this.spinning&&!this._start(t))return!1;this._spin((e>0?1:-1)*this.options.step,t),clearTimeout(this.mousewheelTimer),this.mousewheelTimer=this._delay(function(){this.spinning&&this._stop(t)},100),t.preventDefault()}},"mousedown .ui-spinner-button":function(e){function i(){var t=this.element[0]===this.document[0].activeElement;t||(this.element.focus(),this.previous=s,this._delay(function(){this.previous=s}))}var s;s=this.element[0]===this.document[0].activeElement?this.previous:this.element.val(),e.preventDefault(),i.call(this),this.cancelBlur=!0,this._delay(function(){delete this.cancelBlur,i.call(this)}),this._start(e)!==!1&&this._repeat(null,t(e.currentTarget).hasClass("ui-spinner-up")?1:-1,e)},"mouseup .ui-spinner-button":"_stop","mouseenter .ui-spinner-button":function(e){return t(e.currentTarget).hasClass("ui-state-active")?this._start(e)===!1?!1:(this._repeat(null,t(e.currentTarget).hasClass("ui-spinner-up")?1:-1,e),void 0):void 0},"mouseleave .ui-spinner-button":"_stop"},_draw:function(){var t=this.uiSpinner=this.element.addClass("ui-spinner-input").attr("autocomplete","off").wrap(this._uiSpinnerHtml()).parent().append(this._buttonHtml());this.element.attr("role","spinbutton"),this.buttons=t.find(".ui-spinner-button").attr("tabIndex",-1).button().removeClass("ui-corner-all"),this.buttons.height()>Math.ceil(.5*t.height())&&t.height()>0&&t.height(t.height()),this.options.disabled&&this.disable()},_keydown:function(e){var i=this.options,s=t.ui.keyCode;switch(e.keyCode){case s.UP:return this._repeat(null,1,e),!0;case s.DOWN:return this._repeat(null,-1,e),!0;case s.PAGE_UP:return this._repeat(null,i.page,e),!0;case s.PAGE_DOWN:return this._repeat(null,-i.page,e),!0}return!1},_uiSpinnerHtml:function(){return"<span class='ui-spinner ui-widget ui-widget-content ui-corner-all'></span>"},_buttonHtml:function(){return"<a class='ui-spinner-button ui-spinner-up ui-corner-tr'><span class='ui-icon "+this.options.icons.up+"'>&#9650;</span>"+"</a>"+"<a class='ui-spinner-button ui-spinner-down ui-corner-br'>"+"<span class='ui-icon "+this.options.icons.down+"'>&#9660;</span>"+"</a>"},_start:function(t){return this.spinning||this._trigger("start",t)!==!1?(this.counter||(this.counter=1),this.spinning=!0,!0):!1},_repeat:function(t,e,i){t=t||500,clearTimeout(this.timer),this.timer=this._delay(function(){this._repeat(40,e,i)},t),this._spin(e*this.options.step,i)},_spin:function(t,e){var i=this.value()||0;this.counter||(this.counter=1),i=this._adjustValue(i+t*this._increment(this.counter)),this.spinning&&this._trigger("spin",e,{value:i})===!1||(this._value(i),this.counter++)},_increment:function(e){var i=this.options.incremental;return i?t.isFunction(i)?i(e):Math.floor(e*e*e/5e4-e*e/500+17*e/200+1):1},_precision:function(){var t=this._precisionOf(this.options.step);return null!==this.options.min&&(t=Math.max(t,this._precisionOf(this.options.min))),t},_precisionOf:function(t){var e=""+t,i=e.indexOf(".");return-1===i?0:e.length-i-1},_adjustValue:function(t){var e,i,s=this.options;return e=null!==s.min?s.min:0,i=t-e,i=Math.round(i/s.step)*s.step,t=e+i,t=parseFloat(t.toFixed(this._precision())),null!==s.max&&t>s.max?s.max:null!==s.min&&s.min>t?s.min:t},_stop:function(t){this.spinning&&(clearTimeout(this.timer),clearTimeout(this.mousewheelTimer),this.counter=0,this.spinning=!1,this._trigger("stop",t))},_setOption:function(t,e){if("culture"===t||"numberFormat"===t){var i=this._parse(this.element.val());return this.options[t]=e,this.element.val(this._format(i)),void 0}("max"===t||"min"===t||"step"===t)&&"string"==typeof e&&(e=this._parse(e)),"icons"===t&&(this.buttons.first().find(".ui-icon").removeClass(this.options.icons.up).addClass(e.up),this.buttons.last().find(".ui-icon").removeClass(this.options.icons.down).addClass(e.down)),this._super(t,e),"disabled"===t&&(e?(this.element.prop("disabled",!0),this.buttons.button("disable")):(this.element.prop("disabled",!1),this.buttons.button("enable")))},_setOptions:e(function(t){this._super(t),this._value(this.element.val())}),_parse:function(t){return"string"==typeof t&&""!==t&&(t=window.Globalize&&this.options.numberFormat?Globalize.parseFloat(t,10,this.options.culture):+t),""===t||isNaN(t)?null:t},_format:function(t){return""===t?"":window.Globalize&&this.options.numberFormat?Globalize.format(t,this.options.numberFormat,this.options.culture):t},_refresh:function(){this.element.attr({"aria-valuemin":this.options.min,"aria-valuemax":this.options.max,"aria-valuenow":this._parse(this.element.val())})},_value:function(t,e){var i;""!==t&&(i=this._parse(t),null!==i&&(e||(i=this._adjustValue(i)),t=this._format(i))),this.element.val(t),this._refresh()},_destroy:function(){this.element.removeClass("ui-spinner-input").prop("disabled",!1).removeAttr("autocomplete").removeAttr("role").removeAttr("aria-valuemin").removeAttr("aria-valuemax").removeAttr("aria-valuenow"),this.uiSpinner.replaceWith(this.element)},stepUp:e(function(t){this._stepUp(t)}),_stepUp:function(t){this._start()&&(this._spin((t||1)*this.options.step),this._stop())},stepDown:e(function(t){this._stepDown(t)}),_stepDown:function(t){this._start()&&(this._spin((t||1)*-this.options.step),this._stop())},pageUp:e(function(t){this._stepUp((t||1)*this.options.page)}),pageDown:e(function(t){this._stepDown((t||1)*this.options.page)}),value:function(t){return arguments.length?(e(this._value).call(this,t),void 0):this._parse(this.element.val())},widget:function(){return this.uiSpinner}})})(jQuery);(function(t,e){function i(){return++n}function s(t){return t.hash.length>1&&decodeURIComponent(t.href.replace(a,""))===decodeURIComponent(location.href.replace(a,""))}var n=0,a=/#.*$/;t.widget("ui.tabs",{version:"1.10.2",delay:300,options:{active:null,collapsible:!1,event:"click",heightStyle:"content",hide:null,show:null,activate:null,beforeActivate:null,beforeLoad:null,load:null},_create:function(){var e=this,i=this.options;this.running=!1,this.element.addClass("ui-tabs ui-widget ui-widget-content ui-corner-all").toggleClass("ui-tabs-collapsible",i.collapsible).delegate(".ui-tabs-nav > li","mousedown"+this.eventNamespace,function(e){t(this).is(".ui-state-disabled")&&e.preventDefault()}).delegate(".ui-tabs-anchor","focus"+this.eventNamespace,function(){t(this).closest("li").is(".ui-state-disabled")&&this.blur()}),this._processTabs(),i.active=this._initialActive(),t.isArray(i.disabled)&&(i.disabled=t.unique(i.disabled.concat(t.map(this.tabs.filter(".ui-state-disabled"),function(t){return e.tabs.index(t)}))).sort()),this.active=this.options.active!==!1&&this.anchors.length?this._findActive(i.active):t(),this._refresh(),this.active.length&&this.load(i.active)},_initialActive:function(){var i=this.options.active,s=this.options.collapsible,n=location.hash.substring(1);return null===i&&(n&&this.tabs.each(function(s,a){return t(a).attr("aria-controls")===n?(i=s,!1):e}),null===i&&(i=this.tabs.index(this.tabs.filter(".ui-tabs-active"))),(null===i||-1===i)&&(i=this.tabs.length?0:!1)),i!==!1&&(i=this.tabs.index(this.tabs.eq(i)),-1===i&&(i=s?!1:0)),!s&&i===!1&&this.anchors.length&&(i=0),i},_getCreateEventData:function(){return{tab:this.active,panel:this.active.length?this._getPanelForTab(this.active):t()}},_tabKeydown:function(i){var s=t(this.document[0].activeElement).closest("li"),n=this.tabs.index(s),a=!0;if(!this._handlePageNav(i)){switch(i.keyCode){case t.ui.keyCode.RIGHT:case t.ui.keyCode.DOWN:n++;break;case t.ui.keyCode.UP:case t.ui.keyCode.LEFT:a=!1,n--;break;case t.ui.keyCode.END:n=this.anchors.length-1;break;case t.ui.keyCode.HOME:n=0;break;case t.ui.keyCode.SPACE:return i.preventDefault(),clearTimeout(this.activating),this._activate(n),e;case t.ui.keyCode.ENTER:return i.preventDefault(),clearTimeout(this.activating),this._activate(n===this.options.active?!1:n),e;default:return}i.preventDefault(),clearTimeout(this.activating),n=this._focusNextTab(n,a),i.ctrlKey||(s.attr("aria-selected","false"),this.tabs.eq(n).attr("aria-selected","true"),this.activating=this._delay(function(){this.option("active",n)},this.delay))}},_panelKeydown:function(e){this._handlePageNav(e)||e.ctrlKey&&e.keyCode===t.ui.keyCode.UP&&(e.preventDefault(),this.active.focus())},_handlePageNav:function(i){return i.altKey&&i.keyCode===t.ui.keyCode.PAGE_UP?(this._activate(this._focusNextTab(this.options.active-1,!1)),!0):i.altKey&&i.keyCode===t.ui.keyCode.PAGE_DOWN?(this._activate(this._focusNextTab(this.options.active+1,!0)),!0):e},_findNextTab:function(e,i){function s(){return e>n&&(e=0),0>e&&(e=n),e}for(var n=this.tabs.length-1;-1!==t.inArray(s(),this.options.disabled);)e=i?e+1:e-1;return e},_focusNextTab:function(t,e){return t=this._findNextTab(t,e),this.tabs.eq(t).focus(),t},_setOption:function(t,i){return"active"===t?(this._activate(i),e):"disabled"===t?(this._setupDisabled(i),e):(this._super(t,i),"collapsible"===t&&(this.element.toggleClass("ui-tabs-collapsible",i),i||this.options.active!==!1||this._activate(0)),"event"===t&&this._setupEvents(i),"heightStyle"===t&&this._setupHeightStyle(i),e)},_tabId:function(t){return t.attr("aria-controls")||"ui-tabs-"+i()},_sanitizeSelector:function(t){return t?t.replace(/[!"$%&'()*+,.\/:;<=>?@\[\]\^`{|}~]/g,"\\$&"):""},refresh:function(){var e=this.options,i=this.tablist.children(":has(a[href])");e.disabled=t.map(i.filter(".ui-state-disabled"),function(t){return i.index(t)}),this._processTabs(),e.active!==!1&&this.anchors.length?this.active.length&&!t.contains(this.tablist[0],this.active[0])?this.tabs.length===e.disabled.length?(e.active=!1,this.active=t()):this._activate(this._findNextTab(Math.max(0,e.active-1),!1)):e.active=this.tabs.index(this.active):(e.active=!1,this.active=t()),this._refresh()},_refresh:function(){this._setupDisabled(this.options.disabled),this._setupEvents(this.options.event),this._setupHeightStyle(this.options.heightStyle),this.tabs.not(this.active).attr({"aria-selected":"false",tabIndex:-1}),this.panels.not(this._getPanelForTab(this.active)).hide().attr({"aria-expanded":"false","aria-hidden":"true"}),this.active.length?(this.active.addClass("ui-tabs-active ui-state-active").attr({"aria-selected":"true",tabIndex:0}),this._getPanelForTab(this.active).show().attr({"aria-expanded":"true","aria-hidden":"false"})):this.tabs.eq(0).attr("tabIndex",0)},_processTabs:function(){var e=this;this.tablist=this._getList().addClass("ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all").attr("role","tablist"),this.tabs=this.tablist.find("> li:has(a[href])").addClass("ui-state-default ui-corner-top").attr({role:"tab",tabIndex:-1}),this.anchors=this.tabs.map(function(){return t("a",this)[0]}).addClass("ui-tabs-anchor").attr({role:"presentation",tabIndex:-1}),this.panels=t(),this.anchors.each(function(i,n){var a,o,r,h=t(n).uniqueId().attr("id"),l=t(n).closest("li"),u=l.attr("aria-controls");s(n)?(a=n.hash,o=e.element.find(e._sanitizeSelector(a))):(r=e._tabId(l),a="#"+r,o=e.element.find(a),o.length||(o=e._createPanel(r),o.insertAfter(e.panels[i-1]||e.tablist)),o.attr("aria-live","polite")),o.length&&(e.panels=e.panels.add(o)),u&&l.data("ui-tabs-aria-controls",u),l.attr({"aria-controls":a.substring(1),"aria-labelledby":h}),o.attr("aria-labelledby",h)}),this.panels.addClass("ui-tabs-panel ui-widget-content ui-corner-bottom").attr("role","tabpanel")},_getList:function(){return this.element.find("ol,ul").eq(0)},_createPanel:function(e){return t("<div>").attr("id",e).addClass("ui-tabs-panel ui-widget-content ui-corner-bottom").data("ui-tabs-destroy",!0)},_setupDisabled:function(e){t.isArray(e)&&(e.length?e.length===this.anchors.length&&(e=!0):e=!1);for(var i,s=0;i=this.tabs[s];s++)e===!0||-1!==t.inArray(s,e)?t(i).addClass("ui-state-disabled").attr("aria-disabled","true"):t(i).removeClass("ui-state-disabled").removeAttr("aria-disabled");this.options.disabled=e},_setupEvents:function(e){var i={click:function(t){t.preventDefault()}};e&&t.each(e.split(" "),function(t,e){i[e]="_eventHandler"}),this._off(this.anchors.add(this.tabs).add(this.panels)),this._on(this.anchors,i),this._on(this.tabs,{keydown:"_tabKeydown"}),this._on(this.panels,{keydown:"_panelKeydown"}),this._focusable(this.tabs),this._hoverable(this.tabs)},_setupHeightStyle:function(e){var i,s=this.element.parent();"fill"===e?(i=s.height(),i-=this.element.outerHeight()-this.element.height(),this.element.siblings(":visible").each(function(){var e=t(this),s=e.css("position");"absolute"!==s&&"fixed"!==s&&(i-=e.outerHeight(!0))}),this.element.children().not(this.panels).each(function(){i-=t(this).outerHeight(!0)}),this.panels.each(function(){t(this).height(Math.max(0,i-t(this).innerHeight()+t(this).height()))}).css("overflow","auto")):"auto"===e&&(i=0,this.panels.each(function(){i=Math.max(i,t(this).height("").height())}).height(i))},_eventHandler:function(e){var i=this.options,s=this.active,n=t(e.currentTarget),a=n.closest("li"),o=a[0]===s[0],r=o&&i.collapsible,h=r?t():this._getPanelForTab(a),l=s.length?this._getPanelForTab(s):t(),u={oldTab:s,oldPanel:l,newTab:r?t():a,newPanel:h};e.preventDefault(),a.hasClass("ui-state-disabled")||a.hasClass("ui-tabs-loading")||this.running||o&&!i.collapsible||this._trigger("beforeActivate",e,u)===!1||(i.active=r?!1:this.tabs.index(a),this.active=o?t():a,this.xhr&&this.xhr.abort(),l.length||h.length||t.error("jQuery UI Tabs: Mismatching fragment identifier."),h.length&&this.load(this.tabs.index(a),e),this._toggle(e,u))},_toggle:function(e,i){function s(){a.running=!1,a._trigger("activate",e,i)}function n(){i.newTab.closest("li").addClass("ui-tabs-active ui-state-active"),o.length&&a.options.show?a._show(o,a.options.show,s):(o.show(),s())}var a=this,o=i.newPanel,r=i.oldPanel;this.running=!0,r.length&&this.options.hide?this._hide(r,this.options.hide,function(){i.oldTab.closest("li").removeClass("ui-tabs-active ui-state-active"),n()}):(i.oldTab.closest("li").removeClass("ui-tabs-active ui-state-active"),r.hide(),n()),r.attr({"aria-expanded":"false","aria-hidden":"true"}),i.oldTab.attr("aria-selected","false"),o.length&&r.length?i.oldTab.attr("tabIndex",-1):o.length&&this.tabs.filter(function(){return 0===t(this).attr("tabIndex")}).attr("tabIndex",-1),o.attr({"aria-expanded":"true","aria-hidden":"false"}),i.newTab.attr({"aria-selected":"true",tabIndex:0})},_activate:function(e){var i,s=this._findActive(e);s[0]!==this.active[0]&&(s.length||(s=this.active),i=s.find(".ui-tabs-anchor")[0],this._eventHandler({target:i,currentTarget:i,preventDefault:t.noop}))},_findActive:function(e){return e===!1?t():this.tabs.eq(e)},_getIndex:function(t){return"string"==typeof t&&(t=this.anchors.index(this.anchors.filter("[href$='"+t+"']"))),t},_destroy:function(){this.xhr&&this.xhr.abort(),this.element.removeClass("ui-tabs ui-widget ui-widget-content ui-corner-all ui-tabs-collapsible"),this.tablist.removeClass("ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all").removeAttr("role"),this.anchors.removeClass("ui-tabs-anchor").removeAttr("role").removeAttr("tabIndex").removeUniqueId(),this.tabs.add(this.panels).each(function(){t.data(this,"ui-tabs-destroy")?t(this).remove():t(this).removeClass("ui-state-default ui-state-active ui-state-disabled ui-corner-top ui-corner-bottom ui-widget-content ui-tabs-active ui-tabs-panel").removeAttr("tabIndex").removeAttr("aria-live").removeAttr("aria-busy").removeAttr("aria-selected").removeAttr("aria-labelledby").removeAttr("aria-hidden").removeAttr("aria-expanded").removeAttr("role")}),this.tabs.each(function(){var e=t(this),i=e.data("ui-tabs-aria-controls");i?e.attr("aria-controls",i).removeData("ui-tabs-aria-controls"):e.removeAttr("aria-controls")}),this.panels.show(),"content"!==this.options.heightStyle&&this.panels.css("height","")},enable:function(i){var s=this.options.disabled;s!==!1&&(i===e?s=!1:(i=this._getIndex(i),s=t.isArray(s)?t.map(s,function(t){return t!==i?t:null}):t.map(this.tabs,function(t,e){return e!==i?e:null})),this._setupDisabled(s))},disable:function(i){var s=this.options.disabled;if(s!==!0){if(i===e)s=!0;else{if(i=this._getIndex(i),-1!==t.inArray(i,s))return;s=t.isArray(s)?t.merge([i],s).sort():[i]}this._setupDisabled(s)}},load:function(e,i){e=this._getIndex(e);var n=this,a=this.tabs.eq(e),o=a.find(".ui-tabs-anchor"),r=this._getPanelForTab(a),h={tab:a,panel:r};s(o[0])||(this.xhr=t.ajax(this._ajaxSettings(o,i,h)),this.xhr&&"canceled"!==this.xhr.statusText&&(a.addClass("ui-tabs-loading"),r.attr("aria-busy","true"),this.xhr.success(function(t){setTimeout(function(){r.html(t),n._trigger("load",i,h)},1)}).complete(function(t,e){setTimeout(function(){"abort"===e&&n.panels.stop(!1,!0),a.removeClass("ui-tabs-loading"),r.removeAttr("aria-busy"),t===n.xhr&&delete n.xhr},1)})))},_ajaxSettings:function(e,i,s){var n=this;return{url:e.attr("href"),beforeSend:function(e,a){return n._trigger("beforeLoad",i,t.extend({jqXHR:e,ajaxSettings:a},s))}}},_getPanelForTab:function(e){var i=t(e).attr("aria-controls");return this.element.find(this._sanitizeSelector("#"+i))}})})(jQuery);(function(t){function e(e,i){var s=(e.attr("aria-describedby")||"").split(/\s+/);s.push(i),e.data("ui-tooltip-id",i).attr("aria-describedby",t.trim(s.join(" ")))}function i(e){var i=e.data("ui-tooltip-id"),s=(e.attr("aria-describedby")||"").split(/\s+/),n=t.inArray(i,s);-1!==n&&s.splice(n,1),e.removeData("ui-tooltip-id"),s=t.trim(s.join(" ")),s?e.attr("aria-describedby",s):e.removeAttr("aria-describedby")}var s=0;t.widget("ui.tooltip",{version:"1.10.2",options:{content:function(){var e=t(this).attr("title")||"";return t("<a>").text(e).html()},hide:!0,items:"[title]:not([disabled])",position:{my:"left top+15",at:"left bottom",collision:"flipfit flip"},show:!0,tooltipClass:null,track:!1,close:null,open:null},_create:function(){this._on({mouseover:"open",focusin:"open"}),this.tooltips={},this.parents={},this.options.disabled&&this._disable()},_setOption:function(e,i){var s=this;return"disabled"===e?(this[i?"_disable":"_enable"](),this.options[e]=i,void 0):(this._super(e,i),"content"===e&&t.each(this.tooltips,function(t,e){s._updateContent(e)}),void 0)},_disable:function(){var e=this;t.each(this.tooltips,function(i,s){var n=t.Event("blur");n.target=n.currentTarget=s[0],e.close(n,!0)}),this.element.find(this.options.items).addBack().each(function(){var e=t(this);e.is("[title]")&&e.data("ui-tooltip-title",e.attr("title")).attr("title","")})},_enable:function(){this.element.find(this.options.items).addBack().each(function(){var e=t(this);e.data("ui-tooltip-title")&&e.attr("title",e.data("ui-tooltip-title"))})},open:function(e){var i=this,s=t(e?e.target:this.element).closest(this.options.items);s.length&&!s.data("ui-tooltip-id")&&(s.attr("title")&&s.data("ui-tooltip-title",s.attr("title")),s.data("ui-tooltip-open",!0),e&&"mouseover"===e.type&&s.parents().each(function(){var e,s=t(this);s.data("ui-tooltip-open")&&(e=t.Event("blur"),e.target=e.currentTarget=this,i.close(e,!0)),s.attr("title")&&(s.uniqueId(),i.parents[this.id]={element:this,title:s.attr("title")},s.attr("title",""))}),this._updateContent(s,e))},_updateContent:function(t,e){var i,s=this.options.content,n=this,a=e?e.type:null;return"string"==typeof s?this._open(e,t,s):(i=s.call(t[0],function(i){t.data("ui-tooltip-open")&&n._delay(function(){e&&(e.type=a),this._open(e,t,i)})}),i&&this._open(e,t,i),void 0)},_open:function(i,s,n){function a(t){l.of=t,o.is(":hidden")||o.position(l)}var o,r,h,l=t.extend({},this.options.position);if(n){if(o=this._find(s),o.length)return o.find(".ui-tooltip-content").html(n),void 0;s.is("[title]")&&(i&&"mouseover"===i.type?s.attr("title",""):s.removeAttr("title")),o=this._tooltip(s),e(s,o.attr("id")),o.find(".ui-tooltip-content").html(n),this.options.track&&i&&/^mouse/.test(i.type)?(this._on(this.document,{mousemove:a}),a(i)):o.position(t.extend({of:s},this.options.position)),o.hide(),this._show(o,this.options.show),this.options.show&&this.options.show.delay&&(h=this.delayedShow=setInterval(function(){o.is(":visible")&&(a(l.of),clearInterval(h))},t.fx.interval)),this._trigger("open",i,{tooltip:o}),r={keyup:function(e){if(e.keyCode===t.ui.keyCode.ESCAPE){var i=t.Event(e);i.currentTarget=s[0],this.close(i,!0)}},remove:function(){this._removeTooltip(o)}},i&&"mouseover"!==i.type||(r.mouseleave="close"),i&&"focusin"!==i.type||(r.focusout="close"),this._on(!0,s,r)}},close:function(e){var s=this,n=t(e?e.currentTarget:this.element),a=this._find(n);this.closing||(clearInterval(this.delayedShow),n.data("ui-tooltip-title")&&n.attr("title",n.data("ui-tooltip-title")),i(n),a.stop(!0),this._hide(a,this.options.hide,function(){s._removeTooltip(t(this))}),n.removeData("ui-tooltip-open"),this._off(n,"mouseleave focusout keyup"),n[0]!==this.element[0]&&this._off(n,"remove"),this._off(this.document,"mousemove"),e&&"mouseleave"===e.type&&t.each(this.parents,function(e,i){t(i.element).attr("title",i.title),delete s.parents[e]}),this.closing=!0,this._trigger("close",e,{tooltip:a}),this.closing=!1)},_tooltip:function(e){var i="ui-tooltip-"+s++,n=t("<div>").attr({id:i,role:"tooltip"}).addClass("ui-tooltip ui-widget ui-corner-all ui-widget-content "+(this.options.tooltipClass||""));return t("<div>").addClass("ui-tooltip-content").appendTo(n),n.appendTo(this.document[0].body),this.tooltips[i]=e,n},_find:function(e){var i=e.data("ui-tooltip-id");return i?t("#"+i):t()},_removeTooltip:function(t){t.remove(),delete this.tooltips[t.attr("id")]},_destroy:function(){var e=this;t.each(this.tooltips,function(i,s){var n=t.Event("blur");n.target=n.currentTarget=s[0],e.close(n,!0),t("#"+i).remove(),s.data("ui-tooltip-title")&&(s.attr("title",s.data("ui-tooltip-title")),s.removeData("ui-tooltip-title"))})}})})(jQuery);(function(t,e){var i="ui-effects-";t.effects={effect:{}},function(t,e){function i(t,e,i){var s=u[e.type]||{};return null==t?i||!e.def?null:e.def:(t=s.floor?~~t:parseFloat(t),isNaN(t)?e.def:s.mod?(t+s.mod)%s.mod:0>t?0:t>s.max?s.max:t)}function s(i){var s=l(),n=s._rgba=[];return i=i.toLowerCase(),f(h,function(t,a){var o,r=a.re.exec(i),h=r&&a.parse(r),l=a.space||"rgba";return h?(o=s[l](h),s[c[l].cache]=o[c[l].cache],n=s._rgba=o._rgba,!1):e}),n.length?("0,0,0,0"===n.join()&&t.extend(n,a.transparent),s):a[i]}function n(t,e,i){return i=(i+1)%1,1>6*i?t+6*(e-t)*i:1>2*i?e:2>3*i?t+6*(e-t)*(2/3-i):t}var a,o="backgroundColor borderBottomColor borderLeftColor borderRightColor borderTopColor color columnRuleColor outlineColor textDecorationColor textEmphasisColor",r=/^([\-+])=\s*(\d+\.?\d*)/,h=[{re:/rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(?:,\s*(\d?(?:\.\d+)?)\s*)?\)/,parse:function(t){return[t[1],t[2],t[3],t[4]]}},{re:/rgba?\(\s*(\d+(?:\.\d+)?)\%\s*,\s*(\d+(?:\.\d+)?)\%\s*,\s*(\d+(?:\.\d+)?)\%\s*(?:,\s*(\d?(?:\.\d+)?)\s*)?\)/,parse:function(t){return[2.55*t[1],2.55*t[2],2.55*t[3],t[4]]}},{re:/#([a-f0-9]{2})([a-f0-9]{2})([a-f0-9]{2})/,parse:function(t){return[parseInt(t[1],16),parseInt(t[2],16),parseInt(t[3],16)]}},{re:/#([a-f0-9])([a-f0-9])([a-f0-9])/,parse:function(t){return[parseInt(t[1]+t[1],16),parseInt(t[2]+t[2],16),parseInt(t[3]+t[3],16)]}},{re:/hsla?\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\%\s*,\s*(\d+(?:\.\d+)?)\%\s*(?:,\s*(\d?(?:\.\d+)?)\s*)?\)/,space:"hsla",parse:function(t){return[t[1],t[2]/100,t[3]/100,t[4]]}}],l=t.Color=function(e,i,s,n){return new t.Color.fn.parse(e,i,s,n)},c={rgba:{props:{red:{idx:0,type:"byte"},green:{idx:1,type:"byte"},blue:{idx:2,type:"byte"}}},hsla:{props:{hue:{idx:0,type:"degrees"},saturation:{idx:1,type:"percent"},lightness:{idx:2,type:"percent"}}}},u={"byte":{floor:!0,max:255},percent:{max:1},degrees:{mod:360,floor:!0}},d=l.support={},p=t("<p>")[0],f=t.each;p.style.cssText="background-color:rgba(1,1,1,.5)",d.rgba=p.style.backgroundColor.indexOf("rgba")>-1,f(c,function(t,e){e.cache="_"+t,e.props.alpha={idx:3,type:"percent",def:1}}),l.fn=t.extend(l.prototype,{parse:function(n,o,r,h){if(n===e)return this._rgba=[null,null,null,null],this;(n.jquery||n.nodeType)&&(n=t(n).css(o),o=e);var u=this,d=t.type(n),p=this._rgba=[];return o!==e&&(n=[n,o,r,h],d="array"),"string"===d?this.parse(s(n)||a._default):"array"===d?(f(c.rgba.props,function(t,e){p[e.idx]=i(n[e.idx],e)}),this):"object"===d?(n instanceof l?f(c,function(t,e){n[e.cache]&&(u[e.cache]=n[e.cache].slice())}):f(c,function(e,s){var a=s.cache;f(s.props,function(t,e){if(!u[a]&&s.to){if("alpha"===t||null==n[t])return;u[a]=s.to(u._rgba)}u[a][e.idx]=i(n[t],e,!0)}),u[a]&&0>t.inArray(null,u[a].slice(0,3))&&(u[a][3]=1,s.from&&(u._rgba=s.from(u[a])))}),this):e},is:function(t){var i=l(t),s=!0,n=this;return f(c,function(t,a){var o,r=i[a.cache];return r&&(o=n[a.cache]||a.to&&a.to(n._rgba)||[],f(a.props,function(t,i){return null!=r[i.idx]?s=r[i.idx]===o[i.idx]:e})),s}),s},_space:function(){var t=[],e=this;return f(c,function(i,s){e[s.cache]&&t.push(i)}),t.pop()},transition:function(t,e){var s=l(t),n=s._space(),a=c[n],o=0===this.alpha()?l("transparent"):this,r=o[a.cache]||a.to(o._rgba),h=r.slice();return s=s[a.cache],f(a.props,function(t,n){var a=n.idx,o=r[a],l=s[a],c=u[n.type]||{};null!==l&&(null===o?h[a]=l:(c.mod&&(l-o>c.mod/2?o+=c.mod:o-l>c.mod/2&&(o-=c.mod)),h[a]=i((l-o)*e+o,n)))}),this[n](h)},blend:function(e){if(1===this._rgba[3])return this;var i=this._rgba.slice(),s=i.pop(),n=l(e)._rgba;return l(t.map(i,function(t,e){return(1-s)*n[e]+s*t}))},toRgbaString:function(){var e="rgba(",i=t.map(this._rgba,function(t,e){return null==t?e>2?1:0:t});return 1===i[3]&&(i.pop(),e="rgb("),e+i.join()+")"},toHslaString:function(){var e="hsla(",i=t.map(this.hsla(),function(t,e){return null==t&&(t=e>2?1:0),e&&3>e&&(t=Math.round(100*t)+"%"),t});return 1===i[3]&&(i.pop(),e="hsl("),e+i.join()+")"},toHexString:function(e){var i=this._rgba.slice(),s=i.pop();return e&&i.push(~~(255*s)),"#"+t.map(i,function(t){return t=(t||0).toString(16),1===t.length?"0"+t:t}).join("")},toString:function(){return 0===this._rgba[3]?"transparent":this.toRgbaString()}}),l.fn.parse.prototype=l.fn,c.hsla.to=function(t){if(null==t[0]||null==t[1]||null==t[2])return[null,null,null,t[3]];var e,i,s=t[0]/255,n=t[1]/255,a=t[2]/255,o=t[3],r=Math.max(s,n,a),h=Math.min(s,n,a),l=r-h,c=r+h,u=.5*c;return e=h===r?0:s===r?60*(n-a)/l+360:n===r?60*(a-s)/l+120:60*(s-n)/l+240,i=0===l?0:.5>=u?l/c:l/(2-c),[Math.round(e)%360,i,u,null==o?1:o]},c.hsla.from=function(t){if(null==t[0]||null==t[1]||null==t[2])return[null,null,null,t[3]];var e=t[0]/360,i=t[1],s=t[2],a=t[3],o=.5>=s?s*(1+i):s+i-s*i,r=2*s-o;return[Math.round(255*n(r,o,e+1/3)),Math.round(255*n(r,o,e)),Math.round(255*n(r,o,e-1/3)),a]},f(c,function(s,n){var a=n.props,o=n.cache,h=n.to,c=n.from;l.fn[s]=function(s){if(h&&!this[o]&&(this[o]=h(this._rgba)),s===e)return this[o].slice();var n,r=t.type(s),u="array"===r||"object"===r?s:arguments,d=this[o].slice();return f(a,function(t,e){var s=u["object"===r?t:e.idx];null==s&&(s=d[e.idx]),d[e.idx]=i(s,e)}),c?(n=l(c(d)),n[o]=d,n):l(d)},f(a,function(e,i){l.fn[e]||(l.fn[e]=function(n){var a,o=t.type(n),h="alpha"===e?this._hsla?"hsla":"rgba":s,l=this[h](),c=l[i.idx];return"undefined"===o?c:("function"===o&&(n=n.call(this,c),o=t.type(n)),null==n&&i.empty?this:("string"===o&&(a=r.exec(n),a&&(n=c+parseFloat(a[2])*("+"===a[1]?1:-1))),l[i.idx]=n,this[h](l)))})})}),l.hook=function(e){var i=e.split(" ");f(i,function(e,i){t.cssHooks[i]={set:function(e,n){var a,o,r="";if("transparent"!==n&&("string"!==t.type(n)||(a=s(n)))){if(n=l(a||n),!d.rgba&&1!==n._rgba[3]){for(o="backgroundColor"===i?e.parentNode:e;(""===r||"transparent"===r)&&o&&o.style;)try{r=t.css(o,"backgroundColor"),o=o.parentNode}catch(h){}n=n.blend(r&&"transparent"!==r?r:"_default")}n=n.toRgbaString()}try{e.style[i]=n}catch(h){}}},t.fx.step[i]=function(e){e.colorInit||(e.start=l(e.elem,i),e.end=l(e.end),e.colorInit=!0),t.cssHooks[i].set(e.elem,e.start.transition(e.end,e.pos))}})},l.hook(o),t.cssHooks.borderColor={expand:function(t){var e={};return f(["Top","Right","Bottom","Left"],function(i,s){e["border"+s+"Color"]=t}),e}},a=t.Color.names={aqua:"#00ffff",black:"#000000",blue:"#0000ff",fuchsia:"#ff00ff",gray:"#808080",green:"#008000",lime:"#00ff00",maroon:"#800000",navy:"#000080",olive:"#808000",purple:"#800080",red:"#ff0000",silver:"#c0c0c0",teal:"#008080",white:"#ffffff",yellow:"#ffff00",transparent:[null,null,null,0],_default:"#ffffff"}}(jQuery),function(){function i(e){var i,s,n=e.ownerDocument.defaultView?e.ownerDocument.defaultView.getComputedStyle(e,null):e.currentStyle,a={};if(n&&n.length&&n[0]&&n[n[0]])for(s=n.length;s--;)i=n[s],"string"==typeof n[i]&&(a[t.camelCase(i)]=n[i]);else for(i in n)"string"==typeof n[i]&&(a[i]=n[i]);return a}function s(e,i){var s,n,o={};for(s in i)n=i[s],e[s]!==n&&(a[s]||(t.fx.step[s]||!isNaN(parseFloat(n)))&&(o[s]=n));return o}var n=["add","remove","toggle"],a={border:1,borderBottom:1,borderColor:1,borderLeft:1,borderRight:1,borderTop:1,borderWidth:1,margin:1,padding:1};t.each(["borderLeftStyle","borderRightStyle","borderBottomStyle","borderTopStyle"],function(e,i){t.fx.step[i]=function(t){("none"!==t.end&&!t.setAttr||1===t.pos&&!t.setAttr)&&(jQuery.style(t.elem,i,t.end),t.setAttr=!0)}}),t.fn.addBack||(t.fn.addBack=function(t){return this.add(null==t?this.prevObject:this.prevObject.filter(t))}),t.effects.animateClass=function(e,a,o,r){var h=t.speed(a,o,r);return this.queue(function(){var a,o=t(this),r=o.attr("class")||"",l=h.children?o.find("*").addBack():o;l=l.map(function(){var e=t(this);return{el:e,start:i(this)}}),a=function(){t.each(n,function(t,i){e[i]&&o[i+"Class"](e[i])})},a(),l=l.map(function(){return this.end=i(this.el[0]),this.diff=s(this.start,this.end),this}),o.attr("class",r),l=l.map(function(){var e=this,i=t.Deferred(),s=t.extend({},h,{queue:!1,complete:function(){i.resolve(e)}});return this.el.animate(this.diff,s),i.promise()}),t.when.apply(t,l.get()).done(function(){a(),t.each(arguments,function(){var e=this.el;t.each(this.diff,function(t){e.css(t,"")})}),h.complete.call(o[0])})})},t.fn.extend({addClass:function(e){return function(i,s,n,a){return s?t.effects.animateClass.call(this,{add:i},s,n,a):e.apply(this,arguments)}}(t.fn.addClass),removeClass:function(e){return function(i,s,n,a){return arguments.length>1?t.effects.animateClass.call(this,{remove:i},s,n,a):e.apply(this,arguments)}}(t.fn.removeClass),toggleClass:function(i){return function(s,n,a,o,r){return"boolean"==typeof n||n===e?a?t.effects.animateClass.call(this,n?{add:s}:{remove:s},a,o,r):i.apply(this,arguments):t.effects.animateClass.call(this,{toggle:s},n,a,o)}}(t.fn.toggleClass),switchClass:function(e,i,s,n,a){return t.effects.animateClass.call(this,{add:i,remove:e},s,n,a)}})}(),function(){function s(e,i,s,n){return t.isPlainObject(e)&&(i=e,e=e.effect),e={effect:e},null==i&&(i={}),t.isFunction(i)&&(n=i,s=null,i={}),("number"==typeof i||t.fx.speeds[i])&&(n=s,s=i,i={}),t.isFunction(s)&&(n=s,s=null),i&&t.extend(e,i),s=s||i.duration,e.duration=t.fx.off?0:"number"==typeof s?s:s in t.fx.speeds?t.fx.speeds[s]:t.fx.speeds._default,e.complete=n||i.complete,e}function n(e){return!e||"number"==typeof e||t.fx.speeds[e]?!0:"string"!=typeof e||t.effects.effect[e]?t.isFunction(e)?!0:"object"!=typeof e||e.effect?!1:!0:!0}t.extend(t.effects,{version:"1.10.2",save:function(t,e){for(var s=0;e.length>s;s++)null!==e[s]&&t.data(i+e[s],t[0].style[e[s]])},restore:function(t,s){var n,a;for(a=0;s.length>a;a++)null!==s[a]&&(n=t.data(i+s[a]),n===e&&(n=""),t.css(s[a],n))},setMode:function(t,e){return"toggle"===e&&(e=t.is(":hidden")?"show":"hide"),e},getBaseline:function(t,e){var i,s;switch(t[0]){case"top":i=0;break;case"middle":i=.5;break;case"bottom":i=1;break;default:i=t[0]/e.height}switch(t[1]){case"left":s=0;break;case"center":s=.5;break;case"right":s=1;break;default:s=t[1]/e.width}return{x:s,y:i}},createWrapper:function(e){if(e.parent().is(".ui-effects-wrapper"))return e.parent();var i={width:e.outerWidth(!0),height:e.outerHeight(!0),"float":e.css("float")},s=t("<div></div>").addClass("ui-effects-wrapper").css({fontSize:"100%",background:"transparent",border:"none",margin:0,padding:0}),n={width:e.width(),height:e.height()},a=document.activeElement;try{a.id}catch(o){a=document.body}return e.wrap(s),(e[0]===a||t.contains(e[0],a))&&t(a).focus(),s=e.parent(),"static"===e.css("position")?(s.css({position:"relative"}),e.css({position:"relative"})):(t.extend(i,{position:e.css("position"),zIndex:e.css("z-index")}),t.each(["top","left","bottom","right"],function(t,s){i[s]=e.css(s),isNaN(parseInt(i[s],10))&&(i[s]="auto")}),e.css({position:"relative",top:0,left:0,right:"auto",bottom:"auto"})),e.css(n),s.css(i).show()},removeWrapper:function(e){var i=document.activeElement;return e.parent().is(".ui-effects-wrapper")&&(e.parent().replaceWith(e),(e[0]===i||t.contains(e[0],i))&&t(i).focus()),e},setTransition:function(e,i,s,n){return n=n||{},t.each(i,function(t,i){var a=e.cssUnit(i);a[0]>0&&(n[i]=a[0]*s+a[1])}),n}}),t.fn.extend({effect:function(){function e(e){function s(){t.isFunction(a)&&a.call(n[0]),t.isFunction(e)&&e()}var n=t(this),a=i.complete,r=i.mode;(n.is(":hidden")?"hide"===r:"show"===r)?(n[r](),s()):o.call(n[0],i,s)}var i=s.apply(this,arguments),n=i.mode,a=i.queue,o=t.effects.effect[i.effect];return t.fx.off||!o?n?this[n](i.duration,i.complete):this.each(function(){i.complete&&i.complete.call(this)}):a===!1?this.each(e):this.queue(a||"fx",e)},show:function(t){return function(e){if(n(e))return t.apply(this,arguments);var i=s.apply(this,arguments);return i.mode="show",this.effect.call(this,i)}}(t.fn.show),hide:function(t){return function(e){if(n(e))return t.apply(this,arguments);var i=s.apply(this,arguments);return i.mode="hide",this.effect.call(this,i)}}(t.fn.hide),toggle:function(t){return function(e){if(n(e)||"boolean"==typeof e)return t.apply(this,arguments);var i=s.apply(this,arguments);return i.mode="toggle",this.effect.call(this,i)}}(t.fn.toggle),cssUnit:function(e){var i=this.css(e),s=[];return t.each(["em","px","%","pt"],function(t,e){i.indexOf(e)>0&&(s=[parseFloat(i),e])}),s}})}(),function(){var e={};t.each(["Quad","Cubic","Quart","Quint","Expo"],function(t,i){e[i]=function(e){return Math.pow(e,t+2)}}),t.extend(e,{Sine:function(t){return 1-Math.cos(t*Math.PI/2)},Circ:function(t){return 1-Math.sqrt(1-t*t)},Elastic:function(t){return 0===t||1===t?t:-Math.pow(2,8*(t-1))*Math.sin((80*(t-1)-7.5)*Math.PI/15)},Back:function(t){return t*t*(3*t-2)},Bounce:function(t){for(var e,i=4;((e=Math.pow(2,--i))-1)/11>t;);return 1/Math.pow(4,3-i)-7.5625*Math.pow((3*e-2)/22-t,2)}}),t.each(e,function(e,i){t.easing["easeIn"+e]=i,t.easing["easeOut"+e]=function(t){return 1-i(1-t)},t.easing["easeInOut"+e]=function(t){return.5>t?i(2*t)/2:1-i(-2*t+2)/2}})}()})(jQuery);(function(t){var e=/up|down|vertical/,i=/up|left|vertical|horizontal/;t.effects.effect.blind=function(s,n){var a,o,r,h=t(this),l=["position","top","bottom","left","right","height","width"],c=t.effects.setMode(h,s.mode||"hide"),u=s.direction||"up",d=e.test(u),p=d?"height":"width",f=d?"top":"left",m=i.test(u),g={},v="show"===c;h.parent().is(".ui-effects-wrapper")?t.effects.save(h.parent(),l):t.effects.save(h,l),h.show(),a=t.effects.createWrapper(h).css({overflow:"hidden"}),o=a[p](),r=parseFloat(a.css(f))||0,g[p]=v?o:0,m||(h.css(d?"bottom":"right",0).css(d?"top":"left","auto").css({position:"absolute"}),g[f]=v?r:o+r),v&&(a.css(p,0),m||a.css(f,r+o)),a.animate(g,{duration:s.duration,easing:s.easing,queue:!1,complete:function(){"hide"===c&&h.hide(),t.effects.restore(h,l),t.effects.removeWrapper(h),n()}})}})(jQuery);(function(t){t.effects.effect.bounce=function(e,i){var s,n,a,o=t(this),r=["position","top","bottom","left","right","height","width"],h=t.effects.setMode(o,e.mode||"effect"),l="hide"===h,c="show"===h,u=e.direction||"up",d=e.distance,p=e.times||5,f=2*p+(c||l?1:0),m=e.duration/f,g=e.easing,v="up"===u||"down"===u?"top":"left",_="up"===u||"left"===u,b=o.queue(),y=b.length;for((c||l)&&r.push("opacity"),t.effects.save(o,r),o.show(),t.effects.createWrapper(o),d||(d=o["top"===v?"outerHeight":"outerWidth"]()/3),c&&(a={opacity:1},a[v]=0,o.css("opacity",0).css(v,_?2*-d:2*d).animate(a,m,g)),l&&(d/=Math.pow(2,p-1)),a={},a[v]=0,s=0;p>s;s++)n={},n[v]=(_?"-=":"+=")+d,o.animate(n,m,g).animate(a,m,g),d=l?2*d:d/2;l&&(n={opacity:0},n[v]=(_?"-=":"+=")+d,o.animate(n,m,g)),o.queue(function(){l&&o.hide(),t.effects.restore(o,r),t.effects.removeWrapper(o),i()}),y>1&&b.splice.apply(b,[1,0].concat(b.splice(y,f+1))),o.dequeue()}})(jQuery);(function(t){t.effects.effect.clip=function(e,i){var s,n,a,o=t(this),r=["position","top","bottom","left","right","height","width"],h=t.effects.setMode(o,e.mode||"hide"),l="show"===h,c=e.direction||"vertical",u="vertical"===c,d=u?"height":"width",p=u?"top":"left",f={};t.effects.save(o,r),o.show(),s=t.effects.createWrapper(o).css({overflow:"hidden"}),n="IMG"===o[0].tagName?s:o,a=n[d](),l&&(n.css(d,0),n.css(p,a/2)),f[d]=l?a:0,f[p]=l?0:a/2,n.animate(f,{queue:!1,duration:e.duration,easing:e.easing,complete:function(){l||o.hide(),t.effects.restore(o,r),t.effects.removeWrapper(o),i()}})}})(jQuery);(function(t){t.effects.effect.drop=function(e,i){var s,n=t(this),a=["position","top","bottom","left","right","opacity","height","width"],o=t.effects.setMode(n,e.mode||"hide"),r="show"===o,h=e.direction||"left",l="up"===h||"down"===h?"top":"left",c="up"===h||"left"===h?"pos":"neg",u={opacity:r?1:0};t.effects.save(n,a),n.show(),t.effects.createWrapper(n),s=e.distance||n["top"===l?"outerHeight":"outerWidth"](!0)/2,r&&n.css("opacity",0).css(l,"pos"===c?-s:s),u[l]=(r?"pos"===c?"+=":"-=":"pos"===c?"-=":"+=")+s,n.animate(u,{queue:!1,duration:e.duration,easing:e.easing,complete:function(){"hide"===o&&n.hide(),t.effects.restore(n,a),t.effects.removeWrapper(n),i()}})}})(jQuery);(function(t){t.effects.effect.explode=function(e,i){function s(){b.push(this),b.length===u*d&&n()}function n(){p.css({visibility:"visible"}),t(b).remove(),m||p.hide(),i()}var a,o,r,h,l,c,u=e.pieces?Math.round(Math.sqrt(e.pieces)):3,d=u,p=t(this),f=t.effects.setMode(p,e.mode||"hide"),m="show"===f,g=p.show().css("visibility","hidden").offset(),v=Math.ceil(p.outerWidth()/d),_=Math.ceil(p.outerHeight()/u),b=[];for(a=0;u>a;a++)for(h=g.top+a*_,c=a-(u-1)/2,o=0;d>o;o++)r=g.left+o*v,l=o-(d-1)/2,p.clone().appendTo("body").wrap("<div></div>").css({position:"absolute",visibility:"visible",left:-o*v,top:-a*_}).parent().addClass("ui-effects-explode").css({position:"absolute",overflow:"hidden",width:v,height:_,left:r+(m?l*v:0),top:h+(m?c*_:0),opacity:m?0:1}).animate({left:r+(m?0:l*v),top:h+(m?0:c*_),opacity:m?1:0},e.duration||500,e.easing,s)}})(jQuery);(function(t){t.effects.effect.fade=function(e,i){var s=t(this),n=t.effects.setMode(s,e.mode||"toggle");s.animate({opacity:n},{queue:!1,duration:e.duration,easing:e.easing,complete:i})}})(jQuery);(function(t){t.effects.effect.fold=function(e,i){var s,n,a=t(this),o=["position","top","bottom","left","right","height","width"],r=t.effects.setMode(a,e.mode||"hide"),h="show"===r,l="hide"===r,c=e.size||15,u=/([0-9]+)%/.exec(c),d=!!e.horizFirst,p=h!==d,f=p?["width","height"]:["height","width"],m=e.duration/2,g={},v={};t.effects.save(a,o),a.show(),s=t.effects.createWrapper(a).css({overflow:"hidden"}),n=p?[s.width(),s.height()]:[s.height(),s.width()],u&&(c=parseInt(u[1],10)/100*n[l?0:1]),h&&s.css(d?{height:0,width:c}:{height:c,width:0}),g[f[0]]=h?n[0]:c,v[f[1]]=h?n[1]:0,s.animate(g,m,e.easing).animate(v,m,e.easing,function(){l&&a.hide(),t.effects.restore(a,o),t.effects.removeWrapper(a),i()})}})(jQuery);(function(t){t.effects.effect.highlight=function(e,i){var s=t(this),n=["backgroundImage","backgroundColor","opacity"],a=t.effects.setMode(s,e.mode||"show"),o={backgroundColor:s.css("backgroundColor")};"hide"===a&&(o.opacity=0),t.effects.save(s,n),s.show().css({backgroundImage:"none",backgroundColor:e.color||"#ffff99"}).animate(o,{queue:!1,duration:e.duration,easing:e.easing,complete:function(){"hide"===a&&s.hide(),t.effects.restore(s,n),i()}})}})(jQuery);(function(t){t.effects.effect.pulsate=function(e,i){var s,n=t(this),a=t.effects.setMode(n,e.mode||"show"),o="show"===a,r="hide"===a,h=o||"hide"===a,l=2*(e.times||5)+(h?1:0),c=e.duration/l,u=0,d=n.queue(),p=d.length;for((o||!n.is(":visible"))&&(n.css("opacity",0).show(),u=1),s=1;l>s;s++)n.animate({opacity:u},c,e.easing),u=1-u;n.animate({opacity:u},c,e.easing),n.queue(function(){r&&n.hide(),i()}),p>1&&d.splice.apply(d,[1,0].concat(d.splice(p,l+1))),n.dequeue()}})(jQuery);(function(t){t.effects.effect.puff=function(e,i){var s=t(this),n=t.effects.setMode(s,e.mode||"hide"),a="hide"===n,o=parseInt(e.percent,10)||150,r=o/100,h={height:s.height(),width:s.width(),outerHeight:s.outerHeight(),outerWidth:s.outerWidth()};t.extend(e,{effect:"scale",queue:!1,fade:!0,mode:n,complete:i,percent:a?o:100,from:a?h:{height:h.height*r,width:h.width*r,outerHeight:h.outerHeight*r,outerWidth:h.outerWidth*r}}),s.effect(e)},t.effects.effect.scale=function(e,i){var s=t(this),n=t.extend(!0,{},e),a=t.effects.setMode(s,e.mode||"effect"),o=parseInt(e.percent,10)||(0===parseInt(e.percent,10)?0:"hide"===a?0:100),r=e.direction||"both",h=e.origin,l={height:s.height(),width:s.width(),outerHeight:s.outerHeight(),outerWidth:s.outerWidth()},c={y:"horizontal"!==r?o/100:1,x:"vertical"!==r?o/100:1};n.effect="size",n.queue=!1,n.complete=i,"effect"!==a&&(n.origin=h||["middle","center"],n.restore=!0),n.from=e.from||("show"===a?{height:0,width:0,outerHeight:0,outerWidth:0}:l),n.to={height:l.height*c.y,width:l.width*c.x,outerHeight:l.outerHeight*c.y,outerWidth:l.outerWidth*c.x},n.fade&&("show"===a&&(n.from.opacity=0,n.to.opacity=1),"hide"===a&&(n.from.opacity=1,n.to.opacity=0)),s.effect(n)},t.effects.effect.size=function(e,i){var s,n,a,o=t(this),r=["position","top","bottom","left","right","width","height","overflow","opacity"],h=["position","top","bottom","left","right","overflow","opacity"],l=["width","height","overflow"],c=["fontSize"],u=["borderTopWidth","borderBottomWidth","paddingTop","paddingBottom"],d=["borderLeftWidth","borderRightWidth","paddingLeft","paddingRight"],p=t.effects.setMode(o,e.mode||"effect"),f=e.restore||"effect"!==p,m=e.scale||"both",g=e.origin||["middle","center"],v=o.css("position"),_=f?r:h,b={height:0,width:0,outerHeight:0,outerWidth:0};"show"===p&&o.show(),s={height:o.height(),width:o.width(),outerHeight:o.outerHeight(),outerWidth:o.outerWidth()},"toggle"===e.mode&&"show"===p?(o.from=e.to||b,o.to=e.from||s):(o.from=e.from||("show"===p?b:s),o.to=e.to||("hide"===p?b:s)),a={from:{y:o.from.height/s.height,x:o.from.width/s.width},to:{y:o.to.height/s.height,x:o.to.width/s.width}},("box"===m||"both"===m)&&(a.from.y!==a.to.y&&(_=_.concat(u),o.from=t.effects.setTransition(o,u,a.from.y,o.from),o.to=t.effects.setTransition(o,u,a.to.y,o.to)),a.from.x!==a.to.x&&(_=_.concat(d),o.from=t.effects.setTransition(o,d,a.from.x,o.from),o.to=t.effects.setTransition(o,d,a.to.x,o.to))),("content"===m||"both"===m)&&a.from.y!==a.to.y&&(_=_.concat(c).concat(l),o.from=t.effects.setTransition(o,c,a.from.y,o.from),o.to=t.effects.setTransition(o,c,a.to.y,o.to)),t.effects.save(o,_),o.show(),t.effects.createWrapper(o),o.css("overflow","hidden").css(o.from),g&&(n=t.effects.getBaseline(g,s),o.from.top=(s.outerHeight-o.outerHeight())*n.y,o.from.left=(s.outerWidth-o.outerWidth())*n.x,o.to.top=(s.outerHeight-o.to.outerHeight)*n.y,o.to.left=(s.outerWidth-o.to.outerWidth)*n.x),o.css(o.from),("content"===m||"both"===m)&&(u=u.concat(["marginTop","marginBottom"]).concat(c),d=d.concat(["marginLeft","marginRight"]),l=r.concat(u).concat(d),o.find("*[width]").each(function(){var i=t(this),s={height:i.height(),width:i.width(),outerHeight:i.outerHeight(),outerWidth:i.outerWidth()};f&&t.effects.save(i,l),i.from={height:s.height*a.from.y,width:s.width*a.from.x,outerHeight:s.outerHeight*a.from.y,outerWidth:s.outerWidth*a.from.x},i.to={height:s.height*a.to.y,width:s.width*a.to.x,outerHeight:s.height*a.to.y,outerWidth:s.width*a.to.x},a.from.y!==a.to.y&&(i.from=t.effects.setTransition(i,u,a.from.y,i.from),i.to=t.effects.setTransition(i,u,a.to.y,i.to)),a.from.x!==a.to.x&&(i.from=t.effects.setTransition(i,d,a.from.x,i.from),i.to=t.effects.setTransition(i,d,a.to.x,i.to)),i.css(i.from),i.animate(i.to,e.duration,e.easing,function(){f&&t.effects.restore(i,l)})})),o.animate(o.to,{queue:!1,duration:e.duration,easing:e.easing,complete:function(){0===o.to.opacity&&o.css("opacity",o.from.opacity),"hide"===p&&o.hide(),t.effects.restore(o,_),f||("static"===v?o.css({position:"relative",top:o.to.top,left:o.to.left}):t.each(["top","left"],function(t,e){o.css(e,function(e,i){var s=parseInt(i,10),n=t?o.to.left:o.to.top;return"auto"===i?n+"px":s+n+"px"})})),t.effects.removeWrapper(o),i()}})}})(jQuery);(function(t){t.effects.effect.shake=function(e,i){var s,n=t(this),a=["position","top","bottom","left","right","height","width"],o=t.effects.setMode(n,e.mode||"effect"),r=e.direction||"left",h=e.distance||20,l=e.times||3,c=2*l+1,u=Math.round(e.duration/c),d="up"===r||"down"===r?"top":"left",p="up"===r||"left"===r,f={},m={},g={},v=n.queue(),_=v.length;for(t.effects.save(n,a),n.show(),t.effects.createWrapper(n),f[d]=(p?"-=":"+=")+h,m[d]=(p?"+=":"-=")+2*h,g[d]=(p?"-=":"+=")+2*h,n.animate(f,u,e.easing),s=1;l>s;s++)n.animate(m,u,e.easing).animate(g,u,e.easing);n.animate(m,u,e.easing).animate(f,u/2,e.easing).queue(function(){"hide"===o&&n.hide(),t.effects.restore(n,a),t.effects.removeWrapper(n),i()}),_>1&&v.splice.apply(v,[1,0].concat(v.splice(_,c+1))),n.dequeue()}})(jQuery);(function(t){t.effects.effect.slide=function(e,i){var s,n=t(this),a=["position","top","bottom","left","right","width","height"],o=t.effects.setMode(n,e.mode||"show"),r="show"===o,h=e.direction||"left",l="up"===h||"down"===h?"top":"left",c="up"===h||"left"===h,u={};t.effects.save(n,a),n.show(),s=e.distance||n["top"===l?"outerHeight":"outerWidth"](!0),t.effects.createWrapper(n).css({overflow:"hidden"}),r&&n.css(l,c?isNaN(s)?"-"+s:-s:s),u[l]=(r?c?"+=":"-=":c?"-=":"+=")+s,n.animate(u,{queue:!1,duration:e.duration,easing:e.easing,complete:function(){"hide"===o&&n.hide(),t.effects.restore(n,a),t.effects.removeWrapper(n),i()}})}})(jQuery);(function(t){t.effects.effect.transfer=function(e,i){var s=t(this),n=t(e.to),a="fixed"===n.css("position"),o=t("body"),r=a?o.scrollTop():0,h=a?o.scrollLeft():0,l=n.offset(),c={top:l.top-r,left:l.left-h,height:n.innerHeight(),width:n.innerWidth()},u=s.offset(),d=t("<div class='ui-effects-transfer'></div>").appendTo(document.body).addClass(e.className).css({top:u.top-r,left:u.left-h,height:s.innerHeight(),width:s.innerWidth(),position:a?"fixed":"absolute"}).animate(c,e.duration,e.easing,function(){d.remove(),i()})}})(jQuery);
-
-/*
- * SPServices - Work with SharePoint's Web Services using jQuery
- * Version 2014.01
- * @requires jQuery v1.8 or greater - jQuery 1.10.x recommended
- *
- * Copyright (c) 2009-2013 Sympraxis Consulting LLC
- * Examples and docs at:
- * http://spservices.codeplex.com
- * Licensed under the MIT license:
- * http://www.opensource.org/licenses/mit-license.php
- */
-/*
- * @description Work with SharePoint's Web Services using jQuery
- * @type jQuery
- * @name SPServices
- * @category Plugins/SPServices
- * @author Sympraxis Consulting LLC/marc.anderson@sympraxisconsulting.com
- */
-
-/**
- * ################ FORKED VERSION OF SPSERVICES - BY PAUL TAVARES #############
- *
- * [001]    -   Added fix for: http://spservices.codeplex.com/workitem/10182
- *              Changes start at line 1271.
- * [002]    -   2014.06.14:
- *              Added fix for: https://spservices.codeplex.com/workitem/10146
- *              which was dropped from latest version
- *
- *
- */
-
-/* jshint undef: true */
-/* global L_Menu_BaseUrl, _spUserId, _spPageContextInfo, GipAddSelectedItems, GipRemoveSelectedItems, GipGetGroupData */
-
-(function($) {
-
-    "use strict";
-
-    // Version info
-    var VERSION = "2014.01_FORK_001"; // TODO: Update version
-
-    // String constants
-    //   General
-    var SLASH = "/";
-    var TXTColumnNotFound = "Column not found on page";
-    var SCHEMASharePoint = "http://schemas.microsoft.com/sharepoint";
-    var multiLookupPrefix = "MultiLookupPicker";
-    var multiLookupPrefix2013 = "MultiLookup";
-
-    // Dropdown Types
-    var dropdownType = {
-        simple: "S",
-        complex: "C",
-        multiSelect: "M"
-    };
-
-    // Known list field types
-    var spListFieldTypes = [
-        "Text",
-        "DateTime",
-        "datetime",
-        "User",
-        "UserMulti",
-        "Lookup",
-        "LookupMulti",
-        "Boolean",
-        "Integer",
-        "Counter",
-        "MultiChoice",
-        "Currency",
-        "float",
-        "Calc",
-        "Attachments",
-        "Calculated",
-        "ContentTypeId",
-        "Note",
-        //          "Computed",
-        "URL",
-        "Number",
-        "Choice",
-        "ModStat",
-        "Guid",
-        "File"
-    ];
-
-    // Caching
-    var promisesCache = {};
-
-    //   Web Service names
-    var ALERTS = "Alerts";
-    var AUTHENTICATION = "Authentication";
-    var COPY = "Copy";
-    var FORMS = "Forms";
-    var LISTS = "Lists";
-    var MEETINGS = "Meetings";
-    var PEOPLE = "People";
-    var PERMISSIONS = "Permissions";
-    var PUBLISHEDLINKSSERVICE = "PublishedLinksService";
-    var SEARCH = "Search";
-    var SHAREPOINTDIAGNOSTICS = "SharePointDiagnostics";
-    var SITEDATA = "SiteData";
-    var SITES = "Sites";
-    var SOCIALDATASERVICE = "SocialDataService";
-    var SPELLCHECK = "SpellCheck";
-    var TAXONOMYSERVICE = "TaxonomyClientService";
-    var USERGROUP = "usergroup";
-    var USERPROFILESERVICE = "UserProfileService";
-    var VERSIONS = "Versions";
-    var VIEWS = "Views";
-    var WEBPARTPAGES = "WebPartPages";
-    var WEBS = "Webs";
-    var WORKFLOW = "Workflow";
-
-    // Global variables
-    var currentContext = new SPServicesContext(); // Variable to hold the current context as we figure it out
-    var i = 0; // Generic loop counter
-    var encodeOptionList = ["listName", "description"]; // Used to encode options which may contain special characters
-
-
-    // Array to store Web Service information
-    //  WSops.OpName = [WebService, needs_SOAPAction];
-    //      OpName              The name of the Web Service operation -> These names are unique
-    //      WebService          The name of the WebService this operation belongs to
-    //      needs_SOAPAction    Boolean indicating whether the operatio needs to have the SOAPAction passed in the setRequestHeaderfunction.
-    //                          true if the operation does a write, else false
-
-    var WSops = [];
-
-    WSops.GetAlerts = [ALERTS, false];
-    WSops.DeleteAlerts = [ALERTS, true];
-
-    WSops.Mode = [AUTHENTICATION, false];
-    WSops.Login = [AUTHENTICATION, false];
-
-    WSops.CopyIntoItems = [COPY, true];
-    WSops.CopyIntoItemsLocal = [COPY, true];
-    WSops.GetItem = [COPY, false];
-
-    WSops.GetForm = [FORMS, false];
-    WSops.GetFormCollection = [FORMS, false];
-
-    WSops.AddAttachment = [LISTS, true];
-    WSops.AddDiscussionBoardItem = [LISTS, true];
-    WSops.AddList = [LISTS, true];
-    WSops.AddListFromFeature = [LISTS, true];
-    WSops.ApplyContentTypeToList = [LISTS, true];
-    WSops.CheckInFile = [LISTS, true];
-    WSops.CheckOutFile = [LISTS, true];
-    WSops.CreateContentType = [LISTS, true];
-    WSops.DeleteAttachment = [LISTS, true];
-    WSops.DeleteContentType = [LISTS, true];
-    WSops.DeleteContentTypeXmlDocument = [LISTS, true];
-    WSops.DeleteList = [LISTS, true];
-    WSops.GetAttachmentCollection = [LISTS, false];
-    WSops.GetList = [LISTS, false];
-    WSops.GetListAndView = [LISTS, false];
-    WSops.GetListCollection = [LISTS, false];
-    WSops.GetListContentType = [LISTS, false];
-    WSops.GetListContentTypes = [LISTS, false];
-    WSops.GetListItemChanges = [LISTS, false];
-    WSops.GetListItemChangesSinceToken = [LISTS, false];
-    WSops.GetListItems = [LISTS, false];
-    WSops.GetVersionCollection = [LISTS, false];
-    WSops.UndoCheckOut = [LISTS, true];
-    WSops.UpdateContentType = [LISTS, true];
-    WSops.UpdateContentTypesXmlDocument = [LISTS, true];
-    WSops.UpdateContentTypeXmlDocument = [LISTS, true];
-    WSops.UpdateList = [LISTS, true];
-    WSops.UpdateListItems = [LISTS, true];
-
-    WSops.AddMeeting = [MEETINGS, true];
-    WSops.CreateWorkspace = [MEETINGS, true];
-    WSops.RemoveMeeting = [MEETINGS, true];
-    WSops.SetWorkSpaceTitle = [MEETINGS, true];
-
-    WSops.ResolvePrincipals = [PEOPLE, true];
-    WSops.SearchPrincipals = [PEOPLE, false];
-
-    WSops.AddPermission = [PERMISSIONS, true];
-    WSops.AddPermissionCollection = [PERMISSIONS, true];
-    WSops.GetPermissionCollection = [PERMISSIONS, true];
-    WSops.RemovePermission = [PERMISSIONS, true];
-    WSops.RemovePermissionCollection = [PERMISSIONS, true];
-    WSops.UpdatePermission = [PERMISSIONS, true];
-
-    WSops.GetLinks = [PUBLISHEDLINKSSERVICE, true];
-
-    WSops.GetPortalSearchInfo = [SEARCH, false];
-    WSops.GetQuerySuggestions = [SEARCH, false];
-    WSops.GetSearchMetadata = [SEARCH, false];
-    WSops.Query = [SEARCH, false];
-    WSops.QueryEx = [SEARCH, false];
-    WSops.Registration = [SEARCH, false];
-    WSops.Status = [SEARCH, false];
-
-    WSops.SendClientScriptErrorReport = [SHAREPOINTDIAGNOSTICS, true];
-
-    WSops.GetAttachments = [SITEDATA, false];
-    WSops.EnumerateFolder = [SITEDATA, false];
-    WSops.SiteDataGetList = [SITEDATA, false];
-    WSops.SiteDataGetListCollection = [SITEDATA, false];
-    WSops.SiteDataGetSite = [SITEDATA, false];
-    WSops.SiteDataGetSiteUrl = [SITEDATA, false];
-    WSops.SiteDataGetWeb = [SITEDATA, false];
-
-    WSops.CreateWeb = [SITES, true];
-    WSops.DeleteWeb = [SITES, true];
-    WSops.GetSite = [SITES, false];
-    WSops.GetSiteTemplates = [SITES, false];
-
-    WSops.AddComment = [SOCIALDATASERVICE, true];
-    WSops.AddTag = [SOCIALDATASERVICE, true];
-    WSops.AddTagByKeyword = [SOCIALDATASERVICE, true];
-    WSops.CountCommentsOfUser = [SOCIALDATASERVICE, false];
-    WSops.CountCommentsOfUserOnUrl = [SOCIALDATASERVICE, false];
-    WSops.CountCommentsOnUrl = [SOCIALDATASERVICE, false];
-    WSops.CountRatingsOnUrl = [SOCIALDATASERVICE, false];
-    WSops.CountTagsOfUser = [SOCIALDATASERVICE, false];
-    WSops.DeleteComment = [SOCIALDATASERVICE, true];
-    WSops.DeleteRating = [SOCIALDATASERVICE, true];
-    WSops.DeleteTag = [SOCIALDATASERVICE, true];
-    WSops.DeleteTagByKeyword = [SOCIALDATASERVICE, true];
-    WSops.DeleteTags = [SOCIALDATASERVICE, true];
-    WSops.GetAllTagTerms = [SOCIALDATASERVICE, false];
-    WSops.GetAllTagTermsForUrlFolder = [SOCIALDATASERVICE, false];
-    WSops.GetAllTagUrls = [SOCIALDATASERVICE, false];
-    WSops.GetAllTagUrlsByKeyword = [SOCIALDATASERVICE, false];
-    WSops.GetCommentsOfUser = [SOCIALDATASERVICE, false];
-    WSops.GetCommentsOfUserOnUrl = [SOCIALDATASERVICE, false];
-    WSops.GetCommentsOnUrl = [SOCIALDATASERVICE, false];
-    WSops.GetRatingAverageOnUrl = [SOCIALDATASERVICE, false];
-    WSops.GetRatingOfUserOnUrl = [SOCIALDATASERVICE, false];
-    WSops.GetRatingOnUrl = [SOCIALDATASERVICE, false];
-    WSops.GetRatingsOfUser = [SOCIALDATASERVICE, false];
-    WSops.GetRatingsOnUrl = [SOCIALDATASERVICE, false];
-    WSops.GetSocialDataForFullReplication = [SOCIALDATASERVICE, false];
-    WSops.GetTags = [SOCIALDATASERVICE, true];
-    WSops.GetTagsOfUser = [SOCIALDATASERVICE, true];
-    WSops.GetTagTerms = [SOCIALDATASERVICE, true];
-    WSops.GetTagTermsOfUser = [SOCIALDATASERVICE, true];
-    WSops.GetTagTermsOnUrl = [SOCIALDATASERVICE, true];
-    WSops.GetTagUrlsOfUser = [SOCIALDATASERVICE, true];
-    WSops.GetTagUrlsOfUserByKeyword = [SOCIALDATASERVICE, true];
-    WSops.GetTagUrls = [SOCIALDATASERVICE, true];
-    WSops.GetTagUrlsByKeyword = [SOCIALDATASERVICE, true];
-    WSops.SetRating = [SOCIALDATASERVICE, true];
-    WSops.UpdateComment = [SOCIALDATASERVICE, true];
-
-    WSops.SpellCheck = [SPELLCHECK, false];
-
-    // Taxonomy Service Calls
-    // Updated 2011.01.27 by Thomas McMillan
-    WSops.AddTerms = [TAXONOMYSERVICE, true];
-    WSops.GetChildTermsInTerm = [TAXONOMYSERVICE, false];
-    WSops.GetChildTermsInTermSet = [TAXONOMYSERVICE, false];
-    WSops.GetKeywordTermsByGuids = [TAXONOMYSERVICE, false];
-    WSops.GetTermsByLabel = [TAXONOMYSERVICE, false];
-    WSops.GetTermSets = [TAXONOMYSERVICE, false];
-
-    WSops.AddGroup = [USERGROUP, true];
-    WSops.AddGroupToRole = [USERGROUP, true];
-    WSops.AddRole = [USERGROUP, true];
-    WSops.AddRoleDef = [USERGROUP, true];
-    WSops.AddUserCollectionToGroup = [USERGROUP, true];
-    WSops.AddUserCollectionToRole = [USERGROUP, true];
-    WSops.AddUserToGroup = [USERGROUP, true];
-    WSops.AddUserToRole = [USERGROUP, true];
-    WSops.GetAllUserCollectionFromWeb = [USERGROUP, false];
-    WSops.GetGroupCollection = [USERGROUP, false];
-    WSops.GetGroupCollectionFromRole = [USERGROUP, false];
-    WSops.GetGroupCollectionFromSite = [USERGROUP, false];
-    WSops.GetGroupCollectionFromUser = [USERGROUP, false];
-    WSops.GetGroupCollectionFromWeb = [USERGROUP, false];
-    WSops.GetGroupInfo = [USERGROUP, false];
-    WSops.GetRoleCollection = [USERGROUP, false];
-    WSops.GetRoleCollectionFromGroup = [USERGROUP, false];
-    WSops.GetRoleCollectionFromUser = [USERGROUP, false];
-    WSops.GetRoleCollectionFromWeb = [USERGROUP, false];
-    WSops.GetRoleInfo = [USERGROUP, false];
-    WSops.GetRolesAndPermissionsForCurrentUser = [USERGROUP, false];
-    WSops.GetRolesAndPermissionsForSite = [USERGROUP, false];
-    WSops.GetUserCollection = [USERGROUP, false];
-    WSops.GetUserCollectionFromGroup = [USERGROUP, false];
-    WSops.GetUserCollectionFromRole = [USERGROUP, false];
-    WSops.GetUserCollectionFromSite = [USERGROUP, false];
-    WSops.GetUserCollectionFromWeb = [USERGROUP, false];
-    WSops.GetUserInfo = [USERGROUP, false];
-    WSops.GetUserLoginFromEmail = [USERGROUP, false];
-    WSops.RemoveGroup = [USERGROUP, true];
-    WSops.RemoveGroupFromRole = [USERGROUP, true];
-    WSops.RemoveRole = [USERGROUP, true];
-    WSops.RemoveUserCollectionFromGroup = [USERGROUP, true];
-    WSops.RemoveUserCollectionFromRole = [USERGROUP, true];
-    WSops.RemoveUserCollectionFromSite = [USERGROUP, true];
-    WSops.RemoveUserFromGroup = [USERGROUP, true];
-    WSops.RemoveUserFromRole = [USERGROUP, true];
-    WSops.RemoveUserFromSite = [USERGROUP, true];
-    WSops.RemoveUserFromWeb = [USERGROUP, true];
-    WSops.UpdateGroupInfo = [USERGROUP, true];
-    WSops.UpdateRoleDefInfo = [USERGROUP, true];
-    WSops.UpdateRoleInfo = [USERGROUP, true];
-    WSops.UpdateUserInfo = [USERGROUP, true];
-
-    WSops.AddColleague = [USERPROFILESERVICE, true];
-    WSops.AddLink = [USERPROFILESERVICE, true];
-    WSops.AddMembership = [USERPROFILESERVICE, true];
-    WSops.AddPinnedLink = [USERPROFILESERVICE, true];
-    WSops.CreateMemberGroup = [USERPROFILESERVICE, true];
-    WSops.CreateUserProfileByAccountName = [USERPROFILESERVICE, true];
-    WSops.GetCommonColleagues = [USERPROFILESERVICE, false];
-    WSops.GetCommonManager = [USERPROFILESERVICE, false];
-    WSops.GetCommonMemberships = [USERPROFILESERVICE, false];
-    WSops.GetInCommon = [USERPROFILESERVICE, false];
-    WSops.GetPropertyChoiceList = [USERPROFILESERVICE, false];
-    WSops.GetUserColleagues = [USERPROFILESERVICE, false];
-    WSops.GetUserLinks = [USERPROFILESERVICE, false];
-    WSops.GetUserMemberships = [USERPROFILESERVICE, false];
-    WSops.GetUserPinnedLinks = [USERPROFILESERVICE, false];
-    WSops.GetUserProfileByGuid = [USERPROFILESERVICE, false];
-    WSops.GetUserProfileByIndex = [USERPROFILESERVICE, false];
-    WSops.GetUserProfileByName = [USERPROFILESERVICE, false];
-    WSops.GetUserProfileCount = [USERPROFILESERVICE, false];
-    WSops.GetUserProfileSchema = [USERPROFILESERVICE, false];
-    WSops.GetUserPropertyByAccountName = [USERPROFILESERVICE, false];
-    WSops.ModifyUserPropertyByAccountName = [USERPROFILESERVICE, true];
-    WSops.RemoveAllColleagues = [USERPROFILESERVICE, true];
-    WSops.RemoveAllLinks = [USERPROFILESERVICE, true];
-    WSops.RemoveAllMemberships = [USERPROFILESERVICE, true];
-    WSops.RemoveAllPinnedLinks = [USERPROFILESERVICE, true];
-    WSops.RemoveColleague = [USERPROFILESERVICE, true];
-    WSops.RemoveLink = [USERPROFILESERVICE, true];
-    WSops.RemoveMembership = [USERPROFILESERVICE, true];
-    WSops.RemovePinnedLink = [USERPROFILESERVICE, true];
-    WSops.UpdateColleaguePrivacy = [USERPROFILESERVICE, true];
-    WSops.UpdateLink = [USERPROFILESERVICE, true];
-    WSops.UpdateMembershipPrivacy = [USERPROFILESERVICE, true];
-    WSops.UpdatePinnedLink = [USERPROFILESERVICE, true];
-
-    WSops.DeleteAllVersions = [VERSIONS, true];
-    WSops.DeleteVersion = [VERSIONS, true];
-    WSops.GetVersions = [VERSIONS, false];
-    WSops.RestoreVersion = [VERSIONS, true];
-
-    WSops.AddView = [VIEWS, true];
-    WSops.DeleteView = [VIEWS, true];
-    WSops.GetView = [VIEWS, false];
-    WSops.GetViewHtml = [VIEWS, false];
-    WSops.GetViewCollection = [VIEWS, false];
-    WSops.UpdateView = [VIEWS, true];
-    WSops.UpdateViewHtml = [VIEWS, true];
-
-    WSops.AddWebPart = [WEBPARTPAGES, true];
-    WSops.AddWebPartToZone = [WEBPARTPAGES, true];
-    WSops.GetWebPart2 = [WEBPARTPAGES, false];
-    WSops.GetWebPartPage = [WEBPARTPAGES, false];
-    WSops.GetWebPartProperties = [WEBPARTPAGES, false];
-    WSops.GetWebPartProperties2 = [WEBPARTPAGES, false];
-
-    WSops.CreateContentType = [WEBS, true];
-    WSops.GetColumns = [WEBS, false];
-    WSops.GetContentType = [WEBS, false];
-    WSops.GetContentTypes = [WEBS, false];
-    WSops.GetCustomizedPageStatus = [WEBS, false];
-    WSops.GetListTemplates = [WEBS, false];
-    WSops.GetObjectIdFromUrl = [WEBS, false]; // 2010
-    WSops.GetWeb = [WEBS, false];
-    WSops.GetWebCollection = [WEBS, false];
-    WSops.GetAllSubWebCollection = [WEBS, false];
-    WSops.UpdateColumns = [WEBS, true];
-    WSops.UpdateContentType = [WEBS, true];
-    WSops.WebUrlFromPageUrl = [WEBS, false];
-
-    WSops.AlterToDo = [WORKFLOW, true];
-    WSops.ClaimReleaseTask = [WORKFLOW, true];
-    WSops.GetTemplatesForItem = [WORKFLOW, false];
-    WSops.GetToDosForItem = [WORKFLOW, false];
-    WSops.GetWorkflowDataForItem = [WORKFLOW, false];
-    WSops.GetWorkflowTaskData = [WORKFLOW, false];
-    WSops.StartWorkflow = [WORKFLOW, true];
-
-    // Set up SOAP envelope
-    var SOAPEnvelope = {};
-    SOAPEnvelope.header = "<soap:Envelope xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'><soap:Body>";
-    SOAPEnvelope.footer = "</soap:Body></soap:Envelope>";
-    SOAPEnvelope.payload = "";
-    var SOAPAction;
-
-    // Main function, which calls SharePoint's Web Services directly.
-    $.fn.SPServices = function(options) {
-
-        // If there are no options passed in, use the defaults.  Extend replaces each default with the passed option.
-        var opt = $.extend({}, $.fn.SPServices.defaults, options);
-
-        // Encode options which may contain special character, esp. ampersand
-        for (var i = 0; i < encodeOptionList.length; i++) {
-            if (typeof opt[encodeOptionList[i]] === "string") {
-                opt[encodeOptionList[i]] = encodeXml(opt[encodeOptionList[i]]);
-            }
-        }
-
-        // Put together operation header and SOAPAction for the SOAP call based on which Web Service we're calling
-        SOAPEnvelope.opheader = "<" + opt.operation + " ";
-        switch (WSops[opt.operation][0]) {
-            case ALERTS:
-                SOAPEnvelope.opheader += "xmlns='" + SCHEMASharePoint + "/soap/2002/1/alerts/' >";
-                SOAPAction = SCHEMASharePoint + "/soap/2002/1/alerts/";
-                break;
-            case MEETINGS:
-                SOAPEnvelope.opheader += "xmlns='" + SCHEMASharePoint + "/soap/meetings/' >";
-                SOAPAction = SCHEMASharePoint + "/soap/meetings/";
-                break;
-            case PERMISSIONS:
-                SOAPEnvelope.opheader += "xmlns='" + SCHEMASharePoint + "/soap/directory/' >";
-                SOAPAction = SCHEMASharePoint + "/soap/directory/";
-                break;
-            case PUBLISHEDLINKSSERVICE:
-                SOAPEnvelope.opheader += "xmlns='http://microsoft.com/webservices/SharePointPortalServer/PublishedLinksService/' >";
-                SOAPAction = "http://microsoft.com/webservices/SharePointPortalServer/PublishedLinksService/";
-                break;
-            case SEARCH:
-                SOAPEnvelope.opheader += "xmlns='urn:Microsoft.Search' >";
-                SOAPAction = "urn:Microsoft.Search/";
-                break;
-            case SHAREPOINTDIAGNOSTICS:
-                SOAPEnvelope.opheader += "xmlns='" + SCHEMASharePoint + "/diagnostics/' >";
-                SOAPAction = "http://schemas.microsoft.com/sharepoint/diagnostics/";
-                break;
-            case SOCIALDATASERVICE:
-                SOAPEnvelope.opheader += "xmlns='http://microsoft.com/webservices/SharePointPortalServer/SocialDataService' >";
-                SOAPAction = "http://microsoft.com/webservices/SharePointPortalServer/SocialDataService/";
-                break;
-            case SPELLCHECK:
-                SOAPEnvelope.opheader += "xmlns='http://schemas.microsoft.com/sharepoint/publishing/spelling/' >";
-                SOAPAction = "http://schemas.microsoft.com/sharepoint/publishing/spelling/SpellCheck";
-                break;
-            case TAXONOMYSERVICE:
-                SOAPEnvelope.opheader += "xmlns='" + SCHEMASharePoint + "/taxonomy/soap/' >";
-                SOAPAction = SCHEMASharePoint + "/taxonomy/soap/";
-                break;
-            case USERGROUP:
-                SOAPEnvelope.opheader += "xmlns='" + SCHEMASharePoint + "/soap/directory/' >";
-                SOAPAction = SCHEMASharePoint + "/soap/directory/";
-                break;
-            case USERPROFILESERVICE:
-                SOAPEnvelope.opheader += "xmlns='http://microsoft.com/webservices/SharePointPortalServer/UserProfileService' >";
-                SOAPAction = "http://microsoft.com/webservices/SharePointPortalServer/UserProfileService/";
-                break;
-            case WEBPARTPAGES:
-                SOAPEnvelope.opheader += "xmlns='http://microsoft.com/sharepoint/webpartpages' >";
-                SOAPAction = "http://microsoft.com/sharepoint/webpartpages/";
-                break;
-            case WORKFLOW:
-                SOAPEnvelope.opheader += "xmlns='" + SCHEMASharePoint + "/soap/workflow/' >";
-                SOAPAction = SCHEMASharePoint + "/soap/workflow/";
-                break;
-            default:
-                SOAPEnvelope.opheader += "xmlns='" + SCHEMASharePoint + "/soap/'>";
-                SOAPAction = SCHEMASharePoint + "/soap/";
-                break;
-        }
-
-        // Add the operation to the SOAPAction and opfooter
-        SOAPAction += opt.operation;
-        SOAPEnvelope.opfooter = "</" + opt.operation + ">";
-
-        // Build the URL for the Ajax call based on which operation we're calling
-        // If the webURL has been provided, then use it, else use the current site
-        var ajaxURL = "_vti_bin/" + WSops[opt.operation][0] + ".asmx";
-        var thisSite = $().SPServices.SPGetCurrentSite();
-        if (opt.webURL.charAt(opt.webURL.length - 1) === SLASH) {
-            ajaxURL = opt.webURL + ajaxURL;
-        } else if (opt.webURL.length > 0) {
-            ajaxURL = opt.webURL + SLASH + ajaxURL;
-        } else {
-            ajaxURL = thisSite + ((thisSite.charAt(thisSite.length - 1) === SLASH) ? ajaxURL : (SLASH + ajaxURL));
-        }
-
-        SOAPEnvelope.payload = "";
-        // Each operation requires a different set of values.  This switch statement sets them up in the SOAPEnvelope.payload.
-        switch (opt.operation) {
-            // ALERT OPERATIONS
-            case "GetAlerts":
-                break;
-            case "DeleteAlerts":
-                SOAPEnvelope.payload += "<IDs>";
-                for (i = 0; i < opt.IDs.length; i++) {
-                    SOAPEnvelope.payload += wrapNode("string", opt.IDs[i]);
-                }
-                SOAPEnvelope.payload += "</IDs>";
-                break;
-
-                // AUTHENTICATION OPERATIONS
-            case "Mode":
-                break;
-            case "Login":
-                addToPayload(opt, ["username", "password"]);
-                break;
-
-                // COPY OPERATIONS
-            case "CopyIntoItems":
-                addToPayload(opt, ["SourceUrl"]);
-                SOAPEnvelope.payload += "<DestinationUrls>";
-                for (i = 0; i < opt.DestinationUrls.length; i++) {
-                    SOAPEnvelope.payload += wrapNode("string", opt.DestinationUrls[i]);
-                }
-                SOAPEnvelope.payload += "</DestinationUrls>";
-                addToPayload(opt, ["Fields", "Stream", "Results"]);
-                break;
-            case "CopyIntoItemsLocal":
-                addToPayload(opt, ["SourceUrl"]);
-                SOAPEnvelope.payload += "<DestinationUrls>";
-                for (i = 0; i < opt.DestinationUrls.length; i++) {
-                    SOAPEnvelope.payload += wrapNode("string", opt.DestinationUrls[i]);
-                }
-                SOAPEnvelope.payload += "</DestinationUrls>";
-                break;
-            case "GetItem":
-                addToPayload(opt, ["Url", "Fields", "Stream"]);
-                break;
-
-                // FORM OPERATIONS
-            case "GetForm":
-                addToPayload(opt, ["listName", "formUrl"]);
-                break;
-            case "GetFormCollection":
-                addToPayload(opt, ["listName"]);
-                break;
-
-                // LIST OPERATIONS
-            case "AddAttachment":
-                addToPayload(opt, ["listName", "listItemID", "fileName", "attachment"]);
-                break;
-            case "AddDiscussionBoardItem":
-                addToPayload(opt, ["listName", "message"]);
-                break;
-            case "AddList":
-                addToPayload(opt, ["listName", "description", "templateID"]);
-                break;
-            case "AddListFromFeature":
-                addToPayload(opt, ["listName", "description", "featureID", "templateID"]);
-                break;
-            case "ApplyContentTypeToList":
-                addToPayload(opt, ["webUrl", "contentTypeId", "listName"]);
-                break;
-            case "CheckInFile":
-                addToPayload(opt, ["pageUrl", "comment", "CheckinType"]);
-                break;
-            case "CheckOutFile":
-                addToPayload(opt, ["pageUrl", "checkoutToLocal", "lastmodified"]);
-                break;
-            case "CreateContentType":
-                addToPayload(opt, ["listName", "displayName", "parentType", "fields", "contentTypeProperties", "addToView"]);
-                break;
-            case "DeleteAttachment":
-                addToPayload(opt, ["listName", "listItemID", "url"]);
-                break;
-            case "DeleteContentType":
-                addToPayload(opt, ["listName", "contentTypeId"]);
-                break;
-            case "DeleteContentTypeXmlDocument":
-                addToPayload(opt, ["listName", "contentTypeId", "documentUri"]);
-                break;
-            case "DeleteList":
-                addToPayload(opt, ["listName"]);
-                break;
-            case "GetAttachmentCollection":
-                addToPayload(opt, ["listName", ["listItemID", "ID"]]);
-                break;
-            case "GetList":
-                addToPayload(opt, ["listName"]);
-                break;
-            case "GetListAndView":
-                addToPayload(opt, ["listName", "viewName"]);
-                break;
-            case "GetListCollection":
-                break;
-            case "GetListContentType":
-                addToPayload(opt, ["listName", "contentTypeId"]);
-                break;
-            case "GetListContentTypes":
-                addToPayload(opt, ["listName"]);
-                break;
-            case "GetListItems":
-                addToPayload(opt, ["listName", "viewName", ["query", "CAMLQuery"],
-                    ["viewFields", "CAMLViewFields"],
-                    ["rowLimit", "CAMLRowLimit"],
-                    ["queryOptions", "CAMLQueryOptions"]
-                ]);
-                break;
-            case "GetListItemChanges":
-                addToPayload(opt, ["listName", "viewFields", "since", "contains"]);
-                break;
-            case "GetListItemChangesSinceToken":
-                addToPayload(opt, ["listName", "viewName", ["query", "CAMLQuery"],
-                    ["viewFields", "CAMLViewFields"],
-                    ["rowLimit", "CAMLRowLimit"],
-                    ["queryOptions", "CAMLQueryOptions"], {
-                        name: "changeToken",
-                        sendNull: false
-                    }, {
-                        name: "contains",
-                        sendNull: false
-                    }
-                ]);
-                break;
-            case "GetVersionCollection":
-                addToPayload(opt, ["strlistID", "strlistItemID", "strFieldName"]);
-                break;
-            case "UndoCheckOut":
-                addToPayload(opt, ["pageUrl"]);
-                break;
-            case "UpdateContentType":
-                addToPayload(opt, ["listName", "contentTypeId", "contentTypeProperties", "newFields", "updateFields", "deleteFields", "addToView"]);
-                break;
-            case "UpdateContentTypesXmlDocument":
-                addToPayload(opt, ["listName", "newDocument"]);
-                break;
-            case "UpdateContentTypeXmlDocument":
-                addToPayload(opt, ["listName", "contentTypeId", "newDocument"]);
-                break;
-            case "UpdateList":
-                addToPayload(opt, ["listName", "listProperties", "newFields", "updateFields", "deleteFields", "listVersion"]);
-                break;
-            case "UpdateListItems":
-                addToPayload(opt, ["listName"]);
-                if (typeof opt.updates !== "undefined" && opt.updates.length > 0) {
-                    addToPayload(opt, ["updates"]);
-                } else {
-                    SOAPEnvelope.payload += "<updates><Batch OnError='Continue'><Method ID='1' Cmd='" + opt.batchCmd + "'>";
-                    for (i = 0; i < opt.valuepairs.length; i++) {
-                        SOAPEnvelope.payload += "<Field Name='" + opt.valuepairs[i][0] + "'>" + escapeColumnValue(opt.valuepairs[i][1]) + "</Field>";
-                    }
-                    if (opt.batchCmd !== "New") {
-                        SOAPEnvelope.payload += "<Field Name='ID'>" + opt.ID + "</Field>";
-                    }
-                    SOAPEnvelope.payload += "</Method></Batch></updates>";
-                }
-                break;
-
-                // MEETINGS OPERATIONS
-            case "AddMeeting":
-                addToPayload(opt, ["organizerEmail", "uid", "sequence", "utcDateStamp", "title", "location", "utcDateStart", "utcDateEnd", "nonGregorian"]);
-                break;
-            case "CreateWorkspace":
-                addToPayload(opt, ["title", "templateName", "lcid", "timeZoneInformation"]);
-                break;
-            case "RemoveMeeting":
-                addToPayload(opt, ["recurrenceId", "uid", "sequence", "utcDateStamp", "cancelMeeting"]);
-                break;
-            case "SetWorkspaceTitle":
-                addToPayload(opt, ["title"]);
-                break;
-
-                // PEOPLE OPERATIONS
-            case "ResolvePrincipals":
-                addToPayload(opt, ["principalKeys", "principalType", "addToUserInfoList"]);
-                break;
-            case "SearchPrincipals":
-                addToPayload(opt, ["searchText", "maxResults", "principalType"]);
-                break;
-
-                // PERMISSION OPERATIONS
-            case "AddPermission":
-                addToPayload(opt, ["objectName", "objectType", "permissionIdentifier", "permissionType", "permissionMask"]);
-                break;
-            case "AddPermissionCollection":
-                addToPayload(opt, ["objectName", "objectType", "permissionsInfoXml"]);
-                break;
-            case "GetPermissionCollection":
-                addToPayload(opt, ["objectName", "objectType"]);
-                break;
-            case "RemovePermission":
-                addToPayload(opt, ["objectName", "objectType", "permissionIdentifier", "permissionType"]);
-                break;
-            case "RemovePermissionCollection":
-                addToPayload(opt, ["objectName", "objectType", "memberIdsXml"]);
-                break;
-            case "UpdatePermission":
-                addToPayload(opt, ["objectName", "objectType", "permissionIdentifier", "permissionType", "permissionMask"]);
-                break;
-
-                // PUBLISHEDLINKSSERVICE OPERATIONS
-            case "GetLinks":
-                break;
-
-                // SEARCH OPERATIONS
-            case "GetPortalSearchInfo":
-                SOAPEnvelope.opheader = "<" + opt.operation + " xmlns='http://microsoft.com/webservices/OfficeServer/QueryService'>";
-                SOAPAction = "http://microsoft.com/webservices/OfficeServer/QueryService/" + opt.operation;
-                break;
-            case "GetQuerySuggestions":
-                SOAPEnvelope.opheader = "<" + opt.operation + " xmlns='http://microsoft.com/webservices/OfficeServer/QueryService'>";
-                SOAPAction = "http://microsoft.com/webservices/OfficeServer/QueryService/" + opt.operation;
-                SOAPEnvelope.payload += wrapNode("queryXml", encodeXml(opt.queryXml));
-                break;
-            case "GetSearchMetadata":
-                SOAPEnvelope.opheader = "<" + opt.operation + " xmlns='http://microsoft.com/webservices/OfficeServer/QueryService'>";
-                SOAPAction = "http://microsoft.com/webservices/OfficeServer/QueryService/" + opt.operation;
-                break;
-            case "Query":
-                SOAPEnvelope.payload += wrapNode("queryXml", encodeXml(opt.queryXml));
-                break;
-            case "QueryEx":
-                SOAPEnvelope.opheader = "<" + opt.operation + " xmlns='http://microsoft.com/webservices/OfficeServer/QueryService'>";
-                SOAPAction = "http://microsoft.com/webservices/OfficeServer/QueryService/" + opt.operation;
-                SOAPEnvelope.payload += wrapNode("queryXml", encodeXml(opt.queryXml));
-                break;
-            case "Registration":
-                SOAPEnvelope.payload += wrapNode("registrationXml", encodeXml(opt.registrationXml));
-                break;
-            case "Status":
-                break;
-
-                // SHAREPOINTDIAGNOSTICS OPERATIONS
-            case "SendClientScriptErrorReport":
-                addToPayload(opt, ["message", "file", "line", "client", "stack", "team", "originalFile"]);
-                break;
-
-                // SITEDATA OPERATIONS
-            case "EnumerateFolder":
-                addToPayload(opt, ["strFolderUrl"]);
-                break;
-            case "GetAttachments":
-                addToPayload(opt, ["strListName", "strItemId"]);
-                break;
-            case "SiteDataGetList":
-                addToPayload(opt, ["strListName"]);
-                // Because this operation has a name which duplicates the Lists WS, need to handle
-                SOAPEnvelope = siteDataFixSOAPEnvelope(SOAPEnvelope, opt.operation);
-                break;
-            case "SiteDataGetListCollection":
-                // Because this operation has a name which duplicates the Lists WS, need to handle
-                SOAPEnvelope = siteDataFixSOAPEnvelope(SOAPEnvelope, opt.operation);
-                break;
-            case "SiteDataGetSite":
-                // Because this operation has a name which duplicates the Lists WS, need to handle
-                SOAPEnvelope = siteDataFixSOAPEnvelope(SOAPEnvelope, opt.operation);
-                break;
-            case "SiteDataGetSiteUrl":
-                addToPayload(opt, ["Url"]);
-                // Because this operation has a name which duplicates the Lists WS, need to handle
-                SOAPEnvelope = siteDataFixSOAPEnvelope(SOAPEnvelope, opt.operation);
-                break;
-            case "SiteDataGetWeb":
-                // Because this operation has a name which duplicates the Lists WS, need to handle
-                SOAPEnvelope = siteDataFixSOAPEnvelope(SOAPEnvelope, opt.operation);
-                break;
-
-                // SITES OPERATIONS
-            case "CreateWeb":
-                addToPayload(opt, ["url", "title", "description", "templateName", "language", "languageSpecified",
-                    "locale", "localeSpecified", "collationLocale", "collationLocaleSpecified", "uniquePermissions",
-                    "uniquePermissionsSpecified", "anonymous", "anonymousSpecified", "presence", "presenceSpecified"
-                ]);
-                break;
-            case "DeleteWeb":
-                addToPayload(opt, ["url"]);
-                break;
-            case "GetSite":
-                addToPayload(opt, ["SiteUrl"]);
-                break;
-            case "GetSiteTemplates":
-                addToPayload(opt, ["LCID", "TemplateList"]);
-                break;
-
-                // SOCIALDATASERVICE OPERATIONS
-            case "AddComment":
-                addToPayload(opt, ["url", "comment", "isHighPriority", "title"]);
-                break;
-            case "AddTag":
-                addToPayload(opt, ["url", "termID", "title", "isPrivate"]);
-                break;
-            case "AddTagByKeyword":
-                addToPayload(opt, ["url", "keyword", "title", "isPrivate"]);
-                break;
-            case "CountCommentsOfUser":
-                addToPayload(opt, ["userAccountName"]);
-                break;
-            case "CountCommentsOfUserOnUrl":
-                addToPayload(opt, ["userAccountName", "url"]);
-                break;
-            case "CountCommentsOnUrl":
-                addToPayload(opt, ["url"]);
-                break;
-            case "CountRatingsOnUrl":
-                addToPayload(opt, ["url"]);
-                break;
-            case "CountTagsOfUser":
-                addToPayload(opt, ["userAccountName"]);
-                break;
-            case "DeleteComment":
-                addToPayload(opt, ["url", "lastModifiedTime"]);
-                break;
-            case "DeleteRating":
-                addToPayload(opt, ["url"]);
-                break;
-            case "DeleteTag":
-                addToPayload(opt, ["url", "termID"]);
-                break;
-            case "DeleteTagByKeyword":
-                addToPayload(opt, ["url", "keyword"]);
-                break;
-            case "DeleteTags":
-                addToPayload(opt, ["url"]);
-                break;
-            case "GetAllTagTerms":
-                addToPayload(opt, ["maximumItemsToReturn"]);
-                break;
-            case "GetAllTagTermsForUrlFolder":
-                addToPayload(opt, ["urlFolder", "maximumItemsToReturn"]);
-                break;
-            case "GetAllTagUrls":
-                addToPayload(opt, ["termID"]);
-                break;
-            case "GetAllTagUrlsByKeyword":
-                addToPayload(opt, ["keyword"]);
-                break;
-            case "GetCommentsOfUser":
-                addToPayload(opt, ["userAccountName", "maximumItemsToReturn", "startIndex"]);
-                break;
-            case "GetCommentsOfUserOnUrl":
-                addToPayload(opt, ["userAccountName", "url"]);
-                break;
-            case "GetCommentsOnUrl":
-                addToPayload(opt, ["url", "maximumItemsToReturn", "startIndex"]);
-                if (typeof opt.excludeItemsTime !== "undefined" && opt.excludeItemsTime.length > 0) {
-                    SOAPEnvelope.payload += wrapNode("excludeItemsTime", opt.excludeItemsTime);
-                }
-                break;
-            case "GetRatingAverageOnUrl":
-                addToPayload(opt, ["url"]);
-                break;
-            case "GetRatingOfUserOnUrl":
-                addToPayload(opt, ["userAccountName", "url"]);
-                break;
-            case "GetRatingOnUrl":
-                addToPayload(opt, ["url"]);
-                break;
-            case "GetRatingsOfUser":
-                addToPayload(opt, ["userAccountName"]);
-                break;
-            case "GetRatingsOnUrl":
-                addToPayload(opt, ["url"]);
-                break;
-            case "GetSocialDataForFullReplication":
-                addToPayload(opt, ["userAccountName"]);
-                break;
-            case "GetTags":
-                addToPayload(opt, ["url"]);
-                break;
-            case "GetTagsOfUser":
-                addToPayload(opt, ["userAccountName", "maximumItemsToReturn", "startIndex"]);
-                break;
-            case "GetTagTerms":
-                addToPayload(opt, ["maximumItemsToReturn"]);
-                break;
-            case "GetTagTermsOfUser":
-                addToPayload(opt, ["userAccountName", "maximumItemsToReturn"]);
-                break;
-            case "GetTagTermsOnUrl":
-                addToPayload(opt, ["url", "maximumItemsToReturn"]);
-                break;
-            case "GetTagUrls":
-                addToPayload(opt, ["termID"]);
-                break;
-            case "GetTagUrlsByKeyword":
-                addToPayload(opt, ["keyword"]);
-                break;
-            case "GetTagUrlsOfUser":
-                addToPayload(opt, ["termID", "userAccountName"]);
-                break;
-            case "GetTagUrlsOfUserByKeyword":
-                addToPayload(opt, ["keyword", "userAccountName"]);
-                break;
-            case "SetRating":
-                addToPayload(opt, ["url", "rating", "title", "analysisDataEntry"]);
-                break;
-            case "UpdateComment":
-                addToPayload(opt, ["url", "lastModifiedTime", "comment", "isHighPriority"]);
-                break;
-
-                // SPELLCHECK OPERATIONS
-            case "SpellCheck":
-                addToPayload(opt, ["chunksToSpell", "declaredLanguage", "useLad"]);
-                break;
-
-                // TAXONOMY OPERATIONS
-            case "AddTerms":
-                addToPayload(opt, ["sharedServiceId", "termSetId", "lcid", "newTerms"]);
-                break;
-            case "GetChildTermsInTerm":
-                addToPayload(opt, ["sspId", "lcid", "termId", "termSetId"]);
-                break;
-            case "GetChildTermsInTermSet":
-                addToPayload(opt, ["sspId", "lcid", "termSetId"]);
-                break;
-            case "GetKeywordTermsByGuids":
-                addToPayload(opt, ["termIds", "lcid"]);
-                break;
-            case "GetTermsByLabel":
-                addToPayload(opt, ["label", "lcid", "matchOption", "resultCollectionSize", "termIds", "addIfNotFound"]);
-                break;
-            case "GetTermSets":
-                addToPayload(opt, ["sharedServiceId", "termSetId", "lcid", "clientTimeStamps", "clientVersions"]);
-                break;
-
-                // USERS AND GROUPS OPERATIONS
-            case "AddGroup":
-                addToPayload(opt, ["groupName", "ownerIdentifier", "ownerType", "defaultUserLoginName", "description"]);
-                break;
-            case "AddGroupToRole":
-                addToPayload(opt, ["groupName", "roleName"]);
-                break;
-            case "AddRole":
-                addToPayload(opt, ["roleName", "description", "permissionMask"]);
-                break;
-            case "AddRoleDef":
-                addToPayload(opt, ["roleName", "description", "permissionMask"]);
-                break;
-            case "AddUserCollectionToGroup":
-                addToPayload(opt, ["groupName", "usersInfoXml"]);
-                break;
-            case "AddUserCollectionToRole":
-                addToPayload(opt, ["roleName", "usersInfoXml"]);
-                break;
-            case "AddUserToGroup":
-                addToPayload(opt, ["groupName", "userName", "userLoginName", "userEmail", "userNotes"]);
-                break;
-            case "AddUserToRole":
-                addToPayload(opt, ["roleName", "userName", "userLoginName", "userEmail", "userNotes"]);
-                break;
-            case "GetAllUserCollectionFromWeb":
-                break;
-            case "GetGroupCollection":
-                addToPayload(opt, ["groupNamesXml"]);
-                break;
-            case "GetGroupCollectionFromRole":
-                addToPayload(opt, ["roleName"]);
-                break;
-            case "GetGroupCollectionFromSite":
-                break;
-            case "GetGroupCollectionFromUser":
-                addToPayload(opt, ["userLoginName"]);
-                break;
-            case "GetGroupCollectionFromWeb":
-                break;
-            case "GetGroupInfo":
-                addToPayload(opt, ["groupName"]);
-                break;
-            case "GetRoleCollection":
-                addToPayload(opt, ["roleNamesXml"]);
-                break;
-            case "GetRoleCollectionFromGroup":
-                addToPayload(opt, ["groupName"]);
-                break;
-            case "GetRoleCollectionFromUser":
-                addToPayload(opt, ["userLoginName"]);
-                break;
-            case "GetRoleCollectionFromWeb":
-                break;
-            case "GetRoleInfo":
-                addToPayload(opt, ["roleName"]);
-                break;
-            case "GetRolesAndPermissionsForCurrentUser":
-                break;
-            case "GetRolesAndPermissionsForSite":
-                break;
-            case "GetUserCollection":
-                addToPayload(opt, ["userLoginNamesXml"]);
-                break;
-            case "GetUserCollectionFromGroup":
-                addToPayload(opt, ["groupName"]);
-                break;
-            case "GetUserCollectionFromRole":
-                addToPayload(opt, ["roleName"]);
-                break;
-            case "GetUserCollectionFromSite":
-                break;
-            case "GetUserCollectionFromWeb":
-                break;
-            case "GetUserInfo":
-                addToPayload(opt, ["userLoginName"]);
-                break;
-            case "GetUserLoginFromEmail":
-                addToPayload(opt, ["emailXml"]);
-                break;
-            case "RemoveGroup":
-                addToPayload(opt, ["groupName"]);
-                break;
-            case "RemoveGroupFromRole":
-                addToPayload(opt, ["roleName", "groupName"]);
-                break;
-            case "RemoveRole":
-                addToPayload(opt, ["roleName"]);
-                break;
-            case "RemoveUserCollectionFromGroup":
-                addToPayload(opt, ["groupName", "userLoginNamesXml"]);
-                break;
-            case "RemoveUserCollectionFromRole":
-                addToPayload(opt, ["roleName", "userLoginNamesXml"]);
-                break;
-            case "RemoveUserCollectionFromSite":
-                addToPayload(opt, ["userLoginNamesXml"]);
-                break;
-            case "RemoveUserFromGroup":
-                addToPayload(opt, ["groupName", "userLoginName"]);
-                break;
-            case "RemoveUserFromRole":
-                addToPayload(opt, ["roleName", "userLoginName"]);
-                break;
-            case "RemoveUserFromSite":
-                addToPayload(opt, ["userLoginName"]);
-                break;
-            case "RemoveUserFromWeb":
-                addToPayload(opt, ["userLoginName"]);
-                break;
-            case "UpdateGroupInfo":
-                addToPayload(opt, ["oldGroupName", "groupName", "ownerIdentifier", "ownerType", "description"]);
-                break;
-            case "UpdateRoleDefInfo":
-                addToPayload(opt, ["oldRoleName", "roleName", "description", "permissionMask"]);
-                break;
-            case "UpdateRoleInfo":
-                addToPayload(opt, ["oldRoleName", "roleName", "description", "permissionMask"]);
-                break;
-            case "UpdateUserInfo":
-                addToPayload(opt, ["userLoginName", "userName", "userEmail", "userNotes"]);
-                break;
-
-                // USERPROFILESERVICE OPERATIONS
-            case "AddColleague":
-                addToPayload(opt, ["accountName", "colleagueAccountName", "group", "privacy", "isInWorkGroup"]);
-                break;
-            case "AddLink":
-                addToPayload(opt, ["accountName", "name", "url", "group", "privacy"]);
-                break;
-            case "AddMembership":
-                addToPayload(opt, ["accountName", "membershipInfo", "group", "privacy"]);
-                break;
-            case "AddPinnedLink":
-                addToPayload(opt, ["accountName", "name", "url"]);
-                break;
-            case "CreateMemberGroup":
-                addToPayload(opt, ["membershipInfo"]);
-                break;
-            case "CreateUserProfileByAccountName":
-                addToPayload(opt, ["accountName"]);
-                break;
-            case "GetCommonColleagues":
-                addToPayload(opt, ["accountName"]);
-                break;
-            case "GetCommonManager":
-                addToPayload(opt, ["accountName"]);
-                break;
-            case "GetCommonMemberships":
-                addToPayload(opt, ["accountName"]);
-                break;
-            case "GetInCommon":
-                addToPayload(opt, ["accountName"]);
-                break;
-            case "GetPropertyChoiceList":
-                addToPayload(opt, ["propertyName"]);
-                break;
-            case "GetUserColleagues":
-                addToPayload(opt, ["accountName"]);
-                break;
-            case "GetUserLinks":
-                addToPayload(opt, ["accountName"]);
-                break;
-            case "GetUserMemberships":
-                addToPayload(opt, ["accountName"]);
-                break;
-            case "GetUserPinnedLinks":
-                addToPayload(opt, ["accountName"]);
-                break;
-            case "GetUserProfileByGuid":
-                addToPayload(opt, ["guid"]);
-                break;
-            case "GetUserProfileByIndex":
-                addToPayload(opt, ["index"]);
-                break;
-            case "GetUserProfileByName":
-                // Note that this operation is inconsistent with the others, using AccountName rather than accountName
-                if (typeof opt.accountName !== "undefined" && opt.accountName.length > 0) {
-                    addToPayload(opt, [
-                        ["AccountName", "accountName"]
-                    ]);
-                } else {
-                    addToPayload(opt, ["AccountName"]);
-                }
-                break;
-            case "GetUserProfileCount":
-                break;
-            case "GetUserProfileSchema":
-                break;
-            case "GetUserPropertyByAccountName":
-                addToPayload(opt, ["accountName", "propertyName"]);
-                break;
-            case "ModifyUserPropertyByAccountName":
-                addToPayload(opt, ["accountName", "newData"]);
-                break;
-            case "RemoveAllColleagues":
-                addToPayload(opt, ["accountName"]);
-                break;
-            case "RemoveAllLinks":
-                addToPayload(opt, ["accountName"]);
-                break;
-            case "RemoveAllMemberships":
-                addToPayload(opt, ["accountName"]);
-                break;
-            case "RemoveAllPinnedLinks":
-                addToPayload(opt, ["accountName"]);
-                break;
-            case "RemoveColleague":
-                addToPayload(opt, ["accountName", "colleagueAccountName"]);
-                break;
-            case "RemoveLink":
-                addToPayload(opt, ["accountName", "id"]);
-                break;
-            case "RemoveMembership":
-                addToPayload(opt, ["accountName", "sourceInternal", "sourceReference"]);
-                break;
-            case "RemovePinnedLink":
-                addToPayload(opt, ["accountName", "id"]);
-                break;
-            case "UpdateColleaguePrivacy":
-                addToPayload(opt, ["accountName", "colleagueAccountName", "newPrivacy"]);
-                break;
-            case "UpdateLink":
-                addToPayload(opt, ["accountName", "data"]);
-                break;
-            case "UpdateMembershipPrivacy":
-                addToPayload(opt, ["accountName", "sourceInternal", "sourceReference", "newPrivacy"]);
-                break;
-            case "UpdatePinnedLink ":
-                addToPayload(opt, ["accountName", "data"]);
-                break;
-
-                // VERSIONS OPERATIONS
-            case "DeleteAllVersions":
-                addToPayload(opt, ["fileName"]);
-                break;
-            case "DeleteVersion":
-                addToPayload(opt, ["fileName", "fileVersion"]);
-                break;
-            case "GetVersions":
-                addToPayload(opt, ["fileName"]);
-                break;
-            case "RestoreVersion":
-                addToPayload(opt, ["fileName", "fileVersion"]);
-                break;
-
-                // VIEW OPERATIONS
-            case "AddView":
-                addToPayload(opt, ["listName", "viewName", "viewFields", "query", "rowLimit", "rowLimit", "type", "makeViewDefault"]);
-                break;
-            case "DeleteView":
-                addToPayload(opt, ["listName", "viewName"]);
-                break;
-            case "GetView":
-                addToPayload(opt, ["listName", "viewName"]);
-                break;
-            case "GetViewCollection":
-                addToPayload(opt, ["listName"]);
-                break;
-            case "GetViewHtml":
-                addToPayload(opt, ["listName", "viewName"]);
-                break;
-            case "UpdateView":
-                addToPayload(opt, ["listName", "viewName", "viewProperties", "query", "viewFields", "aggregations", "formats", "rowLimit"]);
-                break;
-            case "UpdateViewHtml":
-                addToPayload(opt, ["listName", "viewName", "viewProperties", "toolbar", "viewHeader", "viewBody", "viewFooter", "viewEmpty", "rowLimitExceeded",
-                    "query", "viewFields", "aggregations", "formats", "rowLimit"
-                ]);
-                break;
-
-                // WEBPARTPAGES OPERATIONS
-            case "AddWebPart":
-                addToPayload(opt, ["pageUrl", "webPartXml", "storage"]);
-                break;
-            case "AddWebPartToZone":
-                addToPayload(opt, ["pageUrl", "webPartXml", "storage", "zoneId", "zoneIndex"]);
-                break;
-            case "GetWebPart2":
-                addToPayload(opt, ["pageUrl", "storageKey", "storage", "behavior"]);
-                break;
-            case "GetWebPartPage":
-                addToPayload(opt, ["documentName", "behavior"]);
-                break;
-            case "GetWebPartProperties":
-                addToPayload(opt, ["pageUrl", "storage"]);
-                break;
-            case "GetWebPartProperties2":
-                addToPayload(opt, ["pageUrl", "storage", "behavior"]);
-                break;
-
-                // WEBS OPERATIONS
-            case "Webs.CreateContentType":
-                addToPayload(opt, ["displayName", "parentType", "newFields", "contentTypeProperties"]);
-                break;
-            case "GetColumns":
-                addToPayload(opt, ["webUrl"]);
-                break;
-            case "GetContentType":
-                addToPayload(opt, ["contentTypeId"]);
-                break;
-            case "GetContentTypes":
-                break;
-            case "GetCustomizedPageStatus":
-                addToPayload(opt, ["fileUrl"]);
-                break;
-            case "GetListTemplates":
-                break;
-            case "GetObjectIdFromUrl":
-                addToPayload(opt, ["objectUrl"]);
-                break;
-            case "GetWeb":
-                addToPayload(opt, [
-                    ["webUrl", "webURL"]
-                ]);
-                break;
-            case "GetWebCollection":
-                break;
-            case "GetAllSubWebCollection":
-                break;
-            case "UpdateColumns":
-                addToPayload(opt, ["newFields", "updateFields", "deleteFields"]);
-                break;
-            case "Webs.UpdateContentType":
-                addToPayload(opt, ["contentTypeId", "contentTypeProperties", "newFields", "updateFields", "deleteFields"]);
-                break;
-            case "WebUrlFromPageUrl":
-                addToPayload(opt, [
-                    ["pageUrl", "pageURL"]
-                ]);
-                break;
-
-                // WORKFLOW OPERATIONS
-            case "AlterToDo":
-                addToPayload(opt, ["item", "todoId", "todoListId", "taskData"]);
-                break;
-            case "ClaimReleaseTask":
-                addToPayload(opt, ["item", "taskId", "listId", "fClaim"]);
-                break;
-            case "GetTemplatesForItem":
-                addToPayload(opt, ["item"]);
-                break;
-            case "GetToDosForItem":
-                addToPayload(opt, ["item"]);
-                break;
-            case "GetWorkflowDataForItem":
-                addToPayload(opt, ["item"]);
-                break;
-            case "GetWorkflowTaskData":
-                addToPayload(opt, ["item", "listId", "taskId"]);
-                break;
-            case "StartWorkflow":
-                addToPayload(opt, ["item", "templateId", "workflowParameters"]);
-                break;
-
-            default:
-                break;
-        }
-
-        // Glue together the pieces of the SOAP message
-        var msg = SOAPEnvelope.header + SOAPEnvelope.opheader + SOAPEnvelope.payload + SOAPEnvelope.opfooter + SOAPEnvelope.footer;
-
-        // Check to see if we've already cached the results
-        var cachedPromise;
-        if(opt.cacheXML) {
-            cachedPromise = promisesCache[msg];
-        }
-
-        // If we don't have a completefunc, then we won't attempt to call it
-        var thisHasCompletefunc = $.isFunction(opt.completefunc);
-
-        if(typeof cachedPromise === "undefined") {
-
-            // Finally, make the Ajax call
-            cachedPromise = $.ajax({
-                // The relative URL for the AJAX call
-                url: ajaxURL,
-                // By default, the AJAX calls are asynchronous.  You can specify false to require a synchronous call.
-                async: opt.async,
-                // Before sending the msg, need to send the request header
-                beforeSend: function (xhr) {
-                    // If we need to pass the SOAPAction, do so
-                    if(WSops[opt.operation][1]) {
-                        xhr.setRequestHeader("SOAPAction", SOAPAction);
-                    }
-                },
-                // Always a POST
-                type: "POST",
-                // Here is the SOAP request we've built above
-                data: msg,
-                // We're getting XML; tell jQuery so that it doesn't need to do a best guess
-                dataType: "xml",
-                // and this is its content type
-                contentType: "text/xml;charset='utf-8'",
-                complete: function(xData, Status) {
-                    // When the call is complete, call the completefunc if there is one
-                    if(thisHasCompletefunc) {
-                        opt.completefunc(xData, Status);
-                    }
-                }
-            });
-
-            // If cache is true
-            // OR
-            // we have this message cached from a prior call,
-            // then update it with this most current version
-            if (opt.cacheXML || promisesCache[msg]) {
-
-                promisesCache[msg] = cachedPromise;
-
-            }
-
-            // Return the promise
-            return cachedPromise;
-
-        } else {
-            // Call the completefunc if there is one
-            if ($.isFunction(opt.completefunc)) {
-                opt.completefunc(cachedPromise, null);
-            }
-            // Return the cached promise
-            return cachedPromise;
-        }
-
-    }; // End $.fn.SPServices
-
-    // Defaults added as a function in our library means that the caller can override the defaults
-    // for their session by calling this function.  Each operation requires a different set of options;
-    // we allow for all in a standardized way.
-    $.fn.SPServices.defaults = {
-
-        cacheXML: false, // If true, we'll cache the XML results with jQuery's .data() function
-        operation: "", // The Web Service operation
-        webURL: "", // URL of the target Web
-        makeViewDefault: false, // true to make the view the default view for the list
-
-        // For operations requiring CAML, these options will override any abstractions
-        CAMLViewName: "", // View name in CAML format.
-        CAMLQuery: "", // Query in CAML format
-        CAMLViewFields: "", // View fields in CAML format
-        CAMLRowLimit: 0, // Row limit as a string representation of an integer
-        CAMLQueryOptions: "<QueryOptions></QueryOptions>", // Query options in CAML format
-
-        // Abstractions for CAML syntax
-        batchCmd: "Update", // Method Cmd for UpdateListItems
-        valuepairs: [], // Fieldname / Fieldvalue pairs for UpdateListItems
-
-        // As of v0.7.1, removed all options which were assigned an empty string ("")
-        DestinationUrls: [], // Array of destination URLs for copy operations
-        behavior: "Version3", // An SPWebServiceBehavior indicating whether the client supports Windows SharePoint Services 2.0 or Windows SharePoint Services 3.0: {Version2 | Version3 }
-        storage: "Shared", // A Storage value indicating how the Web Part is stored: {None | Personal | Shared}
-        objectType: "List", // objectType for operations which require it
-        cancelMeeting: true, // true to delete a meeting;false to remove its association with a Meeting Workspace site
-        nonGregorian: false, // true if the calendar is set to a format other than Gregorian;otherwise, false.
-        fClaim: false, // Specifies if the action is a claim or a release. Specifies true for a claim and false for a release.
-        recurrenceId: 0, // The recurrence ID for the meeting that needs its association removed. This parameter can be set to 0 for single-instance meetings.
-        sequence: 0, // An integer that is used to determine the ordering of updates in case they arrive out of sequence. Updates with a lower-than-current sequence are discarded. If the sequence is equal to the current sequence, the latest update are applied.
-        maximumItemsToReturn: 0, // SocialDataService maximumItemsToReturn
-        startIndex: 0, // SocialDataService startIndex
-        isHighPriority: false, // SocialDataService isHighPriority
-        isPrivate: false, // SocialDataService isPrivate
-        rating: 1, // SocialDataService rating
-        maxResults: 10, // Unless otherwise specified, the maximum number of principals that can be returned from a provider is 10.
-        principalType: "User", // Specifies user scope and other information: [None | User | DistributionList | SecurityGroup | SharePointGroup | All]
-
-        async: true, // Allow the user to force async
-        completefunc: null // Function to call on completion
-
-    }; // End $.fn.SPServices.defaults
-
-    // Function to determine the current Web's URL.  We need this for successful Ajax calls.
-    // The function is also available as a public function.
-    $.fn.SPServices.SPGetCurrentSite = function() {
-
-        // We've already determined the current site...
-        if (currentContext.thisSite.length > 0) {
-            return currentContext.thisSite;
-        }
-
-        // If we still don't know the current site, we call WebUrlFromPageUrlResult.
-        var msg = SOAPEnvelope.header +
-            "<WebUrlFromPageUrl xmlns='" + SCHEMASharePoint + "/soap/' ><pageUrl>" +
-            ((location.href.indexOf("?") > 0) ? location.href.substr(0, location.href.indexOf("?")) : location.href) +
-            "</pageUrl></WebUrlFromPageUrl>" +
-            SOAPEnvelope.footer;
-        $.ajax({
-            async: false, // Need this to be synchronous so we're assured of a valid value
-            url: "/_vti_bin/Webs.asmx",
-            type: "POST",
-            data: msg,
-            dataType: "xml",
-            contentType: "text/xml;charset=\"utf-8\"",
-            complete: function(xData) {
-                currentContext.thisSite = $(xData.responseXML).find("WebUrlFromPageUrlResult").text();
-            }
-        });
-
-        return currentContext.thisSite; // Return the URL
-
-    }; // End $.fn.SPServices.SPGetCurrentSite
-
-    // Function to set up cascading dropdowns on a SharePoint form
-    // (Newform.aspx, EditForm.aspx, or any other customized form.)
-    $.fn.SPServices.SPCascadeDropdowns = function(options) {
-
-        var opt = $.extend({}, {
-            relationshipWebURL: "", // [Optional] The name of the Web (site) which contains the relationships list
-            relationshipList: "", // The name of the list which contains the parent/child relationships
-            relationshipListParentColumn: "", // The internal name of the parent column in the relationship list
-            relationshipListChildColumn: "", // The internal name of the child column in the relationship list
-            relationshipListSortColumn: "", // [Optional] If specified, sort the options in the dropdown by this column,
-            // otherwise the options are sorted by relationshipListChildColumn
-            parentColumn: "", // The display name of the parent column in the form
-            childColumn: "", // The display name of the child column in the form
-            listName: $().SPServices.SPListNameFromUrl(), // The list the form is working with. This is useful if the form is not in the list context.
-            CAMLQuery: "", // [Optional] For power users, this CAML fragment will be Anded with the default query on the relationshipList
-            CAMLQueryOptions: "<QueryOptions><IncludeMandatoryColumns>FALSE</IncludeMandatoryColumns></QueryOptions>", // [Optional] For power users, ability to specify Query Options
-            promptText: "", // [DEPRECATED] Text to use as prompt. If included, {0} will be replaced with the value of childColumn. IOrignal value "Choose {0}..."
-            noneText: "(None)", // [Optional] Text to use for the (None) selection. Provided for non-English language support.
-            simpleChild: false, // [Optional] If set to true and childColumn is a complex dropdown, convert it to a simple dropdown
-            selectSingleOption: false, // [Optional] If set to true and there is only a single child option, select it
-            matchOnId: false, // By default, we match on the lookup's text value. If matchOnId is true, we'll match on the lookup id instead.
-            completefunc: null, // Function to call on completion of rendering the change.
-            debug: false // If true, show error messages;if false, run silent
-        }, options);
-
-
-        var thisParentSetUp = false;
-        var thisFunction = "SPServices.SPCascadeDropdowns";
-
-        // Find the parent column's select (dropdown)
-        var parentSelect = $().SPServices.SPDropdownCtl({
-            displayName: opt.parentColumn
-        });
-        if (parentSelect.Obj.html() === null && opt.debug) {
-            errBox(thisFunction, "parentColumn: " + opt.parentColumn, TXTColumnNotFound);
-            return;
-        }
-
-        // Find the child column's select (dropdown)
-        var childSelect = $().SPServices.SPDropdownCtl({
-            displayName: opt.childColumn
-        });
-        if (childSelect.Obj.html() === null && opt.debug) {
-            errBox(thisFunction, "childColumn: " + opt.childColumn, TXTColumnNotFound);
-            return;
-        }
-
-        // If requested and the childColumn is a complex dropdown, convert to a simple dropdown
-        if (opt.simpleChild === true && childSelect.Type === dropdownType.complex) {
-            $().SPServices.SPComplexToSimpleDropdown({
-                columnName: opt.childColumn
-            });
-            // Set the childSelect to reference the new simple dropdown
-            childSelect = $().SPServices.SPDropdownCtl({
-                displayName: opt.childColumn
-            });
-        }
-
-        var childColumnRequired, childColumnStatic;
-
-        // Get information about the childColumn from the current list
-        $().SPServices({
-            operation: "GetList",
-            async: false,
-            cacheXML: true,
-            listName: opt.listName,
-            completefunc: function(xData) {
-                $(xData.responseXML).find("Fields").each(function() {
-                    $(this).find("Field[DisplayName='" + opt.childColumn + "']").each(function() {
-                        // Determine whether childColumn is Required
-                        childColumnRequired = ($(this).attr("Required") === "TRUE") ? true : false;
-                        childColumnStatic = $(this).attr("StaticName");
-                        // Stop looking; we're done
-                        return false;
-                    });
-                });
-            }
-        });
-
-        // Save data about each child column on the parent
-        var childColumn = {
-            opt: opt,
-            childSelect: childSelect,
-            childColumnStatic: childColumnStatic,
-            childColumnRequired: childColumnRequired
-        };
-        var childColumns = parentSelect.Obj.data("SPCascadeDropdownsChildColumns");
-
-        // If this is the first child for this parent, then create the data object to hold the settings
-        if (typeof childColumns === "undefined") {
-            parentSelect.Obj.data("SPCascadeDropdownsChildColumns", [childColumn]);
-            // If we already have a data object for this parent, then add the setting for this child to it
-        } else {
-            childColumns.push(childColumn);
-            parentSelect.Obj.data("SPCascadeDropdownsChildColumns", childColumns);
-            thisParentSetUp = true;
-        }
-
-        // We only need to bind to the event(s) if we haven't already done so
-        if (!thisParentSetUp) {
-            switch (parentSelect.Type) {
-                // Plain old select
-                case dropdownType.simple:
-                    parentSelect.Obj.bind("change", function() {
-                        cascadeDropdown(opt.parentColumn, parentSelect);
-                    });
-                    break;
-                    // Input / Select hybrid
-                case dropdownType.complex:
-                    // Bind to any change on the hidden input element
-                    parentSelect.optHid.bind("propertychange", function() {
-                        cascadeDropdown(opt.parentColumn, parentSelect);
-                    });
-                    break;
-                    // Multi-select hybrid
-                case dropdownType.multiSelect:
-                    // Handle the dblclick on the candidate select
-                    $(parentSelect.master.candidateControl).bind("dblclick", function() {
-                        cascadeDropdown(opt.parentColumn, parentSelect);
-                    });
-                    // Handle the dblclick on the selected values
-                    $(parentSelect.master.resultControl).bind("dblclick", function() {
-                        cascadeDropdown(opt.parentColumn, parentSelect);
-                    });
-                    // Handle button clicks
-                    $(parentSelect.master.addControl).bind("click", function() {
-                        cascadeDropdown(opt.parentColumn, parentSelect);
-                    });
-                    $(parentSelect.master.removeControl).bind("click", function() {
-                        cascadeDropdown(opt.parentColumn, parentSelect);
-                    });
-                    break;
-                default:
-                    break;
-            }
-        }
-        // Fire the change to set the initially allowable values
-        cascadeDropdown(opt.parentColumn, parentSelect);
-
-    }; // End $.fn.SPServices.SPCascadeDropdowns
-
-    function cascadeDropdown(parentColumn, parentSelect) {
-        var choices = "";
-        var parentSelectSelected;
-        var childSelectSelected = null;
-        var newMultiLookupPickerdata;
-        var numChildOptions;
-        var firstChildOptionId;
-        var firstChildOptionValue;
-
-        // Filter each child column
-        var childColumns = parentSelect.Obj.data("SPCascadeDropdownsChildColumns");
-        $(childColumns).each(function() {
-
-            // Break out the data objects for this child column
-            var opt = this.opt;
-            var childSelect = this.childSelect;
-            var childColumnStatic = this.childColumnStatic;
-            var childColumnRequired = this.childColumnRequired;
-
-            // Get the parent column selection(s)
-            parentSelectSelected = getDropdownSelected(parentSelect, opt.matchOnId);
-
-            // If the selection hasn't changed, then there's nothing to do right now.  This is useful to reduce
-            // the number of Web Service calls when the parentSelect.Type = dropdownType.complex or dropdownType.multiSelect, as there are multiple propertychanges
-            // which don't require any action.  The attribute will be unique per child column in case there are
-            // multiple children for a given parent.
-            var allParentSelections = parentSelectSelected.join(";#");
-            if (parentSelect.Obj.data("SPCascadeDropdown_Selected_" + childColumnStatic) === allParentSelections) {
-                return;
-            }
-            parentSelect.Obj.data("SPCascadeDropdown_Selected_" + childColumnStatic, allParentSelections);
-
-            // Get the current child column selection(s)
-            childSelectSelected = getDropdownSelected(childSelect, true);
-
-            // When the parent column's selected option changes, get the matching items from the relationship list
-            // Get the list items which match the current selection
-            var sortColumn = (opt.relationshipListSortColumn.length > 0) ? opt.relationshipListSortColumn : opt.relationshipListChildColumn;
-            var camlQuery = "<Query><OrderBy><FieldRef Name='" + sortColumn + "'/></OrderBy><Where><And>";
-            if (opt.CAMLQuery.length > 0) {
-                camlQuery += "<And>";
-            }
-
-            // Build up the criteria for inclusion
-            if (parentSelectSelected.length === 0) {
-                // Handle the case where no values are selected in multi-selects
-                camlQuery += "<Eq><FieldRef Name='" + opt.relationshipListParentColumn + "'/><Value Type='Text'></Value></Eq>";
-            } else if (parentSelectSelected.length === 1) {
-                // Only one value is selected
-                camlQuery += "<Eq><FieldRef Name='" + opt.relationshipListParentColumn +
-                    (opt.matchOnId ? "' LookupId='True'/><Value Type='Integer'>" : "'/><Value Type='Text'>") +
-                    escapeColumnValue(parentSelectSelected[0]) + "</Value></Eq>";
-            } else {
-                var compound = (parentSelectSelected.length > 2) ? true : false;
-                for (i = 0; i < (parentSelectSelected.length - 1); i++) {
-                    camlQuery += "<Or>";
-                }
-                for (i = 0; i < parentSelectSelected.length; i++) {
-                    camlQuery += "<Eq><FieldRef Name='" + opt.relationshipListParentColumn +
-                        (opt.matchOnId ? "' LookupId='True'/><Value Type='Integer'>" : "'/><Value Type='Text'>") +
-                        escapeColumnValue(parentSelectSelected[i]) + "</Value></Eq>";
-                    if (i > 0 && (i < (parentSelectSelected.length - 1)) && compound) {
-                        camlQuery += "</Or>";
-                    }
-                }
-                camlQuery += "</Or>";
-            }
-
-            if (opt.CAMLQuery.length > 0) {
-                camlQuery += opt.CAMLQuery + "</And>";
-            }
-
-            // Make sure we don't get any items which don't have the child value
-            camlQuery += "<IsNotNull><FieldRef Name='" + opt.relationshipListChildColumn + "' /></IsNotNull>";
-
-            camlQuery += "</And></Where></Query>";
-
-            $().SPServices({
-                operation: "GetListItems",
-                // Force sync so that we have the right values for the child column onchange trigger
-                async: false,
-                webURL: opt.relationshipWebURL,
-                listName: opt.relationshipList,
-                // Filter based on the currently selected parent column's value
-                CAMLQuery: camlQuery,
-                // Only get the parent and child columns
-                CAMLViewFields: "<ViewFields><FieldRef Name='" + opt.relationshipListParentColumn + "' /><FieldRef Name='" + opt.relationshipListChildColumn + "' /></ViewFields>",
-                // Override the default view rowlimit and get all appropriate rows
-                CAMLRowLimit: 0,
-                // Even though setting IncludeMandatoryColumns to FALSE doesn't work as the docs describe, it fixes a bug in GetListItems with mandatory multi-selects
-                CAMLQueryOptions: opt.CAMLQueryOptions,
-                completefunc: function(xData) {
-
-                    // Handle errors
-                    $(xData.responseXML).find("errorstring").each(function() {
-                        var thisFunction = "SPServices.SPCascadeDropdowns";
-                        var errorText = $(this).text();
-                        if (opt.debug && errorText === "One or more field types are not installed properly. Go to the list settings page to delete these fields.") {
-                            errBox(thisFunction,
-                                "relationshipListParentColumn: " + opt.relationshipListParentColumn + " or " +
-                                "relationshipListChildColumn: " + opt.relationshipListChildColumn,
-                                "Not found in relationshipList " + opt.relationshipList);
-                        } else if (opt.debug && errorText === "Guid should contain 32 digits with 4 dashes (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).") {
-                            errBox(thisFunction,
-                                "relationshipList: " + opt.relationshipList,
-                                "List not found");
-                        }
-                        return;
-                    });
-
-                    // Add an explanatory prompt
-                    switch (childSelect.Type) {
-                        case dropdownType.simple:
-                            // Remove all of the existing options
-                            $(childSelect.Obj).find("option").remove();
-                            // If the column is required or the promptText option is empty, don't add the prompt text
-                            if (!childColumnRequired && (opt.promptText.length > 0)) {
-                                childSelect.Obj.append("<option value='0'>" + opt.promptText.replace(/\{0\}/g, opt.childColumn) + "</option>");
-                            } else if (!childColumnRequired) {
-                                childSelect.Obj.append("<option value='0'>" + opt.noneText + "</option>");
-                            }
-                            break;
-                        case dropdownType.complex:
-                            // If the column is required, don't add the "(None)" option
-                            choices = childColumnRequired ? "" : opt.noneText + "|0";
-                            childSelect.Obj.val("");
-                            break;
-                        case dropdownType.multiSelect:
-                            // Remove all of the existing options
-                            $(childSelect.master.candidateControl).find("option").remove();
-                            newMultiLookupPickerdata = "";
-                            break;
-                        default:
-                            break;
-                    }
-                    // Get the count of items returned and save it so that we can select if it's a single option
-                    // The item count is stored thus: <rs:data ItemCount="1">
-                    numChildOptions = parseFloat($(xData.responseXML).SPFilterNode("rs:data").attr("ItemCount"));
-
-                    // Add an option for each child item
-                    $(xData.responseXML).SPFilterNode("z:row").each(function() {
-
-                        var thisOption = {};
-
-                        // If relationshipListChildColumn is a Lookup column, then the ID should be for the Lookup value,
-                        // else the ID of the relationshipList item
-                        var thisValue = $(this).attr("ows_" + opt.relationshipListChildColumn);
-
-                        if (typeof thisValue !== "undefined" && thisValue.indexOf(";#") > 0) {
-                            thisOption = new SplitIndex(thisValue);
-                        } else {
-                            thisOption.id = $(this).attr("ows_ID");
-                            thisOption.value = thisValue;
-                        }
-
-                        // If the relationshipListChildColumn is a calculated column, then the value isn't preceded by the ID,
-                        // but by the datatype.  In this case, thisOption.id should be the ID of the relationshipList item.
-                        // e.g., float;#12345.67
-                        if (isNaN(thisOption.id)) {
-                            thisOption.id = $(this).attr("ows_ID");
-                        }
-
-                        // Save the id and value for the first child option in case we need to select it (selectSingleOption option is true)
-                        firstChildOptionId = thisOption.id;
-                        firstChildOptionValue = thisOption.value;
-
-                        switch (childSelect.Type) {
-                            case dropdownType.simple:
-                                var selected = ($(this).attr("ows_ID") === childSelectSelected[0]) ? " selected='selected'" : "";
-                                childSelect.Obj.append("<option" + selected + " value='" + thisOption.id + "'>" + thisOption.value + "</option>");
-                                break;
-                            case dropdownType.complex:
-                                if (thisOption.id === childSelectSelected[0]) {
-                                    childSelect.Obj.val(thisOption.value);
-                                }
-                                choices = choices + ((choices.length > 0) ? "|" : "") + thisOption.value + "|" + thisOption.id;
-                                break;
-                            case dropdownType.multiSelect:
-                                $(childSelect.master.candidateControl).append("<option value='" + thisOption.id + "'>" + thisOption.value + "</option>");
-                                newMultiLookupPickerdata += thisOption.id + "|t" + thisOption.value + "|t |t |t";
-                                break;
-                            default:
-                                break;
-                        }
-                    });
-
-                    switch (childSelect.Type) {
-                        case dropdownType.simple:
-                            childSelect.Obj.trigger("change");
-                            // If there is only one option and the selectSingleOption option is true, then select it
-                            if (numChildOptions === 1 && opt.selectSingleOption === true) {
-                                $(childSelect.Obj).find("option[value!='0']:first").attr("selected", "selected");
-                            }
-                            break;
-                        case dropdownType.complex:
-                            // Set the allowable choices
-                            childSelect.Obj.attr("choices", choices);
-                            // If there is only one option and the selectSingleOption option is true, then select it
-                            if (numChildOptions === 1 && opt.selectSingleOption === true) {
-                                // Set the input element value
-                                $(childSelect.Obj).val(firstChildOptionValue);
-                                // Set the value of the optHid input element
-                                childSelect.optHid.val(firstChildOptionId);
-                            }
-                            // If there's no selection, then remove the value in the associated hidden input element (optHid)
-                            if (childSelect.Obj.val() === "") {
-                                childSelect.optHid.val("");
-                            }
-                            break;
-                        case dropdownType.multiSelect:
-                            // Clear the master
-                            childSelect.master.data = "";
-                            childSelect.MultiLookupPickerdata.val(newMultiLookupPickerdata);
-
-                            // Clear any prior selections that are no longer valid or aren't selected
-                            $(childSelect.master.resultControl).find("option").each(function() {
-                                var thisSelected = $(this);
-                                thisSelected.prop("selected", true);
-                                $(childSelect.master.candidateControl).find("option[value='" + thisSelected.val() + "']").each(function() {
-                                    thisSelected.prop("selected", false);
-                                });
-                            });
-                            GipRemoveSelectedItems(childSelect.master);
-
-                            // Hide any options in the candidate list which are already selected
-                            $(childSelect.master.candidateControl).find("option").each(function() {
-                                var thisSelected = $(this);
-                                $(childSelect.master.resultControl).find("option[value='" + thisSelected.val() + "']").each(function() {
-                                    thisSelected.remove();
-                                });
-                            });
-                            GipAddSelectedItems(childSelect.master);
-
-                            // Set master.data to the newly allowable values
-                            childSelect.master.data = GipGetGroupData(newMultiLookupPickerdata);
-
-                            // Trigger a dblclick so that the child will be cascaded if it is a multiselect.
-                            $(childSelect.master.candidateControl).trigger("dblclick");
-
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            });
-            // If present, call completefunc when all else is done
-            if (opt.completefunc !== null) {
-                opt.completefunc();
-            }
-        }); // $(childColumns).each(function()
-
-    } // End cascadeDropdown
-
-
-    // function to convert complex dropdowns to simple dropdowns
-    $.fn.SPServices.SPComplexToSimpleDropdown = function(options) {
-
-        var opt = $.extend({}, {
-            columnName: "", // The display name of the column in the form
-            completefunc: null, // Function to call on completion of rendering the change.
-            debug: false // If true, show error messages;if false, run silent
-        }, options);
-
-        // Find the column's select (dropdown)
-        var columnSelect = $().SPServices.SPDropdownCtl({
-            displayName: opt.columnName
-        });
-        if (columnSelect.Obj.html() === null && opt.debug) {
-            errBox("SPServices.SPComplexToSimpleDropdown", "columnName: " + opt.columnName, TXTColumnNotFound);
-            return;
-        }
-
-        // If we don't have a complex dropdown, then there is nothing to do
-        if (columnSelect.Type !== dropdownType.complex) {
-            return;
-        }
-
-        // The available options are stored in the choices attribute of the complex dropdowns's input element...
-        var choices = $(columnSelect.Obj).attr("choices").split("|");
-
-        // We need to know which option is selected already, if any
-        var complexSelectSelectedId = columnSelect.optHid.val();
-
-        // Build up the simple dropdown, giving it an easy to select id
-        var simpleSelectId = genContainerId("SPComplexToSimpleDropdown", opt.columnName);
-
-        var simpleSelect = "<select id='" + simpleSelectId + "' title='" + opt.columnName + "'>";
-        for (i = 0; i < choices.length; i = i + 2) {
-            var simpleSelectSelected = (choices[i + 1] === complexSelectSelectedId) ? " selected='selected' " : " ";
-            simpleSelect += "<option" + simpleSelectSelected + "value='" + choices[i + 1] + "'>" + choices[i] + "</option>";
-        }
-        simpleSelect += "</select>";
-
-        // Append the new simple select to the form
-        $(columnSelect.Obj).closest("td").prepend(simpleSelect);
-
-        // Remove the complex dropdown functionality since we don't need it anymore...
-        $(columnSelect.Obj).closest("span").find("img").remove();
-        // ...and hide the input element
-        $(columnSelect.Obj).closest("span").find("input").hide();
-
-        // When the simple select changes...
-        $("#" + simpleSelectId).change(function() {
-            var thisVal = $(this).val();
-            // ...set the optHid input element's value to the valus of the selected option...
-            columnSelect.optHid.val(thisVal);
-            // ...and save the selected value as the hidden input's value only if the value is not equal to "0" (None)
-            $(columnSelect.Obj).val($(this).find("option[value='" + (thisVal !== "0" ? thisVal : "") + "']").html());
-        });
-        // Trigger a change to ensure that the selected value registers in the complex dropdown
-        $("#" + simpleSelectId).trigger("change");
-
-        // If present, call completefunc when all else is done
-        if (opt.completefunc !== null) {
-            opt.completefunc();
-        }
-
-    }; // End $.fn.SPServices.SPConvertToSimpleDropdown
-
-
-    // Function to display related information when an option is selected on a form.
-    $.fn.SPServices.SPDisplayRelatedInfo = function(options) {
-
-        var opt = $.extend({}, {
-            columnName: "", // The display name of the column in the form
-            relatedWebURL: "", // [Optional] The name of the Web (site) which contains the related list
-            relatedList: "", // The name of the list which contains the additional information
-            relatedListColumn: "", // The internal name of the related column in the related list
-            relatedColumns: [], // An array of related columns to display
-            displayFormat: "table", // The format to use in displaying the related information.  Possible values are: [table, list]
-            headerCSSClass: "ms-vh2", // CSS class for the table headers
-            rowCSSClass: "ms-vb", // CSS class for the table rows
-            CAMLQuery: "", // [Optional] For power users, this CAML fragment will be <And>ed with the default query on the relatedList
-            numChars: 0, // If used on an input column (not a dropdown), no matching will occur until at least this number of characters has been entered
-            matchType: "Eq", // If used on an input column (not a dropdown), type of match. Can be any valid CAML comparison operator, most often "Eq" or "BeginsWith"
-            matchOnId: false, // By default, we match on the lookup's text value. If matchOnId is true, we'll match on the lookup id instead.
-            completefunc: null, // Function to call on completion of rendering the change.
-            debug: false // If true, show error messages;if false, run silent
-        }, options);
-
-        var divId;
-        var relatedColumnsXML = [];
-        var relatedListXML;
-        var thisFunction = "SPServices.SPDisplayRelatedInfo";
-
-        // Find the column's select (dropdown)
-        var columnSelect = $().SPServices.SPDropdownCtl({
-            displayName: opt.columnName
-        });
-        if (columnSelect.Obj.html() === null && opt.debug) {
-            errBox(thisFunction, "columnName: " + opt.columnName, TXTColumnNotFound);
-            return;
-        }
-
-        // Generate a unique id for the container
-        divId = genContainerId("SPDisplayRelatedInfo", opt.columnName);
-
-        // Get information about the related list and its columns
-        $().SPServices({
-            operation: "GetList",
-            async: false,
-            cacheXML: true,
-            webURL: opt.relatedWebURL,
-            listName: opt.relatedList,
-            completefunc: function(xData) {
-                // If debug is on, notify about an error
-                $(xData.responseXML).find("faultcode").each(function() {
-                    if (opt.debug) {
-                        errBox(thisFunction, "relatedList: " + opt.relatedList, "List not found");
-                        return;
-                    }
-                });
-                // Get info about the related list
-                relatedListXML = $(xData.responseXML).find("List");
-                // Save the information about each column requested
-                for (i = 0; i < opt.relatedColumns.length; i++) {
-                    relatedColumnsXML[opt.relatedColumns[i]] = $(xData.responseXML).find("Fields > Field[Name='" + opt.relatedColumns[i] + "']");
-                }
-                relatedColumnsXML[opt.relatedListColumn] = $(xData.responseXML).find("Fields > Field[Name='" + opt.relatedListColumn + "']");
-            }
-        });
-
-        switch (columnSelect.Type) {
-            // Plain old select
-            case dropdownType.simple:
-                columnSelect.Obj.bind("change", function() {
-                    showRelated(opt, divId, relatedListXML, relatedColumnsXML);
-                });
-                break;
-                // Input / Select hybrid
-            case dropdownType.complex:
-                // Bind to any change on the hidden input element
-                columnSelect.optHid.bind("propertychange", function() {
-                    showRelated(opt, divId, relatedListXML, relatedColumnsXML);
-                });
-                break;
-                // Multi-select hybrid
-            case dropdownType.multiSelect:
-                if (opt.debug) {
-                    errBox(thisFunction, "columnName: " + opt.columnName, "Multi-select columns not supported by this function");
-                }
-                break;
-            default:
-                break;
-        }
-        // Fire the change to set the initially allowable values
-        showRelated(opt, divId, relatedListXML, relatedColumnsXML);
-
-    }; // End $.fn.SPServices.SPDisplayRelatedInfo
-
-    function showRelated(opt, divId, relatedListXML, relatedColumnsXML) {
-
-        var columnSelectSelected = null;
-        var thisFunction = "SPServices.SPDisplayRelatedInfo";
-
-        // Find the column's select (dropdown)
-        var columnSelect = $().SPServices.SPDropdownCtl({
-            displayName: opt.columnName
-        });
-
-        // Get the current column selection(s)
-        columnSelectSelected = getDropdownSelected(columnSelect, opt.matchOnId);
-        if (columnSelect.Type === dropdownType.complex && opt.numChars > 0 && columnSelectSelected[0].length < opt.numChars) {
-            return;
-        }
-
-        // If the selection hasn't changed, then there's nothing to do right now.  This is useful to reduce
-        // the number of Web Service calls when the parentSelect.Type = dropdownType.complex, as there are multiple propertychanges
-        // which don't require any action.
-        if (columnSelect.Obj.attr("showRelatedSelected") === columnSelectSelected[0]) {
-            return;
-        }
-        columnSelect.Obj.attr("showRelatedSelected", columnSelectSelected[0]);
-
-        // Remove the old container...
-        $("#" + divId).remove();
-        // ...and append a new, empty one
-        columnSelect.Obj.parent().append("<div id=" + divId + "></div>");
-
-        // Get the list items which match the current selection
-        var camlQuery = "<Query><Where>";
-        if (opt.CAMLQuery.length > 0) {
-            camlQuery += "<And>";
-        }
-
-        // Need to handle Lookup columns differently than static columns
-        var relatedListColumnType = relatedColumnsXML[opt.relatedListColumn].attr("Type");
-        if (relatedListColumnType === "Lookup") {
-            camlQuery += "<Eq><FieldRef Name='" + opt.relatedListColumn +
-                (opt.matchOnId ? "' LookupId='True'/><Value Type='Integer'>" : "'/><Value Type='Text'>") +
-                escapeColumnValue(columnSelectSelected[0]) + "</Value></Eq>";
-        } else {
-            camlQuery += "<Eq><FieldRef Name='" +
-                (opt.matchOnId ? "ID' /><Value Type='Counter'>" : opt.relatedListColumn + "'/><Value Type='Text'>") +
-                escapeColumnValue(columnSelectSelected[0]) + "</Value></Eq>";
-        }
-
-        if (opt.CAMLQuery.length > 0) {
-            camlQuery += opt.CAMLQuery + "</And>";
-        }
-        camlQuery += "</Where></Query>";
-
-        var viewFields = " ";
-        for (i = 0; i < opt.relatedColumns.length; i++) {
-            viewFields += "<FieldRef Name='" + opt.relatedColumns[i] + "' />";
-        }
-
-        $().SPServices({
-            operation: "GetListItems",
-            async: false,
-            webURL: opt.relatedWebURL,
-            listName: opt.relatedList,
-            // Filter based on the column's currently selected value
-            CAMLQuery: camlQuery,
-            CAMLViewFields: "<ViewFields>" + viewFields + "</ViewFields>",
-            // Override the default view rowlimit and get all appropriate rows
-            CAMLRowLimit: 0,
-            completefunc: function(xData) {
-
-                // Handle errors
-                $(xData.responseXML).find("errorstring").each(function() {
-                    var errorText = $(this).text();
-                    if (opt.debug && errorText === "One or more field types are not installed properly. Go to the list settings page to delete these fields.") {
-                        errBox(thisFunction,
-                            "relatedListColumn: " + opt.relatedListColumn,
-                            "Column not found in relatedList " + opt.relatedList);
-                    } else if (opt.debug && errorText === "Guid should contain 32 digits with 4 dashes (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).") {
-                        errBox(thisFunction,
-                            "relatedList: " + opt.relatedList,
-                            "List not found");
-                    }
-                    return;
-                });
-
-                var outString;
-                // Output each row
-                switch (opt.displayFormat) {
-                    // Only implementing the table format in the first iteration (v0.2.9)
-                    case "table":
-                        outString = "<table>";
-                        outString += "<tr>";
-                        for (i = 0; i < opt.relatedColumns.length; i++) {
-                            if (typeof relatedColumnsXML[opt.relatedColumns[i]] === "undefined" && opt.debug) {
-                                errBox(thisFunction, "columnName: " + opt.relatedColumns[i], "Column not found in relatedList");
-                                return;
-                            }
-                            outString += "<th class='" + opt.headerCSSClass + "'>" + relatedColumnsXML[opt.relatedColumns[i]].attr("DisplayName") + "</th>";
-                        }
-                        outString += "</tr>";
-                        // Add an option for each child item
-                        $(xData.responseXML).SPFilterNode("z:row").each(function() {
-                            outString += "<tr>";
-                            for (i = 0; i < opt.relatedColumns.length; i++) {
-                                outString += "<td class='" + opt.rowCSSClass + "'>" + showColumn(relatedListXML, relatedColumnsXML[opt.relatedColumns[i]], $(this).attr("ows_" + opt.relatedColumns[i]), opt) + "</td>";
-                            }
-                            outString += "</tr>";
-                        });
-                        outString += "</table>";
-                        break;
-                        // list format implemented in v0.5.0. Still table-based, but vertical orientation.
-                    case "list":
-                        outString = "<table>";
-                        $(xData.responseXML).SPFilterNode("z:row").each(function() {
-                            for (i = 0; i < opt.relatedColumns.length; i++) {
-                                if (typeof relatedColumnsXML[opt.relatedColumns[i]] === "undefined" && opt.debug) {
-                                    errBox(thisFunction, "columnName: " + opt.relatedColumns[i], "Column not found in relatedList");
-                                    return;
-                                }
-                                outString += "<tr>";
-                                outString += "<th class='" + opt.headerCSSClass + "'>" + relatedColumnsXML[opt.relatedColumns[i]].attr("DisplayName") + "</th>";
-                                outString += "<td class='" + opt.rowCSSClass + "'>" + showColumn(relatedListXML, relatedColumnsXML[opt.relatedColumns[i]], $(this).attr("ows_" + opt.relatedColumns[i]), opt) + "</td>";
-                                outString += "</tr>";
-                            }
-                        });
-                        outString += "</table>";
-                        break;
-                    default:
-                        break;
-                }
-                // Write out the results
-                $("#" + divId).html(outString);
-            }
-        });
-        // If present, call completefunc when all else is done
-        if (opt.completefunc !== null) {
-            opt.completefunc();
-        }
-    } // End showRelated
-
-    // Function to filter a lookup based dropdown
-    $.fn.SPServices.SPFilterDropdown = function(options) {
-        var opt = $.extend({}, {
-            relationshipWebURL: "", // [Optional] The name of the Web (site) which contains the relationshipList
-            relationshipList: "", // The name of the list which contains the lookup values
-            relationshipListColumn: "", // The internal name of the column in the relationship list
-            relationshipListSortColumn: "", // [Optional] If specified, sort the options in the dropdown by this column,
-            // otherwise the options are sorted by relationshipListColumn
-            relationshipListSortAscending: true, // [Optional] By default, the sort is ascending. If false, descending
-            columnName: "", // The display name of the column in the form
-            listName: $().SPServices.SPListNameFromUrl(), // The list the form is working with. This is useful if the form is not in the list context.
-            promptText: "", // [DEPRECATED] Text to use as prompt. If included, {0} will be replaced with the value of columnName. IOrignal value "Choose {0}..."
-            noneText: "(None)", // [Optional] Text to use for the (None) selection. Provided for non-English language support.
-            CAMLQuery: "", // This CAML fragment will be applied to the relationshipList
-            CAMLQueryOptions: "<QueryOptions><IncludeMandatoryColumns>FALSE</IncludeMandatoryColumns><ViewAttributes Scope='RecursiveAll'/></QueryOptions>", // Need this to mirror SharePoint's behavior, but it can be overridden
-            completefunc: null, // Function to call on completion of rendering the change.
-            debug: false // If true, show error messages; if false, run silent
-        }, options);
-
-        var choices = "";
-        var columnSelectSelected = null;
-        var newMultiLookupPickerdata;
-        var columnColumnRequired;
-        var thisFunction = "SPServices.SPFilterDropdown";
-
-        // Find the column's select (dropdown)
-        var columnSelect = $().SPServices.SPDropdownCtl({
-            displayName: opt.columnName
-        });
-        if (columnSelect.Obj.html() === null && opt.debug) {
-            errBox(thisFunction, "columnName: " + opt.columnName, TXTColumnNotFound);
-            return;
-        }
-
-        // Get the current column selection(s)
-        columnSelectSelected = getDropdownSelected(columnSelect, true);
-
-        // Get the relationshipList items which match the current selection
-        var sortColumn = (opt.relationshipListSortColumn.length > 0) ? opt.relationshipListSortColumn : opt.relationshipListColumn;
-        var sortOrder = (opt.relationshipListSortAscending === true) ? "" : "Ascending='FALSE'";
-        var camlQuery = "<Query><OrderBy><FieldRef Name='" + sortColumn + "' " + sortOrder + "/></OrderBy><Where>";
-        if (opt.CAMLQuery.length > 0) {
-            camlQuery += opt.CAMLQuery;
-        }
-        camlQuery += "</Where></Query>";
-
-        // Get information about columnName from the current list
-        $().SPServices({
-            operation: "GetList",
-            async: false,
-            cacheXML: true,
-            listName: opt.listName,
-            completefunc: function(xData) {
-                $(xData.responseXML).find("Fields").each(function() {
-                    $(this).find("Field[DisplayName='" + opt.columnName + "']").each(function() {
-                        // Determine whether columnName is Required
-                        columnColumnRequired = ($(this).attr("Required") === "TRUE") ? true : false;
-                        // Stop looking; we're done
-                        return false;
-                    });
-                });
-            }
-        });
-
-        $().SPServices({
-            operation: "GetListItems",
-            // Force sync so that we have the right values for the column onchange trigger
-            async: false,
-            webURL: opt.relationshipWebURL,
-            listName: opt.relationshipList,
-            // Filter based on the specified CAML
-            CAMLQuery: camlQuery,
-            // Only get the columnName's data (plus columns we can't prevent)
-            CAMLViewFields: "<ViewFields><FieldRef Name='" + opt.relationshipListColumn + "' /></ViewFields>",
-            // Override the default view rowlimit and get all appropriate rows
-            CAMLRowLimit: 0,
-            // Even though setting IncludeMandatoryColumns to FALSE doesn't work as the docs describe, it fixes a bug in GetListItems with mandatory multi-selects
-            CAMLQueryOptions: opt.CAMLQueryOptions,
-            completefunc: function(xData) {
-
-                // Handle errors
-                $(xData.responseXML).find("errorstring").each(function() {
-                    var errorText = $(this).text();
-                    if (opt.debug && errorText === "One or more field types are not installed properly. Go to the list settings page to delete these fields.") {
-                        errBox(thisFunction,
-                            "relationshipListColumn: " + opt.relationshipListColumn,
-                            "Not found in relationshipList " + opt.relationshipList);
-                    } else if (opt.debug && errorText === "Guid should contain 32 digits with 4 dashes (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).") {
-                        errBox(thisFunction,
-                            "relationshipList: " + opt.relationshipList,
-                            "List not found");
-                    }
-                    return;
-                });
-
-                // Add an explanatory prompt
-                switch (columnSelect.Type) {
-                    case dropdownType.simple:
-                        // Remove all of the existing options
-                        $(columnSelect.Obj).find("option").remove();
-                        // If the column is required or the promptText option is empty, don't add the prompt text
-                        if (!columnColumnRequired && (opt.promptText.length > 0)) {
-                            columnSelect.Obj.append("<option value='0'>" + opt.promptText.replace(/\{0\}/g, opt.columnName) + "</option>");
-                        } else if (!columnColumnRequired) {
-                            columnSelect.Obj.append("<option value='0'>" + opt.noneText + "</option>");
-                        }
-                        break;
-                    case dropdownType.complex:
-                        // If the column is required, don't add the "(None)" option
-                        choices = columnColumnRequired ? "" : opt.noneText + "|0";
-                        columnSelect.Obj.val("");
-                        break;
-                    case dropdownType.multiSelect:
-                        // Remove all of the existing options
-                        $(columnSelect.master.candidateControl).find("option").remove();
-                        newMultiLookupPickerdata = "";
-                        break;
-                    default:
-                        break;
-                }
-
-                // Add an option for each item
-                $(xData.responseXML).SPFilterNode("z:row").each(function() {
-
-                    var thisOption = {};
-
-                    // If relationshipListColumn is a Lookup column, then the ID should be for the Lookup value,
-                    // else the ID of the relationshipList item
-                    var thisValue = $(this).attr("ows_" + opt.relationshipListColumn);
-
-                    if (typeof thisValue !== "undefined" && thisValue.indexOf(";#") > 0) {
-                        thisOption = new SplitIndex(thisValue);
-                    } else {
-                        thisOption.id = $(this).attr("ows_ID");
-                        thisOption.value = thisValue;
-                    }
-
-                    // If the relationshipListColumn is a calculated column, then the value isn't preceded by the ID,
-                    // but by the datatype.  In this case, thisOption.id should be the ID of the relationshipList item.
-                    // e.g., float;#12345.67
-                    if (isNaN(thisOption.id)) {
-                        thisOption.id = $(this).attr("ows_ID");
-                    }
-
-                    switch (columnSelect.Type) {
-                        case dropdownType.simple:
-                            var selected = ($(this).attr("ows_ID") === columnSelectSelected[0]) ? " selected='selected'" : "";
-                            columnSelect.Obj.append("<option" + selected + " value='" + thisOption.id + "'>" + thisOption.value + "</option>");
-                            break;
-                        case dropdownType.complex:
-                            if (thisOption.id === columnSelectSelected[0]) {
-                                columnSelect.Obj.val(thisOption.value);
-                            }
-                            choices = choices + ((choices.length > 0) ? "|" : "") + thisOption.value + "|" + thisOption.id;
-                            break;
-                        case dropdownType.multiSelect:
-                            $(columnSelect.master.candidateControl).append("<option value='" + thisOption.id + "'>" + thisOption.value + "</option>");
-                            newMultiLookupPickerdata += thisOption.id + "|t" + thisOption.value + "|t |t |t";
-                            break;
-                        default:
-                            break;
-                    }
-                });
-
-                switch (columnSelect.Type) {
-                    case dropdownType.simple:
-                        columnSelect.Obj.trigger("change");
-                        break;
-                    case dropdownType.complex:
-                        columnSelect.Obj.attr("choices", choices);
-                        columnSelect.Obj.trigger("propertychange");
-                        break;
-                    case dropdownType.multiSelect:
-                        // Clear the master
-                        columnSelect.master.data = "";
-
-                        columnSelect.MultiLookupPickerdata.val(newMultiLookupPickerdata);
-                        // Clear any prior selections that are no longer valid
-                        $(columnSelect.master.resultControl).find("option").each(function() {
-                            var thisSelected = $(this);
-                            $(this).attr("selected", "selected");
-                            $(columnSelect.master.candidateControl).find("option").each(function() {
-                                if ($(this).html() === thisSelected.html()) {
-                                    thisSelected.removeAttr("selected");
-                                }
-                            });
-                        });
-                        GipRemoveSelectedItems(columnSelect.master);
-                        // Hide any options in the candidate list which are already selected
-                        $(columnSelect.master.candidateControl).find("option").each(function() {
-                            var thisSelected = $(this);
-                            $(columnSelect.master.resultControl).find("option").each(function() {
-                                if ($(this).html() === thisSelected.html()) {
-                                    thisSelected.remove();
-                                }
-                            });
-                        });
-                        GipAddSelectedItems(columnSelect.master);
-                        // Set master.data to the newly allowable values
-                        columnSelect.master.data = GipGetGroupData(newMultiLookupPickerdata);
-
-                        // Trigger a dblclick so that the child will be cascaded if it is a multiselect.
-                        $(columnSelect.master.candidateControl).trigger("dblclick");
-
-                        break;
-                    default:
-                        break;
-                }
-            }
-        });
-        // If present, call completefunc when all else is done
-        if (opt.completefunc !== null) {
-            opt.completefunc();
-        }
-    }; // End $.fn.SPServices.SPFilterDropdown
-
-
-    // Utility function to show the results of a Web Service call formatted well in the browser.
-    $.fn.SPServices.SPDebugXMLHttpResult = function(options) {
-
-        var opt = $.extend({}, {
-            node: null, // An XMLHttpResult object from an ajax call
-            indent: 0 // Number of indents
-        }, options);
-
-        var i;
-        var NODE_TEXT = 3;
-        var NODE_CDATA_SECTION = 4;
-
-        var outString = "";
-        // For each new subnode, begin rendering a new TABLE
-        outString += "<table class='ms-vb' style='margin-left:" + opt.indent * 3 + "px;' width='100%'>";
-        // DisplayPatterns are a bit unique, so let's handle them differently
-        if (opt.node.nodeName === "DisplayPattern") {
-            outString += "<tr><td width='100px' style='font-weight:bold;'>" + opt.node.nodeName +
-                "</td><td><textarea readonly='readonly' rows='5' cols='50'>" + opt.node.xml + "</textarea></td></tr>";
-            // A node which has no children
-        } else if (!opt.node.hasChildNodes()) {
-            outString += "<tr><td width='100px' style='font-weight:bold;'>" + opt.node.nodeName +
-                "</td><td>" + ((opt.node.nodeValue !== null) ? checkLink(opt.node.nodeValue) : "&nbsp;") + "</td></tr>";
-            if (opt.node.attributes) {
-                outString += "<tr><td colspan='99'>" + showAttrs(opt.node) + "</td></tr>";
-            }
-            // A CDATA_SECTION node
-        } else if (opt.node.hasChildNodes() && opt.node.firstChild.nodeType === NODE_CDATA_SECTION) {
-            outString += "<tr><td width='100px' style='font-weight:bold;'>" + opt.node.nodeName +
-                "</td><td><textarea readonly='readonly' rows='5' cols='50'>" + opt.node.parentNode.text + "</textarea></td></tr>";
-            // A TEXT node
-        } else if (opt.node.hasChildNodes() && opt.node.firstChild.nodeType === NODE_TEXT) {
-            outString += "<tr><td width='100px' style='font-weight:bold;'>" + opt.node.nodeName +
-                "</td><td>" + checkLink(opt.node.firstChild.nodeValue) + "</td></tr>";
-            // Handle child nodes
-        } else {
-            outString += "<tr><td width='100px' style='font-weight:bold;' colspan='99'>" + opt.node.nodeName + "</td></tr>";
-            if (opt.node.attributes) {
-                outString += "<tr><td colspan='99'>" + showAttrs(opt.node) + "</td></tr>";
-            }
-            // Since the node has child nodes, recurse
-            outString += "<tr><td>";
-            for (i = 0; i < opt.node.childNodes.length; i++) {
-                outString += $().SPServices.SPDebugXMLHttpResult({
-                    node: opt.node.childNodes.item(i),
-                    indent: opt.indent + 1
-                });
-            }
-            outString += "</td></tr>";
-        }
-        outString += "</table>";
-        // Return the HTML which we have built up
-        return outString;
-    }; // End $.fn.SPServices.SPDebugXMLHttpResult
-
-    // Function which returns the account name for the current user in DOMAIN\username format
-    $.fn.SPServices.SPGetCurrentUser = function(options) {
-
-        var opt = $.extend({}, {
-            webURL: "", // URL of the target Site Collection.  If not specified, the current Web is used.
-            fieldName: "Name", // Specifies which field to return from the userdisp.aspx page
-            fieldNames: {}, // Specifies which fields to return from the userdisp.aspx page - added in v0.7.2 to allow multiple columns
-            debug: false // If true, show error messages; if false, run silent
-        }, options);
-
-        // The current user's ID is reliably available in an existing JavaScript variable
-        if (opt.fieldName === "ID" && typeof currentContext.thisUserId !== "undefined") {
-            return currentContext.thisUserId;
-        }
-
-        var thisField = "";
-        var theseFields = {};
-        var fieldCount = opt.fieldNames.length > 0 ? opt.fieldNames.length : 1;
-        var thisUserDisp;
-        var thisWeb = opt.webURL.length > 0 ? opt.webURL : $().SPServices.SPGetCurrentSite();
-
-        // Get the UserDisp.aspx page using AJAX
-        $.ajax({
-            // Need this to be synchronous so we're assured of a valid value
-            async: false,
-            // Force parameter forces redirection to a page that displays the information as stored in the UserInfo table rather than My Site.
-            // Adding the extra Query String parameter with the current date/time forces the server to view this as a new request.
-            url: thisWeb + "/_layouts/userdisp.aspx?Force=True&" + new Date().getTime(),
-            complete: function(xData) {
-                thisUserDisp = xData;
-            }
-        });
-
-        for (i = 0; i < fieldCount; i++) {
-
-            // The current user's ID is reliably available in an existing JavaScript variable
-            if (opt.fieldNames[i] === "ID") {
-                thisField = currentContext.thisUserId;
-            } else {
-                var thisTextValue;
-                if (fieldCount > 1) {
-                    thisTextValue = RegExp("FieldInternalName=\"" + opt.fieldNames[i] + "\"", "gi");
-                } else {
-                    thisTextValue = RegExp("FieldInternalName=\"" + opt.fieldName + "\"", "gi");
-                }
-                $(thisUserDisp.responseText).find("table.ms-formtable td[id^='SPField']").each(function() {
-                    if (thisTextValue.test($(this).html())) {
-                        // Each fieldtype contains a different data type, as indicated by the id
-                        switch ($(this).attr("id")) {
-                            case "SPFieldText":
-                                thisField = $(this).text();
-                                break;
-                            case "SPFieldNote":
-                                thisField = $(this).find("div").html();
-                                break;
-                            case "SPFieldURL":
-                                thisField = $(this).find("img").attr("src");
-                                break;
-                                // Just in case
-                            default:
-                                thisField = $(this).text();
-                                break;
-                        }
-                        // Stop looking; we're done
-                        return false;
-                    }
-                });
-            }
-            if (opt.fieldNames[i] !== "ID") {
-                thisField = (typeof thisField !== "undefined") ? thisField.replace(/(^[\s\xA0]+|[\s\xA0]+$)/g, '') : null;
-            }
-            if (fieldCount > 1) {
-                theseFields[opt.fieldNames[i]] = thisField;
-            }
-        }
-
-        return (fieldCount > 1) ? theseFields : thisField;
-
-    }; // End $.fn.SPServices.SPGetCurrentUser
-
-    // Function which provides a link on a Lookup column for the user to follow
-    // which allows them to add a new value to the Lookup list.
-    // Based on http://blog.mastykarz.nl/extending-lookup-fields-add-new-item-option/
-    // by Waldek Mastykarz
-    $.fn.SPServices.SPLookupAddNew = function(options) {
-
-        var opt = $.extend({}, {
-            lookupColumn: "", // The display name of the Lookup column
-            promptText: "Add new {0}", // Text to use as prompt + column name
-            newWindow: false, // If true, the link will open in a new window *without* passing the Source.
-            ContentTypeID: "", // [Optional] Pass the ContentTypeID if you'd like to specify it
-            completefunc: null, // Function to call on completion of rendering the change.
-            debug: false // If true, show error messages;if false, run silent
-        }, options);
-
-        var thisFunction = "SPServices.SPLookupAddNew";
-
-        // Find the lookup column's select (dropdown)
-        var lookupSelect = $().SPServices.SPDropdownCtl({
-            displayName: opt.lookupColumn
-        });
-        if (lookupSelect.Obj.html() === null && opt.debug) {
-            errBox(thisFunction, "lookupColumn: " + opt.lookupColumn, TXTColumnNotFound);
-            return;
-        }
-
-        var newUrl = "";
-        var lookupListUrl = "";
-        var lookupColumnStaticName = "";
-        // Use GetList for the current list to determine the details for the Lookup column
-        $().SPServices({
-            operation: "GetList",
-            async: false,
-            cacheXML: true,
-            listName: $().SPServices.SPListNameFromUrl(),
-            completefunc: function(xData) {
-                $(xData.responseXML).find("Field[DisplayName='" + opt.lookupColumn + "']").each(function() {
-                    lookupColumnStaticName = $(this).attr("StaticName");
-                    // Use GetList for the Lookup column's list to determine the list's URL
-                    $().SPServices({
-                        operation: "GetList",
-                        async: false,
-                        cacheXML: true,
-                        listName: $(this).attr("List"),
-                        completefunc: function(xData) {
-                            $(xData.responseXML).find("List").each(function() {
-                                lookupListUrl = $(this).attr("WebFullUrl");
-                                // Need to handle when list is in the root site
-                                lookupListUrl = lookupListUrl !== SLASH ? lookupListUrl + SLASH : lookupListUrl;
-                            });
-                        }
-                    });
-                    // Get the NewItem form for the Lookup column's list
-                    newUrl = getListFormUrl($(this).attr("List"), "NewForm");
-                    // Stop looking;we're done
-                    return false;
-                });
-            }
-        });
-
-        if (lookupListUrl.length === 0 && opt.debug) {
-            errBox(thisFunction, "lookupColumn: " + opt.lookupColumn, "This column does not appear to be a lookup column");
-            return;
-        }
-        if (newUrl.length > 0) {
-            // Build the link to the Lookup column's list enclosed in a div with the id="SPLookupAddNew_" + lookupColumnStaticName
-            var newHref = lookupListUrl + newUrl;
-            // If requested, open the link in a new window and if requested, pass the ContentTypeID
-            newHref += opt.newWindow ?
-                ((opt.ContentTypeID.length > 0) ? "?ContentTypeID=" + opt.ContentTypeID : "") + "' target='_blank'" :
-                "?" + ((opt.ContentTypeID.length > 0) ? "ContentTypeID=" + opt.ContentTypeID + "&" : "") + "Source=" + escapeUrl(location.href) + "'";
-            var newLink = "<div id='SPLookupAddNew_" + lookupColumnStaticName + "'>" + "<a href='" + newHref + ">" + opt.promptText.replace(/\{0\}/g, opt.lookupColumn) + "</a></div>";
-            // Append the link to the Lookup columns's formbody table cell
-            $(lookupSelect.Obj).parents("td.ms-formbody").append(newLink);
-        } else if (opt.debug) {
-            errBox(thisFunction, "lookupColumn: " + opt.lookupColumn, "NewForm cannot be found");
-            return;
-        }
-        // If present, call completefunc when all else is done
-        if (opt.completefunc !== null) {
-            opt.completefunc();
-        }
-    }; // End $.fn.SPServices.SPLookupAddNew
-
-    // Function to return the ID of the last item created on a list by a specific user. Useful for maintaining parent/child relationships
-    // between list forms
-    $.fn.SPServices.SPGetLastItemId = function(options) {
-
-        var opt = $.extend({}, {
-            webURL: "", // URL of the target Web.  If not specified, the current Web is used.
-            listName: "", // The name or GUID of the list
-            userAccount: "", // The account for the user in DOMAIN\username format. If not specified, the current user is used.
-            CAMLQuery: "" // [Optional] For power users, this CAML fragment will be Anded with the default query on the relatedList
-        }, options);
-
-        var userId;
-        var lastId = 0;
-        $().SPServices({
-            operation: "GetUserInfo",
-            webURL: opt.webURL,
-            async: false,
-            userLoginName: (opt.userAccount !== "") ? opt.userAccount : $().SPServices.SPGetCurrentUser(),
-            completefunc: function(xData) {
-                $(xData.responseXML).find("User").each(function() {
-                    userId = $(this).attr("ID");
-                });
-            }
-        });
-
-        // Get the list items for the user, sorted by Created, descending. If the CAMLQuery option has been specified, And it with
-        // the existing Where clause
-        var camlQuery = "<Query><Where>";
-        if (opt.CAMLQuery.length > 0) {
-            camlQuery += "<And>";
-        }
-        camlQuery += "<Eq><FieldRef Name='Author' LookupId='TRUE'/><Value Type='Integer'>" + userId + "</Value></Eq>";
-        if (opt.CAMLQuery.length > 0) {
-            camlQuery += opt.CAMLQuery + "</And>";
-        }
-        camlQuery += "</Where><OrderBy><FieldRef Name='Created_x0020_Date' Ascending='FALSE'/></OrderBy></Query>";
-
-        $().SPServices({
-            operation: "GetListItems",
-            async: false,
-            webURL: opt.webURL,
-            listName: opt.listName,
-            CAMLQuery: camlQuery,
-            CAMLViewFields: "<ViewFields><FieldRef Name='ID'/></ViewFields>",
-            CAMLRowLimit: 1,
-            CAMLQueryOptions: "<QueryOptions><ViewAttributes Scope='Recursive' /></QueryOptions>",
-            completefunc: function(xData) {
-                $(xData.responseXML).SPFilterNode("z:row").each(function() {
-                    lastId = $(this).attr("ows_ID");
-                });
-            }
-        });
-        return lastId;
-    }; // End $.fn.SPServices.SPGetLastItemId
-
-    // Function which checks to see if the value for a column on the form is unique in the list.
-    $.fn.SPServices.SPRequireUnique = function(options) {
-
-        var opt = $.extend({}, {
-            columnStaticName: "Title", // Name of the column
-            duplicateAction: 0, // 0 = warn, 1 = prevent
-            ignoreCase: false, // If set to true, the function ignores case, if false it looks for an exact match
-            initMsg: "This value must be unique.", // Initial message to display after setup
-            initMsgCSSClass: "ms-vb", // CSS class for initial message
-            errMsg: "This value is not unique.", // Error message to display if not unique
-            errMsgCSSClass: "ms-formvalidation", // CSS class for error message
-            showDupes: false, // If true, show links to the duplicate item(s) after the error message
-            completefunc: null // Function to call on completion of rendering the change.
-        }, options);
-
-        // Get the current item's ID from the Query String
-        var queryStringVals = $().SPServices.SPGetQueryString();
-        var thisID = queryStringVals.ID;
-        currentContext.thisList = $().SPServices.SPListNameFromUrl();
-
-        // Set the messages based on the options provided
-        var msg = "<span id='SPRequireUnique" + opt.columnStaticName + "' class='{0}'>{1}</span><br/>";
-        var firstMsg = msg.replace(/\{0\}/g, opt.initMsgCSSClass).replace(/\{1\}/g, opt.initMsg);
-
-        // We need the DisplayName
-        var columnDisplayName = $().SPServices.SPGetDisplayFromStatic({
-            listName: currentContext.thisList,
-            columnStaticName: opt.columnStaticName
-        });
-        var columnObj = $("input[Title='" + columnDisplayName + "']");
-        $(columnObj).parent().append(firstMsg);
-
-        $(columnObj).blur(function() {
-            var columnValueIDs = [];
-            // Get the columnDisplayName's value
-            var columnValue = $(this).val();
-            if (columnValue.length === 0) {
-                return false;
-            }
-
-            // Call the Lists Web Service (GetListItems) to see if the value already exists
-            $().SPServices({
-                operation: "GetListItems",
-                async: false,
-                listName: currentContext.thisList,
-                // Make sure we get all the items, ignoring any filters on the default view.
-                CAMLQuery: "<Query><Where><IsNotNull><FieldRef Name='" + opt.columnStaticName + "'/></IsNotNull></Where></Query>",
-                // Filter based on columnStaticName's value
-                CAMLViewFields: "<ViewFields><FieldRef Name='ID' /><FieldRef Name='" + opt.columnStaticName + "' /></ViewFields>",
-                // Override the default view rowlimit and get all appropriate rows
-                CAMLRowLimit: 0,
-                completefunc: function(xData) {
-                    var testValue = opt.ignoreCase ? columnValue.toUpperCase() : columnValue;
-                    $(xData.responseXML).SPFilterNode("z:row").each(function() {
-                        var thisValue = opt.ignoreCase ? $(this).attr("ows_" + opt.columnStaticName).toUpperCase() : $(this).attr("ows_" + opt.columnStaticName);
-                        // If this value already exists in columnStaticName and it's not the current item, then save the ID in the array
-                        if ((testValue === thisValue) && ($(this).attr("ows_ID") !== thisID)) {
-                            columnValueIDs.push([$(this).attr("ows_ID"), $(this).attr("ows_" + opt.columnStaticName)]);
-                        }
-                    });
-                }
-            });
-            var newMsg = opt.initMsg;
-            $("span#SPRequireUnique" + opt.columnStaticName).html(newMsg).attr("class", opt.initMsgCSSClass);
-
-            $("input[value='OK']:disabled, input[value='Save']:disabled").removeAttr("disabled");
-            if (columnValueIDs.length > 0) {
-                newMsg = opt.errMsg;
-                $("span#SPRequireUnique" + opt.columnStaticName).html(newMsg).attr("class", opt.errMsgCSSClass);
-                if (opt.duplicateAction === 1) {
-                    $("input[Title='" + opt.columnDisplayName + "']").focus();
-                    $("input[value='OK'], input[value='Save']").attr("disabled", "disabled");
-                }
-                if (opt.showDupes) {
-                    var out = " " + columnValueIDs.length + " duplicate item" + (columnValueIDs.length > 1 ? "s" : "") + ": ";
-                    for (i = 0; i < columnValueIDs.length; i++) {
-                        out += "<a href='DispForm.aspx?ID=" + columnValueIDs[i][0] + "&Source=" + location.href + "'>" + columnValueIDs[i][1] + "</a> ";
-                    }
-                    $("span#SPRequireUnique" + opt.columnStaticName).append(out);
-                }
-            }
-
-        });
-        // If present, call completefunc when all else is done
-        if (opt.completefunc !== null) {
-            opt.completefunc();
-        }
-    }; // End $.fn.SPServices.SPRequireUnique
-
-    // This function returns the DisplayName for a column based on the StaticName.
-    $.fn.SPServices.SPGetDisplayFromStatic = function(options) {
-
-        var opt = $.extend({}, {
-            webURL: "", // URL of the target Web.  If not specified, the current Web is used.
-            listName: "", // The name or GUID of the list
-            columnStaticName: "", // StaticName of the column
-            columnStaticNames: {} // StaticName of the columns - added in v0.7.2 to allow multiple columns
-        }, options);
-
-        var displayName = "";
-        var displayNames = {};
-        var nameCount = opt.columnStaticNames.length > 0 ? opt.columnStaticNames.length : 1;
-
-        $().SPServices({
-            operation: "GetList",
-            async: false,
-            cacheXML: true,
-            webURL: opt.webURL,
-            listName: opt.listName,
-            completefunc: function(xData) {
-                if (nameCount > 1) {
-                    for (i = 0; i < nameCount; i++) {
-                        displayNames[opt.columnStaticNames[i]] = $(xData.responseXML).find("Field[StaticName='" + opt.columnStaticNames[i] + "']").attr("DisplayName");
-                    }
-                } else {
-                    displayName = $(xData.responseXML).find("Field[StaticName='" + opt.columnStaticName + "']").attr("DisplayName");
-                }
-            }
-        });
-
-        return (nameCount > 1) ? displayNames : displayName;
-
-    }; // End $.fn.SPServices.SPGetDisplayFromStatic
-
-    // This function returns the StaticName for a column based on the DisplayName.
-    $.fn.SPServices.SPGetStaticFromDisplay = function(options) {
-
-        var opt = $.extend({}, {
-            webURL: "", // URL of the target Web.  If not specified, the current Web is used.
-            listName: "", // The name or GUID of the list
-            columnDisplayName: "", // DisplayName of the column
-            columnDisplayNames: {} // DisplayNames of the columns - added in v0.7.2 to allow multiple columns
-        }, options);
-
-        var staticName = "";
-        var staticNames = {};
-        var nameCount = opt.columnDisplayNames.length > 0 ? opt.columnDisplayNames.length : 1;
-
-        $().SPServices({
-            operation: "GetList",
-            async: false,
-            cacheXML: true,
-            webURL: opt.webURL,
-            listName: opt.listName,
-            completefunc: function(xData) {
-                if (nameCount > 1) {
-                    for (i = 0; i < nameCount; i++) {
-                        staticNames[opt.columnDisplayNames[i]] = $(xData.responseXML).find("Field[DisplayName='" + opt.columnDisplayNames[i] + "']").attr("StaticName");
-                    }
-                } else {
-                    staticName = $(xData.responseXML).find("Field[DisplayName='" + opt.columnDisplayName + "']").attr("StaticName");
-                }
-            }
-        });
-
-        return (nameCount > 1) ? staticNames : staticName;
-
-    }; // End $.fn.SPServices.SPGetStaticFromDisplay
-
-    // This function allows you to redirect to a another page from a new item form with the new
-    // item's ID. This allows chaining of forms from item creation onward.
-    $.fn.SPServices.SPRedirectWithID = function(options) {
-
-        var opt = $.extend({}, {
-            redirectUrl: "", // Page for the redirect
-            qsParamName: "ID" // In some cases, you may want to pass the newly created item's ID with a different
-            // parameter name than ID. Specify that name here, if needed.
-        }, options);
-
-        currentContext.thisList = $().SPServices.SPListNameFromUrl();
-        var queryStringVals = $().SPServices.SPGetQueryString();
-        var lastID = queryStringVals.ID;
-        var QSList = queryStringVals.List;
-        var QSRootFolder = queryStringVals.RootFolder;
-        var QSContentTypeId = queryStringVals.ContentTypeId;
-
-        // On first load, change the form actions to redirect back to this page with the current lastID for this user and the
-        // original Source.
-        if (typeof queryStringVals.ID === "undefined") {
-            lastID = $().SPServices.SPGetLastItemId({
-                listName: currentContext.thisList
-            });
-            $("form[name='aspnetForm']").each(function() {
-                // This page...
-                var thisUrl = (location.href.indexOf("?") > 0) ? location.href.substring(0, location.href.indexOf("?")) : location.href;
-                // ... plus the Source if it exists
-                var thisSource = (typeof queryStringVals.Source === "string") ?
-                    "Source=" + queryStringVals.Source.replace(/\//g, "%2f").replace(/:/g, "%3a") : "";
-
-                var newQS = [];
-                if (typeof QSList !== "undefined") {
-                    newQS.push("List=" + QSList);
-                }
-                if (typeof QSRootFolder !== "undefined") {
-                    newQS.push("RootFolder=" + QSRootFolder);
-                }
-                if (typeof QSContentTypeId !== "undefined") {
-                    newQS.push("ContentTypeId=" + QSContentTypeId);
-                }
-
-                var newAction = thisUrl +
-                    ((newQS.length > 0) ? ("?" + newQS.join("&") + "&") : "?") +
-                // Set the Source to point back to this page with the lastID this user has added
-                "Source=" + thisUrl +
-                    "?ID=" + lastID +
-                // Pass the original source as RealSource, if present
-                ((thisSource.length > 0) ? ("%26RealSource=" + queryStringVals.Source) : "") +
-                // Pass the override RedirectURL, if present
-                ((typeof queryStringVals.RedirectURL === "string") ? ("%26RedirectURL=" + queryStringVals.RedirectURL) : "");
-                $(this).attr("action", newAction);
-            });
-            // If this is the load after the item is saved, wait until the new item has been saved (commits are asynchronous),
-            // then do the redirect to redirectUrl with the new lastID, passing along the original Source.
-        } else {
-            while (queryStringVals.ID === lastID) {
-                lastID = $().SPServices.SPGetLastItemId({
-                    listName: currentContext.thisList
-                });
-            }
-            // If there is a RedirectURL parameter on the Query String, then redirect there instead of the value
-            // specified in the options (opt.redirectUrl)
-            var thisRedirectUrl = (typeof queryStringVals.RedirectURL === "string") ? queryStringVals.RedirectURL : opt.redirectUrl;
-            location.href = thisRedirectUrl + "?" + opt.qsParamName + "=" + lastID +
-                ((typeof queryStringVals.RealSource === "string") ? ("&Source=" + queryStringVals.RealSource) : "");
-        }
-    }; // End $.fn.SPServices.SPRedirectWithID
-
-    // The SPSetMultiSelectSizes function sets the sizes of the multi-select boxes for a column on a form automagically
-    // based on the values they contain. The function takes into account the fontSize, fontFamily, fontWeight, etc., in its algorithm.
-    $.fn.SPServices.SPSetMultiSelectSizes = function(options) {
-
-        var opt = $.extend({}, {
-            multiSelectColumn: "",
-            minWidth: 0,
-            maxWidth: 0,
-            debug: false
-        }, options);
-
-        var thisFunction = "SPServices.SPSetMultiSelectSizes";
-
-        // Find the multi-select column
-        var thisMultiSelect = $().SPServices.SPDropdownCtl({
-            displayName: opt.multiSelectColumn
-        });
-        if (thisMultiSelect.Obj.html() === null && opt.debug) {
-            errBox(thisFunction, "multiSelectColumn: " + opt.multiSelectColumn, TXTColumnNotFound);
-            return;
-        }
-        if (thisMultiSelect.Type !== dropdownType.multiSelect && opt.debug) {
-            errBox(thisFunction, "multiSelectColumn: " + opt.multiSelectColumn, "Column is not multi-select.");
-            return;
-        }
-
-        // Create a temporary clone of the select to use to determine the appropriate width settings.
-        // We'll append it to the end of the enclosing span.
-        var cloneId = genContainerId("SPSetMultiSelectSizes", opt.multiSelectColumn);
-        var cloneObj = $("<select id='" + cloneId + "' ></select>").appendTo(thisMultiSelect.container);
-        cloneObj.css({
-            "width": "auto", // We want the clone to resize its width based on the contents
-            "height": 0, // Just to keep the page clean while we are using the clone
-            "visibility": "hidden" // And let's keep it hidden
-        });
-
-        // Add all the values to the cloned select.  First the left (possible values) select...
-        $(thisMultiSelect.master.candidateControl).find("option").each(function() {
-            cloneObj.append("<option value='" + $(this).html() + "'>" + $(this).html() + "</option>");
-        });
-        // ...then the right (selected values) select (in case some values have already been selected)
-        $(thisMultiSelect.master.resultControl).find("option").each(function() {
-            cloneObj.append("<option value='" + $(this).val() + "'>" + $(this).html() + "</option>");
-        });
-
-        // We'll add 5px for a little padding on the right.
-        var divWidth = cloneObj.width() + 5;
-        var newDivWidth = divWidth;
-        if (opt.minWidth > 0 || opt.maxWidth > 0) {
-            if (divWidth < opt.minWidth) {
-                divWidth = opt.minWidth;
-            }
-            if (newDivWidth < opt.minWidth) {
-                newDivWidth = opt.minWidth;
-            }
-            if (newDivWidth > opt.maxWidth) {
-                newDivWidth = opt.maxWidth;
-            }
-        }
-        var selectWidth = divWidth;
-
-        // Set the new widths
-        $(thisMultiSelect.master.candidateControl).css("width", selectWidth + "px").parent().css("width", newDivWidth + "px");
-        $(thisMultiSelect.master.resultControl).css("width", selectWidth + "px").parent().css("width", newDivWidth + "px");
-
-        // Remove the select's clone, since we're done with it
-        cloneObj.remove();
-
-    }; // End $.fn.SPServices.SPSetMultiSelectSizes
-
-    // Does an audit of a site's list forms to show where script is in use.
-    $.fn.SPServices.SPScriptAudit = function(options) {
-
-        var opt = $.extend({}, {
-            webURL: "", // [Optional] The name of the Web (site) to audit
-            listName: "", // [Optional] The name of a specific list to audit. If not present, all lists in the site are audited.
-            outputId: "", // The id of the DOM object for output
-            auditForms: true, // Audit the form pages
-            auditViews: true, // Audit the view pages
-            auditPages: true, // Audit the Pages Document Library
-            auditPagesListName: "Pages", // The Pages Document Library(ies), if desired. Either a single string or an array of strings.
-            showHiddenLists: false, // Show output for hidden lists
-            showNoScript: false, // Show output for lists with no scripts (effectively "verbose")
-            showSrc: true // Show the source location for included scripts
-        }, options);
-
-        var formTypes = [
-            ["New", "NewForm.aspx", false],
-            ["Display", "DispForm.aspx", false],
-            ["Edit", "EditForm.aspx", false]
-        ];
-        var listXml;
-
-        // Build the table to contain the results
-        $("#" + opt.outputId)
-            .append("<table id='SPScriptAudit' width='100%' style='border-collapse: collapse;' border=0 cellSpacing=0 cellPadding=1>" +
-                "<tr>" +
-                "<th></th>" +
-                "<th>List</th>" +
-                "<th>Page Class</th>" +
-                "<th>Page Type</th>" +
-                "<th>Page</th>" +
-                (opt.showSrc ? "<th>Script References</th>" : "") +
-                "</tr>" +
-                "</table>");
-        // Apply the CSS class to the headers
-        $("#SPScriptAudit th").attr("class", "ms-vh2-nofilter");
-
-        // Don't bother with the lists if the options don't require them
-        if (opt.auditForms || opt.auditViews) {
-            // First, get all of the lists within the site
-            $().SPServices({
-                operation: "GetListCollection",
-                webURL: opt.webURL,
-                async: false, // Need this to be synchronous so we're assured of a valid value
-                completefunc: function(xData) {
-                    $(xData.responseXML).find("List").each(function() {
-                        listXml = $(this);
-
-                        // If listName has been specified, then only return results for that list
-                        if ((opt.listName.length === 0) || (listXml.attr("Title") === opt.listName)) {
-                            // Don't work with hidden lists unless we're asked to
-                            if ((opt.showHiddenLists && listXml.attr("Hidden") === "False") || !opt.showHiddenLists) {
-
-                                // Audit the list's forms
-                                if (opt.auditForms) {
-                                    // Get the list's Content Types, therefore the form pages
-                                    $().SPServices({
-                                        operation: "GetListContentTypes",
-                                        webURL: opt.webURL,
-                                        listName: listXml.attr("ID"),
-                                        async: false, // Need this to be synchronous so we're assured of a valid value
-                                        completefunc: function(xData) {
-                                            $(xData.responseXML).find("ContentType").each(function() {
-                                                // Don't deal with folders
-                                                if ($(this).attr("ID").substring(0, 6) !== "0x0120") {
-                                                    var formUrls = $(this).find("FormUrls");
-                                                    for (i = 0; i < formTypes.length; i++) {
-                                                        // Look for a customized form...
-                                                        $(formUrls).find(formTypes[i][0]).each(function() {
-                                                            SPScriptAuditPage(opt, listXml, "Form", this.nodeName, ((opt.webURL.length > 0) ? opt.webURL : $().SPServices.SPGetCurrentSite()) + SLASH + $(this).text());
-                                                            formTypes[i][2] = true;
-                                                        });
-                                                        // ...else the uncustomized form
-                                                        if (!formTypes[i][2]) {
-                                                            var defaultViewUrl = listXml.attr("DefaultViewUrl");
-                                                            SPScriptAuditPage(opt, listXml, "Form", formTypes[i][0],
-                                                                defaultViewUrl.substring(0, defaultViewUrl.lastIndexOf(SLASH) + 1) + formTypes[i][1]);
-                                                        }
-                                                    }
-                                                    // Reset the form types
-                                                    for (i = 0; i < formTypes.length; i++) {
-                                                        formTypes[i][2] = false;
-                                                    }
-                                                }
-                                            });
-                                        }
-                                    });
-                                }
-
-                                // Audit the list's views
-                                if (opt.auditViews) {
-                                    // Get the list's Views
-                                    $().SPServices({
-                                        operation: "GetViewCollection",
-                                        webURL: opt.webURL,
-                                        listName: listXml.attr("ID"),
-                                        async: false, // Need this to be synchronous so we're assured of a valid value
-                                        completefunc: function(xData) {
-                                            $(xData.responseXML).find("View").each(function() {
-                                                SPScriptAuditPage(opt, listXml, "View", $(this).attr("DisplayName"), $(this).attr("Url"));
-                                            });
-                                        }
-                                    });
-                                }
-
-                            }
-                        }
-                    });
-                }
-            });
-        }
-
-        // Don't bother with auditing pages if the options don't require it
-        var numLists = 0;
-        var listsArray = [];
-        if (typeof opt.auditPagesListName === "string") {
-            numLists = 1;
-            listsArray.push(opt.auditPagesListName);
-        } else {
-            numLists = opt.auditPagesListName.length;
-            listsArray = opt.auditPagesListName;
-        }
-
-        if (opt.auditPages) {
-            for (i = 0; i < numLists; i++) {
-                $().SPServices({
-                    operation: "GetList",
-                    async: false,
-                    cacheXML: true,
-                    webURL: opt.webURL,
-                    listName: listsArray[i],
-                    completefunc: function(xData) {
-                        $(xData.responseXML).find("List").each(function() {
-                            listXml = $(this);
-                        });
-                    }
-                });
-                // Get all of the items from the Document Library
-                $().SPServices({
-                    operation: "GetListItems",
-                    async: false,
-                    webURL: opt.webURL,
-                    listName: listsArray[i],
-                    CAMLQuery: "<Query><Where><Neq><FieldRef Name='ContentType'/><Value Type='Text'>Folder</Value></Neq></Where></Query>",
-                    CAMLViewFields: "<ViewFields><FieldRef Name='Title'/><FieldRef Name='FileRef'/></ViewFields>",
-                    CAMLRowLimit: 0,
-                    completefunc: function(xData) {
-                        $(xData.responseXML).SPFilterNode("z:row").each(function() {
-                            var thisPageUrl = $(this).attr("ows_FileRef").split(";#")[1];
-                            var thisTitle = $(this).attr("ows_Title");
-                            var thisPageType = (typeof thisTitle !== "undefined") ? thisTitle : "";
-                            if (thisPageUrl.indexOf(".aspx") > 0) {
-                                SPScriptAuditPage(opt, listXml, "Page", thisPageType, SLASH + thisPageUrl);
-                            }
-                        });
-                    }
-                });
-            }
-        }
-        // Remove progress indicator and make the output pretty by cleaning up the ms-alternating CSS class
-        $("#SPScriptAudit tr[class='ms-alternating']:even").removeAttr("class");
-    }; // End $.fn.SPServices.SPScriptAudit
-
-    // Displays the usage of scripts in a site
-    function SPScriptAuditPage(opt, listXml, pageClass, pageType, pageUrl) {
-
-        var i = 0;
-        var jQueryPage = 0;
-        var pageScriptSrc = {};
-        pageScriptSrc.type = [];
-        pageScriptSrc.src = [];
-        pageScriptSrc.script = [];
-        var scriptRegex = RegExp("<script[\\s\\S]*?/script>", "gi");
-
-        // Fetch the page
-        $.ajax({
-            type: "GET",
-            url: pageUrl,
-            dataType: "text",
-            async: false,
-            success: function(xData) {
-
-                var scriptMatch;
-
-                while (scriptMatch = scriptRegex.exec(xData)) {
-                    var scriptLanguage = getScriptAttribute(scriptMatch, "language");
-                    var scriptType = getScriptAttribute(scriptMatch, "type");
-                    var scriptSrc = getScriptAttribute(scriptMatch, "src");
-                    if (scriptSrc !== null && scriptSrc.length > 0 && !coreScript(scriptSrc)) {
-                        pageScriptSrc.type.push((scriptLanguage !== null && scriptLanguage.length > 0) ? scriptLanguage : scriptType);
-                        pageScriptSrc.src.push(scriptSrc);
-                        jQueryPage++;
-                    }
-                }
-
-                // Only show pages without script if we've been asked to do so.
-                if ((!opt.showNoScript && (pageScriptSrc.type.length > 0)) || opt.showNoScript) {
-                    var pagePath = pageUrl.substring(0, pageUrl.lastIndexOf(SLASH) + 1);
-                    var out = "<tr class=ms-alternating>" +
-                        "<td class=ms-vb-icon><a href='" + listXml.attr("DefaultViewUrl") + "'><IMG border=0 src='" + listXml.attr("ImageUrl") + "'width=16 height=16></A></TD>" +
-                        "<td class=ms-vb2><a href='" + listXml.attr("DefaultViewUrl") + "'>" + listXml.attr("Title") + ((listXml.attr("Hidden") === "True") ? '(Hidden)' : '') + "</td>" +
-                        "<td class=ms-vb2>" + pageClass + "</td>" +
-                        "<td class=ms-vb2>" + pageType + "</td>" +
-                        "<td class=ms-vb2><a href='" + pageUrl + "'>" + fileName(pageUrl) + "</td>";
-                    if (opt.showSrc) {
-                        var thisSrcPath;
-                        out += "<td valign='top'><table width='100%' style='border-collapse: collapse;' border=0 cellSpacing=0 cellPadding=1>";
-                        for (i = 0; i < pageScriptSrc.type.length; i++) {
-                            thisSrcPath = (pageScriptSrc.src[i].substr(0, 1) !== SLASH) ? pagePath + pageScriptSrc.src[i] : pageScriptSrc.src[i];
-                            out += "<tr><td class=ms-vb2 width='30%'>" + pageScriptSrc.type[i] + "</td>";
-                            out += "<td class=ms-vb2 width='70%'><a href='" + thisSrcPath + "'>" + fileName(pageScriptSrc.src[i]) + "</td></tr>";
-                        }
-                        out += "</table></td>";
-                    }
-                    $("#SPScriptAudit").append(out);
-                }
-            }
-        });
-    } // End of function SPScriptAuditPage
-
-    function getScriptAttribute(source, attribute) {
-        var matches;
-        var regex = RegExp(attribute + "=(\"([^\"]*)\")|('([^']*)')", "gi");
-        if (matches = regex.exec(source)) {
-            return matches[2];
-        }
-        return null;
-    } // End of function getScriptAttribute
-
-    // Check to see if the script reference is part of SharePoint core so that we can ignore it
-    function coreScript(src) {
-        var i;
-        var coreScriptLocations = ["WebResource.axd", "_layouts"];
-        for (i = 0; i < coreScriptLocations.length; i++) {
-            if (src.indexOf(coreScriptLocations[i]) > -1) {
-                return true;
-            }
-        }
-        return false;
-    } // End of function coreScript
-
-    // Rearrange radio buttons or checkboxes in a form from vertical to horizontal display to save page real estate
-    $.fn.SPServices.SPArrangeChoices = function(options) {
-
-        var opt = $.extend({}, {
-            listName: $().SPServices.SPListNameFromUrl(), // The list name for the current form
-            columnName: "", // The display name of the column in the form
-            perRow: 99, // Maximum number of choices desired per row.
-            randomize: false // If true, randomize the order of the options
-        }, options);
-
-        var columnFillInChoice = false;
-        var columnOptions = [];
-        var out;
-
-        // Get information about columnName from the list to determine if we're allowing fill-in choices
-        var thisGetList = $().SPServices({
-            operation: "GetList",
-            async: false,
-            cacheXML: true,
-            listName: opt.listName
-        });
-
-        // when the promise is available...
-        thisGetList.done(function() {
-            $(thisGetList.responseXML).find("Field[DisplayName='" + opt.columnName + "']").each(function() {
-                // Determine whether columnName allows a fill-in choice
-                columnFillInChoice = ($(this).attr("FillInChoice") === "TRUE") ? true : false;
-                // Stop looking;we're done
-                return false;
-            });
-
-            var thisFormField = findFormField(opt.columnName);
-
-            var totalChoices = $(thisFormField).find("tr").length;
-            var choiceNumber = 0;
-            var fillinPrompt;
-            var fillinInput;
-            // Collect all of the choices
-            $(thisFormField).find("tr").each(function() {
-                choiceNumber++;
-                // If this is the fill-in prompt, save it...
-                if (columnFillInChoice && choiceNumber === (totalChoices - 1)) {
-                    fillinPrompt = $(this).find("td").html();
-                    // ...or if it is the fill-in input box, save it...
-                } else if (columnFillInChoice && choiceNumber === totalChoices) {
-                    fillinInput = $(this).find("td").html();
-                    // ...else push into the columnOptions array.
-                } else {
-                    columnOptions.push($(this).html());
-                }
-            });
-            out = "<TR>";
-
-            // If randomize is true, randomly sort the options
-            if (opt.randomize) {
-                columnOptions.sort(randOrd);
-            }
-
-            // Add all of the options to the out string
-            for (i = 0; i < columnOptions.length; i++) {
-                out += columnOptions[i];
-                // If we've already got perRow columnOptions in the row, close off the row
-                if ((i + 1) % opt.perRow === 0) {
-                    out += "</TR><TR>";
-                }
-            }
-            out += "</TR>";
-
-            // If we are allowing a fill-in choice, add that option in a separate row at the bottom
-            if (columnFillInChoice) {
-                out += "<TR><TD colspan='99'>" + fillinPrompt + fillinInput + "</TD></TR>";
-            }
-
-            // Remove the existing rows...
-            $(thisFormField).find("tr").remove();
-            // ...and append the out string
-            $(thisFormField).find("table").append(out);
-
-        });
-
-    }; // End $.fn.SPServices.SPArrangeChoices
-
-    // Provide suggested values from a list for in input column based on characters typed
-    $.fn.SPServices.SPAutocomplete = function(options) {
-
-        var opt = $.extend({}, {
-            webURL: "", // [Optional] The name of the Web (site) which contains the sourceList
-            sourceList: "", // The name of the list which contains the values
-            sourceColumn: "", // The static name of the column which contains the values
-            columnName: "", // The display name of the column in the form
-            CAMLQuery: "", // [Optional] For power users, this CAML fragment will be Anded with the default query on the relatedList
-            CAMLQueryOptions: "<QueryOptions></QueryOptions>", // [Optional] For power users, allows specifying the CAMLQueryOptions for the GetListItems call
-            CAMLRowLimit: 0, // [Optional] Override the default view rowlimit and get all appropriate rows
-            filterType: "BeginsWith", // Type of filtering: [BeginsWith, Contains]
-            numChars: 0, // Wait until this number of characters has been typed before attempting any actions
-            ignoreCase: false, // If set to true, the function ignores case, if false it looks for an exact match
-            highlightClass: "", // If a class is supplied, highlight the matched characters in the values by applying that class to a wrapping span
-            uniqueVals: false, // If set to true, the function only adds unique values to the list (no duplicates)
-            maxHeight: 99999, // Sets the maximum number of values to display before scrolling occurs
-            slideDownSpeed: "fast", // Speed at which the div should slide down when values match (milliseconds or ["fast" | "slow"])
-            processingIndicator: "_layouts/images/REFRESH.GIF", // If present, show this while processing
-            debug: false // If true, show error messages;if false, run silent
-        }, options);
-
-        var matchNum;
-
-        // Find the input control for the column and save some of its attributes
-        var columnObj = $("input[Title='" + opt.columnName + "']");
-        columnObj.css("position", "");
-        var columnObjColor = columnObj.css("color");
-        var columnObjWidth = columnObj.css("width");
-
-        if (columnObj.html() === null && opt.debug) {
-            errBox("SPServices.SPAutocomplete",
-                "columnName: " + opt.columnName,
-                "Column is not an input control or is not found on page");
-            return;
-        }
-
-        // Remove the <br/> which isn't needed and messes up the formatting
-        columnObj.closest("span").find("br").remove();
-        columnObj.wrap("<div>");
-
-        // Create a div to contain the matching values and add it to the DOM
-        var containerId = genContainerId("SPAutocomplete", opt.columnName);
-        columnObj.after("<div><ul id='" + containerId + "' style='width:" + columnObjWidth + ";display:none;padding:2px;border:1px solid #2A1FAA;background-color:#FFF;position:absolute;z-index:40;margin:0'></div>");
-
-        // Set the width to match the width of the input control
-        $("#" + containerId).css("width", columnObjWidth);
-
-        // Handle keypresses
-        $(columnObj).keyup(function() {
-
-            // Get the column's value
-            var columnValue = $(this).val();
-
-            // Hide the container while we're working on it
-            $("#" + containerId).hide();
-
-            // Have enough characters been typed yet?
-            if (columnValue.length < opt.numChars) {
-                return false;
-            }
-
-            // Show the the processingIndicator as a background image in the input element
-            columnObj.css({
-                "background-image": "url(" + opt.processingIndicator + ")",
-                "background-position": "right",
-                "background-repeat": "no-repeat"
-            });
-
-            // Array to hold the matched values
-            var matchArray = [];
-
-            // Build the appropriate CAMLQuery
-            var camlQuery = "<Query><OrderBy><FieldRef Name='" + opt.sourceColumn + "'/></OrderBy><Where>";
-            if (opt.CAMLQuery.length > 0) {
-                camlQuery += "<And>";
-            }
-            camlQuery += "<" + opt.filterType + "><FieldRef Name='" + opt.sourceColumn + "'/><Value Type='Text'>" + columnValue + "</Value></" + opt.filterType + ">";
-            if (opt.CAMLQuery.length > 0) {
-                camlQuery += opt.CAMLQuery + "</And>";
-            }
-            camlQuery += "</Where></Query>";
-
-            // Call GetListItems to find all of the potential values
-            $().SPServices({
-                operation: "GetListItems",
-                async: false,
-                webURL: opt.WebURL,
-                listName: opt.sourceList,
-                CAMLQuery: camlQuery,
-                CAMLQueryOptions: opt.CAMLQueryOptions,
-                CAMLViewFields: "<ViewFields><FieldRef Name='" + opt.sourceColumn + "' /></ViewFields>",
-                CAMLRowLimit: opt.CAMLRowLimit,
-                completefunc: function(xData) {
-                    // Handle upper/lower case if ignoreCase = true
-                    var testValue = opt.ignoreCase ? columnValue.toUpperCase() : columnValue;
-                    // See which values match and add the ones that do to matchArray
-                    $(xData.responseXML).SPFilterNode("z:row").each(function() {
-                        var thisValue = $(this).attr("ows_" + opt.sourceColumn);
-                        var thisValueTest = opt.ignoreCase ? $(this).attr("ows_" + opt.sourceColumn).toUpperCase() : $(this).attr("ows_" + opt.sourceColumn);
-                        // Make sure we have a match...
-                        if (opt.filterType === "Contains") {
-                            var firstMatch = thisValueTest.indexOf(testValue);
-                            if ((firstMatch >= 0) &&
-                                // ...and that the match is not already in the array if we want uniqueness
-                                (!opt.uniqueVals || ($.inArray(thisValue, matchArray) === -1))) {
-                                matchArray.push($(this).attr("ows_" + opt.sourceColumn));
-                            }
-                        } else {
-                            // Handles normal case, which is BeginsWith and and other unknown values
-                            if (testValue === thisValueTest.substr(0, testValue.length) &&
-                                // ...and that the match is not already in the array if we want uniqueness
-                                (!opt.uniqueVals || ($.inArray(thisValue, matchArray) === -1))) {
-                                matchArray.push($(this).attr("ows_" + opt.sourceColumn));
-                            }
-                        }
-                    });
-                }
-            });
-
-            // Build out the set of list elements to contain the available values
-            var out = "";
-            for (i = 0; i < matchArray.length; i++) {
-                // If a highlightClass has been supplied, wrap a span around each match
-                if (opt.highlightClass.length > 0) {
-                    // Set up Regex based on whether we want to ignore case
-                    var thisRegex = new RegExp(columnValue, opt.ignoreCase ? "gi" : "g");
-                    // Look for all occurrences
-                    var matches = matchArray[i].match(thisRegex);
-                    var startLoc = 0;
-                    // Loop for each occurrence, wrapping each in a span with the highlightClass CSS class
-                    for (matchNum = 0; matchNum < matches.length; matchNum++) {
-                        var thisPos = matchArray[i].indexOf(matches[matchNum], startLoc);
-                        var endPos = thisPos + matches[matchNum].length;
-                        var thisSpan = "<span class='" + opt.highlightClass + "'>" + matches[matchNum] + "</span>";
-                        matchArray[i] = matchArray[i].substr(0, thisPos) + thisSpan + matchArray[i].substr(endPos);
-                        startLoc = thisPos + thisSpan.length;
-                    }
-                }
-                // Add the value to the markup for the container
-                out += "<li style='display: block;position: relative;cursor: pointer;'>" + matchArray[i] + "</li>";
-            }
-
-            // Add all the list elements to the containerId container
-            $("#" + containerId).html(out);
-            // Set up hehavior for the available values in the list element
-            $("#" + containerId + " li").click(function() {
-                $("#" + containerId).fadeOut(opt.slideUpSpeed);
-                columnObj.val($(this).text());
-            }).mouseover(function() {
-                var mouseoverCss = {
-                    "cursor": "hand",
-                    "color": "#ffffff",
-                    "background": "#3399ff"
-                };
-                $(this).css(mouseoverCss);
-            }).mouseout(function() {
-                var mouseoutCss = {
-                    "cursor": "inherit",
-                    "color": columnObjColor,
-                    "background": "transparent"
-                };
-                $(this).css(mouseoutCss);
-            });
-
-            // If we've got some values to show, then show 'em!
-            if (matchArray.length > 0) {
-                $("#" + containerId).slideDown(opt.slideDownSpeed);
-            }
-            // Remove the processing indicator
-            columnObj.css("background-image", "");
-        });
-
-    }; // End $.fn.SPServices.SPAutocomplete
-
-    // Get the Query String parameters and their values and return in an array
-    // Includes code from http://www.developerdrive.com/2013/08/turning-the-querystring-into-a-json-object-using-javascript/
-    // Simplified in 2014.01 using this code
-    $.fn.SPServices.SPGetQueryString = function(options) {
-
-        var opt = $.extend({}, {
-            lowercase: false // If true, parameter names will be converted to lowercase
-        }, options);
-
-        var queryStringVals = {};
-
-        var qs = location.search.slice(1).split('&');
-
-        for (var i = 0; i < qs.length; i++) {
-            var param = qs[i].split('=');
-            var paramName = opt.lowercase ? param[0].toLowerCase() : param[0];
-            queryStringVals[paramName] = decodeURIComponent(param[1] || "");
-        }
-
-        return queryStringVals;
-
-    }; // End $.fn.SPServices.SPGetQueryString
-
-    // Get the current list's GUID (ID) from the current URL.  Use of this function only makes sense if we're in a list's context,
-    // and we assume that we are calling it from an aspx page which is a form or view for the list.
-    $.fn.SPServices.SPListNameFromUrl = function(options) {
-
-        var opt = $.extend({}, {
-            listName: "" // [Optional] Pass in the name or GUID of a list if you are not in its context. e.g., on a Web Part pages in the Pages library
-        }, options);
-
-        // Has the list name or GUID been passed in?
-        if (opt.listName.length > 0) {
-            currentContext.thisList = opt.listName;
-            return currentContext.thisList;
-            // Do we already know the current list?
-        } else if (currentContext.thisList.length > 0) {
-            return currentContext.thisList;
-        }
-
-        // Parse out the list's root URL from the current location or the passed url
-        var thisPage = location.href;
-        var thisPageBaseName = thisPage.substring(0, thisPage.indexOf(".aspx"));
-        var listPath = decodeURIComponent(thisPageBaseName.substring(0, thisPageBaseName.lastIndexOf(SLASH) + 1)).toUpperCase();
-
-        // Call GetListCollection and loop through the results to find a match with the list's URL to get the list's GUID
-        $().SPServices({
-            operation: "GetListCollection",
-            async: false,
-            completefunc: function(xData) {
-                $(xData.responseXML).find("List").each(function() {
-                    var defaultViewUrl = $(this).attr("DefaultViewUrl");
-                    var listCollList = defaultViewUrl.substring(0, defaultViewUrl.lastIndexOf(SLASH) + 1).toUpperCase();
-                    if (listPath.indexOf(listCollList) > 0) {
-                        currentContext.thisList = $(this).attr("ID");
-                        return false;
-                    }
-                });
-            }
-        });
-
-        // Return the list GUID (ID)
-        return currentContext.thisList;
-
-    }; // End $.fn.SPServices.SPListNameFromUrl
-
-    // SPUpdateMultipleListItems allows you to update multiple items in a list based upon some common characteristic or metadata criteria.
-    $.fn.SPServices.SPUpdateMultipleListItems = function(options) {
-
-        var opt = $.extend({}, {
-            webURL: "", // [Optional] URL of the target Web.  If not specified, the current Web is used.
-            listName: "", // The list to operate on.
-            CAMLQuery: "", // A CAML fragment specifying which items in the list will be selected and updated
-            batchCmd: "Update", // The operation to perform. By default, Update.
-            valuepairs: [], // Valuepairs for the update in the form [[fieldname1, fieldvalue1], [fieldname2, fieldvalue2]...]
-            completefunc: null, // Function to call on completion of rendering the change.
-            debug: false // If true, show error messages;if false, run silent
-        }, options);
-
-        var i;
-        var itemsToUpdate = [];
-        var documentsToUpdate = [];
-
-        // Call GetListItems to find all of the items matching the CAMLQuery
-        $().SPServices({
-            operation: "GetListItems",
-            async: false,
-            webURL: opt.webURL,
-            listName: opt.listName,
-            CAMLQuery: opt.CAMLQuery,
-            CAMLQueryOptions: "<QueryOptions><ViewAttributes Scope='Recursive' /></QueryOptions>",
-            completefunc: function(xData) {
-                $(xData.responseXML).SPFilterNode("z:row").each(function() {
-                    itemsToUpdate.push($(this).attr("ows_ID"));
-                    var fileRef = $(this).attr("ows_FileRef");
-                    fileRef = "/" + fileRef.substring(fileRef.indexOf(";#") + 2);
-                    documentsToUpdate.push(fileRef);
-                });
-            }
-        });
-
-        var fieldNum;
-        var batch = "<Batch OnError='Continue'>";
-        for (i = 0; i < itemsToUpdate.length; i++) {
-            batch += "<Method ID='" + i + "' Cmd='" + opt.batchCmd + "'>";
-            for (fieldNum = 0; fieldNum < opt.valuepairs.length; fieldNum++) {
-                batch += "<Field Name='" + opt.valuepairs[fieldNum][0] + "'>" + escapeColumnValue(opt.valuepairs[fieldNum][1]) + "</Field>";
-            }
-            batch += "<Field Name='ID'>" + itemsToUpdate[i] + "</Field>";
-            if (documentsToUpdate[i].length > 0) {
-                batch += "<Field Name='FileRef'>" + documentsToUpdate[i] + "</Field>";
-            }
-            batch += "</Method>";
-        }
-        batch += "</Batch>";
-
-        // Call UpdateListItems to update all of the items matching the CAMLQuery
-        $().SPServices({
-            operation: "UpdateListItems",
-            async: false,
-            webURL: opt.webURL,
-            listName: opt.listName,
-            updates: batch,
-            completefunc: function(xData) {
-                // If present, call completefunc when all else is done
-                if (opt.completefunc !== null) {
-                    opt.completefunc(xData);
-                }
-            }
-        });
-
-    }; // End $.fn.SPServices.SPUpdateMultipleListItems
-
-    // SPGetListItemsJson retrieves items from a list in JSON format
-    $.fn.SPServices.SPGetListItemsJson = function(options) {
-
-        var opt = $.extend({}, {
-            webURL: "", // [Optional] URL of the target Web.  If not specified, the current Web is used.
-            listName: "",
-            CAMLViewName: "",
-            CAMLQuery: "",
-            CAMLViewFields: "",
-            CAMLRowLimit: "",
-            CAMLQueryOptions: "",
-            changeToken: "", // [Optional] If provided, will be passed with the request
-            contains: "", // CAML snippet for an additional filter
-            mapping: null, // If provided, use this mapping rather than creating one automagically from the list schema
-            mappingOverrides: null, // Pass in specific column overrides here
-            debug: false // If true, show error messages;if false, run silent
-        }, options);
-
-        var newChangeToken;
-        var thisListJsonMapping = {};
-        var deletedIds = [];
-        var result = $.Deferred();
-
-        // Call GetListItems to find all of the items matching the CAMLQuery
-        var thisData = $().SPServices({
-            operation: "GetListItemChangesSinceToken",
-            webURL: opt.webURL,
-            listName: opt.listName,
-            CAMLViewName: opt.CAMLViewName,
-            CAMLQuery: opt.CAMLQuery,
-            CAMLViewFields: opt.CAMLViewFields,
-            CAMLRowLimit: opt.CAMLRowLimit,
-            CAMLQueryOptions: opt.CAMLQueryOptions,
-            changeToken: opt.changeToken,
-            contains: opt.contains
-        });
-
-        thisData.done(function() {
-
-            var mappingKey = "SPGetListItemsJson" + opt.webURL + opt.listName;
-
-            // We're going to use this multiple times
-            var responseXml = $(thisData.responseXML);
-
-            // Get the changeToken
-            newChangeToken = responseXml.find("Changes").attr("LastChangeToken");
-
-            // Some of the existing items may have been deleted
-            responseXml.find("listitems Changes Id[ChangeType='Delete']").each(function() {
-                deletedIds.push($(this).text());
-            });
-
-            if (opt.mapping === null) {
-                // Automagically create the mapping
-                responseXml.find("List > Fields > Field").each(function() {
-                    var thisField = $(this);
-                    var thisType = thisField.attr("Type");
-                    // Only work with known column types
-                    if ($.inArray(thisType, spListFieldTypes) >= 0) {
-                        thisListJsonMapping["ows_" + thisField.attr("Name")] = {
-                            mappedName: thisField.attr("Name"),
-                            objectType: thisField.attr("Type")
-                        };
-                    }
-
-                });
-
-            } else {
-                thisListJsonMapping = opt.mapping;
-            }
-
-            // Implement any mappingOverrides
-            // Example: { ows_JSONTextColumn: { mappedName: "JTC", objectType: "JSON" } }
-            if (opt.mappingOverrides !== null) {
-                // For each mappingOverride, override the list schema
-                for (var mapping in opt.mappingOverrides) {
-                    thisListJsonMapping[mapping] = opt.mappingOverrides[mapping];
-                }
-            }
-
-            // If we haven't retrieved the list schema in this call, try to grab it from the saved data from a prior call
-            if ($.isEmptyObject(thisListJsonMapping)) {
-                thisListJsonMapping = $(document).data(mappingKey);
-            } else {
-                $(document).data(mappingKey, thisListJsonMapping);
-            }
-
-            var jsonData = responseXml.SPFilterNode("z:row").SPXmlToJson({
-                mapping: thisListJsonMapping,
-                sparse: true
-            });
-
-            var thisResult = {
-                changeToken: newChangeToken,
-                mapping: thisListJsonMapping,
-                data: jsonData,
-                deletedIds: deletedIds
-            };
-
-            result.resolveWith(thisResult);
-
-        });
-
-        return result.promise();
-
-    }; // End $.fn.SPServices.SPUpdateMultipleListItems
-
-    // Convert a JavaScript date to the ISO 8601 format required by SharePoint to update list items
-    $.fn.SPServices.SPConvertDateToISO = function(options) {
-
-        var opt = $.extend({}, {
-            dateToConvert: new Date(), // The JavaScript date we'd like to convert. If no date is passed, the function returns the current date/time
-            dateOffset: "-05:00" // The time zone offset requested. Default is EST
-        }, options);
-
-        //Generate ISO 8601 date/time formatted string
-        var s = "";
-        var d = opt.dateToConvert;
-        s += d.getFullYear() + "-";
-        s += pad(d.getMonth() + 1) + "-";
-        s += pad(d.getDate());
-        s += "T" + pad(d.getHours()) + ":";
-        s += pad(d.getMinutes()) + ":";
-        s += pad(d.getSeconds()) + "Z" + opt.dateOffset;
-        //Return the ISO8601 date string
-        return s;
-
-    }; // End $.fn.SPServices.SPConvertDateToISO
-
-    // This method for finding specific nodes in the returned XML was developed by Steve Workman. See his blog post
-    // http://www.steveworkman.com/html5-2/javascript/2011/improving-javascript-xml-node-finding-performance-by-2000/
-    // for performance details.
-    $.fn.SPFilterNode = function(name) {
-        return this.find('*').filter(function() {
-            return this.nodeName === name;
-        });
-    }; // End $.fn.SPFilterNode
-
-    // This function converts an XML node set to JSON
-    // Initial implementation focuses only on GetListItems
-    $.fn.SPXmlToJson = function(options) {
-
-        var opt = $.extend({}, {
-            mapping: {}, // columnName: mappedName: "mappedName", objectType: "objectType"
-            includeAllAttrs: false, // If true, return all attributes, regardless whether they are in the mapping
-            removeOws: true, // Specifically for GetListItems, if true, the leading ows_ will be stripped off the field name
-            sparse: false // If true, empty ("") values will not be returned
-        }, options);
-
-        var attrNum;
-        var jsonObject = [];
-
-        this.each(function() {
-            var row = {};
-            var rowAttrs = this.attributes;
-
-            if (!opt.sparse) {
-                // Bring back all mapped columns, even those with no value
-                $.each(opt.mapping, function() {
-                    row[this.mappedName] = "";
-                });
-            }
-
-            // Parse through the element's attributes
-            for (attrNum = 0; attrNum < rowAttrs.length; attrNum++) {
-                var thisAttrName = rowAttrs[attrNum].name;
-                var thisMapping = opt.mapping[thisAttrName];
-                var thisObjectName = typeof thisMapping !== "undefined" ? thisMapping.mappedName : opt.removeOws ? thisAttrName.split("ows_")[1] : thisAttrName;
-                var thisObjectType = typeof thisMapping !== "undefined" ? thisMapping.objectType : undefined;
-                if (opt.includeAllAttrs || thisMapping !== undefined) {
-                    row[thisObjectName] = attrToJson(rowAttrs[attrNum].value, thisObjectType);
-                }
-            }
-            // Push this item into the JSON Object
-            jsonObject.push(row);
-
-        });
-
-        // Return the JSON object
-        return jsonObject;
-
-    }; // End $.fn.SPServices.SPXmlToJson
-
-
-    function attrToJson(v, objectType) {
-
-        var colValue;
-
-        switch (objectType) {
-            case "Text":
-                colValue = stringToJsonObject(v);
-                break;
-            case "DateTime":
-            case "datetime": // For calculated columns, stored as datetime;#value
-                // Dates have dashes instead of slashes: ows_Created="2009-08-25 14:24:48"
-                colValue = dateToJsonObject(v);
-                break;
-            case "User":
-                colValue = userToJsonObject(v);
-                break;
-            case "UserMulti":
-                colValue = userMultiToJsonObject(v);
-                break;
-            case "Lookup":
-                colValue = lookupToJsonObject(v);
-                break;
-            case "LookupMulti":
-                colValue = lookupMultiToJsonObject(v);
-                break;
-            case "Boolean":
-                colValue = booleanToJsonObject(v);
-                break;
-            case "Integer":
-                colValue = intToJsonObject(v);
-                break;
-            case "Counter":
-                colValue = intToJsonObject(v);
-                break;
-            case "MultiChoice":
-                colValue = choiceMultiToJsonObject(v);
-                break;
-            case "Number":
-            case "Currency":
-            case "float": // For calculated columns, stored as float;#value
-                colValue = floatToJsonObject(v);
-                break;
-            case "Calculated":
-                colValue = calcToJsonObject(v);
-                break;
-            case "Attachments":
-                colValue = lookupToJsonObject(v);
-                break;
-            case "JSON":
-                colValue = jsonToJsonObject(v); // Special case for text JSON stored in text columns
-                break;
-            default:
-                // All other objectTypes will be simple strings
-                colValue = stringToJsonObject(v);
-                break;
-        }
-        return colValue;
-    }
-
-    function stringToJsonObject(s) {
-        return s;
-    }
-
-    function intToJsonObject(s) {
-        return parseInt(s, 10);
-    }
-
-    function floatToJsonObject(s) {
-        return parseFloat(s);
-    }
-
-    function booleanToJsonObject(s) {
-        var out = s === "0" ? false : true;
-        return out;
-    }
-
-    function dateToJsonObject(s) {
-
-        var dt = s.split("T")[0] !== s ? s.split("T") : s.split(" ");
-        var d = dt[0].split("-");
-        var t = dt[1].split(":");
-        var t3 = t[2].split("Z");
-        var date = new Date(d[0], (d[1] - 1), d[2], t[0], t[1], t3[0]);
-        return date;
-    }
-
-    function userToJsonObject(s) {
-        if (s.length === 0) {
-            return null;
-        } else {
-            var thisUser = new SplitIndex(s);
-            var thisUserExpanded = thisUser.value.split(",#");
-            if (thisUserExpanded.length === 1) {
-                return {
-                    userId: thisUser.id,
-                    userName: thisUser.value
-                };
-            } else {
-                return {
-                    userId: thisUser.id,
-                    userName: thisUserExpanded[0].replace(/(,,)/g, ","),
-                    loginName: thisUserExpanded[1].replace(/(,,)/g, ","),
-                    email: thisUserExpanded[2].replace(/(,,)/g, ","),
-                    sipAddress: thisUserExpanded[3].replace(/(,,)/g, ","),
-                    title: thisUserExpanded[4].replace(/(,,)/g, ",")
-                };
-            }
-        }
-    }
-
-    function userMultiToJsonObject(s) {
-        if (s.length === 0) {
-            return null;
-        } else {
-            var thisUserMultiObject = [];
-            var thisUserMulti = s.split(";#");
-            for (i = 0; i < thisUserMulti.length; i = i + 2) {
-                var thisUser = userToJsonObject(thisUserMulti[i] + ";#" + thisUserMulti[i + 1]);
-                thisUserMultiObject.push(thisUser);
-            }
-            return thisUserMultiObject;
-        }
-    }
-
-    function lookupToJsonObject(s) {
-        if (s.length === 0) {
-            return null;
-        } else {
-            var thisLookup = new SplitIndex(s);
-            return {
-                lookupId: thisLookup.id,
-                lookupValue: thisLookup.value
-            };
-        }
-    }
-
-    function lookupMultiToJsonObject(s) {
-        if (s.length === 0) {
-            return null;
-        } else {
-            var thisLookupMultiObject = [];
-            var thisLookupMulti = s.split(";#");
-            for (i = 0; i < thisLookupMulti.length; i = i + 2) {
-                var thisLookup = lookupToJsonObject(thisLookupMulti[i] + ";#" + thisLookupMulti[i + 1]);
-                thisLookupMultiObject.push(thisLookup);
-            }
-            return thisLookupMultiObject;
-        }
-    }
-
-    function choiceMultiToJsonObject(s) {
-        if (s.length === 0) {
-            return null;
-        } else {
-            var thisChoiceMultiObject = [];
-            var thisChoiceMulti = s.split(";#");
-            for (i = 0; i < thisChoiceMulti.length; i++) {
-                if (thisChoiceMulti[i].length !== 0) {
-                    thisChoiceMultiObject.push(thisChoiceMulti[i]);
-                }
-            }
-            return thisChoiceMultiObject;
-        }
-    }
-
-    function calcToJsonObject(s) {
-        if (s.length === 0) {
-            return null;
-        } else {
-            var thisCalc = s.split(";#");
-            // The first value will be the calculated column value type, the second will be the value
-            return attrToJson(thisCalc[1], thisCalc[0]);
-        }
-    }
-
-    function jsonToJsonObject(s) {
-        if (s.length === 0) {
-            return null;
-        } else {
-            return $.parseJSON(s);
-        }
-    }
-
-    // Find a People Picker in the page
-    // Returns references to:
-    //   row - The TR which contains the People Picker (useful if you'd like to hide it at some point)
-    //   contents - The element which contains the current value
-    //   currentValue - The current value if it is set
-    //   checkNames - The Check Names image (in case you'd like to click it at some point)
-    $.fn.SPServices.SPFindPeoplePicker = function(options) {
-
-        var opt = $.extend({}, {
-            peoplePickerDisplayName: "", // The displayName of the People Picker on the form
-            valueToSet: "", // The value to set the People Picker to. Should be a string containing each username or groupname separated by semi-colons.
-            checkNames: true // If set to true, the Check Names image will be clicked to resolve the names
-        }, options);
-
-        var thisRow = $("nobr").filter(function() {
-            // Ensures we get a match whether or not the People Picker is required (if required, the nobr contains a span also)
-            return $(this).contents().eq(0).text() === opt.peoplePickerDisplayName;
-        }).closest("tr");
-
-        var thisContents = thisRow.find("div[name='upLevelDiv']");
-        var thisCheckNames = thisRow.find("img[Title='Check Names']:first");
-
-        // If a value was provided, set the value
-        if (opt.valueToSet.length > 0) {
-            thisContents.html(opt.valueToSet);
-        }
-
-        // If checkName is true, click the check names icon
-        if (opt.checkNames) {
-            thisCheckNames.click();
-        }
-        var thisCurrentValue = $.trim(thisContents.text());
-
-        // Parse the entity data
-        var dictionaryEntries = [];
-
-        // IE
-        thisContents.children("span").each(function() {
-
-            // Grab the entity data
-            var thisData = $(this).find("div[data]").attr("data");
-
-            var dictionaryEntry = {};
-
-            // Entity data is only available in IE
-            if (typeof thisData !== "undefined") {
-                var arrayOfDictionaryEntry = $.parseXML(thisData);
-                var $xml = $(arrayOfDictionaryEntry);
-
-                $xml.find("DictionaryEntry").each(function() {
-                    var key = $(this).find("Key").text();
-                    var value = $(this).find("Value").text();
-                    dictionaryEntry[key] = value;
-                });
-                dictionaryEntries.push(dictionaryEntry);
-                // For other browsers, we'll call GetUserInfo to get the data
-            } else {
-                $().SPServices({
-                    operation: "GetUserInfo",
-                    async: false,
-                    cacheXML: true,
-                    userLoginName: $(this).attr("title"),
-                    completefunc: function(xData) {
-
-                        $(xData.responseXML).find("User").each(function() {
-
-                            $.each(this.attributes, function(i, attrib) {
-                                var key = attrib.name;
-                                var value = attrib.value;
-                                dictionaryEntry[key] = value;
-                            });
-                            dictionaryEntries.push(dictionaryEntry);
-                        });
-                    }
-                });
-            }
-        });
-
-        return {
-            row: thisRow,
-            contents: thisContents,
-            currentValue: thisCurrentValue,
-            checkNames: thisCheckNames,
-            dictionaryEntries: dictionaryEntries
-        };
-    };
-
-    // Return the current version of SPServices as a string
-    $.fn.SPServices.Version = function() {
-
-        return VERSION;
-
-    }; // End $.fn.SPServices.Version
-
-
-    // Find a dropdown (or multi-select) in the DOM. Returns the dropdown object and its type:
-    // S = Simple (select)
-    // C = Compound (input + select hybrid)
-    // M = Multi-select (select hybrid)
-    $.fn.SPServices.SPDropdownCtl = function(options) {
-
-        var opt = $.extend({}, {
-            displayName: "" // The displayName of the column on the form
-        }, options);
-
-        var columnObj = {};
-
-        var colStaticName = $().SPServices.SPGetStaticFromDisplay({
-            listName: $().SPServices.SPListNameFromUrl(),
-            columnDisplayName: opt.displayName
-        });
-
-        // Simple, where the select's title attribute is colName (DisplayName)
-        //  Examples:
-        //      SP2013 <select title="Country" id="Country_d578ed64-2fa7-4c1e-8b41-9cc1d524fc28_$LookupField">
-        //      SP2010: <SELECT name=ctl00$m$g_d10479d7_6965_4da0_b162_510bbbc58a7f$ctl00$ctl05$ctl01$ctl00$ctl00$ctl04$ctl00$Lookup title=Country id=ctl00_m_g_d10479d7_6965_4da0_b162_510bbbc58a7f_ctl00_ctl05_ctl01_ctl00_ctl00_ctl04_ctl00_Lookup>
-        //      SP2007: <select name="ctl00$m$g_e845e690_00da_428f_afbd_fbe804787763$ctl00$ctl04$ctl04$ctl00$ctl00$ctl04$ctl00$Lookup" Title="Country" id="ctl00_m_g_e845e690_00da_428f_afbd_fbe804787763_ctl00_ctl04_ctl04_ctl00_ctl00_ctl04_ctl00_Lookup">
-        if ((columnObj.Obj = $("select[Title='" + opt.displayName + "']")).length === 1) {
-            columnObj.Type = dropdownType.simple;
-            // Compound
-        } else if ((columnObj.Obj = $("input[Title='" + opt.displayName + "']")).length === 1) {
-            columnObj.Type = dropdownType.complex;
-            // Simple, where the select's id begins with colStaticName (StaticName) - needed for required columns where title="DisplayName Required Field"
-            //   Example: SP2013 <select title="Region Required Field" id="Region_59566f6f-1c3b-4efb-9b7b-6dbc35fe3b0a_$LookupField" showrelatedselected="3">
-        } else if ((columnObj.Obj = $("select:regex(id, (" + colStaticName + ")(_)[0-9a-fA-F]{8}(-))")).length === 1) {
-            columnObj.Type = dropdownType.simple;
-            // Multi-select: This will find the multi-select column control in English and most other language sites where the Title looks like 'Column Name possible values'
-        } else if ((columnObj.Obj = $("select[ID$='SelectCandidate'][Title^='" + opt.displayName + " ']")).length === 1) {
-            columnObj.Type = dropdownType.multiSelect;
-            // Multi-select: This will find the multi-select column control on a Russian site (and perhaps others) where the Title looks like '????????? ????????: Column Name'
-        } else if ((columnObj.Obj = $("select[ID$='SelectCandidate'][Title$=': " + opt.displayName + "']")).length === 1) {
-            columnObj.Type = dropdownType.multiSelect;
-            // Multi-select: This will find the multi-select column control on a German site (and perhaps others) where the Title looks like 'MÃ¶gliche Werte fÃ¼r &quot;Column name&quot;.'
-        } else if ((columnObj.Obj = $("select[ID$='SelectCandidate'][Title$='\"" + opt.displayName + "\".']")).length === 1) {
-            columnObj.Type = dropdownType.multiSelect;
-            // Multi-select: This will find the multi-select column control on a Italian site (and perhaps others) where the Title looks like "Valori possibili Column name"
-        } else if ((columnObj.Obj = $("select[ID$='SelectCandidate'][Title$=' " + opt.displayName + "']")).length === 1) {
-            columnObj.Type = dropdownType.multiSelect;
-        } else {
-            columnObj.Type = null;
-        }
-
-        // Last ditch effort
-        // Simple, finding based on the comment text at the top of the td.ms-formbody where the select's title begins with DisplayName - needed for required columns where title="DisplayName Required Field"
-        //   Example: SP2010 <select name="ctl00$m$g_308135f8_3f59_4d67_b5f8_c26776c498b7$ff51$ctl00$Lookup" id="ctl00_m_g_308135f8_3f59_4d67_b5f8_c26776c498b7_ff51_ctl00_Lookup" title="Region Required Field">
-        if (columnObj.Type === null) {
-            var fieldContainer = findFormField(opt.displayName);
-            if (fieldContainer !== undefined) {
-                var fieldSelect = fieldContainer.find("select[title^='" + opt.displayName + "'][id$='$Lookup']");
-
-                if (fieldSelect && fieldSelect.length === 1) {
-                    columnObj.Type = dropdownType.simple;
-                    columnObj.Obj = fieldSelect;
-                }
-            }
-        }
-
-        if (columnObj.Type === dropdownType.complex) {
-            columnObj.optHid = $("input[id='" + columnObj.Obj.attr("optHid") + "']");
-        } else if (columnObj.Type === dropdownType.multiSelect) {
-            // Find the important bits of the multiselect control
-            columnObj.container = columnObj.Obj.closest("span");
-            columnObj.MultiLookupPickerdata = columnObj.container.find("input[id$='" + multiLookupPrefix + "_data'], input[id$='" + multiLookupPrefix2013 + "_data']");
-            var addButtonId = columnObj.container.find("[id$='AddButton']").attr("id");
-            columnObj.master =
-                window[addButtonId.replace(/AddButton/, multiLookupPrefix + "_m")] || // SharePoint 2007
-            window[addButtonId.replace(/AddButton/, multiLookupPrefix2013 + "_m")]; // SharePoint 2013
-        }
-
-        return columnObj;
-
-    }; // End of function $.fn.SPServices.SPDropdownCtl
-
-    ////// PRIVATE FUNCTIONS ////////
-
-    // Get the current context (as much as we can) on startup
-    // See: http://johnliu.net/blog/2012/2/3/sharepoint-javascript-current-page-context-info.html
-    function SPServicesContext() {
-
-        // SharePoint 2010 gives us a context variable
-        if (typeof _spPageContextInfo !== "undefined") {
-            this.thisSite = _spPageContextInfo.webServerRelativeUrl;
-            this.thisList = _spPageContextInfo.pageListId;
-            this.thisUserId = _spPageContextInfo.userId;
-            // In SharePoint 2007, we know the UserID only
-        } else {
-            this.thisSite = (typeof L_Menu_BaseUrl !== "undefined") ? L_Menu_BaseUrl : "";
-            this.thisList = "";
-            this.thisUserId = (typeof _spUserId !== "undefined") ? _spUserId : undefined;
-        }
-
-    } // End of function SPServicesContext
-
-
-    // Display a column (field) formatted correctly based on its definition in the list.
-    // NOTE: Currently not dealing with locale differences.
-    //   columnXML          The XML node for the column from a GetList operation
-    //   columnValue        The text representation of the column's value
-    //   opt                The current set of options
-    function showColumn(listXML, columnXML, columnValue, opt) {
-
-        if (typeof columnValue === "undefined") {
-            return "";
-        }
-
-        var i;
-        var outString = "";
-        var dispUrl;
-        var numDecimals;
-        var outArray = [];
-        var webUrl = opt.relatedWebURL.length > 0 ? opt.relatedWebURL : $().SPServices.SPGetCurrentSite();
-
-        switch (columnXML.attr("Type")) {
-            case "Text":
-                outString = columnValue;
-                break;
-            case "URL":
-                switch (columnXML.attr("Format")) {
-                    // URL as hyperlink
-                    case "Hyperlink":
-                        outString = "<a href='" + columnValue.substring(0, columnValue.search(",")) + "'>" +
-                            columnValue.substring(columnValue.search(",") + 1) + "</a>";
-                        break;
-                        // URL as image
-                    case "Image":
-                        outString = "<img alt='" + columnValue.substring(columnValue.search(",") + 1) +
-                            "' src='" + columnValue.substring(0, columnValue.search(",")) + "'/>";
-                        break;
-                        // Just in case
-                    default:
-                        outString = columnValue;
-                        break;
-                }
-                break;
-            case "User":
-            case "UserMulti":
-                var userMultiValues = columnValue.split(";#");
-                for (i = 0; i < userMultiValues.length; i = i + 2) {
-                    outArray.push("<a href='/_layouts/userdisp.aspx?ID=" + userMultiValues[i] +
-                        "&Source=" + escapeUrl(location.href) + "'>" +
-                        userMultiValues[i + 1] + "</a>");
-                }
-                outString = outArray.join(", ");
-                break;
-            case "Calculated":
-                var calcColumn = columnValue.split(";#");
-                outString = calcColumn[1];
-                break;
-            case "Number":
-                numDecimals = columnXML.attr("Decimals");
-                outString = typeof numDecimals === "undefined" ?
-                    parseFloat(columnValue).toString() :
-                    parseFloat(columnValue).toFixed(numDecimals).toString();
-                break;
-            case "Currency":
-                numDecimals = columnXML.attr("Decimals");
-                outString = typeof numDecimals === "undefined" ?
-                    parseFloat(columnValue).toFixed(2).toString() :
-                    parseFloat(columnValue).toFixed(numDecimals).toString();
-                break;
-            case "Lookup":
-                switch (columnXML.attr("Name")) {
-                    case "FileRef":
-                        // Get the display form URL for the lookup source list
-                        dispUrl = listXML.attr("BaseType") === "1" ? listXML.attr("RootFolder") + SLASH + "Forms/DispForm.aspx" :
-                            listXML.attr("RootFolder") + SLASH + "DispForm.aspx";
-                        outString = "<a href='" + dispUrl +
-                            "?ID=" + columnValue.substring(0, columnValue.search(";#")) + "&RootFolder=*&Source=" + escapeUrl(location.href) + "'>" +
-                            columnValue.substring(columnValue.search(";#") + 2) + "</a>";
-                        break;
-                    case "FileDirRef":
-                        // Get the display form URL for the lookup source list
-                        dispUrl = SLASH + columnValue.substring(columnValue.search(";#") + 2);
-                        outString = "<a href='" + dispUrl + "'>" +
-                            columnValue.substring(columnValue.search(";#") + 2) + "</a>";
-                        break;
-                        // Any other lookup column
-                    default:
-                        // Get the display form URL for the lookup source list
-                        dispUrl = getListFormUrl(columnXML.attr("List"), "DisplayForm");
-                        outString = "<a href='" + opt.relatedWebURL + SLASH + dispUrl +
-                            "?ID=" + columnValue.substring(0, columnValue.search(";#")) + "&RootFolder=*&Source=" + escapeUrl(location.href) + "'>" +
-                            columnValue.substring(columnValue.search(";#") + 2) + "</a>";
-                        break;
-                }
-                break;
-            case "LookupMulti":
-                // Get the display form URL for the lookup source list
-                dispUrl = getListFormUrl(columnXML.attr("List"), "DisplayForm");
-                // Show all the values as links to the items, separated by commas
-                outString = "";
-                if (columnValue.length > 0) {
-                    var lookupMultiValues = columnValue.split(";#");
-                    for (i = 0; i < lookupMultiValues.length / 2; i++) {
-                        outArray.push("<a href='" + webUrl + SLASH + dispUrl +
-                            "?ID=" + lookupMultiValues[i * 2] + "&RootFolder=*&Source=" + escapeUrl(location.href) + "'>" +
-                            lookupMultiValues[(i * 2) + 1] + "</a>");
-                    }
-                }
-                outString = outArray.join(", ");
-                break;
-            case "File":
-                fileName = columnValue.substring(columnValue.search(";#") + 2);
-                outString = "<a href='" + listXML.attr("RootFolder") + SLASH + fileName + "'>" + fileName + "</a>";
-                break;
-            case "Counter":
-                outString = columnValue;
-                break;
-            case "DateTime":
-                outString = columnValue;
-                break;
-            default:
-                outString = columnValue;
-                break;
-        }
-        return outString;
-    } // End of function showColumn
-
-
-    // Show a single attribute of a node, enclosed in a table
-    //   node               The XML node
-    //   opt                The current set of options
-    function showAttrs(node) {
-        var i;
-        var out = "<table class='ms-vb' width='100%'>";
-        for (i = 0; i < node.attributes.length; i++) {
-            out += "<tr><td width='10px' style='font-weight:bold;'>" + i + "</td><td width='100px'>" +
-                node.attributes.item(i).nodeName + "</td><td>" + checkLink(node.attributes.item(i).nodeValue) + "</td></tr>";
-        }
-        out += "</table>";
-        return out;
-    } // End of function showAttrs
-
-    // Returns the selected value(s) for a dropdown in an array. Expects a dropdown object as returned by the DropdownCtl function.
-    // If matchOnId is true, returns the ids rather than the text values for the selection options(s).
-    function getDropdownSelected(columnSelect, matchOnId) {
-
-        var columnSelectSelected = [];
-
-        switch (columnSelect.Type) {
-            case dropdownType.simple:
-                if (matchOnId) {
-                    columnSelectSelected.push(columnSelect.Obj.find("option:selected").val() || []);
-                } else {
-                    columnSelectSelected.push(columnSelect.Obj.find("option:selected").text() || []);
-                }
-                break;
-            case dropdownType.complex:
-                if (matchOnId) {
-                    columnSelectSelected.push(columnSelect.optHid.val() || []);
-                } else {
-                    columnSelectSelected.push(columnSelect.Obj.val() || []);
-                }
-                break;
-            case dropdownType.multiSelect:
-                $(columnSelect.master.resultControl).find("option").each(function() {
-                    if (matchOnId) {
-                        columnSelectSelected.push($(this).val());
-                    } else {
-                        columnSelectSelected.push($(this).html());
-                    }
-                });
-                break;
-            default:
-                break;
-        }
-        return columnSelectSelected;
-
-    } // End of function getDropdownSelected
-
-    // Build an error message based on passed parameters
-    function errBox(func, param, msg) {
-        var errMsg = "<b>Error in function</b><br/>" + func + "<br/>" +
-            "<b>Parameter</b><br/>" + param + "<br/>" +
-            "<b>Message</b><br/>" + msg + "<br/><br/>" +
-            "<span onmouseover='this.style.cursor=\"hand\";' onmouseout='this.style.cursor=\"inherit\";' style='width=100%;text-align:right;'>Click to continue</span></div>";
-        modalBox(errMsg);
-    } // End of function errBox
-
-    // Call this function to pop up a branded modal msgBox
-    function modalBox(msg) {
-        var boxCSS = "position:absolute;width:300px;height:150px;padding:10px;background-color:#000000;color:#ffffff;z-index:30;font-family:'Arial';font-size:12px;display:none;";
-        $("#aspnetForm").parent().append("<div id='SPServices_msgBox' style=" + boxCSS + ">" + msg);
-        var height = $("#SPServices_msgBox").height();
-        var width = $("#SPServices_msgBox").width();
-        var leftVal = ($(window).width() / 2) - (width / 2) + "px";
-        var topVal = ($(window).height() / 2) - (height / 2) - 100 + "px";
-        $("#SPServices_msgBox").css({
-            border: '5px #C02000 solid',
-            left: leftVal,
-            top: topVal
-        }).show().fadeTo("slow", 0.75).click(function() {
-            $(this).fadeOut("3000", function() {
-                $(this).remove();
-            });
-        });
-    } // End of function modalBox
-
-    // Generate a unique id for a containing div using the function name and the column display name
-    function genContainerId(funcname, columnName) {
-        return funcname + "_" + $().SPServices.SPGetStaticFromDisplay({
-            listName: $().SPServices.SPListNameFromUrl(),
-            columnDisplayName: columnName
-        });
-    } // End of function genContainerId
-
-    // Get the URL for a specified form for a list
-    function getListFormUrl(l, f) {
-
-        var u;
-        $().SPServices({
-            operation: "GetFormCollection",
-            async: false,
-            listName: l,
-            completefunc: function(xData) {
-                u = $(xData.responseXML).find("Form[Type='" + f + "']").attr("Url");
-            }
-        });
-        return u;
-
-    } // End of function getListFormUrl
-
-    // Add the option values to the SOAPEnvelope.payload for the operation
-    //  opt = options for the call
-    //  paramArray = an array of option names to add to the payload
-    //      "paramName" if the parameter name and the option name match
-    //      ["paramName", "optionName"] if the parameter name and the option name are different (this handles early "wrappings" with inconsistent naming)
-    //      {name: "paramName", sendNull: false} indicates the element is marked as "add to payload only if non-null"
-    function addToPayload(opt, paramArray) {
-
-        var i;
-
-        for (i = 0; i < paramArray.length; i++) {
-            // the parameter name and the option name match
-            if (typeof paramArray[i] === "string") {
-                SOAPEnvelope.payload += wrapNode(paramArray[i], opt[paramArray[i]]);
-                // the parameter name and the option name are different
-            } else if ($.isArray(paramArray[i]) && paramArray[i].length === 2) {
-                SOAPEnvelope.payload += wrapNode(paramArray[i][0], opt[paramArray[i][1]]);
-                // the element not a string or an array and is marked as "add to payload only if non-null"
-            } else if ((typeof paramArray[i] === "object") && (paramArray[i].sendNull !== undefined)) {
-                SOAPEnvelope.payload += ((opt[paramArray[i].name] === undefined) || (opt[paramArray[i].name].length === 0)) ? "" : wrapNode(paramArray[i].name, opt[paramArray[i].name]);
-                // something isn't right, so report it
-            } else {
-                errBox(opt.operation, "paramArray[" + i + "]: " + paramArray[i], "Invalid paramArray element passed to addToPayload()");
-            }
-        }
-    } // End of function addToPayload
-
-    // Finds the td which contains a form field in default forms using the comment which contains:
-    //  <!--  FieldName="Title"
-    //      FieldInternalName="Title"
-    //      FieldType="SPFieldText"
-    //  -->
-    // as the "anchor" to find it. Necessary because SharePoint doesn't give all field types ids or specific classes.
-    function findFormField(columnName) {
-        var thisFormBody;
-        // There's no easy way to find one of these columns; we'll look for the comment with the columnName
-        var searchText = RegExp("FieldName=\"" + columnName.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&") + "\"", "gi");
-        // Loop through all of the ms-formbody table cells
-        $("td.ms-formbody, td.ms-formbodysurvey").each(function() {
-            // Check for the right comment
-            if (searchText.test($(this).html())) {
-                thisFormBody = $(this);
-                // Found it, so we're done
-                return false;
-            }
-        });
-        return thisFormBody;
-    } // End of function findFormField
-
-    // The SiteData operations have the same names as other Web Service operations. To make them easy to call and unique, I'm using
-    // the SiteData prefix on their names. This function replaces that name with the right name in the SOAPEnvelope.
-    function siteDataFixSOAPEnvelope(SOAPEnvelope, siteDataOperation) {
-        var siteDataOp = siteDataOperation.substring(8);
-        SOAPEnvelope.opheader = SOAPEnvelope.opheader.replace(siteDataOperation, siteDataOp);
-        SOAPEnvelope.opfooter = SOAPEnvelope.opfooter.replace(siteDataOperation, siteDataOp);
-        return SOAPEnvelope;
-    } // End of function siteDataFixSOAPEnvelope
-
-    // Wrap an XML node (n) around a value (v)
-    function wrapNode(n, v) {
-        var thisValue = typeof v !== "undefined" ? v : "";
-        return "<" + n + ">" + thisValue + "</" + n + ">";
-    }
-
-    // Generate a random number for sorting arrays randomly
-    function randOrd() {
-        return (Math.round(Math.random()) - 0.5);
-    }
-
-    // If a string is a URL, format it as a link, else return the string as-is
-    function checkLink(s) {
-        return ((s.indexOf("http") === 0) || (s.indexOf(SLASH) === 0)) ? "<a href='" + s + "'>" + s + "</a>" : s;
-    }
-
-    // Get the filename from the full URL
-    function fileName(s) {
-        return s.substring(s.lastIndexOf(SLASH) + 1, s.length);
-    }
-
-    /* Taken from http://dracoblue.net/dev/encodedecode-special-xml-characters-in-javascript/155/ */
-    var xml_special_to_escaped_one_map = {
-        '&': '&amp;',
-        '"': '&quot;',
-        '<': '&lt;',
-        '>': '&gt;'
-    };
-    var escaped_one_to_xml_special_map = {
-        '&amp;': '&',
-        '&quot;': '"',
-        '&lt;': '<',
-        '&gt;': '>'
-    };
-
-    function encodeXml(string) {
-        return string.replace(/([\&"<>])/g, function(str, item) {
-            return xml_special_to_escaped_one_map[item];
-        });
-    }
-
-    function decodeXml(string) {
-        return string.replace(/(&quot;|&lt;|&gt;|&amp;)/g,
-            function(str, item) {
-                return escaped_one_to_xml_special_map[item];
-            });
-    }
-    /* Taken from http://dracoblue.net/dev/encodedecode-special-xml-characters-in-javascript/155/ */
-
-    // Escape column values
-    function escapeColumnValue(s) {
-        if (typeof s === "string") {
-            return s.replace(/&(?![a-zA-Z]{1,8};)/g, "&amp;");
-        } else {
-            return s;
-        }
-    }
-
-    // Escape Url
-    function escapeUrl(u) {
-        return u.replace(/&/g, '%26');
-    }
-
-    // Split values like 1;#value into id and value
-    function SplitIndex(s) {
-        var spl = s.split(";#");
-        this.id = spl[0];
-        this.value = spl[1];
-    }
-
-    function pad(n) {
-        return n < 10 ? "0" + n : n;
-    }
-
-    // James Padolsey's Regex Selector for jQuery http://james.padolsey.com/javascript/regex-selector-for-jquery/
-    $.expr[':'].regex = function(elem, index, match) {
-        var matchParams = match[3].split(','),
-            validLabels = /^(data|css):/,
-            attr = {
-                method: matchParams[0].match(validLabels) ?
-                    matchParams[0].split(':')[0] : 'attr',
-                property: matchParams.shift().replace(validLabels, '')
-            },
-            regexFlags = 'ig',
-            regex = new RegExp(matchParams.join('').replace(/^\s+|\s+$/g, ''), regexFlags);
-        return regex.test(jQuery(elem)[attr.method](attr.property));
-    };
-
-
-})(jQuery);
 
 /**
 * vkBeautify - javascript plugin to pretty-print or minify text in XML, JSON, CSS and SQL formats.
@@ -7101,165 +2639,193 @@ window.vkbeautify = new vkbeautify();
 
 //-------- START SPWidgets plugin: inserted by build script ----------------- 
 
-(function(h){var s=h;document.head||(document.head=document.getElementsByTagName("head")[0]);(function(){try{h.pt||(h.pt={})}catch(c){h.pt={}}void 0===h.pt._cache&&(h.pt._cache={});h.SPWidgets={};h.SPWidgets.version="20140822044255";h.SPWidgets.defaults={};h.fn.SPMsgHasError=function(){var c=h(this).find("ErrorCode"),e=!1;if(!c.length)return h(this).find("faultcode").length?!0:!1;c.each(function(){if("0x00000000"!==h(this).text())return e=!0,!1});return e};h.fn.SPGetMsgError=function(){var c=
-h(this),e="",b=c.find("ErrorCode"),d=0;b.length||(b=c.find("faultcode"));if(!b.length)return"";b.each(function(){var a=h(this);"0x00000000"!==a.text()&&(d+=1,e+="("+d+") "+a.text()+": "+a.parent().children().not(a).text()+"\n")});return e=d+" error(s) encountered! \n"+e};h.SPWidgets.fillTemplate=function(c,e){var b,d,a,g,l,f,p,n,q;"object"===typeof c&&1===arguments.length&&(e=c.data,c=c.tmplt);b="";d="string"!==typeof c?String(h("<div/>").append(c).html()):c;a=d.match(/(\{\{.*?\}\})/g);h.isArray(e)||
-(e=[e]);if(null!==a)for(f=0,p=e.length;f<p;f++){n=d;g=0;for(l=a.length;g<l;g++)a[g]=a[g].replace(/[\{\}]/g,""),q=e[f][a[g]]||"",h.isFunction(q)&&(q=q()),n=n.replace("{{"+a[g]+"}}",q);b+=n}return b};h.SPWidgets.parseLookupFieldValue=function(c){var e=[],b=String(c).split(";#"),d=b.length,a,g;if(void 0===c)return e;for(c=0;c<d;c++)a=b[c],c++,g=b[c],(a||g)&&e.push({id:a,title:g});return e};h.SPWidgets.getCamlLogical=function(c){c=h.extend({},{type:"AND",values:[],onEachValue:null},c);var e="<And>",b=
-"</And>",d="",a=0,g=0,l=!1;c.type=String(c.type).toUpperCase();h.isArray(c.values)||(c.values=[c.values]);"AND"!==c.type&&(e="<Or>",b="</Or>");d=e;a=c.values.length;g=a-1;l=h.isFunction(c.onEachValue);2>a&&(d="");for(e=0;e<a;e++)if(d=l?d+String(c.onEachValue(c.values[e])).toString():d+String(c.values[e]).toString(),1<g-e){d+=h.SPWidgets.getCamlLogical(h.extend({},c,{values:c.values.slice(e+1,a-e)}));break}1<a&&(d+=b);return d};h.SPWidgets.SPGetDateString=function(c,e){function b(a){return 10>a?"0"+
-a:a}e=String(e||"local").toLowerCase();c=c||new Date;var d="";return d="utc"===e?c.getUTCFullYear()+"-"+b(c.getUTCMonth()+1)+"-"+b(c.getUTCDate())+"T"+b(c.getUTCHours())+":"+b(c.getUTCMinutes())+":"+b(c.getUTCSeconds())+"Z":c.getFullYear()+"-"+b(c.getMonth()+1)+"-"+b(c.getDate())+"T"+b(c.getHours())+":"+b(c.getMinutes())+":"+b(c.getSeconds())};h.SPWidgets.parseDateString=function(c){var e=null,b,d;if(!c)return e;if(e=Date.parse(10===c.length?c+"T00:00":c))return new Date(e);d=[1,4,5,6,7,10,11];c=
-c.match(/^(\d{4}|[+\-]\d{6})(?:-(\d{2})(?:-(\d{2}))?)?(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{3}))?)?(?:(Z)|([+\-])(\d{2})(?::(\d{2}))?)?)?$/);if(!c)return e;e=0;for(b=d.length;e<b;e++)c[d[e]]=~~c[d[e]];--c[2];"Z"===c[8]?(void 0!==c[9]&&(d=60*c[10]+c[11],"+"===c[9]&&(d=-d),c[5]+=d),e=new Date(Date.UTC(c[1],c[2],c[3],c[4],c[5],c[6],c[7]))):e=new Date(c[1],c[2],c[3],c[4],c[5],c[6],c[7]);return e};h.SPWidgets.makeSameHeight=function(c,e,b){var d=0,a=h(c);b||(b="height");a.each(function(){var a=h(this).css(b,
-"");d<a.outerHeight(!0)&&(d=a.outerHeight(!0))});0<d&&(e&&(d+=e),a.css(b,d));return c};h.SPWidgets.escapeXML=function(c){return"string"!==typeof c?"":c.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/'/g,"&apos;").replace(/"/g,"&quot;")};h.SPWidgets.unEscapeXML=function(c){return"string"!==typeof c?"":c.replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&amp;/g,"&").replace(/&apos;/g,"'").replace(/&quot;/g,'"')};h.SPWidgets.getRuntimeInfo=function(){function c(){this.SPWidgets=
-h.SPWidgets.version;this.jQuery=h.fn.jquery||"?";this.SPServices=this.jQueryUICss=this.jQueryUI="?";return this}c.prototype.asString=function(){var a="",c;for(c in this)this.hasOwnProperty(c)&&(a+="[ "+c+" = "+this[c]+" ] ");return a};var e=new c,b=h('<div style="position:fixed;width:100px;left:-1000px;"/>').appendTo("body"),d="";try{e.jQueryUI=s.ui.version}catch(a){}try{e.SPServices=h().SPServices.Version()}catch(g){h.fn.SPServices&&(e.SPServices="loaded")}d=b.css("background-image");b.addClass("ui-widget-header");
-b.css("background-image")!==d&&(e.jQueryUICss="loaded");b.remove();return e};h.SPWidgets.getSPVersion=function(c){var e={12:"2007",14:"2010",15:"2013"},b=12;"undefined"!==typeof SP&&(b=14,SP.ClientSchemaVersions?SP.ClientSchemaVersions.currentVersion&&(b=parseInt(SP.ClientSchemaVersions.currentVersion)):(b=parseInt(_spPageContextInfo.webUIVersion),4===b&&(b=14)));c&&(b=e[b]||b);return b}})(s);(function(c){var k={initDone:!1,maxColumns:20};c.SPWidgets.defaults.board={list:"",field:"",CAMLQuery:"<Query></Query>",
-CAMLViewFields:"",fieldFilter:null,optionalLabel:"(none)",template:null,webURL:c().SPServices.SPGetCurrentSite(),showColPicker:!1,colPickerLabel:"Columns",colPickerVisible:[],colPickerCloseLabel:"Close",colPickerApplyLabel:"Apply",colPickerCheckLabel:"Check-Uncheck All",colPickerTotalLabel:"Selected.",colPickerMaxColMsg:"Can not exceed 10 columns!",colPickerMinColMsg:"Mininum of 2 required!",onGetListItems:null,onPreUpdate:null,onBoardCreate:null,height:null};c.fn.SPShowBoard=function(e){k.initDone||
-(k.initDone=!0,""!==k.styleSheet&&c('<style type="text/css">\n\n'+k.styleSheet+"\n\n</style>").prependTo("head"));var b=arguments,d=this;this.each(function(){var a=c(this),g="string"===typeof e,l=a.hasClass("hasSPShowBoard"),f=null,p="",h=null;if(l&&!g)return this;if(g&&l&&!a.hasClass("loadingSPShowBoard"))return p=e.toLowerCase(),h=a.data("SPShowBoardOptions"),"refresh"===p?h._getListItems().then(function(){h.showItemsOnBoard({refresh:!0})}):"redraw"===p?h.setBoardColumnHeight():"setvisible"===p?
-h.setUserDefinedVisibleCol(b[1]):"setheight"===p?(h.height=b[1],h.setBoardColumnHeight()):"getcolumns"===p&&(d=h.getBoardColumnList()),this;if(a.hasClass("loadingSPShowBoard"))return this;f=c.extend({},c.SPWidgets.defaults.board,e,{ele:a,states:[],statesMap:{},tmpltHeader:"",tmpltState:"",statesCntr:"",headersCntr:"",listItems:[],initDone:!1,formUrls:null,isStateRequired:!0,maxColumnVisible:10,showNumberOfColumns:10,getBoardStates:function(){return c.Deferred(function(b){c().SPServices({operation:"GetList",
-listName:f.list,cacheXML:!0,async:!1,webURL:f.webURL,completefunc:function(d,e){var g=c(d.responseXML),l=g.find("Fields Field[StaticName='"+f.field+"']");if(!l.length){l=g.find("Fields Field[DisplayName='"+f.field+"']");if(!l.length){b.rejectWith(a,["Field ("+f.field+") not found in list definition!",d,e]);return}f._origField=f.field;f.field=l.attr("StaticName")}"FALSE"===l.attr("Required")&&(f.isStateRequired=!1);switch(l.attr("Type").toLowerCase()){case "choice":f.isStateRequired||(f.states.push({type:"choice",
-title:f.optionalLabel,name:f.optionalLabel}),f.statesMap[""]=f.states[f.states.length-1]);f.fieldFilter&&(f.fieldFilter=f.fieldFilter.split(/\,/));l.find("CHOICES CHOICE").each(function(a,b){var d=c(this).text();if(!f.fieldFilter||c.grep(f.fieldFilter,function(a){return a===d}).length){if(a>=k.maxColumns){try{console.log("SPWIDGETS:BOARD:Warning: Can only build a max of "+k.maxColumns+" columns!")}catch(e){}return!1}f.states.push({type:"choice",title:d,name:d});f.statesMap[d]=f.states[f.states.length-
-1]}});b.resolveWith(f,[d,e]);break;case "lookup":f.fieldFilter||(f.fieldFilter="<Query></Query>");c().SPServices({operation:"GetListItems",listName:l.attr("List"),async:!0,cacheXML:!0,CAMLQuery:f.fieldFilter,webURL:f.webURL,CAMLRowLimit:k.maxColumns,CAMLViewFields:'<ViewFields><FieldRef Name="'+l.attr("ShowField")+'" /></ViewFields>',completefunc:function(d,e){if("error"===e)b.rejectWith(a,["Communications Error!",d,e]);else{var g=c(d.responseXML);g.SPMsgHasError()?b.rejectWith(a,[g.SPGetMsgError(),
-d,e]):(f.isStateRequired||(f.states.push({type:"lookup",title:f.optionalLabel,name:""}),f.statesMap[""]=f.states[f.states.length-1]),g.SPFilterNode("z:row").each(function(a,b){if(a>=k.maxColumns){try{console.log("SPWIDGETS:BOARD:Warning: Can only build a max of "+k.maxColumns+" columns!")}catch(d){}return!1}var e=c(this),g=e.attr("ows_ID"),e=e.attr("ows_"+l.attr("ShowField")),g=g+";#"+e;f.states.push({type:"lookup",title:e,name:g});f.statesMap[g]=f.states[f.states.length-1]}),b.resolveWith(f,[d,e]))}}});
-break;default:b.rejectWith(a,["Field ("+f.field+") Type ("+l.attr("Type")+") is not supported!",d,e])}}})}).promise()},_getListItems:function(){return c.Deferred(function(b){function d(e){c.isFunction(f.onGetListItems)&&f.onGetListItems.call(a,f.listItems,e);b.resolveWith(a,[f.listItems])}c.isFunction(f.CAMLQuery)?f.CAMLQuery.call(a,function(a){c.isArray(a)&&(f.listItems=a,d(f.CAMLQuery))},e):c().SPServices({operation:"GetListItems",listName:f.list,async:!0,CAMLQuery:f.CAMLQuery,CAMLRowLimit:0,CAMLViewFields:f.CAMLViewFields,
-webURL:f.webURL,completefunc:function(e,g){if("error"===g)b.rejectWith(a,["Communications Error!",e,g]);else{var l=c(e.responseXML);l.SPMsgHasError()?b.rejectWith(a,[l.SPGetMsgError(),e,g]):(f.listItems=l.SPFilterNode("z:row").SPXmlToJson({includeAllAttrs:!0}),d(l))}}})}).promise()},getBoardItemDataObject:function(a){var b=null,d,e,g;if(a)for(a=String(a),d=0,e=f.listItems.length;d<e;d++)g=f.listItems[d].ID,c.isFunction(g)&&(g=f.listItems[d].ID()),g=String(g),a===g&&(b=f.listItems[d],d=e+e);return b},
-showItemsOnBoard:function(b){function d(b,g){var m="",l=null,q="";c.isFunction(f.template)?(m=f.template.call(a,b,g))&&(m=String(m)):m=c.SPWidgets.fillTemplate(f.template,t);void 0!==g&&""!==m?g.html(m):""!==m&&(l=b.ID,c.isFunction(b.ID)&&(l=b.ID()),void 0===k[p]&&(k[p]=""),f.initDone&&e.refresh&&(q+=" spwidget-temp"),k[p]+='<div class="spwidget-board-state-item ui-state-default ui-corner-all'+q+'" data-id="'+l+'">'+m+"</div>");return m}var e=c.extend({},{rows:f.listItems,refresh:!1,doBoardInsert:!0},
-b);b=[];var g=[],l=[],k={},h=null,p=null,n=h=null,t=null,x;if(!e.refresh)for(n=0,x=f.states.length;n<x;n++)f.states[n].headerTotalEle.html("0"),f.states[n].dataEle.empty();n=0;for(x=e.rows.length;n<x;n++)t=e.rows[n],p=t[f.field]||"",h=t.ID,c.isFunction(p)&&(p=t[f.field]()),c.isFunction(h)&&(h=h()),f.statesMap[p]&&(!1===e.refresh?(f.initDone&&b.push(t),d(t)):(h=f.statesCntr.find("div[data-id='"+h+"']"),h.length?(h.addClass("spwidget-temp"),h.closest("div.spwidget-board-state").data("boardstate")!==
-p&&(h.appendTo(f.statesMap[p].dataEle),l.push(t)),d(t,h)):(f.initDone&&b.push(t),d(t))));if(e.doBoardInsert){for(n in k)k.hasOwnProperty(n)&&""!==k[n]&&f.statesMap[n].dataEle.append(k[n]);c.pt.addHoverEffect(a.find(".spwidget-board-state-item"))}f.initDone&&e.refresh&&f.statesCntr.find("div.spwidget-board-state-item").not("div.spwidget-temp").each(function(){g.push(f.getBoardItemDataObject(c(this).data("id")));c(this).remove()}).end().removeClass("spwidget-temp");f.initDone&&(f.statesCntr.find("div.spwidget-board-state").sortable("refresh").end().disableSelection(),
-n=f.getEventObject(),b.length&&(n.itemsModified.length=0,n.itemsModified.push(b),a.trigger("spwidget:boarditemadd",[a,c.extend({},n)])),g.length&&(n.itemsModified.length=0,n.itemsModified.push(g),a.trigger("spwidget:boarditemremove",[a,c.extend({},n)])),n.itemsModified.length=0,n.itemsModified.push.apply(n.itemsModified,b),n.itemsModified.push.apply(n.itemsModified,g),n.itemsModified.push.apply(n.itemsModified,l),n.itemsModified.length&&a.trigger("spwidget:boardchange",[a,n]));f.updBoardHeaders();
-f.setBoardColumnHeight();return k},updBoardHeaders:function(a){var b;if(!c.extend({},{state:null},a).state)for(a=0,b=f.states.length;a<b;a++)f.states[a].headerTotalEle.html(f.states[a].dataEle.children().length)},getEventObject:function(a){a||(a=f.statesCntr.find("div.spwidget-board-state-item:first"));a=c(a);a={stateTotals:{},itemTotal:0,currentState:a.closest("div.spwidget-board-state").data("boardstate"),itemObj:f.getBoardItemDataObject(a.data("id"))||{},itemsModified:[]};var b,d;b=0;for(d=f.states.length;b<
-d;b++)a.itemTotal+=a.stateTotals[f.states[b].name]=Number(f.states[b].headerTotalEle.text());return a},getListFormUrl:function(a){function b(){c().SPServices({operation:"GetFormCollection",listName:f.list,webURL:f.webURL,cacheXML:!0,async:!1,completefunc:function(a,b){c(a.responseXML).find("Form").each(function(){var a=c(this);f.formUrls[String(a.attr("Type")).toLowerCase()]=f.webURL+"/"+a.attr("Url")})}})}a=String(a).toLowerCase();null===f.formUrls&&(f.formUrls={},b());return f.formUrls[a]||""},
-setUserDefinedVisibleCol:function(a){function b(a){var d=!1;c.each(f.states,function(c,f){if(f.title===a||f.name===a)return d=!0,!1});return d}var d=0,e=!1;if(a){if(!c.isArray(a)||!a.length){if(!c.isArray(a)&&"all"!==String(a).toLowerCase())return;e=!0;a=[]}2>a.length||(e||(d=0,c.each(a,function(a,c){b(c)&&d++;if(2===d)return!1})),d=0,c.each(f.states,function(b,e){-1<c.inArray(e.title,a)||-1<c.inArray(e.name,a)?(d++,!1===e.isVisible&&(e.isVisible=!0,e.dataEle.css("display",""),e.headerEle.css("display",
-""))):(e.isVisible=!1,e.dataEle.css("display","none"),e.headerEle.css("display","none"));if(d>=f.maxColumnVisible)return!1}),f.setBoardColumnClass(d),f.setBoardColumnHeight(),f.triggerBoardColumnChangeEvent())}},setBoardColumnClass:function(a){var b=f.headersCntr.add(f.statesCntr);a=parseInt(a);if(!a||2>a)a=0,c.each(f.states,function(c,f){f.isVisible&&a++});if(f.showNumberOfColumns===a)return f;b.addClass("spwidget-states-"+a);f.showNumberOfColumns&&b.removeClass("spwidget-states-"+f.showNumberOfColumns);
-f.showNumberOfColumns=a;return f},triggerBoardColumnChangeEvent:function(){var a=[];f.initDone&&(c.each(f.statesMap,function(c,f){f.isVisible&&a.push(f.title)}),f.ele.trigger("spwidget:boardColumnChange",[f.ele,a]))},setupColumnPicker:function(){var b=a.find(".spwidget-board-column-list-cntr"),d=b.find("div.spwidget-board-column-list"),e=b.children("div.ui-state-default:last"),g={$totalCntr:b.find("span.spwidget-board-column-total"),setTotalSelected:function(){var a=g.getSelected().length;g.$totalCntr.html(a);
-return a},getSelected:function(){return d.find("a.ui-state-highlight")},showMessage:function(a){c('<div class="spwidget-board-msg ui-state-error ui-corner-all">'+a+"</div>").appendTo(e).fadeOut(8E3,function(){c(this).remove()})},setSelected:function(){var a=d.find("a");c.each(f.states,function(c,f){var b=a.filter("[data-board_col_index='"+c+"']");f.isVisible?g.selectColumn(b,!1):g.selectColumn(b,!0)});g.setTotalSelected()},selectColumn:function(a,f){c(a).each(function(){var a=c(this),b=a.find(".ui-icon");
-a.hasClass("ui-state-highlight")||f?!1!==f&&(b.removeClass("ui-icon-check"),a.removeClass("ui-state-highlight")):(b.addClass("ui-icon-check"),a.addClass("ui-state-highlight"))});return a},setVisibleColumns:function(a){a||(a=g.getSelected());var b=a.length;c.each(f.states,function(c,f){a.filter("[data-board_col_index='"+c+"']").length?!1===f.isVisible&&(f.isVisible=!0,f.dataEle.css("display",""),f.headerEle.css("display","")):(f.isVisible=!1,f.dataEle.css("display","none"),f.headerEle.css("display",
-"none"))});f.setBoardColumnClass(b);f.setBoardColumnHeight()},setUserDefinedVisibleCol:function(a){var b=0,e="";if(!c.isArray(a)||!a.length){if(!c.isArray(a)&&"all"!==String(a).toLowerCase())return;a=[];c.each(f.states,function(c,f){a.push(f.title)})}c.each(a,function(a,d){c.each(f.states,function(a,c){if(c.title===d)return b++,1<b&&(e+=","),e+="a[data-board_col_name='"+c.name+"']",!1});if(b>=f.maxColumnVisible)return!1});2<=b&&(g.setVisibleColumns(d.find(e)),g.triggerEvent())}};g.triggerEvent=f.triggerBoardColumnChangeEvent;
-b.find("button[name='apply']").button({label:f.colPickerApplyLabel,icons:{secondary:"ui-icon-circle-check"}}).on("click",function(a){a=g.getSelected();var c=a.length;c>f.maxColumnVisible?g.showMessage(f.colPickerMaxColMsg):2>c?g.showMessage(f.colPickerMinColMsg):(b.hide(),g.setVisibleColumns(a),g.triggerEvent())});b.find("button[name='check']").attr("title",f.colPickerCheckLabel).button({text:!1,icons:{primary:"ui-icon-radio-off"}}).on("click",function(a){a=g.getSelected();a.length?g.selectColumn(a,
-!0):g.selectColumn(d.find("a"));g.setTotalSelected()});b.find("button[name='close']").attr("title",f.colPickerCloseLabel).button({text:!1,icons:{primary:"ui-icon-circle-close"}}).on("click",function(a){b.hide()});a.find("div.spwidget-board-settings").css("display","").find("div.spwidget-board-settings-columns").each(function(){var a=c(this);a.button({label:f.colPickerLabel,icons:{secondary:"ui-icon-triangle-1-s"}}).on("click.SPWidgets",function(){b.is(":visible")?b.hide():(g.setSelected(),b.show().position({my:"left top",
-at:"left bottom",of:a}))});return!1});d.each(function(){var a=c(this),b="";c.each(f.states,function(a,c){b+='<a href="javascript:" data-board_col_index="'+a+'" data-board_col_name="'+c.name+'"><span class="ui-icon ui-icon-minus"></span><span>'+c.title+"</span></a>"});a.html(b);return!1}).on("click","a",function(){g.selectColumn(this);g.setTotalSelected()});b.find("span.spwidget-board-column-total-label").html(f.colPickerTotalLabel)},setBoardColumnHeight:function(){f.headersCntr.is(":visible")&&c.SPWidgets.makeSameHeight(f.headersCntr.find("div.spwidget-board-state:visible"),
-0,"min-height");f.height?f.statesCntr.find("div.spwidget-board-state:visible").css({height:f.height,"min-height":""}):f.statesCntr.is(":visible")&&c.SPWidgets.makeSameHeight(f.statesCntr.find("div.spwidget-board-state:visible").css("height",""),20,"min-height")},getBoardColumnList:function(){var a=[],c,b;c=0;for(b=f.states.length;c<b;c++)a.push({name:f.states[c].name,title:f.states[c].title,isVisible:f.states[c].isVisible});return a}});if(!f.list||!f.field)return a.html("<div>SPWidgets:Board [ERROR] Missing required input parameters!</div>"),
-this;a.addClass("loadingSPShowBoard").data("SPShowBoardOptions",f);f.getBoardStates().then(function(){""===f.CAMLViewFields?f.CAMLViewFields='<ViewFields><FieldRef Name="ID" /><FieldRef Name="Title" /><FieldRef Name="'+f.field+'" /></ViewFields>':0>f.CAMLViewFields.indexOf(f.field)&&(f.CAMLViewFields=f.CAMLViewFields.replace(/\<\/ViewFields\>/i,'<FieldRef Name="'+f.field+'" /></ViewFields>'));a.html(c(k.htmlTemplate).filter("div.spwidget-board"));f.tmpltHeader=c("<div/>").append(a.find("div.spwidget-board-headers-cntr div.spwidget-board-state").clone()).html();
-f.tmpltState=c("<div/>").append(a.find("div.spwidget-board-states-cntr div.spwidget-board-state")).html();f.states.length<=f.maxColumnVisible&&(f.showNumberOfColumns=f.states.length);f.statesCntr=a.find("div.spwidget-board-states-cntr").addClass("spwidget-states-"+f.showNumberOfColumns).empty();f.headersCntr=a.find("div.spwidget-board-headers-cntr").addClass("spwidget-states-"+f.showNumberOfColumns).empty();c.each(f.states,function(a,b){b.headerEle=c(f.tmpltHeader).appendTo(f.headersCntr).attr("data-boardstate",
-b.name).attr("data-boardindex",a).find(".spwidget-board-header-title").html(b.title).end();b.dataEle=c(f.tmpltState).appendTo(f.statesCntr).attr("data-boardindex",a).attr("data-boardstate",b.name);b.headerTotalEle=b.headerEle.find("span.spwidget-state-item-total");b.isVisible=!0;a>f.maxColumnVisible-1&&(b.headerEle.css("display","none"),b.dataEle.css("display","none"),b.isVisible=!1)});c(f.headersCntr,f.statesCntr).append('<div style="clear:both;"></div>');!0===f.showColPicker&&f.setupColumnPicker();
-c.isArray(f.colPickerVisible)&&f.colPickerVisible.length&&f.setUserDefinedVisibleCol(f.colPickerVisible);a.on("sortreceive sortremove",function(a,b){f.updBoardHeaders();c(b.item).removeClass("ui-state-hover")}).on("sortreceive",function(b,d){var e=f.getEventObject(d.item),g=c.Deferred(),l="",l=c.isFunction(e.itemObj.ID)?e.itemObj.ID():e.itemObj.ID;e.updates=[];e.updatePromise=g.promise();e.updates.push([f.field,e.currentState]);if(c.isFunction(f.onPreUpdate)&&!0===f.onPreUpdate.call(d.item,b,d.item,
-e)||!e.updates.length)return this;c().SPServices({operation:"UpdateListItems",listName:f.list,async:!0,ID:l,valuepairs:e.updates,webURL:f.webURL,completefunc:function(f,l){if("error"===l)g.rejectWith(a,["Communications Error!",f,l]);else{var k=c(f.responseXML),h=null;k.SPMsgHasError()?g.rejectWith(a,[k.SPGetMsgError(),f,l]):(h=c(f.responseXML).SPFilterNode("z:row").SPXmlToJson({includeAllAttrs:!0}),c(b.target).trigger("spwidget:boardchange",[d.item,e]),g.resolveWith(b.target,[h[0],e.itemObj,f]))}}})}).on("click",
-"a.spwidgets-board-action",function(a){a=c(a.currentTarget);var b=String(a.data("spwidgets_board_action")).toLowerCase(),d="",e=c.pt.getEscapedUrl(window.location.href);switch(b){case "edit-item":d=f.getListFormUrl("EditForm");break;case "view-item":d=f.getListFormUrl("DisplayForm")}window.location.href=d+"?ID="+a.data("spwidgets_id")+"&Source="+e;return this});null===f.template&&(f.template=c(k.htmlTemplate).filter("div.spwidget-item-template"));f._getListItems().then(function(){f.showItemsOnBoard();
-f.statesCntr.find("div.spwidget-board-state").each(function(){var b=c(this);b.sortable({connectWith:b.siblings(),containment:a,cursor:"move",tolerance:"pointer",opacity:".80",placeholder:"ui-state-highlight spwidget-board-placeholder",forcePlaceholderSize:!0,remove:function(a,c){f.setBoardColumnHeight()}})});f.statesCntr.disableSelection();f.initDone=!0;f.setBoardColumnHeight();a.addClass("hasSPShowBoard").removeClass("loadingSPShowBoard");c.isFunction(f.onBoardCreate)&&f.onBoardCreate.call(a,f.getEventObject());
-c(a).trigger("spwidget:boardcreate",[a,f.getEventObject()])})}).fail(function(c,b,f){a.append('<div class="ui-state-error"><p>'+c+"</p></div>")});return this});return d};k.styleSheet="/** \n * Stylesheet for the Board widget\n * \n * BUILD: July 20, 2014 - 04:46 PM\n */\ndiv.spwidget-board {\n    width: 100%;\n    position: relative;\n}\n\ndiv.spwidget-board div.spwidget-board-headers,\ndiv.spwidget-board div.spwidget-board-headers-cntr,\ndiv.spwidget-board div.spwidget-board-states-cntr, \ndiv.spwidget-board div.spwidget-board-states {\n    width: 100%;\n}\n\ndiv.spwidget-board div.spwidget-board-state {\n    width: 49%;\n    float: left;\n    margin: 0% .1%;\n    padding: .2%;\n    overflow: auto;\n}\n/* Board Individual Headers */\ndiv.spwidget-board div.spwidget-board-headers-cntr div.spwidget-board-state {\n    font-weight: bold;\n    font-size: 1.1em;\n    overflow: hidden;\n    word-wrap: break-word;\n}\n/* Board Header Title */\ndiv.spwidget-board div.spwidget-board-headers-cntr .spwidget-board-header-title,\ndiv.spwidget-board div.spwidget-board-headers-cntr .spwidget-state-item-stat-cntr {\n    display: inline-block\n}\n/* Board Header Stats container*/\ndiv.spwidget-board div.spwidget-board-headers-cntr .spwidget-state-item-stat-cntr {\n    font-size: .8em;\n    float: right;\n}\ndiv.spwidget-board div.spwidget-board-headers-cntr .spwidget-item-stat {\n    display: inline-block;\n    min-width: 2em;\n    padding: 0 0.2em;\n    text-align: center;\n}\n\n/* Board column content */\ndiv.spwidget-board div.spwidget-board-states div.spwidget-board-state {\n    margin-bottom: 1em;\n    min-height: 10em;\n}\n\ndiv.spwidget-board div.spwidget-board-state div.spwidget-board-state-item {\n    padding: .2em;\n    margin: .5em .2em;\n    font-weight: normal;\n    cursor: move;\n    overflow: auto;\n}\ndiv.spwidget-board div.spwidget-board-state-item div.spwidget-board-item-actions{\n    margin-top: .2em;\n    padding: .2em .5em;\n    overflow: hidden;\n}\ndiv.spwidget-board .spwidget-board-placeholder {\n    height: 3em;\n}\n\n/** Setting container */\ndiv.spwidget-board-settings {\n    font-size: .8em;\n    margin: .2em;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list-cntr {\n    z-index: 5;\n    position: absolute;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list-cntr > div {\n    padding: .2em;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list-cntr > div:first-child,\ndiv.spwidget-board-settings div.spwidget-board-column-list-cntr > div:last-child {\n    text-align: right;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list {\n    width: 20em;\n    height: 17em;\n    overflow: auto;\n    position: relative\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list-cntr .spwidget-board-msg {\n    position: absolute;\n    top: 1px;\n    left: 1px;\n    padding: .2em;\n}\ndiv.spwidget-board-settings div.ui-state-default {\n    position: relative;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list > a {\n    display: block;\n    margin: .2em;\n    padding: .2em;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list > a > span.ui-icon {\n    display: inline-block;\n}\n\n/* Number of Columns (96 % #columns)\n * Currently support 10 columns. \n */\ndiv.spwidget-board .spwidget-states-3 div.spwidget-board-state {\n    width: 32.4%;\n}\ndiv.spwidget-board .spwidget-states-4 div.spwidget-board-state {\n    width: 24%;\n}\ndiv.spwidget-board .spwidget-states-5 div.spwidget-board-state {\n    width: 19.1%;\n}\ndiv.spwidget-board .spwidget-states-6 div.spwidget-board-state {\n    width: 15.8%;\n}\ndiv.spwidget-board .spwidget-states-7 div.spwidget-board-state {\n    width: 13.4%;\n}\ndiv.spwidget-board .spwidget-states-8 div.spwidget-board-state {\n    width: 11.6%;\n}\ndiv.spwidget-board .spwidget-states-9 div.spwidget-board-state {\n    width: 10.2%;\n}\ndiv.spwidget-board .spwidget-states-10 div.spwidget-board-state {\n    width: 9.1%;\n}\n";
+(function(m,x,u,t){var s=m,q={};u.head||(u.head=u.getElementsByTagName("head")[0]);(function(){try{m.pt||(m.pt={})}catch(b){m.pt={}}m.pt._cache===t&&(m.pt._cache={});m.SPWidgets={};m.SPWidgets.version="20140824033307";m.SPWidgets.defaults={};m.SPWidgets.SPAPI=q;m.fn.SPMsgHasError=function(){var b=m(this).find("ErrorCode"),h=!1;if(!b.length)return m(this).find("faultcode").length?!0:!1;b.each(function(){if("0x00000000"!==m(this).text())return h=!0,!1});return h};m.fn.SPGetMsgError=function(){var b=
+m(this),h="",e=b.find("ErrorCode"),c=0;e.length||(e=b.find("faultcode"));if(!e.length)return"";e.each(function(){var a=m(this);"0x00000000"!==a.text()&&(c+=1,h+="("+c+") "+a.text()+": "+a.parent().children().not(a).text()+"\n")});return h=c+" error(s) encountered! \n"+h};m.SPWidgets.fillTemplate=function(b,h){var e,c,a,d,f,n,g,r,p;"object"===typeof b&&1===arguments.length&&(h=b.data,b=b.tmplt);e="";c="string"!==typeof b?String(m("<div/>").append(b).html()):b;a=c.match(/(\{\{.*?\}\})/g);m.isArray(h)||
+(h=[h]);if(null!==a)for(n=0,g=h.length;n<g;n++){r=c;d=0;for(f=a.length;d<f;d++)a[d]=a[d].replace(/[\{\}]/g,""),p=h[n][a[d]]||"",m.isFunction(p)&&(p=p()),r=r.replace("{{"+a[d]+"}}",p);e+=r}return e};m.SPWidgets.parseLookupFieldValue=function(b){var h=[],e=String(b).split(";#"),c=e.length,a,d;if(b===t)return h;for(b=0;b<c;b++)a=e[b],b++,d=e[b],(a||d)&&h.push({id:a,title:d});return h};m.SPWidgets.getCamlLogical=function(b){b=m.extend({},{type:"AND",values:[],onEachValue:null},b);var h="<And>",e="</And>",
+c="",a=0,d=0,f=!1;b.type=String(b.type).toUpperCase();m.isArray(b.values)||(b.values=[b.values]);"AND"!==b.type&&(h="<Or>",e="</Or>");c=h;a=b.values.length;d=a-1;f=m.isFunction(b.onEachValue);2>a&&(c="");for(h=0;h<a;h++)if(c=f?c+String(b.onEachValue(b.values[h])).toString():c+String(b.values[h]).toString(),1<d-h){c+=m.SPWidgets.getCamlLogical(m.extend({},b,{values:b.values.slice(h+1,a-h)}));break}1<a&&(c+=e);return c};m.SPWidgets.SPGetDateString=function(b,h){function e(b){return 10>b?"0"+b:b}h=String(h||
+"local").toLowerCase();b=b||new Date;var c="";return c="utc"===h?b.getUTCFullYear()+"-"+e(b.getUTCMonth()+1)+"-"+e(b.getUTCDate())+"T"+e(b.getUTCHours())+":"+e(b.getUTCMinutes())+":"+e(b.getUTCSeconds())+"Z":b.getFullYear()+"-"+e(b.getMonth()+1)+"-"+e(b.getDate())+"T"+e(b.getHours())+":"+e(b.getMinutes())+":"+e(b.getSeconds())};m.SPWidgets.parseDateString=function(b){var h=null,e,c;if(!b)return h;if(h=Date.parse(10===b.length?b+"T00:00":b))return new Date(h);c=[1,4,5,6,7,10,11];b=b.match(/^(\d{4}|[+\-]\d{6})(?:-(\d{2})(?:-(\d{2}))?)?(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{3}))?)?(?:(Z)|([+\-])(\d{2})(?::(\d{2}))?)?)?$/);
+if(!b)return h;h=0;for(e=c.length;h<e;h++)b[c[h]]=~~b[c[h]];--b[2];"Z"===b[8]?(b[9]!==t&&(c=60*b[10]+b[11],"+"===b[9]&&(c=-c),b[5]+=c),h=new Date(Date.UTC(b[1],b[2],b[3],b[4],b[5],b[6],b[7]))):h=new Date(b[1],b[2],b[3],b[4],b[5],b[6],b[7]);return h};m.SPWidgets.makeSameHeight=function(b,h,e){var c=0,a=m(b);e||(e="height");a.each(function(){var b=m(this).css(e,"");c<b.outerHeight(!0)&&(c=b.outerHeight(!0))});0<c&&(h&&(c+=h),a.css(e,c));return b};m.SPWidgets.escapeXML=function(b){return"string"!==typeof b?
+"":b.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/'/g,"&apos;").replace(/"/g,"&quot;")};m.SPWidgets.unEscapeXML=function(b){return"string"!==typeof b?"":b.replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&amp;/g,"&").replace(/&apos;/g,"'").replace(/&quot;/g,'"')};m.SPWidgets.getRuntimeInfo=function(){function b(){this.SPWidgets=m.SPWidgets.version;this.jQuery=m.fn.jquery||"?";this.jQueryUICss=this.jQueryUI="?";return this}b.prototype.asString=function(){var b="",a;for(a in this)this.hasOwnProperty(a)&&
+(b+="[ "+a+" = "+this[a]+" ] ");return b};var h=new b,e=m('<div style="position:fixed;width:100px;left:-1000px;"/>').appendTo("body"),c="";try{h.jQueryUI=s.ui.version}catch(a){}c=e.css("background-image");e.addClass("ui-widget-header");e.css("background-image")!==c&&(h.jQueryUICss="loaded");e.remove();return h};m.SPWidgets.getSPVersion=function(b){var h={12:"2007",14:"2010",15:"2013"},e=12,c=!1;"undefined"!==typeof SP&&(e=14,SP.ClientSchemaVersions&&SP.ClientSchemaVersions.currentVersion&&(e=parseInt(SP.ClientSchemaVersions.currentVersion),
+c=!0),c||"undefined"===typeof _spPageContextInfo||(e=parseInt(_spPageContextInfo.webUIVersion),4===e&&(e=14)));b&&(e=h[e]||e);return e}})(s);(function(b,k){var h=k||{};k||("undefined"===typeof b.SPAPI?b.SPAPI=h:h=b.SPAPI);h.doesMsgHaveError=function(e){e=b(e);var c=e.find("ErrorCode"),a=!1;if(!c.length)return e.find("faultcode").length?!0:!1;c.each(function(){if("0x00000000"!==b(this).text())return a=!0,!1});return a}})(s,"undefined"!==typeof q?q:t);(function(b,k){var h=k||{};k||("undefined"===typeof b.SPAPI?
+b.SPAPI=h:h=b.SPAPI);h.getList=function(){var e=null,c=function(){e.apply(this,arguments)};c.defaults={listName:"",webURL:"",cacheXML:!0,async:!0,completefunc:null};e=function(a){var d=this,f=b.extend({},c.defaults,a);f.webURL?"/"!==f.webURL.charAt(f.webURL.length-1)&&(f.webURL+="/"):f.webURL=d.getSiteUrl();f.webURL+="_vti_bin/Lists.asmx";f.cacheKey=f.webURL+"?List="+f.listname;f.isCached=d.cache.isCached(f.cacheKey);if(f.cacheXML&&f.isCached)return a=d.cache(f.cacheKey),b.isFunction(f.completefunc)&&
+a.then(function(a,d,c){f.completefunc.call(b,c,d)}),a;f.isCached&&d.cache.clear(f.cacheKey);a=b.Deferred(function(a){b.ajax({type:"POST",cache:!1,async:f.async,url:f.webURL,contentType:"text/xml;charset=utf-8",dataType:"xml",data:'<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><GetList xmlns="http://schemas.microsoft.com/sharepoint/soap/"><listName>'+
+f.listName+"</listName></GetList></soap:Body></soap:Envelope>"}).done(function(d,c,e){b.isFunction(f.completefunc)&&f.completefunc.call(b,e,c);a.resolveWith(b,[d,c,e])}).fail(function(){f.cacheXML&&d.cache.clear(f.cacheKey);a.rejectWith(b,arguments)})}).promise();f.cacheXML&&d.cache(f.cacheKey,a);return a};return c}()})(s,"undefined"!==typeof q?q:t);(function(b,k){var h=k||{};k||("undefined"===typeof b.SPAPI?b.SPAPI=h:h=b.SPAPI);h.getListFormCollection=function(){var e=null,c=null,a=function(){null===
+c&&(c=this);return e.apply(this,arguments)};a.defaults={listName:"",webURL:"",cacheXML:!1,async:!0,completefunc:null};e=function(d){var f=b.extend({},a.defaults,d),e;e=b.Deferred(function(a){f.webURL?"/"!==f.webURL.charAt(f.webURL.length-1)&&(f.webURL+="/"):f.webURL=c.getSiteUrl();f.webURL+="_vti_bin/Forms.asmx";f.cacheKey=f.webURL+"?List="+f.listname;f.isCached=c.cache.isCached(f.cacheKey);if(f.cacheXML&&f.isCached)return e=c.cache(f.cacheKey),b.isFunction(f.completefunc)&&e.then(function(a,d){f.completefunc.call(b,
+a,d)}),e;f.isCached&&c.cache.clear(f.cacheKey);b.ajax({type:"POST",cache:!1,async:f.async,url:f.webURL,contentType:"text/xml;charset=utf-8",dataType:"xml",data:'<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><GetFormCollection xmlns="http://schemas.microsoft.com/sharepoint/soap/"><listName>'+f.listName+"</listName></GetFormCollection></soap:Body></soap:Envelope>",complete:function(d,
+e){"error"===e||c.doesMsgHaveError(d)?(f.cacheXML&&c.cache.clear(f.cacheKey),a.rejectWith(b,[d,e])):(b.isFunction(f.completefunc)&&f.completefunc.call(b,d,e),a.resolveWith(b,[d,e]))}})}).promise();f.cacheXML&&c.cache(f.cacheKey,e);return e};return a}()})(s,"undefined"!==typeof q?q:t);(function(b,k){var h=k||{};k||("undefined"===typeof b.SPAPI?b.SPAPI=h:h=b.SPAPI);h.getListItems=function(){var e=null,c=null,a=function(){null===c&&(c=this);return e.apply(this,arguments)};a.defaults={listName:"",webURL:"",
+viewName:"",CAMLViewFields:"",CAMLQuery:"",CAMLRowLimit:"",operation:"GetListItems",cacheXML:!1,async:!0,completefunc:null,changeToken:""};e=function(d){var f=b.extend({},a.defaults,d);f.webURL?"/"!==f.webURL.charAt(f.webURL.length-1)&&(f.webURL+="/"):f.webURL=c.getSiteUrl();f.webURL+="_vti_bin/Lists.asmx";f.cacheKey=f.webURL+"?"+[f.listName,f.viewName,f.CAMLViewFields,f.CAMLQuery,f.CAMLRowLimit,f.operation,f.changeToken].join("|");f.isCached=c.cache.isCached(f.cacheKey);if(f.cacheXML&&f.isCached)return d=
+c.cache(f.cacheKey),b.isFunction(f.completefunc)&&d.then(function(b,a,d){f.completefunc(a,d,b)}),d;f.isCached&&c.cache.clear(f.cacheKey);d=b.Deferred(function(a){b.ajax({type:"POST",cache:!1,async:f.async,url:f.webURL,contentType:"text/xml;charset=utf-8",dataType:"xml",data:'<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><'+f.operation+
+' xmlns="http://schemas.microsoft.com/sharepoint/soap/"><listName>'+f.listName+"</listName><viewName>"+(f.viewName||"")+"</viewName><query>"+(f.CAMLQuery||"<Query></Query>")+"</query><viewFields>"+(f.CAMLViewFields||"<ViewFields></ViewFields>")+"</viewFields><rowLimit>"+(f.CAMLRowLimit||0)+"</rowLimit><queryOptions>"+(f.CAMLQueryOptions||"<QueryOptions></QueryOptions>")+"</queryOptions>"+("GetListItemChangesSinceToken"===f.operation?"<changeToken>"+f.changeToken+"</changeToken>":"")+"</"+f.operation+
+"></soap:Body></soap:Envelope>",complete:function(d,e){var h=[];"error"===e||c.doesMsgHaveError(d)?(b.isFunction(f.completefunc)&&f.completefunc(d,e,h),f.cacheXML&&c.cache.clear(f.cacheKey),a.rejectWith(b,[h,d,e])):(h=c.getNodesFromXml({xDoc:d.responseXML,nodeName:"z:row"}),b.isFunction(f.completefunc)&&f.completefunc(d,e,h),a.resolveWith(b,[h,d,e]))}})}).promise();f.cacheXML&&c.cache(f.cacheKey,d);return d};return a}()})(s,"undefined"!==typeof q?q:t);(function(b,k){var h=k||{};k||("undefined"===
+typeof b.SPAPI?b.SPAPI=h:h=b.SPAPI);h.getNodesFromXml=function(e){var c=b.extend({},{xDoc:null,nodeName:"",asJQuery:!1,cleanAttr:!0},e);e=c.xDoc.getElementsByTagName(c.nodeName);var a,d,f,n;0===e.length&&"z:row"===c.nodeName&&(e=c.xDoc.getElementsByTagName("row"));0===e.length&&"rs:data"===c.nodeName&&(e=c.xDoc.getElementsByTagName("data"));if(!0===c.asJQuery)return b(e);d=[];a=function(b){b=b.attributes;var a={},d,f,e;f=0;for(e=b.length;f<e;f++)d=b[f].name,c.cleanAttr&&-1<d.indexOf("ows_")&&(d=d.replace("ows_",
+"")),a[d]=b[f].value;return a};f=0;for(n=e.length;f<n;f++)d.push(a(e[f]));return d}})(s,"undefined"!==typeof q?q:t);(function(b,k){var h=k||{};k||("undefined"===typeof b.SPAPI?b.SPAPI=h:h=b.SPAPI);h.getSearchPrincipals=function(){var e=null,c=null,a=function(){null===c&&(c=this);return e.apply(this,arguments)};a.defaults={searchText:"",maxResults:50,principalType:"All",webURL:"",cacheXML:!1,async:!0,completefunc:null};e=function(d){var f=b.extend({},a.defaults,d),e;e=b.Deferred(function(a){f.webURL?
+"/"!==f.webURL.charAt(f.webURL.length-1)&&(f.webURL+="/"):f.webURL=c.getSiteUrl();f.webURL+="_vti_bin/People.asmx";f.cacheKey=f.webURL+"?"+[f.searchText,f.maxResults,f.principalType].join("|");f.isCached=c.cache.isCached(f.cacheKey);if(f.cacheXML&&f.isCached)return e=c.cache(f.cacheKey),b.isFunction(f.completefunc)&&e.then(function(a,d){f.completefunc.call(b,a,d)}),e;f.isCached&&c.cache.clear(f.cacheKey);b.ajax({type:"POST",cache:!1,async:f.async,url:f.webURL,contentType:"text/xml;charset=utf-8",
+dataType:"xml",data:'<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><SearchPrincipals xmlns="http://schemas.microsoft.com/sharepoint/soap/"><searchText>'+optinons.searchText+"</searchText><maxResults>"+f.maxResults+"</maxResults><principalType>"+f.principalType+"</principalType></SearchPrincipals></soap:Body></soap:Envelope>",complete:function(d,e){"error"===e||c.doesMsgHaveError(d)?
+(f.cacheXML&&c.cache.clear(f.cacheKey),a.rejectWith(b,[d,e])):(b.isFunction(f.completefunc)&&f.completefunc.call(b,d,e),a.resolveWith(b,[d,e]))}})}).promise();f.cacheXML&&c.cache(f.cacheKey,e);return e};return a}()})(s,"undefined"!==typeof q?q:t);(function(b,k){var h=k||{};k||("undefined"===typeof b.SPAPI?b.SPAPI=h:h=b.SPAPI);h.getSiteListCollection=function(e){var c=null,a=null,d=function(){null===a&&(a=this);return c.apply(this,arguments)};d.defaults={webURL:"",cacheXML:!1,async:!0,completefunc:null,
+filter:null};c=function(f){var c=b.extend({},d.defaults,f),g;g=b.Deferred(function(d){c.webURL?"/"!==c.webURL.charAt(c.webURL.length-1)&&(c.webURL+="/"):c.webURL=a.getSiteUrl();c.webURL+="_vti_bin/SiteData.asmx";c.cacheKey=c.webURL+"?"+(""+c.filter);c.isCached=a.cache.isCached(c.cacheKey);if(c.cacheXML&&c.isCached)return g=a.cache(c.cacheKey),b.isFunction(c.completefunc)&&g.then(function(a,d,f){c.completefunc.call(b,d,f,a)}),g;c.isCached&&a.cache.clear(c.cacheKey);b.ajax({type:"POST",cache:!1,async:c.async,
+url:c.webURL,contentType:"text/xml;charset=utf-8",dataType:"xml",data:'<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><GetListCollection xmlns="http://schemas.microsoft.com/sharepoint/soap/"></GetListCollection></soap:Body></soap:Envelope>',complete:function(f,g){if("error"===g||a.doesMsgHaveError(f))c.cacheXML&&a.cache.clear(c.cacheKey),
+d.rejectWith(b,[null,f,g]);else{var e=b(f.responseXML).find("_sList"),h=[];c.filter&&!b.isArray(c.filter)&&(c.filter=[c.filter]);e.each(function(){var a=b(this),d={};c.filter&&b.isArray(c.filter)&&-1===b.inArray(a.find("Title").text(),c.filter)&&-1===b.inArray(a.find("InternalName").text(),c.filter)||(a.children().each(function(){d[this.nodeName]=b(this).text()}),h.push(d))});b.isFunction(c.completefunc)&&c.completefunc.call(b,f,g,h);d.resolveWith(b,[h,f,g])}}})}).promise();c.cacheXML&&a.cache(c.cacheKey,
+g);return g};return d}()})(s,"undefined"!==typeof q?q:t);(function(b,k){var h=k||{};k||("undefined"===typeof b.SPAPI?b.SPAPI=h:h=b.SPAPI);h.getSiteUrl=function(){var e={};return function(c){var a="",d=!1;c||(c=u.location.href,d=!0);a=c;-1<c.indexOf("?")?a=c.substr(0,c.indexOf("?")):-1<c.indexOf("#")&&(a=c.substr(0,c.indexOf("#")));if(!a)throw"getSiteUrl(): Unable to determine site url from "+c;if(e[a])return e[a];d&&("undefined"!==typeof _spPageContextInfo&&_spPageContextInfo.webServerRelativeUrl&&
+(e[a]=_spPageContextInfo.webServerRelativeUrl),!e[a]&&("undefined"!==typeof L_Menu_BaseUrl&&L_Menu_BaseUrl)&&(e[a]=L_Menu_BaseUrl),e[a]&&0!==e[a].indexOf("http")&&(e[a]=u.location.protocol+"//"+u.location.hostname+(80!==Number(u.location.port)&&0<Number(u.location.port)?u.location.port:"")+e[a]));e[a]||b.ajax({type:"POST",cache:!1,async:!1,url:u.location.protocol+"//"+u.location.host+"/_vti_bin/Webs.asmx",data:"<soap:Envelope xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'><soap:Body><WebUrlFromPageUrl xmlns='http://schemas.microsoft.com/sharepoint/soap/' ><pageUrl>"+
+a+"</pageUrl></WebUrlFromPageUrl></soap:Body></soap:Envelope>",contentType:"text/xml; charset=utf-8",dataType:"xml",success:function(d){e[a]=b(d).find("WebUrlFromPageUrlResult").text()}});e[a]&&"/"!==e[a].charAt(e[a].length-1)&&(e[a]+="/");return e[a]||""}}()})(s,"undefined"!==typeof q?q:t);(function(b,k){var h=k||{};k||("undefined"===typeof b.SPAPI?b.SPAPI=h:h=b.SPAPI);h.resolvePrincipals=function(e){var c=null,a=null,d=function(){null===a&&(a=this);return c.apply(this,arguments)};d.defaults={principalKeys:[],
+principalType:"All",addToUserInfoList:!0,async:!0};c=function(f){f=b.extend({},d.defaults,f);f.webURL?"/"!==f.webURL.charAt(f.webURL.length-1)&&(f.webURL+="/"):f.webURL=a.getSiteUrl();f.webURL+="/_vti_bin/People.asmx";b.isArray(f.principalKeys)||(f.principalKeys=[f.principalKeys]);f.principalXml="";var c=/<string>/i,g,e;g=0;for(e=f.principalKeys.length;g<e;g++)c.test(f.principalKeys[g])?f.principalXml+=f.principalKeys[g]:f.principalXml+="<string>"+f.principalKeys[g]+"</string>";return b.ajax({type:"POST",
+cache:!1,async:f.async,url:f.webURL,contentType:"text/xml;charset=utf-8",beforeSend:function(b){b.setRequestHeader("SOAPAction","http://schemas.microsoft.com/sharepoint/soap/ResolvePrincipals")},dataType:"xml",data:'<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><ResolvePrincipals xmlns="http://schemas.microsoft.com/sharepoint/soap/"><principalKeys>'+f.principalXml+
+"</principalKeys><principalType>"+f.principalType+"</principalType><addToUserInfoList>"+f.addToUserInfoList+"</addToUserInfoList></ResolvePrincipals></soap:Body></soap:Envelope>"})};return d}()})(s,"undefined"!==typeof q?q:t);(function(b,k){var h=k||{};k||("undefined"===typeof b.SPAPI?b.SPAPI=h:h=b.SPAPI);h.searchPrincipals=function(){var e=null,c=null,a=function(){null===c&&(c=this);return e.apply(this,arguments)};a.defaults={searchText:"",maxResults:50,principalType:"All",webURL:"",cacheXML:!1,
+async:!0,completefunc:null};e=function(d){var f=b.extend({},a.defaults,d),e;e=b.Deferred(function(a){f.webURL?"/"!==f.webURL.charAt(f.webURL.length-1)&&(f.webURL+="/"):f.webURL=c.getSiteUrl();f.webURL+="_vti_bin/People.asmx";f.cacheKey=f.webURL+"?"+[f.searchText,f.maxResults,f.principalType].join("|");f.isCached=c.cache.isCached(f.cacheKey);if(f.cacheXML&&f.isCached)return e=c.cache(f.cacheKey),b.isFunction(f.completefunc)&&e.then(function(a,d){f.completefunc.call(b,a,d)}),e;f.isCached&&c.cache.clear(f.cacheKey);
+b.ajax({type:"POST",cache:!1,async:f.async,url:f.webURL,contentType:"text/xml;charset=utf-8",dataType:"xml",data:'<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><SearchPrincipals xmlns="http://schemas.microsoft.com/sharepoint/soap/"><searchText>'+f.searchText+"</searchText><maxResults>"+f.maxResults+"</maxResults><principalType>"+f.principalType+"</principalType></SearchPrincipals></soap:Body></soap:Envelope>",
+complete:function(d,e){"error"===e||c.doesMsgHaveError(d)?(f.cacheXML&&c.cache.clear(f.cacheKey),a.rejectWith(b,[d,e])):(b.isFunction(f.completefunc)&&f.completefunc.call(b,d,e),a.resolveWith(b,[d,e]))}})}).promise();f.cacheXML&&c.cache(f.cacheKey,e);return e};return a}()})(s,"undefined"!==typeof q?q:t);(function(b,k){var h=k||{},e=function(c){function a(b){var d,a,e,l;d=0;for(a=b.length;d<a;d++){l="";for(e in b[d])b[d].hasOwnProperty(e)&&(l='<Field Name="'+e+'">'+b[d][e]+"</Field>");l&&(f.push('<Method ID="'+
+c.counter+'" Cmd="'+c.updateType+'">'+l+"</Method>"),c.counter++)}}function d(d){var a,e,h;a=0;for(e=d.length;a<e;a++)b.isArray(d[a])&&(h='<Field Name="'+d[a][0]+'">'+d[a][1]+"</Field>");h&&(f.push('<Method ID="'+c.counter+'" Cmd="'+c.updateType+'">'+h+"</Method>"),c.counter++)}var f=[],e=typeof c.updates;"string"===e?f.push(c.updates):b.isArray(c.updates)&&c.updates.length&&(e=typeof c.updates[0],"object"===e?a(c.updates):"string"===e?f.push.apply(f,c.updates):b.isArray(c.updates[0])&&d(c.updates));
+c.ID&&c.valuepairs&&(c.valuepairs.push(["ID",c.ID]),d(c.valuepairs));return f};k||("undefined"===typeof b.SPAPI?b.SPAPI=h:h=b.SPAPI);h.updateListItems=function(){var c=null,a=function(){return c.apply(this,arguments)};a.defaults={listName:"",webURL:"",async:!0,completefunc:null,updates:"",updateType:"Update",updateOnError:"Continue"};c=function(d){var f=b.extend({},a.defaults,d,{counter:1});f.webURL?"/"!==f.webURL.charAt(f.webURL.length-1)&&(f.webURL+="/"):f.webURL=this.getSiteUrl();f.updateType=
+f.batchCmd||f.updateType;f._updates=e(f).join("");/<\/Batch>/.test(f._updates)||(f._updates='<Batch OnError="Continue">'+f._updates+"</Batch>");return b.ajax({type:"POST",cache:!1,async:f.async,url:f.webURL+"_vti_bin/Lists.asmx",beforeSend:function(b){b.setRequestHeader("SOAPAction","http://schemas.microsoft.com/sharepoint/soap/UpdateListItems")},contentType:"text/xml;charset=utf-8",dataType:"xml",data:'<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><UpdateListItems xmlns="http://schemas.microsoft.com/sharepoint/soap/"><listName>'+
+f.listName+"</listName><updates>"+f._updates+"</updates></UpdateListItems></soap:Body></soap:Envelope>",complete:function(d,a){b.isFunction(f.completefunc)&&f.completefunc.call(b,d,a)}})};return a}()})(s,"undefined"!==typeof q?q:t);(function(b,k){var h=k||{};k||("undefined"===typeof b.SPAPI?b.SPAPI=h:h=b.SPAPI);h.cache=function(){var b={},c=function(b,d){if(b)return"undefined"===typeof d?c.get(b):c.set(b,d)};c.clear=function(a){delete b[a]};c.clearAll=function(){b={}};c.get=function(a){return b[a]};
+c.set=function(a,d){return b[a]=d};c.isCached=function(a){return b.hasOwnProperty(a)?!0:!1};return c}()})(s,"undefined"!==typeof q?q:t);(function(b){var k={},h=b.SPWidgets.SPAPI;k.initDone=!1;k.maxColumns=20;b.SPWidgets.defaults.board={list:"",field:"",CAMLQuery:"<Query></Query>",CAMLViewFields:"",fieldFilter:null,optionalLabel:"(none)",template:null,webURL:h.getSiteUrl(),showColPicker:!1,colPickerLabel:"Columns",colPickerVisible:[],colPickerCloseLabel:"Close",colPickerApplyLabel:"Apply",colPickerCheckLabel:"Check-Uncheck All",
+colPickerTotalLabel:"Selected.",colPickerMaxColMsg:"Can not exceed 10 columns!",colPickerMinColMsg:"Mininum of 2 required!",onGetListItems:null,onPreUpdate:null,onBoardCreate:null,height:null};b.fn.SPShowBoard=function(e){k.initDone||(k.initDone=!0,""!==k.styleSheet&&b('<style type="text/css">\n\n'+k.styleSheet+"\n\n</style>").prependTo("head"));var c=arguments,a=this;this.each(function(){var d=b(this),f="string"===typeof e,n=d.hasClass("hasSPShowBoard"),g=null,r="",p=null;if(n&&!f)return this;if(f&&
+n&&!d.hasClass("loadingSPShowBoard"))return r=e.toLowerCase(),p=d.data("SPShowBoardOptions"),"refresh"===r?p._getListItems().then(function(){p.showItemsOnBoard({refresh:!0})}):"redraw"===r?p.setBoardColumnHeight():"setvisible"===r?p.setUserDefinedVisibleCol(c[1]):"setheight"===r?(p.height=c[1],p.setBoardColumnHeight()):"getcolumns"===r&&(a=p.getBoardColumnList()),this;if(d.hasClass("loadingSPShowBoard"))return this;g=b.extend({},b.SPWidgets.defaults.board,e,{ele:d,states:[],statesMap:{},tmpltHeader:"",
+tmpltState:"",statesCntr:"",headersCntr:"",listItems:[],initDone:!1,formUrls:null,isStateRequired:!0,maxColumnVisible:10,showNumberOfColumns:10,getBoardStates:function(){return b.Deferred(function(a){h.getList({listName:g.list,cacheXML:!0,async:!1,webURL:g.webURL,completefunc:function(f,c){var e=b(f.responseXML),n=e.find("Fields Field[StaticName='"+g.field+"']");if(!n.length){n=e.find("Fields Field[DisplayName='"+g.field+"']");if(!n.length){a.rejectWith(d,["Field ("+g.field+") not found in list definition!",
+f,c]);return}g._origField=g.field;g.field=n.attr("StaticName")}"FALSE"===n.attr("Required")&&(g.isStateRequired=!1);switch(n.attr("Type").toLowerCase()){case "choice":g.isStateRequired||(g.states.push({type:"choice",title:g.optionalLabel,name:g.optionalLabel}),g.statesMap[""]=g.states[g.states.length-1]);g.fieldFilter&&(g.fieldFilter=g.fieldFilter.split(/\,/));n.find("CHOICES CHOICE").each(function(d,a){var f=b(this).text();if(!g.fieldFilter||b.grep(g.fieldFilter,function(b){return b===f}).length){if(d>=
+k.maxColumns){try{console.log("SPWIDGETS:BOARD:Warning: Can only build a max of "+k.maxColumns+" columns!")}catch(c){}return!1}g.states.push({type:"choice",title:f,name:f});g.statesMap[f]=g.states[g.states.length-1]}});a.resolveWith(g,[f,c]);break;case "lookup":g.fieldFilter||(g.fieldFilter="<Query></Query>");h.getListItems({listName:n.attr("List"),async:!0,cacheXML:!0,CAMLQuery:g.fieldFilter,webURL:g.webURL,CAMLRowLimit:k.maxColumns,CAMLViewFields:'<ViewFields><FieldRef Name="'+n.attr("ShowField")+
+'" /></ViewFields>',completefunc:function(f,c){if("error"===c)a.rejectWith(d,["Communications Error!",f,c]);else{var e=b(f.responseXML);e.SPMsgHasError()?a.rejectWith(d,[e.SPGetMsgError(),f,c]):(g.isStateRequired||(g.states.push({type:"lookup",title:g.optionalLabel,name:""}),g.statesMap[""]=g.states[g.states.length-1]),e=h.getNodesFromXml({xDoc:f.responseXML,node:"z:row",asJQuery:!0}),e.each(function(d,a){if(d>=k.maxColumns){try{console.log("SPWIDGETS:BOARD:Warning: Can only build a max of "+k.maxColumns+
+" columns!")}catch(f){}return!1}var c=b(this),e=c.attr("ows_ID"),c=c.attr("ows_"+n.attr("ShowField")),e=e+";#"+c;g.states.push({type:"lookup",title:c,name:e});g.statesMap[e]=g.states[g.states.length-1]}),a.resolveWith(g,[f,c]))}}});break;default:a.rejectWith(d,["Field ("+g.field+") Type ("+n.attr("Type")+") is not supported!",f,c])}}})}).promise()},_getListItems:function(){return b.Deferred(function(a){function f(c){b.isFunction(g.onGetListItems)&&g.onGetListItems.call(d,g.listItems,c);a.resolveWith(d,
+[g.listItems])}b.isFunction(g.CAMLQuery)?g.CAMLQuery.call(d,function(a){b.isArray(a)&&(g.listItems=a,f(g.CAMLQuery))},e):h.getListItems({listName:g.list,async:!0,CAMLQuery:g.CAMLQuery,CAMLRowLimit:0,CAMLViewFields:g.CAMLViewFields,webURL:g.webURL,completefunc:function(c,e,h){if("error"===e)a.rejectWith(d,["Communications Error!",c,e]);else{var k=b(c.responseXML);k.SPMsgHasError()?a.rejectWith(d,[k.SPGetMsgError(),c,e]):(g.listItems=h,f(k))}}})}).promise()},getBoardItemDataObject:function(a){var d=
+null,c,f,e;if(a)for(a=String(a),c=0,f=g.listItems.length;c<f;c++)e=g.listItems[c].ID,b.isFunction(e)&&(e=g.listItems[c].ID()),e=String(e),a===e&&(d=g.listItems[c],c=f+f);return d},showItemsOnBoard:function(a){function c(a,e){var l="",h=null,n="";b.isFunction(g.template)?(l=g.template.call(d,a,e))&&(l=String(l)):l=b.SPWidgets.fillTemplate(g.template,m);e!==t&&""!==l?e.html(l):""!==l&&(h=a.ID,b.isFunction(a.ID)&&(h=a.ID()),k[r]===t&&(k[r]=""),g.initDone&&f.refresh&&(n+=" spwidget-temp"),k[r]+='<div class="spwidget-board-state-item ui-state-default ui-corner-all'+
+n+'" data-id="'+h+'">'+l+"</div>");return l}var f=b.extend({},{rows:g.listItems,refresh:!1,doBoardInsert:!0},a);a=[];var e=[],h=[],k={},n=null,r=null,p=n=null,m=null,q;if(!f.refresh)for(p=0,q=g.states.length;p<q;p++)g.states[p].headerTotalEle.html("0"),g.states[p].dataEle.empty();p=0;for(q=f.rows.length;p<q;p++)m=f.rows[p],r=m[g.field]||"",n=m.ID,b.isFunction(r)&&(r=m[g.field]()),b.isFunction(n)&&(n=n()),g.statesMap[r]&&(!1===f.refresh?(g.initDone&&a.push(m),c(m)):(n=g.statesCntr.find("div[data-id='"+
+n+"']"),n.length?(n.addClass("spwidget-temp"),n.closest("div.spwidget-board-state").data("boardstate")!==r&&(n.appendTo(g.statesMap[r].dataEle),h.push(m)),c(m,n)):(g.initDone&&a.push(m),c(m))));if(f.doBoardInsert){for(p in k)k.hasOwnProperty(p)&&""!==k[p]&&g.statesMap[p].dataEle.append(k[p]);b.pt.addHoverEffect(d.find(".spwidget-board-state-item"))}g.initDone&&f.refresh&&g.statesCntr.find("div.spwidget-board-state-item").not("div.spwidget-temp").each(function(){e.push(g.getBoardItemDataObject(b(this).data("id")));
+b(this).remove()}).end().removeClass("spwidget-temp");g.initDone&&(g.statesCntr.find("div.spwidget-board-state").sortable("refresh").end().disableSelection(),p=g.getEventObject(),a.length&&(p.itemsModified.length=0,p.itemsModified.push(a),d.trigger("spwidget:boarditemadd",[d,b.extend({},p)])),e.length&&(p.itemsModified.length=0,p.itemsModified.push(e),d.trigger("spwidget:boarditemremove",[d,b.extend({},p)])),p.itemsModified.length=0,p.itemsModified.push.apply(p.itemsModified,a),p.itemsModified.push.apply(p.itemsModified,
+e),p.itemsModified.push.apply(p.itemsModified,h),p.itemsModified.length&&d.trigger("spwidget:boardchange",[d,p]));g.updBoardHeaders();g.setBoardColumnHeight();return k},updBoardHeaders:function(a){var d;if(!b.extend({},{state:null},a).state)for(a=0,d=g.states.length;a<d;a++)g.states[a].headerTotalEle.html(g.states[a].dataEle.children().length)},getEventObject:function(a){a||(a=g.statesCntr.find("div.spwidget-board-state-item:first"));a=b(a);a={stateTotals:{},itemTotal:0,currentState:a.closest("div.spwidget-board-state").data("boardstate"),
+itemObj:g.getBoardItemDataObject(a.data("id"))||{},itemsModified:[]};var d,c;d=0;for(c=g.states.length;d<c;d++)a.itemTotal+=a.stateTotals[g.states[d].name]=Number(g.states[d].headerTotalEle.text());return a},getListFormUrl:function(a){function d(){h.getListFormCollection({listName:g.list,webURL:g.webURL,cacheXML:!0,async:!1,completefunc:function(a,d){b(a.responseXML).find("Form").each(function(){var a=b(this);g.formUrls[String(a.attr("Type")).toLowerCase()]=g.webURL+"/"+a.attr("Url")})}})}a=String(a).toLowerCase();
+null===g.formUrls&&(g.formUrls={},d());return g.formUrls[a]||""},setUserDefinedVisibleCol:function(a){function d(a){var c=!1;b.each(g.states,function(b,d){if(d.title===a||d.name===a)return c=!0,!1});return c}var c=0,f=!1;if(a){if(!b.isArray(a)||!a.length){if(!b.isArray(a)&&"all"!==String(a).toLowerCase())return;f=!0;a=[]}2>a.length||(f||(c=0,b.each(a,function(a,b){d(b)&&c++;if(2===c)return!1})),c=0,b.each(g.states,function(d,f){-1<b.inArray(f.title,a)||-1<b.inArray(f.name,a)?(c++,!1===f.isVisible&&
+(f.isVisible=!0,f.dataEle.css("display",""),f.headerEle.css("display",""))):(f.isVisible=!1,f.dataEle.css("display","none"),f.headerEle.css("display","none"));if(c>=g.maxColumnVisible)return!1}),g.setBoardColumnClass(c),g.setBoardColumnHeight(),g.triggerBoardColumnChangeEvent())}},setBoardColumnClass:function(a){var d=g.headersCntr.add(g.statesCntr);a=parseInt(a);if(!a||2>a)a=0,b.each(g.states,function(b,d){d.isVisible&&a++});if(g.showNumberOfColumns===a)return g;d.addClass("spwidget-states-"+a);
+g.showNumberOfColumns&&d.removeClass("spwidget-states-"+g.showNumberOfColumns);g.showNumberOfColumns=a;return g},triggerBoardColumnChangeEvent:function(){var a=[];g.initDone&&(b.each(g.statesMap,function(b,d){d.isVisible&&a.push(d.title)}),g.ele.trigger("spwidget:boardColumnChange",[g.ele,a]))},setupColumnPicker:function(){var a=d.find(".spwidget-board-column-list-cntr"),c=a.find("div.spwidget-board-column-list"),f=a.children("div.ui-state-default:last"),e={$totalCntr:a.find("span.spwidget-board-column-total"),
+setTotalSelected:function(){var a=e.getSelected().length;e.$totalCntr.html(a);return a},getSelected:function(){return c.find("a.ui-state-highlight")},showMessage:function(a){b('<div class="spwidget-board-msg ui-state-error ui-corner-all">'+a+"</div>").appendTo(f).fadeOut(8E3,function(){b(this).remove()})},setSelected:function(){var a=c.find("a");b.each(g.states,function(b,d){var c=a.filter("[data-board_col_index='"+b+"']");d.isVisible?e.selectColumn(c,!1):e.selectColumn(c,!0)});e.setTotalSelected()},
+selectColumn:function(a,d){b(a).each(function(){var a=b(this),c=a.find(".ui-icon");a.hasClass("ui-state-highlight")||d?!1!==d&&(c.removeClass("ui-icon-check"),a.removeClass("ui-state-highlight")):(c.addClass("ui-icon-check"),a.addClass("ui-state-highlight"))});return a},setVisibleColumns:function(a){a||(a=e.getSelected());var d=a.length;b.each(g.states,function(b,d){a.filter("[data-board_col_index='"+b+"']").length?!1===d.isVisible&&(d.isVisible=!0,d.dataEle.css("display",""),d.headerEle.css("display",
+"")):(d.isVisible=!1,d.dataEle.css("display","none"),d.headerEle.css("display","none"))});g.setBoardColumnClass(d);g.setBoardColumnHeight()},setUserDefinedVisibleCol:function(a){var d=0,f="";if(!b.isArray(a)||!a.length){if(!b.isArray(a)&&"all"!==String(a).toLowerCase())return;a=[];b.each(g.states,function(b,d){a.push(d.title)})}b.each(a,function(a,c){b.each(g.states,function(a,b){if(b.title===c)return d++,1<d&&(f+=","),f+="a[data-board_col_name='"+b.name+"']",!1});if(d>=g.maxColumnVisible)return!1});
+2<=d&&(e.setVisibleColumns(c.find(f)),e.triggerEvent())}};e.triggerEvent=g.triggerBoardColumnChangeEvent;a.find("button[name='apply']").button({label:g.colPickerApplyLabel,icons:{secondary:"ui-icon-circle-check"}}).on("click",function(b){b=e.getSelected();var d=b.length;d>g.maxColumnVisible?e.showMessage(g.colPickerMaxColMsg):2>d?e.showMessage(g.colPickerMinColMsg):(a.hide(),e.setVisibleColumns(b),e.triggerEvent())});a.find("button[name='check']").attr("title",g.colPickerCheckLabel).button({text:!1,
+icons:{primary:"ui-icon-radio-off"}}).on("click",function(a){a=e.getSelected();a.length?e.selectColumn(a,!0):e.selectColumn(c.find("a"));e.setTotalSelected()});a.find("button[name='close']").attr("title",g.colPickerCloseLabel).button({text:!1,icons:{primary:"ui-icon-circle-close"}}).on("click",function(b){a.hide()});d.find("div.spwidget-board-settings").css("display","").find("div.spwidget-board-settings-columns").each(function(){var d=b(this);d.button({label:g.colPickerLabel,icons:{secondary:"ui-icon-triangle-1-s"}}).on("click.SPWidgets",
+function(){a.is(":visible")?a.hide():(e.setSelected(),a.show().position({my:"left top",at:"left bottom",of:d}))});return!1});c.each(function(){var a=b(this),d="";b.each(g.states,function(a,b){d+='<a href="javascript:" data-board_col_index="'+a+'" data-board_col_name="'+b.name+'"><span class="ui-icon ui-icon-minus"></span><span>'+b.title+"</span></a>"});a.html(d);return!1}).on("click","a",function(){e.selectColumn(this);e.setTotalSelected()});a.find("span.spwidget-board-column-total-label").html(g.colPickerTotalLabel)},
+setBoardColumnHeight:function(){g.headersCntr.is(":visible")&&b.SPWidgets.makeSameHeight(g.headersCntr.find("div.spwidget-board-state:visible"),0,"min-height");g.height?g.statesCntr.find("div.spwidget-board-state:visible").css({height:g.height,"min-height":""}):g.statesCntr.is(":visible")&&b.SPWidgets.makeSameHeight(g.statesCntr.find("div.spwidget-board-state:visible").css("height",""),20,"min-height")},getBoardColumnList:function(){var a=[],b,d;b=0;for(d=g.states.length;b<d;b++)a.push({name:g.states[b].name,
+title:g.states[b].title,isVisible:g.states[b].isVisible});return a}});if(!g.list||!g.field)return d.html("<div>SPWidgets:Board [ERROR] Missing required input parameters!</div>"),this;d.addClass("loadingSPShowBoard").data("SPShowBoardOptions",g);g.getBoardStates().then(function(){""===g.CAMLViewFields?g.CAMLViewFields='<ViewFields><FieldRef Name="ID" /><FieldRef Name="Title" /><FieldRef Name="'+g.field+'" /></ViewFields>':0>g.CAMLViewFields.indexOf(g.field)&&(g.CAMLViewFields=g.CAMLViewFields.replace(/\<\/ViewFields\>/i,
+'<FieldRef Name="'+g.field+'" /></ViewFields>'));d.html(b(k.htmlTemplate).filter("div.spwidget-board"));g.tmpltHeader=b("<div/>").append(d.find("div.spwidget-board-headers-cntr div.spwidget-board-state").clone()).html();g.tmpltState=b("<div/>").append(d.find("div.spwidget-board-states-cntr div.spwidget-board-state")).html();g.states.length<=g.maxColumnVisible&&(g.showNumberOfColumns=g.states.length);g.statesCntr=d.find("div.spwidget-board-states-cntr").addClass("spwidget-states-"+g.showNumberOfColumns).empty();
+g.headersCntr=d.find("div.spwidget-board-headers-cntr").addClass("spwidget-states-"+g.showNumberOfColumns).empty();b.each(g.states,function(a,d){d.headerEle=b(g.tmpltHeader).appendTo(g.headersCntr).attr("data-boardstate",d.name).attr("data-boardindex",a).find(".spwidget-board-header-title").html(d.title).end();d.dataEle=b(g.tmpltState).appendTo(g.statesCntr).attr("data-boardindex",a).attr("data-boardstate",d.name);d.headerTotalEle=d.headerEle.find("span.spwidget-state-item-total");d.isVisible=!0;
+a>g.maxColumnVisible-1&&(d.headerEle.css("display","none"),d.dataEle.css("display","none"),d.isVisible=!1)});b(g.headersCntr,g.statesCntr).append('<div style="clear:both;"></div>');!0===g.showColPicker&&g.setupColumnPicker();b.isArray(g.colPickerVisible)&&g.colPickerVisible.length&&g.setUserDefinedVisibleCol(g.colPickerVisible);d.on("sortreceive sortremove",function(a,d){g.updBoardHeaders();b(d.item).removeClass("ui-state-hover")}).on("sortreceive",function(a,c){var f=g.getEventObject(c.item),e=b.Deferred(),
+k="",k=b.isFunction(f.itemObj.ID)?f.itemObj.ID():f.itemObj.ID;f.updates=[];f.updatePromise=e.promise();f.updates.push([g.field,f.currentState]);if(b.isFunction(g.onPreUpdate)&&!0===g.onPreUpdate.call(c.item,a,c.item,f)||!f.updates.length)return this;h.updateListItems({listName:g.list,async:!0,ID:k,valuepairs:f.updates,webURL:g.webURL,completefunc:function(g,k){if("error"===k)e.rejectWith(d,["Communications Error!",g,k]);else{var n=b(g.responseXML),r=null;n.SPMsgHasError()?e.rejectWith(d,[n.SPGetMsgError(),
+g,k]):(r=h.getNodesFromXml({xDoc:g.responseXML,nodeName:"z:row"}),b(a.target).trigger("spwidget:boardchange",[c.item,f]),e.resolveWith(a.target,[r[0],f.itemObj,g]))}}})}).on("click","a.spwidgets-board-action",function(a){a=b(a.currentTarget);var d=String(a.data("spwidgets_board_action")).toLowerCase(),f="",c=b.pt.getEscapedUrl(x.location.href);switch(d){case "edit-item":f=g.getListFormUrl("EditForm");break;case "view-item":f=g.getListFormUrl("DisplayForm")}x.location.href=f+"?ID="+a.data("spwidgets_id")+
+"&Source="+c;return this});null===g.template&&(g.template=b(k.htmlTemplate).filter("div.spwidget-item-template"));g._getListItems().then(function(){g.showItemsOnBoard();g.statesCntr.find("div.spwidget-board-state").each(function(){var a=b(this);a.sortable({connectWith:a.siblings(),containment:d,cursor:"move",tolerance:"pointer",opacity:".80",placeholder:"ui-state-highlight spwidget-board-placeholder",forcePlaceholderSize:!0,remove:function(a,d){g.setBoardColumnHeight()}})});g.statesCntr.disableSelection();
+g.initDone=!0;g.setBoardColumnHeight();d.addClass("hasSPShowBoard").removeClass("loadingSPShowBoard");b.isFunction(g.onBoardCreate)&&g.onBoardCreate.call(d,g.getEventObject());b(d).trigger("spwidget:boardcreate",[d,g.getEventObject()])})}).fail(function(a,b,f){d.append('<div class="ui-state-error"><p>'+a+"</p></div>")});return this});return a};k.styleSheet="/** \n * Stylesheet for the Board widget\n * \n * BUILD: August 23, 2014 - 10:14 AM\n */\ndiv.spwidget-board {\n    width: 100%;\n    position: relative;\n}\n\ndiv.spwidget-board div.spwidget-board-headers,\ndiv.spwidget-board div.spwidget-board-headers-cntr,\ndiv.spwidget-board div.spwidget-board-states-cntr, \ndiv.spwidget-board div.spwidget-board-states {\n    width: 100%;\n}\n\ndiv.spwidget-board div.spwidget-board-state {\n    width: 49%;\n    float: left;\n    margin: 0% .1%;\n    padding: .2%;\n    overflow: auto;\n}\n/* Board Individual Headers */\ndiv.spwidget-board div.spwidget-board-headers-cntr div.spwidget-board-state {\n    font-weight: bold;\n    font-size: 1.1em;\n    overflow: hidden;\n    word-wrap: break-word;\n}\n/* Board Header Title */\ndiv.spwidget-board div.spwidget-board-headers-cntr .spwidget-board-header-title,\ndiv.spwidget-board div.spwidget-board-headers-cntr .spwidget-state-item-stat-cntr {\n    display: inline-block\n}\n/* Board Header Stats container*/\ndiv.spwidget-board div.spwidget-board-headers-cntr .spwidget-state-item-stat-cntr {\n    font-size: .8em;\n    float: right;\n}\ndiv.spwidget-board div.spwidget-board-headers-cntr .spwidget-item-stat {\n    display: inline-block;\n    min-width: 2em;\n    padding: 0 0.2em;\n    text-align: center;\n}\n\n/* Board column content */\ndiv.spwidget-board div.spwidget-board-states div.spwidget-board-state {\n    margin-bottom: 1em;\n    min-height: 10em;\n}\n\ndiv.spwidget-board div.spwidget-board-state div.spwidget-board-state-item {\n    padding: .2em;\n    margin: .5em .2em;\n    font-weight: normal;\n    cursor: move;\n    overflow: auto;\n}\ndiv.spwidget-board div.spwidget-board-state-item div.spwidget-board-item-actions{\n    margin-top: .2em;\n    padding: .2em .5em;\n    overflow: hidden;\n}\ndiv.spwidget-board .spwidget-board-placeholder {\n    height: 3em;\n}\n\n/** Setting container */\ndiv.spwidget-board-settings {\n    font-size: .8em;\n    margin: .2em;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list-cntr {\n    z-index: 5;\n    position: absolute;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list-cntr > div {\n    padding: .2em;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list-cntr > div:first-child,\ndiv.spwidget-board-settings div.spwidget-board-column-list-cntr > div:last-child {\n    text-align: right;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list {\n    width: 20em;\n    height: 17em;\n    overflow: auto;\n    position: relative\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list-cntr .spwidget-board-msg {\n    position: absolute;\n    top: 1px;\n    left: 1px;\n    padding: .2em;\n}\ndiv.spwidget-board-settings div.ui-state-default {\n    position: relative;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list > a {\n    display: block;\n    margin: .2em;\n    padding: .2em;\n}\ndiv.spwidget-board-settings div.spwidget-board-column-list > a > span.ui-icon {\n    display: inline-block;\n}\n\n/* Number of Columns (96 % #columns)\n * Currently support 10 columns. \n */\ndiv.spwidget-board .spwidget-states-3 div.spwidget-board-state {\n    width: 32.4%;\n}\ndiv.spwidget-board .spwidget-states-4 div.spwidget-board-state {\n    width: 24%;\n}\ndiv.spwidget-board .spwidget-states-5 div.spwidget-board-state {\n    width: 19.1%;\n}\ndiv.spwidget-board .spwidget-states-6 div.spwidget-board-state {\n    width: 15.8%;\n}\ndiv.spwidget-board .spwidget-states-7 div.spwidget-board-state {\n    width: 13.4%;\n}\ndiv.spwidget-board .spwidget-states-8 div.spwidget-board-state {\n    width: 11.6%;\n}\ndiv.spwidget-board .spwidget-states-9 div.spwidget-board-state {\n    width: 10.2%;\n}\ndiv.spwidget-board .spwidget-states-10 div.spwidget-board-state {\n    width: 9.1%;\n}\n";
 k.htmlTemplate='<div class="spwidget-board">\n    <div class="spwidget-board-settings" style="display:none;">\n        <div class=\'spwidget-board-settings-columns\'>Columns</div>\n        <div class="spwidget-board-column-list-cntr ui-widget-content ui-corner-all" style="display: none">\n            <div class="ui-state-default">\n                <span>\n                    <span class="spwidget-board-column-total"></span> \n                    <span class="spwidget-board-column-total-label">Selected.</span>\n                </span>\n                <button type="button" name="check" title="Check-Uncheck All">Check</button>\n                <button type="button" name="close" title="Close">Close</button>\n            </div>\n            <div class="spwidget-board-column-list">\n            </div>\n            <div class="ui-state-default">\n                <button type="button" name="apply">Apply</button>\n            </div>\n        </div>\n    </div>\n    <div class="spwidget-board-headers">\n        <div class="spwidget-board-headers-cntr">\n            <div class="spwidget-board-state ui-widget-content ui-corner-top">\n                <span class="spwidget-board-header-title"></span>\n                <span class="spwidget-state-item-stat-cntr">\n                    <span class="spwidget-item-stat ui-widget-content ui-corner-all spwidget-state-item-total">0</span>\n                </span>\n            </div>\n            <div style="clear:both;"></div>\n        </div>\n    </div>\n    <div style="clear:both;"></div>\n    <div class="spwidget-board-states">\n        <div class="spwidget-board-states-cntr">\n            <div class="spwidget-board-state ui-widget-content ui-corner-bottom"></div>\n            <div style="clear:both;"></div>\n        </div>\n    </div>\n    <div style="clear:both;"></div>\n</div>\n<div class="spwidget-item-template">\n    <div>\n        <div>#{{ID}}: {{Title}}</div>\n        <div class="ui-state-active ui-corner-all spwidget-board-item-actions">\n            <a class="spwidgets-board-action" href="javascript:" title="View Item" data-spwidgets_id="{{ID}}" data-spwidgets_board_action="view-item"><img src="/_layouts/images/icgen.gif" border="0"/></a>\n            <a class="spwidgets-board-action" href="javascript:" title="Edit Item" data-spwidgets_id="{{ID}}" data-spwidgets_board_action="edit-item"><img src="/_layouts/images/CMSEditSourceDoc.GIF" border="0"/></a>\n        </div>\n    </div>\n</div>\n'})(s);
-(function(c){var k={_islookupFieldCssDone:!1,_isLookupbodyEventDone:!1};c.SPWidgets.defaults.LookupField={list:"",allowMultiples:!0,inputLabel:"",inputPlaceholder:"Type and Pick",readOnly:!1,exactMatch:!0,uiContainer:null,selectFields:["Title"],filter:"",filterFields:["Title"],filterOrderBy:"",template:'<div>{{Title}} <span class="spwidgets-item-remove">[x]</span></div>',listTemplate:"{{Title}}",listHeight:0,onItemAdd:null,onItemRemove:null,onReady:null,msgNoItems:"",maxResults:50,minLength:2,hideInput:!0,
-padDelimeter:!1,showSelector:!1};c.fn.SPLookupField=function(e){k._islookupFieldCssDone||(k._islookupFieldCssDone=!0,c('<style type="text/css">\n\n'+k.styleSheet+"\n\n</style>").prependTo("head"));var b=arguments;this.each(function(){var d=c(this);if(!d.is("input")&&!d.is("textarea")||d.hasClass("hasLookupSPField")){if("string"===typeof e&&d.is("input")){var a=d.data("SPWidgetLookupFieldUI").data("SPWidgetLookupFieldOpt");if("method"===e.toLowerCase()){var d=String(b[1]||"").toLowerCase(),g=b[2];
-"clear"===d?(c.isArray(g)||(g=g?[g]:[]),g.length?function(){var b=c();c.each(g,function(c,d){b=b.add(a._selectedItemsCntr.find("div.spwidgets-item-id-"+d))});k.removeItem(a,b)}():k.removeItem(a,a._selectedItemsCntr.find("div.spwidgets-item"))):"add"===d&&k.addItem(a,g)}}return this}a=c.extend({},c.SPWidgets.defaults.LookupField,e,{_ele:d.css("display","none").addClass("hasLookupSPField")});a.showSelectedItems=function(b,d){var e=a._selectedItemsCntr.css("display",""),g=[],l=!1;e.find("div.spwidgets-item").length&&
-!1!==a.allowMultiples||e.empty();c.isArray(b)?g=b:g.push(b);c.each(g,function(b,f){if(!e.find("div.spwidgets-item-id-"+f.ID).length){var g=c('<div class="spwidgets-item spwidgets-item-id-'+f.ID+'" data-spid="'+f.ID+'" style="display:none">'+c.SPWidgets.fillTemplate(a.template,f)+"</div>").appendTo(e).find(".spwidgets-item-remove").on("click.SPWidgets",function(c){k.removeItem(a,this)}).end();c.isFunction(a.onItemAdd)&&!0!==d&&a.onItemAdd.call(a._ele,g,f,a._cntr);0<e.find("div.spwidgets-item-id-"+
-f.ID).length&&(l=!0,g.fadeIn("slow").promise().then(function(){c(this).css("display","")}),!0!==d&&a.storeItemIDs(f.ID,a.allowMultiples),!1===a.allowMultiples&&!0===a.hideInput&&a._lookupInputEleCntr.css("display","none"))}});a.readOnly&&a._cntr.find(".spwidgets-item-remove").remove();l&&a._ele.trigger("change")};a.storeItemIDs=function(b,d){var e=c.trim(a._ele.val()),g=!1;c.isArray(b)||(b=[b]);!0!==d&&(e="");c.each(b,function(c,b){b&&(1>e.length&&(!0===a.padDelimeter&&!g)&&(e+=";#",g=!0),0<e.length&&
-(e+=";#"),e+=b+";#")});a._ele.val(e)};a.showCurrentInputSelection=function(b){return c.Deferred(function(d){var e=c.extend({},{async:!0},b),g=c.SPWidgets.parseLookupFieldValue(a._ele.val());g.length?c().SPServices({operation:"GetListItems",async:e.async,listName:a.list,CAMLQuery:"<Query><Where>"+c.SPWidgets.getCamlLogical({type:"OR",values:g,onEachValue:function(a){var c="";a.id&&(c="<Eq><FieldRef Name='ID'/><Value Type='Counter'>"+a.id+"</Value></Eq>");return c}})+"</Where></Query>",CAMLViewFields:"<ViewFields>"+
-a._selectFields+"</ViewFields>",CAMLRowLimit:0,completefunc:function(b,f){var e=c(b.responseXML).SPFilterNode("z:row").SPXmlToJson({includeAllAttrs:!0,removeOws:!0});a.addToAutocompleteCache(e);a.showSelectedItems(e,!0);d.resolveWith(a,[b,f])}}):d.resolveWith(a,[null,null])}).promise()};a.getItemObjectFromCache=function(b){var d=null;c.each(a._autocompleteCache,function(a,e){c.each(e,function(a,c){if(c.ID==b)return d=c,!1});if(null!==d)return!1});return d};a.addToAutocompleteCache=function(b){c.isArray(b)||
-(b=[b]);c.each(b,function(c,b){a._autocompleteCache[b.ID]||(a._autocompleteCache[b.ID]=[]);a._autocompleteCache[b.ID].push(b)})};a._cntr=c(k.htmlTemplate).find(".spwidgets-lookup-cntr").clone(1);null===a.uiContainer?a._cntr.insertAfter(a._ele):a._cntr.appendTo(c(a.uiContainer));a._selectedItemsCntr=a._cntr.find("div.spwidgets-lookup-selected");a._lookupInputEleCntr=a._cntr.find("div.spwidgets-lookup-input");a._lookupInputEle=a._lookupInputEleCntr.find("input[name='spwidgetLookupInput']");a._ignoreKeywordsRegEx=
-/^(of|and|a|an|to|by|the|or)$/i;a._cntr.data("SPWidgetLookupFieldOpt",a);a._ele.data("SPWidgetLookupFieldUI",a._cntr);a.showSelector?(a._selectorCntr=a._cntr.find("div.spwidget-lookup-selector-cntr"),a._queryInitDone=!1,a._cntr.find(".spwidget-lookup-selector-showhide").on("click",function(c){a._selectorCntr.is(":visible")?a._selectorCntr.css("display","none"):(a._selectorCntr.css("display","block").position({my:"left top",at:"left bottom",of:a._lookupInputEle}),a._queryInitDone||(a._queryInitDone=
-!0,k.doSelectorDataInit(a)))}),a._selectorCntr.find("button[name='close']").button({text:!1,icons:{primary:"ui-icon-circle-close"}}).click(function(){a._selectorCntr.css("display","none")}),a._lookupInputEle.on("focus",function(c){a._selectorCntr.is(":visible")&&a._selectorCntr.css("display","none")})):a._cntr.find(".spwidget-lookup-selector-showhide,.spwidget-lookup-selector-cntr").remove();a.inputLabel?a._cntr.find("div.spwidgets-lookup-input label").empty().append(a.inputLabel):a._cntr.find("div.spwidgets-lookup-input label").remove();
-a.inputPlaceholder&&a._lookupInputEleCntr.find("input").attr("placeholder",a.inputPlaceholder);!0===a.readOnly&&(a._lookupInputEleCntr.css("display","none"),a._cntr.find("div.spwidget-lookup").addClass("spwidget-lookup-readyonly"));a._selectFields="";c.each(a.selectFields,function(c,b){a._selectFields+="<FieldRef Name='"+b+"'/>"});a._templateTokens=String(a.template).match(/(\$\{.*?\})/g);null==a._templateTokens&&(a._templateTokens=[]);c.each(a._templateTokens,function(c,b){a._templateTokens[c]=b.replace(/[\$\{\}]/g,
-"")});var l=a._autocompleteCache={};a._cntr.find("div.spwidgets-lookup-input input").autocomplete({minLength:2,appendTo:a._cntr,open:function(b,d){c(this).autocomplete("widget").each(function(){0<a.listHeight&&c(this).css("height",a.listHeight+"px");return!1})},source:function(b,d){b.term=c.trim(b.term);var e=String(c.trim(b.term)).toUpperCase();if(e in l)d(l[e]);else{l[e]=[];var g=[],k=String(b.term);if(null===k.match(/\D/)&&null!==k.match(/\d/))g.push("<Eq><FieldRef Name='ID'/><Value Type='Counter'>"+
-k+"</Value></Eq>");else{k=[b.term];a.exactMatch||(k=String(b.term).split(/ /));for(var h=0,r=a.filterFields.length;h<r;h++){for(var u=[],v=0,y=k.length;v<y;v++)a._ignoreKeywordsRegEx.test(k[v])||u.push("<Contains><FieldRef Name='"+a.filterFields[h]+"'/><Value Type='Text'>"+k[v]+"</Value></Contains>");g.push(c.SPWidgets.getCamlLogical({values:u,type:"AND"}))}}g=c.SPWidgets.getCamlLogical({values:g,type:"OR"});a.filter&&(g=c.SPWidgets.getCamlLogical({values:[g,a.filter],type:"AND"}));c().SPServices({operation:"GetListItems",
-listName:a.list,async:!0,CAMLQuery:"<Query><Where>"+g+"</Where>"+a.filterOrderBy+"</Query>",CAMLRowLimit:a.maxResults,CAMLViewFields:"<ViewFields>"+a._selectFields+"</ViewFields>",completefunc:function(b,f){c(b.responseXML).SPFilterNode("z:row").each(function(){var b=c(this).SPXmlToJson({includeAllAttrs:!0})[0];b.value="";b.label=c.SPWidgets.fillTemplate(a.listTemplate,b);l[e].push(b)});d(l[e])}})}},select:function(c,b){a.showSelectedItems(b.item)}}).on("keyup.SPWidgets",function(b){if(13==b.which){var d=
-c(b.target).val();d&&String(d).length<a.minLength&&c(b.target).autocomplete("search",d+"    ")}});a._ele.val()?a.showCurrentInputSelection().then(function(b,d){c.isFunction(a.onReady)&&a.onReady.call(a._ele,a._cntr)}):c.isFunction(a.onReady)&&a.onReady.call(a._ele,a._cntr);return this});return this};k.removeItem=function(e,b){var d=c(b).closest("div.spwidgets-item"),a=e._selectedItemsCntr,g=[];if(c.isFunction(e.onItemRemove)){d.each(function(){g.push(e.getItemObjectFromCache(c(this).data("spid")))});
-if(!1===e.onItemRemove.call(e._ele,d,g,e._cntr))return k;g=[]}d.fadeOut("fast").promise().then(function(){d.remove();!e.msgNoItems&&(!1===e.allowMultiples||!0===e.allowMultiples&&1>a.find("div.spwidgets-item").length)&&a.css("display","none");!1===e.allowMultiples&&!0===e.hideInput&&e._lookupInputEleCntr.css("display","");1>a.find("div.spwidgets-item").length&&e.msgNoItems&&a.append("<div>"+e.msgNoItems+"</div>");a.find("div.spwidgets-item").each(function(){g.push(c(this).data("spid"))});e._lookupInputEleCntr.find("input").focus();
-e.storeItemIDs(g);e._ele.change()});return k};k.addItem=function(c,b){if(!b||"string"!==typeof b)return c;var d=c._ele.val();""===d&&!0===c.padDelimeter&&(d+=";#");d&&(d+=";#");c._ele.val(d+b);c.showCurrentInputSelection();return c};k.doSelectorDataInit=function(e){var b={$resultsCntr:e._selectorCntr.find("div.spwidget-lookup-selector-item-cntr"),nextPageToken:"",isLoading:!1,hasMorePages:!0,$lastPage:c(),queryXml:e.filter?"<Query><Where>"+e.filter+"</Where>"+e.filterOrderBy+"</Query>":"<Query>"+
-e.filterOrderBy+"</Query>"};k._isLookupbodyEventDone||(k._isLookupbodyEventDone=!0,c("body").on("click",function(b){b=c(b.target);var a=c("div.spwidget-lookup-selector-cntr:visible"),e=null;a.length&&(e=b.closest("div.spwidget-lookup-selector-cntr"),!e.length&&b.is(".spwidget-lookup-selector-showhide")&&(e=b.parent().find("div.spwidget-lookup-selector-cntr")),a.not(e).hide())}));b.getListRows=function(){return c.Deferred(function(d){b.isLoading?d.resolveWith($lastPage,[$lastPage]):(b.isLoading=!0,
-c().SPServices({operation:"GetListItems",listName:e.list,async:!0,CAMLQuery:b.queryXml,CAMLRowLimit:e.maxResults,CAMLViewFields:"<ViewFields>"+e._selectFields+"</ViewFields>",CAMLQueryOptions:function(){if(""!==b.nextPageToken)return"<QueryOptions><Paging ListItemCollectionPositionNext='"+c.SPWidgets.escapeXML(b.nextPageToken)+"'/></QueryOptions>"}(),completefunc:function(a,g){var l=c(a.responseXML),f=l.SPFilterNode("rs:data").eq(0),k=l.SPFilterNode("z:row").SPXmlToJson({includeAllAttrs:!0,removeOws:!0}),
-l=c("<div/>").insertBefore(b.$nextPage),h="";b.nextPageToken=f.attr("ListItemCollectionPositionNext")||"";""===b.nextPageToken&&(b.hasMorePages=!1);c.each(k,function(a,b){e.addToAutocompleteCache(b);b.value="";b.label=c.SPWidgets.fillTemplate(e.listTemplate,b);h+='<div class="spwidget-lookup-item" data-spwidgetsindex="'+a+'">'+b.label+"</div>"});l.html(h).find("div.spwidget-lookup-item").each(function(){var a=c(this);a.hover(function(){a.addClass("ui-state-hover")},function(){a.removeClass("ui-state-hover")})}).end().on("click",
-"div.spwidget-lookup-item",function(a){a=c(this).data("spwidgetsindex");e.showSelectedItems(k[a])});b.isLoading=!1;d.resolveWith(l,[l])}}))})};b.$nextPage=c('<div class="ui-state-highlight spwidget-lookup-selector-next">Next...</div>').appendTo(b.$resultsCntr.empty()).click(function(c){b.hasMorePages&&(b.$nextPage.css("display","none"),b.getListRows().then(function(a){b.hasMorePages?b.$nextPage.css("display",""):a.children().length||a.append("<div class='ui-state-highlight'>No Items Found!</div>");
-b.$resultsCntr.scrollTop(a.position().top)}))});b.$nextPage.click();return e};k.styleSheet='/**\n * Stylesheet for the Lookup Field widget.\n * \n */\n\n.spwidgets-lookup-cntr {\n    position: relative;\n    display: inline-block;\n    zoom: 1; /* IE7 hack */\n    *display: inline; /* IE7 hack */\n}\n\n\n.spwidgets-lookup-cntr .spwidgets-lookup-selected {\n    -moz-appearance: textfield;\n    -webkit-appearance: textfield;\n    background-color: white;\n    background-color: -moz-field;\n    border: 1px solid  darkgray;\n    box-shadow: 1px 1px 1px 0 lightgray inset;  \n    font: -moz-field;\n    font: -webkit-small-control;\n    margin-top: 5px;\n    padding: 2px 5px; \n}\n\n.spwidgets-lookup-cntr  .spwidgets-lookup-selected .spwidgets-item {\n    display: inline-block;\n    margin-left: .5em;\n}\n.spwidgets-lookup-cntr .spwidgets-item:first-child {\n    margin-left: 0px;\n}\n.spwidgets-lookup-cntr .spwidgets-item-remove {\n    color: red;\n    font-size: xx-small;\n    vertical-align: super;\n    cursor: pointer;\n}\n\n.spwidgets-lookup-cntr .spwidgets-lookup-input {\n    margin: .2em 0em;\n    position: relative;\n}\n.spwidgets-lookup-cntr .spwidgets-lookup-input input {\n    width: 99%;\n}\n.spwidgets-lookup-cntr ul.ui-autocomplete {\n    overflow: auto;\n    z-index: 1;\n}\n\n/* Ready only display */\n.spwidgets-lookup-cntr div.spwidget-lookup-readyonly .spwidgets-lookup-selected {\n    -moz-appearance: none;\n    -webkit-appearance: none;\n    background-color: transparent;\n    border: none;\n    box-shadow: none;\n    font: inherit;\n}\n.spwidgets-lookup-cntr div.spwidget-lookup-readyonly .spwidgets-item-remove {\n    display: none;\n}\n\n/** SELECTOR */\n.spwidgets-lookup-cntr .spwidget-lookup-selector-showhide {\n    background-repeat: no-repeat;\n    background-image: url("/_layouts/images/bizdatacontentsource.gif");\n    cursor: pointer;\n    display: block;\n    position: absolute;\n    text-indent: -99999px;\n    z-index: 5;\n    height: 16px;\n    width: 16px;\n    right: 5px;\n    top: .3em;\n}\n.spwidgets-lookup-cntr div.spwidget-lookup-selector-cntr {\n    display: none;\n    position: absolute;\n    left: 0px;\n    z-index: 10;\n    padding: .2em;\n    width: 98%;\n    font-size: .8em;\n}\n.spwidgets-lookup-cntr div.spwidget-lookup-selector-cntr > .ui-state-default {\n    padding: .2em;\n    text-align: right;\n}\n\n.spwidgets-lookup-cntr div.spwidget-lookup-selector-item-cntr {\n    height: 15em;\n    overflow: auto;\n    padding: .2em;\n    font-size: 1em;\n}\n.spwidgets-lookup-cntr div.spwidget-lookup-selector-item-cntr .ui-state-highlight {\n    padding: .5em;\n    margin: 1em .2em;\n    text-align: center;\n    font-size: 1.1em;\n    font-weight: bold;\n}\n.spwidgets-lookup-cntr div.spwidget-lookup-selector-item-cntr .spwidget-lookup-selector-next {\n    cursor: pointer;\n}\n.spwidgets-lookup-cntr div.spwidget-lookup-selector-item-cntr .spwidget-lookup-item {\n    padding: .2em .5em;\n    margin: .2em;\n    cursor: pointer;\n    font-weight: normal;\n}\n\n';
+(function(b){var k={_islookupFieldCssDone:!1,_isLookupbodyEventDone:!1},h=b.SPWidgets.SPAPI;b.SPWidgets.defaults.LookupField={list:"",allowMultiples:!0,inputLabel:"",inputPlaceholder:"Type and Pick",readOnly:!1,exactMatch:!0,uiContainer:null,selectFields:["Title"],filter:"",filterFields:["Title"],filterOrderBy:"",template:'<div>{{Title}} <span class="spwidgets-item-remove">[x]</span></div>',listTemplate:"{{Title}}",listHeight:0,onItemAdd:null,onItemRemove:null,onReady:null,msgNoItems:"",maxResults:50,
+minLength:2,hideInput:!0,padDelimeter:!1,showSelector:!1};b.fn.SPLookupField=function(e){k._islookupFieldCssDone||(k._islookupFieldCssDone=!0,b('<style type="text/css">\n\n'+k.styleSheet+"\n\n</style>").prependTo("head"));var c=arguments;this.each(function(){var a=b(this);if(!a.is("input")&&!a.is("textarea")||a.hasClass("hasLookupSPField")){if("string"===typeof e&&a.is("input")){var d=a.data("SPWidgetLookupFieldUI").data("SPWidgetLookupFieldOpt");if("method"===e.toLowerCase()){var a=String(c[1]||
+"").toLowerCase(),f=c[2];"clear"===a?(b.isArray(f)||(f=f?[f]:[]),f.length?function(){var a=b();b.each(f,function(b,f){a=a.add(d._selectedItemsCntr.find("div.spwidgets-item-id-"+f))});k.removeItem(d,a)}():k.removeItem(d,d._selectedItemsCntr.find("div.spwidgets-item"))):"add"===a&&k.addItem(d,f)}}return this}d=b.extend({},b.SPWidgets.defaults.LookupField,e,{_ele:a.css("display","none").addClass("hasLookupSPField")});d.showSelectedItems=function(a,f){var c=d._selectedItemsCntr.css("display",""),e=[],
+h=!1;c.find("div.spwidgets-item").length&&!1!==d.allowMultiples||c.empty();b.isArray(a)?e=a:e.push(a);b.each(e,function(a,e){if(!c.find("div.spwidgets-item-id-"+e.ID).length){var g=b('<div class="spwidgets-item spwidgets-item-id-'+e.ID+'" data-spid="'+e.ID+'" style="display:none">'+b.SPWidgets.fillTemplate(d.template,e)+"</div>").appendTo(c).find(".spwidgets-item-remove").on("click.SPWidgets",function(a){k.removeItem(d,this)}).end();b.isFunction(d.onItemAdd)&&!0!==f&&d.onItemAdd.call(d._ele,g,e,d._cntr);
+0<c.find("div.spwidgets-item-id-"+e.ID).length&&(h=!0,g.fadeIn("slow").promise().then(function(){b(this).css("display","")}),!0!==f&&d.storeItemIDs(e.ID,d.allowMultiples),!1===d.allowMultiples&&!0===d.hideInput&&d._lookupInputEleCntr.css("display","none"))}});d.readOnly&&d._cntr.find(".spwidgets-item-remove").remove();h&&d._ele.trigger("change")};d.storeItemIDs=function(a,f){var c=b.trim(d._ele.val()),e=!1;b.isArray(a)||(a=[a]);!0!==f&&(c="");b.each(a,function(a,b){b&&(1>c.length&&(!0===d.padDelimeter&&
+!e)&&(c+=";#",e=!0),0<c.length&&(c+=";#"),c+=b+";#")});d._ele.val(c)};d.showCurrentInputSelection=function(a){return b.Deferred(function(c){var f=b.extend({},{async:!0},a),e=b.SPWidgets.parseLookupFieldValue(d._ele.val());e.length?h.getListItems({operation:"GetListItems",async:f.async,listName:d.list,CAMLQuery:"<Query><Where>"+b.SPWidgets.getCamlLogical({type:"OR",values:e,onEachValue:function(a){var d="";a.id&&(d="<Eq><FieldRef Name='ID'/><Value Type='Counter'>"+a.id+"</Value></Eq>");return d}})+
+"</Where></Query>",CAMLViewFields:"<ViewFields>"+d._selectFields+"</ViewFields>",CAMLRowLimit:0,completefunc:function(a,b,f){d.addToAutocompleteCache(f);d.showSelectedItems(f,!0);c.resolveWith(d,[a,b])}}):c.resolveWith(d,[null,null])}).promise()};d.getItemObjectFromCache=function(a){var c=null;b.each(d._autocompleteCache,function(d,f){b.each(f,function(d,b){if(b.ID==a)return c=b,!1});if(null!==c)return!1});return c};d.addToAutocompleteCache=function(a){b.isArray(a)||(a=[a]);b.each(a,function(a,b){d._autocompleteCache[b.ID]||
+(d._autocompleteCache[b.ID]=[]);d._autocompleteCache[b.ID].push(b)})};d._cntr=b(k.htmlTemplate).find(".spwidgets-lookup-cntr").clone(1);null===d.uiContainer?d._cntr.insertAfter(d._ele):d._cntr.appendTo(b(d.uiContainer));d._selectedItemsCntr=d._cntr.find("div.spwidgets-lookup-selected");d._lookupInputEleCntr=d._cntr.find("div.spwidgets-lookup-input");d._lookupInputEle=d._lookupInputEleCntr.find("input[name='spwidgetLookupInput']");d._ignoreKeywordsRegEx=/^(of|and|a|an|to|by|the|or)$/i;d._cntr.data("SPWidgetLookupFieldOpt",
+d);d._ele.data("SPWidgetLookupFieldUI",d._cntr);d.showSelector?(d._selectorCntr=d._cntr.find("div.spwidget-lookup-selector-cntr"),d._queryInitDone=!1,d._cntr.find(".spwidget-lookup-selector-showhide").on("click",function(a){d._selectorCntr.is(":visible")?d._selectorCntr.css("display","none"):(d._selectorCntr.css("display","block").position({my:"left top",at:"left bottom",of:d._lookupInputEle}),d._queryInitDone||(d._queryInitDone=!0,k.doSelectorDataInit(d)))}),d._selectorCntr.find("button[name='close']").button({text:!1,
+icons:{primary:"ui-icon-circle-close"}}).click(function(){d._selectorCntr.css("display","none")}),d._lookupInputEle.on("focus",function(a){d._selectorCntr.is(":visible")&&d._selectorCntr.css("display","none")})):d._cntr.find(".spwidget-lookup-selector-showhide,.spwidget-lookup-selector-cntr").remove();d.inputLabel?d._cntr.find("div.spwidgets-lookup-input label").empty().append(d.inputLabel):d._cntr.find("div.spwidgets-lookup-input label").remove();d.inputPlaceholder&&d._lookupInputEleCntr.find("input").attr("placeholder",
+d.inputPlaceholder);!0===d.readOnly&&(d._lookupInputEleCntr.css("display","none"),d._cntr.find("div.spwidget-lookup").addClass("spwidget-lookup-readyonly"));d._selectFields="";b.each(d.selectFields,function(a,b){d._selectFields+="<FieldRef Name='"+b+"'/>"});d._templateTokens=String(d.template).match(/(\$\{.*?\})/g);null==d._templateTokens&&(d._templateTokens=[]);b.each(d._templateTokens,function(a,b){d._templateTokens[a]=b.replace(/[\$\{\}]/g,"")});var n=d._autocompleteCache={};d._cntr.find("div.spwidgets-lookup-input input").autocomplete({minLength:2,
+appendTo:d._cntr,open:function(a,c){b(this).autocomplete("widget").each(function(){0<d.listHeight&&b(this).css("height",d.listHeight+"px");return!1})},source:function(a,c){a.term=b.trim(a.term);var f=String(b.trim(a.term)).toUpperCase();if(f in n)c(n[f]);else{n[f]=[];var e=[],k=String(a.term);if(null===k.match(/\D/)&&null!==k.match(/\d/))e.push("<Eq><FieldRef Name='ID'/><Value Type='Counter'>"+k+"</Value></Eq>");else{k=[a.term];d.exactMatch||(k=String(a.term).split(/ /));for(var w=0,v=d.filterFields.length;w<
+v;w++){for(var m=[],q=0,y=k.length;q<y;q++)d._ignoreKeywordsRegEx.test(k[q])||m.push("<Contains><FieldRef Name='"+d.filterFields[w]+"'/><Value Type='Text'>"+k[q]+"</Value></Contains>");e.push(b.SPWidgets.getCamlLogical({values:m,type:"AND"}))}}e=b.SPWidgets.getCamlLogical({values:e,type:"OR"});d.filter&&(e=b.SPWidgets.getCamlLogical({values:[e,d.filter],type:"AND"}));h.getListItems({operation:"GetListItems",listName:d.list,async:!0,CAMLQuery:"<Query><Where>"+e+"</Where>"+d.filterOrderBy+"</Query>",
+CAMLRowLimit:d.maxResults,CAMLViewFields:"<ViewFields>"+d._selectFields+"</ViewFields>",completefunc:function(a,e,g){b.each(g,function(a,c){c.value="";c.label=b.SPWidgets.fillTemplate(d.listTemplate,c);n[f].push(c)});c(n[f])}})}},select:function(a,b){d.showSelectedItems(b.item)}}).on("keyup.SPWidgets",function(a){if(13==a.which){var c=b(a.target).val();c&&String(c).length<d.minLength&&b(a.target).autocomplete("search",c+"    ")}});d._ele.val()?d.showCurrentInputSelection().then(function(a,c){b.isFunction(d.onReady)&&
+d.onReady.call(d._ele,d._cntr)}):b.isFunction(d.onReady)&&d.onReady.call(d._ele,d._cntr);return this});return this};k.removeItem=function(e,c){var a=b(c).closest("div.spwidgets-item"),d=e._selectedItemsCntr,f=[];if(b.isFunction(e.onItemRemove)){a.each(function(){f.push(e.getItemObjectFromCache(b(this).data("spid")))});if(!1===e.onItemRemove.call(e._ele,a,f,e._cntr))return k;f=[]}a.fadeOut("fast").promise().then(function(){a.remove();!e.msgNoItems&&(!1===e.allowMultiples||!0===e.allowMultiples&&1>
+d.find("div.spwidgets-item").length)&&d.css("display","none");!1===e.allowMultiples&&!0===e.hideInput&&e._lookupInputEleCntr.css("display","");1>d.find("div.spwidgets-item").length&&e.msgNoItems&&d.append("<div>"+e.msgNoItems+"</div>");d.find("div.spwidgets-item").each(function(){f.push(b(this).data("spid"))});e._lookupInputEleCntr.find("input").focus();e.storeItemIDs(f);e._ele.change()});return k};k.addItem=function(b,c){if(!c||"string"!==typeof c)return b;var a=b._ele.val();""===a&&!0===b.padDelimeter&&
+(a+=";#");a&&(a+=";#");b._ele.val(a+c);b.showCurrentInputSelection();return b};k.doSelectorDataInit=function(e){var c={$resultsCntr:e._selectorCntr.find("div.spwidget-lookup-selector-item-cntr"),nextPageToken:"",isLoading:!1,hasMorePages:!0,$lastPage:b(),queryXml:e.filter?"<Query><Where>"+e.filter+"</Where>"+e.filterOrderBy+"</Query>":"<Query>"+e.filterOrderBy+"</Query>"};k._isLookupbodyEventDone||(k._isLookupbodyEventDone=!0,b("body").on("click",function(a){a=b(a.target);var d=b("div.spwidget-lookup-selector-cntr:visible"),
+c=null;d.length&&(c=a.closest("div.spwidget-lookup-selector-cntr"),!c.length&&a.is(".spwidget-lookup-selector-showhide")&&(c=a.parent().find("div.spwidget-lookup-selector-cntr")),d.not(c).hide())}));c.getListRows=function(){return b.Deferred(function(a){c.isLoading?a.resolveWith($lastPage,[$lastPage]):(c.isLoading=!0,h.getListItems({operation:"GetListItems",listName:e.list,async:!0,CAMLQuery:c.queryXml,CAMLRowLimit:e.maxResults,CAMLViewFields:"<ViewFields>"+e._selectFields+"</ViewFields>",CAMLQueryOptions:function(){if(""!==
+c.nextPageToken)return"<QueryOptions><Paging ListItemCollectionPositionNext='"+b.SPWidgets.escapeXML(c.nextPageToken)+"'/></QueryOptions>"}(),completefunc:function(d,f,k){b(d.responseXML);d=h.getNodesFromXml({xDoc:d.responseXML,nodeName:"rs:data",asJQuery:!0}).eq(0);f=b("<div/>").insertBefore(c.$nextPage);var g="";c.nextPageToken=d.attr("ListItemCollectionPositionNext")||"";""===c.nextPageToken&&(c.hasMorePages=!1);b.each(k,function(a,d){e.addToAutocompleteCache(d);d.value="";d.label=b.SPWidgets.fillTemplate(e.listTemplate,
+d);g+='<div class="spwidget-lookup-item" data-spwidgetsindex="'+a+'">'+d.label+"</div>"});f.html(g).find("div.spwidget-lookup-item").each(function(){var a=b(this);a.hover(function(){a.addClass("ui-state-hover")},function(){a.removeClass("ui-state-hover")})}).end().on("click","div.spwidget-lookup-item",function(a){a=b(this).data("spwidgetsindex");e.showSelectedItems(k[a])});c.isLoading=!1;a.resolveWith(f,[f])}}))})};c.$nextPage=b('<div class="ui-state-highlight spwidget-lookup-selector-next">Next...</div>').appendTo(c.$resultsCntr.empty()).click(function(a){c.hasMorePages&&
+(c.$nextPage.css("display","none"),c.getListRows().then(function(a){c.hasMorePages?c.$nextPage.css("display",""):a.children().length||a.append("<div class='ui-state-highlight'>No Items Found!</div>");c.$resultsCntr.scrollTop(a.position().top)}))});c.$nextPage.click();return e};k.styleSheet='/**\n * Stylesheet for the Lookup Field widget.\n * \n */\n\n.spwidgets-lookup-cntr {\n    position: relative;\n    display: inline-block;\n    zoom: 1; /* IE7 hack */\n    *display: inline; /* IE7 hack */\n}\n\n\n.spwidgets-lookup-cntr .spwidgets-lookup-selected {\n    -moz-appearance: textfield;\n    -webkit-appearance: textfield;\n    background-color: white;\n    background-color: -moz-field;\n    border: 1px solid  darkgray;\n    box-shadow: 1px 1px 1px 0 lightgray inset;  \n    font: -moz-field;\n    font: -webkit-small-control;\n    margin-top: 5px;\n    padding: 2px 5px; \n}\n\n.spwidgets-lookup-cntr  .spwidgets-lookup-selected .spwidgets-item {\n    display: inline-block;\n    margin-left: .5em;\n}\n.spwidgets-lookup-cntr .spwidgets-item:first-child {\n    margin-left: 0px;\n}\n.spwidgets-lookup-cntr .spwidgets-item-remove {\n    color: red;\n    font-size: xx-small;\n    vertical-align: super;\n    cursor: pointer;\n}\n\n.spwidgets-lookup-cntr .spwidgets-lookup-input {\n    margin: .2em 0em;\n    position: relative;\n}\n.spwidgets-lookup-cntr .spwidgets-lookup-input input {\n    width: 99%;\n}\n.spwidgets-lookup-cntr ul.ui-autocomplete {\n    overflow: auto;\n    z-index: 1;\n}\n\n/* Ready only display */\n.spwidgets-lookup-cntr div.spwidget-lookup-readyonly .spwidgets-lookup-selected {\n    -moz-appearance: none;\n    -webkit-appearance: none;\n    background-color: transparent;\n    border: none;\n    box-shadow: none;\n    font: inherit;\n}\n.spwidgets-lookup-cntr div.spwidget-lookup-readyonly .spwidgets-item-remove {\n    display: none;\n}\n\n/** SELECTOR */\n.spwidgets-lookup-cntr .spwidget-lookup-selector-showhide {\n    background-repeat: no-repeat;\n    background-image: url("/_layouts/images/bizdatacontentsource.gif");\n    cursor: pointer;\n    display: block;\n    position: absolute;\n    text-indent: -99999px;\n    z-index: 5;\n    height: 16px;\n    width: 16px;\n    right: 5px;\n    top: .3em;\n}\n.spwidgets-lookup-cntr div.spwidget-lookup-selector-cntr {\n    display: none;\n    position: absolute;\n    left: 0px;\n    z-index: 10;\n    padding: .2em;\n    width: 98%;\n    font-size: .8em;\n}\n.spwidgets-lookup-cntr div.spwidget-lookup-selector-cntr > .ui-state-default {\n    padding: .2em;\n    text-align: right;\n}\n\n.spwidgets-lookup-cntr div.spwidget-lookup-selector-item-cntr {\n    height: 15em;\n    overflow: auto;\n    padding: .2em;\n    font-size: 1em;\n}\n.spwidgets-lookup-cntr div.spwidget-lookup-selector-item-cntr .ui-state-highlight {\n    padding: .5em;\n    margin: 1em .2em;\n    text-align: center;\n    font-size: 1.1em;\n    font-weight: bold;\n}\n.spwidgets-lookup-cntr div.spwidget-lookup-selector-item-cntr .spwidget-lookup-selector-next {\n    cursor: pointer;\n}\n.spwidgets-lookup-cntr div.spwidget-lookup-selector-item-cntr .spwidget-lookup-item {\n    padding: .2em .5em;\n    margin: .2em;\n    cursor: pointer;\n    font-weight: normal;\n}\n\n';
 k.htmlTemplate='<div>\n    <div class="spwidgets-lookup-cntr">\n        <div class="spwidget-lookup">\n            <div class="spwidgets-lookup-selected" style="display:none;">\n            </div>\n            <div class="spwidgets-lookup-input">\n                <label>Add</label>\n                <input type="text" name="spwidgetLookupInput" value="" />\n                <span class="spwidget-lookup-selector-showhide" title="Browse">Browse</span>\n                <div class="spwidget-lookup-selector-cntr ui-widget-content">\n                    <div class="ui-state-default">\n                        <button type="button" name="close" title="Close">Close</button>\n                    </div>\n                    <div class="spwidget-lookup-selector-item-cntr"></div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n\n'})(s);
-(function(){h.pt.pickSPUser={_isPickSPUserCssDone:!1};h.SPWidgets.defaults.peoplePicker={allowMultiples:!0,maxSearchResults:50,webURL:null,type:"User",onPickUser:null,onCreate:null,onRemoveUser:null,inputPlaceholder:"Type and Pick",appendTo:null,minLength:3,resolvePrincipals:!0,meKeyword:"[me]",meKeywordLabel:"Current User",filterSuggestions:null};h.fn.pickSPUser=function(c){h.pt.pickSPUser._isPickSPUserCssDone||(h.pt.pickSPUser._isPickSPUserCssDone=!0,h('<style type="text/css">\n\n'+h.pt.pickSPUser.styleSheet+
-"\n\n</style>").prependTo("head"));var k=arguments,e=this;if("string"===typeof c)return function(c){return c.is("input")&&c.hasClass("hasPickSPUser")?h.pt.pickSPUser.handleAction.apply(c,k):e}(e.eq(0));this.each(function(){var b=h(this),d=h.extend({},h.SPWidgets.defaults.peoplePicker,c,{eleUserInput:b.css("display","none").addClass("hasPickSPUser")});d.webURL||(d.webURL=h().SPServices.SPGetCurrentSite());d.maxSearchResults=parseInt(d.maxSearchResults)||50;var a=h(h.pt.pickSPUser.htmlTemplate).find(".pt-pickSPUser").clone(1).insertAfter(b);
-d.eleSelected=a.find("div.pt-pickSPUser-selected").empty().on("click",".tt-delete-icon",function(){h.pt.pickSPUser.removeUser(this)});d.elePickInput=a.find("div.pt-pickSPUser-input");d.isUserAlreadySelected=function(a,c){var b="div[data-pickspuserid='"+a+"']";c&&(b+="[data-pickspusername='"+c+"']");return 0<d.eleSelected.find(b).length};d.addPeopleToList=function(a,c){var b=(new String(a)).split(";#"),e=b.length,g,k,w,r;for(g=0;g<e;g++)k=b[g],g++,w=b[g],"<userid/>"===k.toLowerCase()&&(w=d.meKeywordLabel),
-r=h.pt.pickSPUser.getUserHtmlElement(d,k,w).appendTo(d.eleSelected),function(a,c,b){b=c;"<userid/>"===k.toLowerCase()&&(b=d.meKeyword);d.getSearchResults(b).done(function(b,d,f){var e=String(c).toLowerCase();h.each(b,function(c,b){if(String(b.displayName).toLowerCase()===e)return a.data("pickspuser_object",b),!1})})}(r,w,k);h.pt.addHoverEffect(d.eleSelected.find("div.pt-pickSPUser-person-cntr"));!1===d.allowMultiples&&d.elePickInput.css("display","none");h.pt.pickSPUser.storeListOfUsers(d.eleSelected,
-c)};d.getSearchResults=function(a){return h.Deferred(function(c){h().SPServices({operation:"SearchPrincipals",searchText:a,maxResults:d.maxSearchResults,principalType:d.type,async:!0,webURL:d.webURL,completefunc:function(b,e){var g=h(b.responseXML),k=[];-1<String(d.meKeyword).indexOf(a.toLowerCase())&&k.push({displayName:d.meKeywordLabel,accountId:"<UserID/>",accountName:d.meKeywordLabel,accountType:"User",value:d.meKeywordLabel,label:d.meKeywordLabel});g.find("PrincipalInfo").each(function(){var a=
-h(this),a={displayName:a.find("DisplayName").text(),accountId:a.find("UserInfoID").text(),accountName:a.find("AccountName").text(),accountType:a.find("PrincipalType").text(),value:a.find("DisplayName").text(),label:""};a.label+=a.displayName;k.push(a)});d.filterSuggestions&&(k=d.filterSuggestions(k));c.resolveWith(b,[k,b,e])}})}).promise()};!0===d.allowMultiples&&d.eleSelected.addClass("pt-pickSPUser-selected-multiple");var e={};d.elePickInput.find("input[name='pickSPUserInputField']").attr("placeholder",
-d.inputPlaceholder).autocomplete({minLength:d.minLength,appendTo:d.appendTo||d.elePickInput,source:function(a,c){a.term in e?c(e[a.term]):(e[a.term]=[],d.getSearchResults(a.term).then(function(b,d,k){e[a.term].push.apply(e[a.term],b);c(e[a.term])}))},select:function(c,f){if(!1===d.allowMultiples)d.eleSelected.empty();else if(d.isUserAlreadySelected(f.item.accountId,f.item.displayName)){setTimeout(function(){c.target.value=""},50);return}var e=function(){h.pt.pickSPUser.getUserHtmlElement(d,f.item.accountId,
-f.item.displayName).appendTo(d.eleSelected).data("pickspuser_object",f.item);h.pt.pickSPUser.storeListOfUsers(a);h.pt.addHoverEffect(a.find("div.pt-pickSPUser-person-cntr"));setTimeout(function(){c.target.value=""},50);!1===d.allowMultiples&&d.elePickInput.hide();h.isFunction(d.onPickUser)&&d.onPickUser.call(d.eleUserInput,h.extend({},f.item));b.trigger(h.Event("spwidget:peoplePickerAdd"),[d.eleUserInput,h.extend({},f.item)])};"-1"===f.item.accountId&&d.resolvePrincipals?h.fn.pickSPUser.resolvePrincipals({principalKeys:f.item.accountName}).then(function(a,
-c){f.item.accountId=h(a).find("AccountName:contains('"+f.item.accountName+"')").parent().find("UserInfoID").text();e()}):e()}});a.data("pickSPUserContainerOpt",d);b.data("pickSPUserContainer",a);b.val()&&d.addPeopleToList(b.val(),!0);h.isFunction(d.onCreate)&&d.onCreate.call(b,b);b.trigger(h.Event("spwidget:peoplePickerCreate"),[d.eleUserInput]);return this});return this};h.fn.pickSPUser.resolvePrincipals=function(c){c=h.extend({},{principalKeys:[],principalType:"All",addToUserInfoList:!0,async:!0},
-c);h.isArray(c.principalKeys)||(c.principalKeys=[c.principalKeys]);c.principalXml="";var k=/<string>/i,e,b;e=0;for(b=c.principalKeys.length;e<b;e++)k.test(c.principalKeys[e])?c.principalXml+=c.principalKeys[e]:c.principalXml+="<string>"+c.principalKeys[e]+"</string>";return h.ajax({type:"POST",cache:!1,async:c.async,url:h().SPServices.SPGetCurrentSite()+"/_vti_bin/People.asmx",contentType:"text/xml;charset=utf-8",beforeSend:function(c){c.setRequestHeader("SOAPAction","http://schemas.microsoft.com/sharepoint/soap/ResolvePrincipals")},
-dataType:"xml",data:'<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><ResolvePrincipals xmlns="http://schemas.microsoft.com/sharepoint/soap/"><principalKeys>'+c.principalXml+"</principalKeys><principalType>"+c.principalType+"</principalType><addToUserInfoList>"+c.addToUserInfoList+"</addToUserInfoList></ResolvePrincipals></soap:Body></soap:Envelope>"})};h.pt.pickSPUser.getUserHtmlElement=
-function(c,k,e){c=h(h.pt.pickSPUser.htmlTemplate).find(".pt-pickSPUser-person").clone(1);c.attr("data-pickSPUserID",k);c.find("span.pt-person-name").append(e).end().attr("data-pickSPUserNAME",e);return c};h.pt.pickSPUser.removeUser=function(c){var k=h(c).closest("div.pt-pickSPUser"),e=k.data("pickSPUserContainerOpt");c=h(c).closest("div.pt-pickSPUser-person");var b=c.data("pickspuser_object");h.isFunction(e.onRemoveUser)&&e.onRemoveUser.call(e.ele,e.ele,c,b);c.fadeOut("fast",function(){h(this).remove();
-h.pt.pickSPUser.storeListOfUsers(k)});!1===e.allowMultiples&&e.elePickInput.show("fast",function(){e.elePickInput.find("input").focus()});e.eleUserInput.trigger(h.Event("spwidget:peoplePickerRemove"),[e.eleUserInput,b])};h.pt.pickSPUser.storeListOfUsers=function(c,k){var e=h(c).closest("div.pt-pickSPUser"),b=e.data("pickSPUserContainerOpt"),d="",a={};e.find("div.pt-pickSPUser-selected div.pt-pickSPUser-person").each(function(){var c=h(this).attr("data-pickSPUserID")+";#"+h(this).attr("data-pickSPUserNAME");
-a[c]||(a[c]=!0,d&&(d+=";#"),d+=c)});b.eleUserInput.val(d);k||b.eleUserInput.change()};h.pt.pickSPUser.handleAction=function(c,k,e){c=String(c).toLowerCase();k=String(k).toLowerCase();var b=h(this).data("pickSPUserContainer").data("pickSPUserContainerOpt"),d=this;if("method"===c)switch(k){case "clear":b.eleUserInput.val("");b.eleSelected.empty();!1===b.allowMultiples&&(b.eleSelected.css("display","none"),b.elePickInput.show());break;case "destroy":h(this).hasClass("hasPickSPUser")&&h(this).removeClass("hasPickSPUser").next(".pt-pickSPUser").remove().show().trigger("change");
-break;case "add":b.addPeopleToList(e);break;case "remove":e&&(c=b.eleSelected.find("div[data-pickspuserid='"+e+"']"),c.length||(c=b.eleSelected.find("div[data-pickspusername='"+e+"']")),c.length&&h.pt.pickSPUser.removeUser(c));break;case "getselected":d=h.SPWidgets.parseLookupFieldValue(b.eleUserInput.val())}return d};h.pt.pickSPUser.styleSheet="/**\n * Styles for the Pick User Widget\n */\n.pt-pickSPUser .pt-pickSPUser-selected .pt-pickSPUser-person {\n    float: left;\n    margin-left: .2em;\n}\n.pt-pickSPUser .pt-pickSPUser-hint {\n    font-size: .9em;\n}\n\n.pt-pickSPUser div.pt-pickSPUser-input input.ui-autocomplete {\n    width: 99%;\n}\n.pt-pickSPUser div.pt-pickSPUser-input ul.ui-autocomplete {\n    z-index: 1;\n}\n\n.pt-pickSPUser .pt-pickSPUser-person-cntr {\n    margin: .2em 0em;\n    padding: .2em;\n    position: relative;\n}\n\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-person-name {\n    padding-right: 2em;\n}\n\n/* Item action container (delete button) */\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-pickSPUser-person-actions {\n    position: absolute;\n    right: 1px;\n    top: 1px;\n    padding: .2em;\n    display: none;\n}\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-pickSPUser-person-actions .pt-pickSPUser-person-action-links,\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-pickSPUser-person-actions .pt-pickSPUser-person-action-links .tt-confirm-delete {\n    float:right;\n}\n\n/* Make the action visible if we hover or we are trying to confirm a deletion */\n.pt-pickSPUser .pt-pickSPUser-person-cntr.ui-state-hover .pt-pickSPUser-person-actions,\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-pickSPUser-person-actions.tt-confirm,\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-pickSPUser-person-actions a {\n    display:block;\n    float: right;\n}\n\n/* autocomplete busy image */\n.ui-autocomplete-loading {\n    background: white url('/_layouts/images/loading.gif') right center no-repeat;\n}\n\n\n";
-h.pt.pickSPUser.htmlTemplate='\x3c!--\n    Html Templates for the PickSPUser plugin.\n    \n    |\n    |   $Author$\n    | $Revision$\n    |     $Date$\n    |       $Id$\n    |\n--\x3e\n<div>\n    <div class="pt-pickSPUser">\n        <div class="pt-pickSPUser-selected">\n            None Selected!\n        </div>\n        <div style="clear:both"></div>\n        <div class="pt-pickSPUser-input" \n                title="Type user name above to view search results.">\n            <input name="pickSPUserInputField" value="" type="text"/>\n        </div>\n    </div>\n    \n    <div class="pt-pickSPUser-person">\n        <div class="pt-pickSPUser-person-cntr ui-state-default ui-corner-all">\n            <span class="pt-person-name"></span>\n            <div class="pt-pickSPUser-person-actions">\n                <div class="tt-record-item-action-links">\n                    <a class="tt-delete-icon" href="javascript:" onclick="jQuery.pt.pickSPUser.removeUser(this);">\n                        <img style="border: medium none; margin-right: 2px;" alt="Delete" src="/_layouts/images/delitem.gif">\n                    </a>\n                    <div style="clear:both;"></div>\n                </div>\n                <div style="clear:both;"></div>\n            </div>\n        </div>\n    </div>\n</div>\n';
-h.pt.addHoverEffect=function(c){return h(c).each(function(){if(!h(this).hasClass("addHoverEffectDone")){h(this).addClass("addHoverEffectDone");var c=this;h(c).mouseenter(function(){h(c).toggleClass("ui-state-hover")});h(c).mouseleave(function(){h(c).toggleClass("ui-state-hover")})}})}})(s);(function(c){var k={isSPUploadCssDone:!1};c.SPWidgets.defaults.upload={listName:"",folderPath:"",uploadDonePage:"",onPageChange:null,onUploadDone:null,uploadUrlOpt:"",overwrite:!1,uploadPage:"",overlayClass:"",
-overlayBgColor:"white",overlayMessage:"<div>Working on it</div>",selectFileMessage:"Click here to select file...",uploadDoneMessage:"Upload Successful!",fileNameErrorMessage:'A file name cannot contain any of the following characters: \\ / : * ? " &lt; &gt; | # { } % ~ &amp;',noFileErrorMessage:"No file selected!",checkInFormHeight:"25em",webURL:null,debug:!1,filenameInputSelector:"input[id$='onetidIOFile']"};c.fn.SPControlUpload=function(e){k.isSPUploadCssDone||(k.isSPUploadCssDone=!0,c('<style type="text/css">\n\n'+
-k.StyleSheet+"\n\n</style>").prependTo("head"),c.SPWidgets.defaults.upload.webURL||(c.SPWidgets.defaults.upload.webURL=c().SPServices.SPGetCurrentSite()));return c(this).each(function(){var b=c.extend({},c.SPWidgets.defaults.upload,e),d;b.log=b.debug?k.log:function(){};b.showHideBusy=function(a){return c.Deferred(function(c){a?b.$busyOverlay.fadeOut("fast").promise().then(function(){c.resolve()}):b.$busyOverlay.fadeIn("slow").promise().then(function(){c.resolve()})}).promise()};b.showHideFullForm=
-function(a){a?(b.$content.removeClass("spwidget-show-full-form"),b.$iframeCntr.css({overflow:"",height:""})):(b.$content.addClass("spwidget-show-full-form"),b.$iframeCntr.css({overflow:"auto",height:"auto"}));return b};b.showHideSuccess=function(a){a?b.$successCntr.stop().fadeOut().promise(function(){b.$successCntr.css("display","none")}):b.$successCntr.stop().show().promise(function(){b.$successCntr.css("display","block")});return b};b.showError=function(a){a=c.extend({},{message:"",autoHide:!0},
-a);b.$errorCntrMsg.html(a.message);b.$errorCntr.stop().css("display","block");a.autoHide&&b.$errorCntr.animate({opacity:1},5E3,function(){b.clearError()});return b};b.clearError=function(){b.$errorCntr.css("display","none");return b};b.resetWidget=function(){b.ev={state:1,action:"uploading",hideOverlay:!0,pageUrl:"",page:null,isUploadDone:!1,file:{}};b.$iframe.attr("src",b.uploadPage);return b};b.getUploadedFileRow=function(){var a={};c().SPServices({operation:"GetListItems",async:!1,webURL:b.webURL,
-listName:b.listName,CAMLQuery:"<Query><Where><Eq><FieldRef Name='Author' LookupId='TRUE'/><Value Type='Integer'><UserID/></Value></Eq></Where><OrderBy><FieldRef Name='Modified' Ascending='FALSE'/></OrderBy></Query>",CAMLViewFields:"<ViewFields><FieldRef Name='ID'/><FieldRef Name='EncodedAbsUrl'/><FieldRef Name='FileLeafRef' /><FieldRef Name='Author' /><FieldRef Name='Editor' /><FieldRef Name='Created' /><FieldRef Name='Modified' /></ViewFields>",CAMLRowLimit:1,CAMLQueryOptions:"<QueryOptions><ViewAttributes Scope='Recursive' /></QueryOptions>",
-completefunc:function(b,d){var f=c(b.responseXML).SPFilterNode("z:row").SPXmlToJson({includeAllAttrs:!0});f.length&&(a=f[0])}});return a};b.isUploadPage=function(a){var c=!1,d=document.createElement("a"),f=null;d.href=String(a).toLowerCase();b.userUploadPage?(f=document.createElement("a"),f.href=String(b.userUploadPage).toLowerCase(),d.pathname===f.pathname&&(c=!0)):c=/upload(ex)?\.aspx$/.test(d.pathname);return c};b.listName&&0!==b.listName.indexOf("{")&&(b.listName=c.pt.getListUID(b.listName));
-if(!b.listName)return c(this).html('<div class="ui-state-error">Input parameter [listName] not valid!</div>'),this;b.spVersion=c.SPWidgets.getSPVersion(!0);b.userUploadPage=b.uploadPage;b.uploadPage=String(b.uploadPage);if(b.uploadPage)-1===b.uploadPage.toLowerCase().indexOf("http")&&(d="/",0==b.uploadPage.indexOf("/")&&(d=""),b.uploadPage=b.webURL+d+b.uploadPage);else switch(b.spVersion){case "2013":b.uploadPage=b.webURL+"/_layouts/15/UploadEx.aspx";break;case "2010":b.uploadPage=b.webURL+"/_layouts/UploadEx.aspx";
-break;default:b.uploadPage=b.webURL+"/_layouts/Upload.aspx"}b.uploadDonePage=String(b.uploadDonePage);b.uploadDonePage||(b.uploadDonePage=b.webURL+"/_layouts/images/STS_ListItem_43216.gif");b._iframeLoadId=1;b._uploadUrlParams="?List="+c.pt.getEscapedUrl(b.listName)+"&RootFolder="+c.pt.getEscapedUrl(b.folderPath)+"&Source="+c.pt.getEscapedUrl(b.uploadDonePage)+"&"+(new Date).getTime()+"=1&"+b.uploadUrlOpt;b.uploadPage+=b._uploadUrlParams;b._lastError="";b._reloadCount=0;b.ev={state:1,action:"uploading",
-hideOverlay:!0,pageUrl:"",page:null,isUploadDone:!1,file:{}};b.$ele=c(this);d={};b.overlayBgColor&&(d["background-color"]=b.overlayBgColor);b.$cntr=c(c(k.HtmlUI).filter("div.SPControlUploadUI").clone()).appendTo(b.$ele.addClass("hasSPControlUploadUI").empty()).data("SPControlUploadOptions",b);b.$buttonCntr=b.$cntr.find("div.buttonPane").click(function(a){k.onUpload(this)});b.$content=b.$cntr.find("div.mainContainer");b.$iframeCntr=b.$cntr.find("div.iFrameWindow");b.$iframe=b.$iframeCntr.children("iframe");
-b.$busyOverlay=b.$cntr.find("div.loadingOverlay");b.$busyOverlayMsg=b.$busyOverlay.find("div.loadingOverlayMsg");b.$successCntr=b.$cntr.find("div.spwidget-success-cntr");b.$errorCntr=b.$cntr.find("div.spwidget-error-cntr");b.$errorCntrMsg=b.$errorCntr.find(".spwidget-msg");b.reInvalidChr=/[\/:*?"<>|#{}%~&]/;b.$successCntr.on("click",".spwidget-close",function(a){b.showHideSuccess(!0)}).find(".spwidget-msg").html(b.uploadDoneMessage);b.$errorCntr.on("click",".spwidget-close",function(a){b.clearError()});
-b.$busyOverlay.addClass(b.overlayClass).css(d);b.$busyOverlayMsg.html(b.overlayMessage);b.showHideBusy();b.$cntr.find("iframe").css("height",b.checkInFormHeight).load(function(a){k.onIframeChange(b.$ele.find(".SPControlUploadUI"))}).attr("src",b.uploadPage).end();return this})};k.onUpload=function(e){var b=c(e).closest(".SPControlUploadUI"),d=b.find("iframe").contents(),a=d.find("input[type='file']").closest("tr").siblings().find("span"),g=b.data("SPControlUploadOptions");e=g.ev;g.log("Upload.onUpload("+
-g._iframeLoadId+"): Start....");a.css("display","none");if(d.find("input[type='file']").val())if(g.reInvalidChr.test(d.find("div.SPControlUploadModUIFileSelected").text()))g.showError({message:g.fileNameErrorMessage});else{e.state=2;e.action="preLoad";if(g.onPageChange&&!1===g.onPageChange.call(g.$ele,e))return!1;g.showHideFullForm(!0);g.showHideBusy().then(function(){g.log("Upload.onUpload("+g._iframeLoadId+"): Clicking the OK button on upload form.");d.find("input[type='button'][id$='btnOK']").click();
-if(a.is(":visible"))return g.log("Upload.onUpload("+g._iframeLoadId+"): Error message reported! \n"+a.text()),b.find(".loadingOverlay").css("display","none").end(),!1})}else g.showError({message:g.noFileErrorMessage})};k.isSPBusyAnimation=function(c){return c.find("#GearPage").length||c.find("#ms-loading-box").length?!0:!1};k.onIframeChange=function(e){var b=c(e).closest(".SPControlUploadUI"),d=b.data("SPControlUploadOptions"),a=0,g=c(b.find("iframe").contents());if(d.debug)try{d.log("Upload.onIframeChange(): ENTERING... Document readyState: "+
-g[0].readyState+" IFRAME URL: "+g[0].location.href)}catch(l){}k.isSPBusyAnimation(g)?d.log("Upload.onIframeChange(): EXITING... Gear page displyed."):2===d.ev.state&&"preLoad"===d.ev.action&&!0===g[0].spcontrolupload_init_done?(d.log("Upload.onIframeChange("+d._iframeLoadId+"): Exiting! ev.action=["+d.ev.action+"] and ev.state=["+d.ev.state+"] - Nothing to do. Action handled by onUpload(). Setting action to postLoad"),d.ev.action="postLoad"):(d._iframeLoadId++,a=d._iframeLoadId,d.log("Upload.onIframeChange("+
-a+"): State=["+d.ev.state+"] Action=["+d.ev.action+"]"),setTimeout(function(){if(a!==d._iframeLoadId)d.log("Upload.onIframeChange("+a+"): not latest invokation! Existing.");else{var f=d.ev,e=g.find("form").eq(0);g=c(b.find("iframe").contents());d.log("Upload.onIframeChange("+a+"): STARTING... Executing setTimeout(). URL:"+g[0].location.href);if(!0===g.spcontrolupload_init_done)d.log("Upload.onIframeChange("+a+"): EXITING!!! Page was already processed!");else{g.spcontrolupload_init_done=!0;f.pageUrl=
-g[0].location.href;f.page=g;d.$iframeCntr.scrollTop(0);g.scrollTop(0);if(d.isUploadPage(f.pageUrl)){d.log("Upload.onIframeChange("+a+"): URL is the upload page!");g.find("body").css({overflow:"hidden"});e.children(":visible").hide().end().append(c(k.HtmlUI).filter("div#SPControlUploadModUI").clone()).find("div.SPControlUploadModUIFileSelected").html(d.selectFileMessage);if(RegExp(/error/i).test(c.trim(g.find(".ms-pagetitle").text()))||RegExp(/error/i).test(c.trim(g.find("title").text()))||RegExp(/error\.aspx/i).test(c.trim(g.find("form").attr("action")))){d.log("Upload.onIframeChange("+
-a+"): page displaying an error... Storing it and reloading upload form.");d._lastError=g.find("[id$='LabelMessage']").text();if(1<d._reloadCount){alert("Error encountered during upload which is causing program to loop. Last upload error was: "+d._lastError);b.find(".loadingOverlay").fadeOut();return}d._reloadCount+=1;b.find("iframe").attr("src",d.uploadPage);return}if(k.isSPBusyAnimation(g)&&!g.find("input[type='file']").length){d.log("Upload.onIframeChange("+a+"): SP processing page (GearPage)... Exiting and waiting for next page...");
-return}g.find("input[type='file']").closest("table").appendTo(g.find("#SPControlUploadModUI")).removeClass("ms-authoringcontrols");var l=g.find("#SPControlUploadModUI").find("input[type='file']").closest("tr").siblings().css("display","none").end().end().siblings("tr .ms-error").css("display","").end().on("change focus click",function(a){a=c(this).val();var b="",f="/_layouts/images/urn-content-classes-smartfolder16.gif";if(a){try{b=a.substr(a.lastIndexOf(".")+1)}catch(e){b="GEN"}f="/_layouts/images/IC"+
-b.toUpperCase()+".GIF";a=a.replace(/\\/g,"/").split("/").pop()||a}else a=d.selectFileMessage;g.find("#SPControlUploadModUI > div").html(a).css("background-image","url('"+f+"')")}).css({cursor:"pointer",height:"100px",position:"absolute",left:"0px",top:"0px",filter:"alpha(opacity=1)",opacity:"0.01",outline:"none","-moz-opacity":"0.01","font-size":"100px","z-index":"5"});e.on("mousemove",function(a){l.css({left:a.pageX-(l.width()-50),top:a.pageY-30}).blur()});d._lastError&&(d.showError({message:d._lastError}),
-d._lastError="");d._reloadCount=0;d.overwrite?g.find("input[type='checkbox'][name$='OverwriteSingle']").prop("checked","checked"):g.find("input[type='checkbox'][name$='OverwriteSingle']").prop("checked","");f.state=1;f.action="postLoad";f.hideOverlay=!0}else{d.log("Upload.onIframeChange("+d._iframeLoadId+"): File uploaded to server! Need ["+d.uploadDonePage+"] to be done.");f.state=3;f.action="postLoad";f.hideOverlay=!0;f.file=d.getUploadedFileRow();if(k.isSameUrlPage(f.pageUrl,d.uploadDonePage))d.log("Upload.onIframeChange("+
-d._iframeLoadId+"): Upload widget process DONE!"),f.isUploadDone=!0,f.hideOverlay=!1,d.showHideBusy(),d.showHideSuccess();else if(d.log("Upload.onIframeChange("+d._iframeLoadId+"): Post Upload Form being displayed! Hooking into form.onsubmit!"),e.length){var h=e.prop("onsubmit"),m=e.find(d.filenameInputSelector).eq(0);m.length&&(e.children(":visible").css("display","none").addClass("ptWasVisible"),m.closest("div[id^='WebPart']").appendTo(e).css("display","").removeClass("ptWasVisible"));e[0].onsubmit=
-function(){d.log("Upload.onIframeChange("+a+"): iframe form.onsubmit triggered!");d.showHideBusy();var b=!0;c.isFunction(d.onPageChange)&&(b=d.onPageChange.call(d.$ele,c.extend({},f,{state:3,action:"preLoad"})));if(!1===b)return d.showHideBusy(!0),b;c.isFunction(h)&&(b=h());if(!1===b)return d.showHideBusy(!0),b;d.showHideFullForm(!0);return b}}c(b.find("iframe")[0].contentWindow).unload(function(a){d.log("Upload.onIframeChange("+d._iframeLoadId+"): iframe.unload() triggered!");d.showHideBusy();d.showHideFullForm(!0);
-if(c.isFunction(d.onPageChange))return d.onPageChange.call(d.$ele,c.extend({},f,{state:3,action:"preLoad"}))})}d.log("Upload.onIframeChange("+d._iframeLoadId+"): iframe page setup done!");d.onPageChange&&d.onPageChange.call(d.$ele,f);if("postload"!==f.action.toLowerCase()||!0===f.hideOverlay)d.showHideBusy(!0),!1===f.isUploadDone&&3===f.state&&d.showHideFullForm();f.isUploadDone&&(d.resetWidget(),d.$successCntr.animate({opacity:1},3E3,function(){d.showHideSuccess(!0)}),c.isFunction(d.onUploadDone)&&
-d.onUploadDone.call(d.$ele,f.file))}}},500))};k.isSameUrlPage=function(c,b){if(!c||!b)return!1;var d=function(a){var c=document.createElement("a");c.href=a;return unescape(c.pathname)},a=String(d(c)).toLowerCase(),d=String(d(b)).toLowerCase();return a===d};c.pt.getEscapedUrl=escapeProperly;c.pt.getUnEscapedUrl=unescapeProperly;c.pt.getListUID=function(e){if(!e)return"";var b="";if(c.pt._cache["getListUID:"+e])return b=c.pt._cache["getListUID:"+e];c().SPServices({operation:"GetList",listName:e,async:!1,
-completefunc:function(d,a){b=c(d.responseXML).find("List").attr("ID")}});b&&(c.pt._cache["getListUID:"+e]=b);return b};k.log=function(){var e,b,d=1,a=0,g=!1,l=!1,f=["#FFFFFF","#F5F5F2"];"undefined"===typeof console||"undefined"===typeof console.debug?e=function(){var c,e,g="";c=0;for(e=arguments.length;c<e;c++)g+='<div style="padding: .1em .1em;background-color:'+f[a]+'"><span>['+d+"] </span>"+arguments[c]+"</div>",d++,a=1===a?0:1;g&&(b.append(g),b.dialog("isOpen")||b.dialog("open"))}:g=!0;return function(){l||
-(l=!0,g||(b=c("<div><h2>SPWidgets Debug Output</h2></div>").appendTo("body").dialog({title:"Debug output",height:300})));if(g){var a,d;a=0;for(d=arguments.length;a<d;a++)console.debug(arguments[a])}else e.apply(this,arguments)}}();k.StyleSheet="/**\n * FILE: jquery.SPControlUpload.css\n * \n * \n */\n.spcontrolupload .mainContainer {\n\tposition: relative;\n\tdisplay:block;\n\theight: 4em;\n}\n\n.spcontrolupload .iFrameWindow,\n.spcontrolupload .buttonPane,\n.spcontrolupload .spwidget-success-cntr,\n.spcontrolupload .loadingOverlay {\n    position: absolute;\n    top: 0px;\n    height: 3em;\n    width: 100%;\n}\n.spcontrolupload .buttonPane {\n    left: 0px;\n    width: 10%;\n    overflow: hidden;\n    cursor: pointer;\n}\n.spcontrolupload .buttonPane .upload_button {\n    font-weight: bold;\n    font-size: 1.1em;\n    text-align: center;\n    margin-top: .8em;\n}\n\n.spcontrolupload .iFrameWindow {\n    width: 90%;\n    left: 10%;\n    overflow: hidden;\n}\n.spcontrolupload .iFrameWindow iframe {\n\toverflow: auto;\n\twidth: 100%;\n\theight: 99%;\n}\n\n.spcontrolupload .spwidget-show-full-form .iFrameWindow {\n    overflow: auto;\n    width: 100%;\n    margin: 0em;\n    left: 0px;\n    right: auto;\n    z-index: 5;\n}\n\n.spcontrolupload .loadingOverlayMsg {\n\tfont-size: 1em;\n\tbackground-position: left top;\n    background-repeat: no-repeat;\n    background-image: url('/_layouts/images/loadingcirclests16.gif');\n    margin: 0.5em;\n    padding-left: 25px;\n}\n\n.spcontrolupload .spwidget-success-cntr,\n.spcontrolupload .spwidget-error-cntr {\n    display: none;\n}\n.spcontrolupload div.spwidget-msg-cntr {\n    margin: 0.5em .5em .5em 3em;\n\tfont-size: 1em;\n\tbackground-position: left top;\n    background-repeat: no-repeat;    \n}\n.spcontrolupload .spwidget-close {\n    color: red;\n    font-size: xx-small;\n    font-weight: bold;\n    vertical-align: super;\n    cursor: pointer;\n}\n\n.spcontrolupload .spwidget-success-cntr div.spwidget-msg-cntr {\n    background-image: url('/_layouts/images/STS_ListItem_43216.gif');\n    padding-left: 30px;\n}\n\n.spcontrolupload .spwidget-error-cntr {\n    bottom: -1.5em;\n    left: 0px;\n    width: 100%;\n    position: absolute;\n}\n\n/* For debug/dev purpose. Add it to .spcontrolupload container */\n.spcontrolupload-dev-mode .iFrameWindow {\n    overflow: auto !important;\n    height: auto !important;\n    z-index: 5 !important;\n}\n.spcontrolupload-dev-mode .iFrameWindow iframe {\n    overflow: scroll !important;\n}\n\n";
+(function(b){var k=b.SPWidgets.SPAPI;b.pt.pickSPUser={_isPickSPUserCssDone:!1};b.SPWidgets.defaults.peoplePicker={allowMultiples:!0,maxSearchResults:50,webURL:null,type:"User",onPickUser:null,onCreate:null,onRemoveUser:null,inputPlaceholder:"Type and Pick",appendTo:null,minLength:3,resolvePrincipals:!0,meKeyword:"[me]",meKeywordLabel:"Current User",filterSuggestions:null};b.fn.pickSPUser=function(h){b.pt.pickSPUser._isPickSPUserCssDone||(b.pt.pickSPUser._isPickSPUserCssDone=!0,b('<style type="text/css">\n\n'+
+b.pt.pickSPUser.styleSheet+"\n\n</style>").prependTo("head"));var e=arguments,c=this;if("string"===typeof h)return function(a){return a.is("input")&&a.hasClass("hasPickSPUser")?b.pt.pickSPUser.handleAction.apply(a,e):c}(c.eq(0));this.each(function(){var a=b(this),d=b.extend({},b.SPWidgets.defaults.peoplePicker,h,{eleUserInput:a.css("display","none").addClass("hasPickSPUser")});d.webURL||(d.webURL=k.getSiteUrl());d.maxSearchResults=parseInt(d.maxSearchResults)||50;var c=b(b.pt.pickSPUser.htmlTemplate).find(".pt-pickSPUser").clone(1).insertAfter(a);
+d.eleSelected=c.find("div.pt-pickSPUser-selected").empty().on("click",".tt-delete-icon",function(){b.pt.pickSPUser.removeUser(this)});d.elePickInput=c.find("div.pt-pickSPUser-input");d.isUserAlreadySelected=function(a,b){var c="div[data-pickspuserid='"+a+"']";b&&(c+="[data-pickspusername='"+b+"']");return 0<d.eleSelected.find(c).length};d.addPeopleToList=function(a,c){var f=(new String(a)).split(";#"),e=f.length,h,k,n,m;for(h=0;h<e;h++)k=f[h],h++,n=f[h],"<userid/>"===k.toLowerCase()&&(n=d.meKeywordLabel),
+m=b.pt.pickSPUser.getUserHtmlElement(d,k,n).appendTo(d.eleSelected),function(a,c,f){f=c;"<userid/>"===k.toLowerCase()&&(f=d.meKeyword);d.getSearchResults(f).done(function(d,f,e){var g=String(c).toLowerCase();b.each(d,function(b,d){if(String(d.displayName).toLowerCase()===g)return a.data("pickspuser_object",d),!1})})}(m,n,k);b.pt.addHoverEffect(d.eleSelected.find("div.pt-pickSPUser-person-cntr"));!1===d.allowMultiples&&d.elePickInput.css("display","none");b.pt.pickSPUser.storeListOfUsers(d.eleSelected,
+c)};d.getSearchResults=function(a){return b.Deferred(function(c){k.searchPrincipals({searchText:a,maxResults:d.maxSearchResults,principalType:d.type,async:!0,webURL:d.webURL,completefunc:function(f,e){var h=b(f.responseXML),k=[];-1<String(d.meKeyword).indexOf(a.toLowerCase())&&k.push({displayName:d.meKeywordLabel,accountId:"<UserID/>",accountName:d.meKeywordLabel,accountType:"User",value:d.meKeywordLabel,label:d.meKeywordLabel});h.find("PrincipalInfo").each(function(){var a=b(this),a={displayName:a.find("DisplayName").text(),
+accountId:a.find("UserInfoID").text(),accountName:a.find("AccountName").text(),accountType:a.find("PrincipalType").text(),value:a.find("DisplayName").text(),label:""};a.label+=a.displayName;k.push(a)});d.filterSuggestions&&(k=d.filterSuggestions(k));c.resolveWith(f,[k,f,e])}})}).promise()};!0===d.allowMultiples&&d.eleSelected.addClass("pt-pickSPUser-selected-multiple");var e={};d.elePickInput.find("input[name='pickSPUserInputField']").attr("placeholder",d.inputPlaceholder).autocomplete({minLength:d.minLength,
+appendTo:d.appendTo||d.elePickInput,source:function(a,b){a.term in e?b(e[a.term]):(e[a.term]=[],d.getSearchResults(a.term).then(function(d,c,f){e[a.term].push.apply(e[a.term],d);b(e[a.term])}))},select:function(e,h){if(!1===d.allowMultiples)d.eleSelected.empty();else if(d.isUserAlreadySelected(h.item.accountId,h.item.displayName)){setTimeout(function(){e.target.value=""},50);return}var n=function(){b.pt.pickSPUser.getUserHtmlElement(d,h.item.accountId,h.item.displayName).appendTo(d.eleSelected).data("pickspuser_object",
+h.item);b.pt.pickSPUser.storeListOfUsers(c);b.pt.addHoverEffect(c.find("div.pt-pickSPUser-person-cntr"));setTimeout(function(){e.target.value=""},50);!1===d.allowMultiples&&d.elePickInput.hide();b.isFunction(d.onPickUser)&&d.onPickUser.call(d.eleUserInput,b.extend({},h.item));a.trigger(b.Event("spwidget:peoplePickerAdd"),[d.eleUserInput,b.extend({},h.item)])};"-1"===h.item.accountId&&d.resolvePrincipals?k.resolvePrincipals({principalKeys:h.item.accountName}).then(function(a,d){h.item.accountId=b(a).find("AccountName:contains('"+
+h.item.accountName+"')").parent().find("UserInfoID").text();n()}):n()}});c.data("pickSPUserContainerOpt",d);a.data("pickSPUserContainer",c);a.val()&&d.addPeopleToList(a.val(),!0);b.isFunction(d.onCreate)&&d.onCreate.call(a,a);a.trigger(b.Event("spwidget:peoplePickerCreate"),[d.eleUserInput]);return this});return this};b.pt.pickSPUser.getUserHtmlElement=function(h,e,c){h=b(b.pt.pickSPUser.htmlTemplate).find(".pt-pickSPUser-person").clone(1);h.attr("data-pickSPUserID",e);h.find("span.pt-person-name").append(c).end().attr("data-pickSPUserNAME",
+c);return h};b.pt.pickSPUser.removeUser=function(h){var e=b(h).closest("div.pt-pickSPUser"),c=e.data("pickSPUserContainerOpt");h=b(h).closest("div.pt-pickSPUser-person");var a=h.data("pickspuser_object");b.isFunction(c.onRemoveUser)&&c.onRemoveUser.call(c.ele,c.ele,h,a);h.fadeOut("fast",function(){b(this).remove();b.pt.pickSPUser.storeListOfUsers(e)});!1===c.allowMultiples&&c.elePickInput.show("fast",function(){c.elePickInput.find("input").focus()});c.eleUserInput.trigger(b.Event("spwidget:peoplePickerRemove"),
+[c.eleUserInput,a])};b.pt.pickSPUser.storeListOfUsers=function(h,e){var c=b(h).closest("div.pt-pickSPUser"),a=c.data("pickSPUserContainerOpt"),d="",f={};c.find("div.pt-pickSPUser-selected div.pt-pickSPUser-person").each(function(){var a=b(this).attr("data-pickSPUserID")+";#"+b(this).attr("data-pickSPUserNAME");f[a]||(f[a]=!0,d&&(d+=";#"),d+=a)});a.eleUserInput.val(d);e||a.eleUserInput.change()};b.pt.pickSPUser.handleAction=function(h,e,c){h=String(h).toLowerCase();e=String(e).toLowerCase();var a=
+b(this).data("pickSPUserContainer").data("pickSPUserContainerOpt"),d=this;if("method"===h)switch(e){case "clear":a.eleUserInput.val("");a.eleSelected.empty();!1===a.allowMultiples&&(a.eleSelected.css("display","none"),a.elePickInput.show());break;case "destroy":b(this).hasClass("hasPickSPUser")&&b(this).removeClass("hasPickSPUser").next(".pt-pickSPUser").remove().show().trigger("change");break;case "add":a.addPeopleToList(c);break;case "remove":c&&(h=a.eleSelected.find("div[data-pickspuserid='"+c+
+"']"),h.length||(h=a.eleSelected.find("div[data-pickspusername='"+c+"']")),h.length&&b.pt.pickSPUser.removeUser(h));break;case "getselected":d=b.SPWidgets.parseLookupFieldValue(a.eleUserInput.val())}return d};b.pt.pickSPUser.styleSheet="/**\n * Styles for the Pick User Widget\n */\n.pt-pickSPUser .pt-pickSPUser-selected .pt-pickSPUser-person {\n    float: left;\n    margin-left: .2em;\n}\n.pt-pickSPUser .pt-pickSPUser-hint {\n    font-size: .9em;\n}\n\n.pt-pickSPUser div.pt-pickSPUser-input input.ui-autocomplete {\n    width: 99%;\n}\n.pt-pickSPUser div.pt-pickSPUser-input ul.ui-autocomplete {\n    z-index: 1;\n}\n\n.pt-pickSPUser .pt-pickSPUser-person-cntr {\n    margin: .2em 0em;\n    padding: .2em;\n    position: relative;\n}\n\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-person-name {\n    padding-right: 2em;\n}\n\n/* Item action container (delete button) */\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-pickSPUser-person-actions {\n    position: absolute;\n    right: 1px;\n    top: 1px;\n    padding: .2em;\n    display: none;\n}\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-pickSPUser-person-actions .pt-pickSPUser-person-action-links,\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-pickSPUser-person-actions .pt-pickSPUser-person-action-links .tt-confirm-delete {\n    float:right;\n}\n\n/* Make the action visible if we hover or we are trying to confirm a deletion */\n.pt-pickSPUser .pt-pickSPUser-person-cntr.ui-state-hover .pt-pickSPUser-person-actions,\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-pickSPUser-person-actions.tt-confirm,\n.pt-pickSPUser .pt-pickSPUser-person-cntr .pt-pickSPUser-person-actions a {\n    display:block;\n    float: right;\n}\n\n/* autocomplete busy image */\n.ui-autocomplete-loading {\n    background: white url('/_layouts/images/loading.gif') right center no-repeat;\n}\n\n\n";
+b.pt.pickSPUser.htmlTemplate='\x3c!--\n    Html Templates for the PickSPUser plugin.\n    \n    |\n    |   $Author$\n    | $Revision$\n    |     $Date$\n    |       $Id$\n    |\n--\x3e\n<div>\n    <div class="pt-pickSPUser">\n        <div class="pt-pickSPUser-selected">\n            None Selected!\n        </div>\n        <div style="clear:both"></div>\n        <div class="pt-pickSPUser-input" \n                title="Type user name above to view search results.">\n            <input name="pickSPUserInputField" value="" type="text"/>\n        </div>\n    </div>\n    \n    <div class="pt-pickSPUser-person">\n        <div class="pt-pickSPUser-person-cntr ui-state-default ui-corner-all">\n            <span class="pt-person-name"></span>\n            <div class="pt-pickSPUser-person-actions">\n                <div class="tt-record-item-action-links">\n                    <a class="tt-delete-icon" href="javascript:" onclick="jQuery.pt.pickSPUser.removeUser(this);">\n                        <img style="border: medium none; margin-right: 2px;" alt="Delete" src="/_layouts/images/delitem.gif">\n                    </a>\n                    <div style="clear:both;"></div>\n                </div>\n                <div style="clear:both;"></div>\n            </div>\n        </div>\n    </div>\n</div>\n';
+b.pt.addHoverEffect=function(h){return b(h).each(function(){if(!b(this).hasClass("addHoverEffectDone")){b(this).addClass("addHoverEffectDone");var e=this;b(e).mouseenter(function(){b(e).toggleClass("ui-state-hover")});b(e).mouseleave(function(){b(e).toggleClass("ui-state-hover")})}})}})(s);(function(b){var k={},h=b.SPWidgets.SPAPI;k.isSPUploadCssDone=!1;b.SPWidgets.defaults.upload={listName:"",folderPath:"",uploadDonePage:"",onPageChange:null,onUploadDone:null,uploadUrlOpt:"",overwrite:!1,uploadPage:"",
+overlayClass:"",overlayBgColor:"white",overlayMessage:"<div>Working on it</div>",selectFileMessage:"Click here to select file...",uploadDoneMessage:"Upload Successful!",fileNameErrorMessage:'A file name cannot contain any of the following characters: \\ / : * ? " &lt; &gt; | # { } % ~ &amp;',noFileErrorMessage:"No file selected!",checkInFormHeight:"25em",webURL:null,debug:!1,filenameInputSelector:"input[id$='onetidIOFile']"};b.fn.SPControlUpload=function(e){k.isSPUploadCssDone||(k.isSPUploadCssDone=
+!0,b('<style type="text/css">\n\n'+k.StyleSheet+"\n\n</style>").prependTo("head"),b.SPWidgets.defaults.upload.webURL||(b.SPWidgets.defaults.upload.webURL=h.getSiteUrl()));return b(this).each(function(){var c=b.extend({},b.SPWidgets.defaults.upload,e),a;c.log=c.debug?k.log:function(){};c.showHideBusy=function(a){return b.Deferred(function(b){a?c.$busyOverlay.fadeOut("fast").promise().then(function(){b.resolve()}):c.$busyOverlay.fadeIn("slow").promise().then(function(){b.resolve()})}).promise()};c.showHideFullForm=
+function(a){a?(c.$content.removeClass("spwidget-show-full-form"),c.$iframeCntr.css({overflow:"",height:""})):(c.$content.addClass("spwidget-show-full-form"),c.$iframeCntr.css({overflow:"auto",height:"auto"}));return c};c.showHideSuccess=function(a){a?c.$successCntr.stop().fadeOut().promise(function(){c.$successCntr.css("display","none")}):c.$successCntr.stop().show().promise(function(){c.$successCntr.css("display","block")});return c};c.showError=function(a){a=b.extend({},{message:"",autoHide:!0},
+a);c.$errorCntrMsg.html(a.message);c.$errorCntr.stop().css("display","block");a.autoHide&&c.$errorCntr.animate({opacity:1},5E3,function(){c.clearError()});return c};c.clearError=function(){c.$errorCntr.css("display","none");return c};c.resetWidget=function(){c.ev={state:1,action:"uploading",hideOverlay:!0,pageUrl:"",page:null,isUploadDone:!1,file:{}};c.$iframe.attr("src",c.uploadPage);return c};c.getUploadedFileRow=function(){var a={};h.getListItems({async:!1,webURL:c.webURL,listName:c.listName,CAMLQuery:"<Query><Where><Eq><FieldRef Name='Author' LookupId='TRUE'/><Value Type='Integer'><UserID/></Value></Eq></Where><OrderBy><FieldRef Name='Modified' Ascending='FALSE'/></OrderBy></Query>",
+CAMLViewFields:"<ViewFields><FieldRef Name='ID'/><FieldRef Name='EncodedAbsUrl'/><FieldRef Name='FileLeafRef' /><FieldRef Name='Author' /><FieldRef Name='Editor' /><FieldRef Name='Created' /><FieldRef Name='Modified' /></ViewFields>",CAMLRowLimit:1,CAMLQueryOptions:"<QueryOptions><ViewAttributes Scope='Recursive' /></QueryOptions>",completefunc:function(b,c,e){e.length&&(a=e[0])}});return a};c.isUploadPage=function(a){var b=!1,e=u.createElement("a"),g=null;e.href=String(a).toLowerCase();c.userUploadPage?
+(g=u.createElement("a"),g.href=String(c.userUploadPage).toLowerCase(),e.pathname===g.pathname&&(b=!0)):b=/upload(ex)?\.aspx$/.test(e.pathname);return b};c.listName&&0!==c.listName.indexOf("{")&&(c.listName=b.pt.getListUID(c.listName));if(!c.listName)return b(this).html('<div class="ui-state-error">Input parameter [listName] not valid!</div>'),this;c.spVersion=b.SPWidgets.getSPVersion(!0);c.userUploadPage=c.uploadPage;c.uploadPage=String(c.uploadPage);if(c.uploadPage)-1===c.uploadPage.toLowerCase().indexOf("http")&&
+(a="/",0==c.uploadPage.indexOf("/")&&(a=""),c.uploadPage=c.webURL+a+c.uploadPage);else switch(c.spVersion){case "2013":c.uploadPage=c.webURL+"/_layouts/15/UploadEx.aspx";break;case "2010":c.uploadPage=c.webURL+"/_layouts/UploadEx.aspx";break;default:c.uploadPage=c.webURL+"/_layouts/Upload.aspx"}c.uploadDonePage=String(c.uploadDonePage);c.uploadDonePage||(c.uploadDonePage=c.webURL+"/_layouts/images/STS_ListItem_43216.gif");c._iframeLoadId=1;c._uploadUrlParams="?List="+b.pt.getEscapedUrl(c.listName)+
+"&RootFolder="+b.pt.getEscapedUrl(c.folderPath)+"&Source="+b.pt.getEscapedUrl(c.uploadDonePage)+"&"+(new Date).getTime()+"=1&"+c.uploadUrlOpt;c.uploadPage+=c._uploadUrlParams;c._lastError="";c._reloadCount=0;c.ev={state:1,action:"uploading",hideOverlay:!0,pageUrl:"",page:null,isUploadDone:!1,file:{}};c.$ele=b(this);a={};c.overlayBgColor&&(a["background-color"]=c.overlayBgColor);c.$cntr=b(b(k.HtmlUI).filter("div.SPControlUploadUI").clone()).appendTo(c.$ele.addClass("hasSPControlUploadUI").empty()).data("SPControlUploadOptions",
+c);c.$buttonCntr=c.$cntr.find("div.buttonPane").click(function(a){k.onUpload(this)});c.$content=c.$cntr.find("div.mainContainer");c.$iframeCntr=c.$cntr.find("div.iFrameWindow");c.$iframe=c.$iframeCntr.children("iframe");c.$busyOverlay=c.$cntr.find("div.loadingOverlay");c.$busyOverlayMsg=c.$busyOverlay.find("div.loadingOverlayMsg");c.$successCntr=c.$cntr.find("div.spwidget-success-cntr");c.$errorCntr=c.$cntr.find("div.spwidget-error-cntr");c.$errorCntrMsg=c.$errorCntr.find(".spwidget-msg");c.reInvalidChr=
+/[\/:*?"<>|#{}%~&]/;c.$successCntr.on("click",".spwidget-close",function(a){c.showHideSuccess(!0)}).find(".spwidget-msg").html(c.uploadDoneMessage);c.$errorCntr.on("click",".spwidget-close",function(a){c.clearError()});c.$busyOverlay.addClass(c.overlayClass).css(a);c.$busyOverlayMsg.html(c.overlayMessage);c.showHideBusy();c.$cntr.find("iframe").css("height",c.checkInFormHeight).load(function(a){k.onIframeChange(c.$ele.find(".SPControlUploadUI"))}).attr("src",c.uploadPage).end();return this})};k.onUpload=
+function(e){var c=b(e).closest(".SPControlUploadUI"),a=c.find("iframe").contents(),d=a.find("input[type='file']").closest("tr").siblings().find("span"),f=c.data("SPControlUploadOptions");e=f.ev;f.log("Upload.onUpload("+f._iframeLoadId+"): Start....");d.css("display","none");if(a.find("input[type='file']").val())if(f.reInvalidChr.test(a.find("div.SPControlUploadModUIFileSelected").text()))f.showError({message:f.fileNameErrorMessage});else{e.state=2;e.action="preLoad";if(f.onPageChange&&!1===f.onPageChange.call(f.$ele,
+e))return!1;f.showHideFullForm(!0);f.showHideBusy().then(function(){f.log("Upload.onUpload("+f._iframeLoadId+"): Clicking the OK button on upload form.");a.find("input[type='button'][id$='btnOK']").click();if(d.is(":visible"))return f.log("Upload.onUpload("+f._iframeLoadId+"): Error message reported! \n"+d.text()),c.find(".loadingOverlay").css("display","none").end(),!1})}else f.showError({message:f.noFileErrorMessage})};k.isSPBusyAnimation=function(b){return b.find("#GearPage").length||b.find("#ms-loading-box").length?
+!0:!1};k.onIframeChange=function(e){var c=b(e).closest(".SPControlUploadUI"),a=c.data("SPControlUploadOptions"),d=0,f=b(c.find("iframe").contents());if(a.debug)try{a.log("Upload.onIframeChange(): ENTERING... Document readyState: "+f[0].readyState+" IFRAME URL: "+f[0].location.href)}catch(h){}k.isSPBusyAnimation(f)?a.log("Upload.onIframeChange(): EXITING... Gear page displyed."):2===a.ev.state&&"preLoad"===a.ev.action&&!0===f[0].spcontrolupload_init_done?(a.log("Upload.onIframeChange("+a._iframeLoadId+
+"): Exiting! ev.action=["+a.ev.action+"] and ev.state=["+a.ev.state+"] - Nothing to do. Action handled by onUpload(). Setting action to postLoad"),a.ev.action="postLoad"):(a._iframeLoadId++,d=a._iframeLoadId,a.log("Upload.onIframeChange("+d+"): State=["+a.ev.state+"] Action=["+a.ev.action+"]"),setTimeout(function(){if(d!==a._iframeLoadId)a.log("Upload.onIframeChange("+d+"): not latest invokation! Existing.");else{var e=a.ev,h=f.find("form").eq(0);f=b(c.find("iframe").contents());a.log("Upload.onIframeChange("+
+d+"): STARTING... Executing setTimeout(). URL:"+f[0].location.href);if(!0===f.spcontrolupload_init_done)a.log("Upload.onIframeChange("+d+"): EXITING!!! Page was already processed!");else{f.spcontrolupload_init_done=!0;e.pageUrl=f[0].location.href;e.page=f;a.$iframeCntr.scrollTop(0);f.scrollTop(0);if(a.isUploadPage(e.pageUrl)){a.log("Upload.onIframeChange("+d+"): URL is the upload page!");f.find("body").css({overflow:"hidden"});h.children(":visible").hide().end().append(b(k.HtmlUI).filter("div#SPControlUploadModUI").clone()).find("div.SPControlUploadModUIFileSelected").html(a.selectFileMessage);
+if(RegExp(/error/i).test(b.trim(f.find(".ms-pagetitle").text()))||RegExp(/error/i).test(b.trim(f.find("title").text()))||RegExp(/error\.aspx/i).test(b.trim(f.find("form").attr("action")))){a.log("Upload.onIframeChange("+d+"): page displaying an error... Storing it and reloading upload form.");a._lastError=f.find("[id$='LabelMessage']").text();if(1<a._reloadCount){alert("Error encountered during upload which is causing program to loop. Last upload error was: "+a._lastError);c.find(".loadingOverlay").fadeOut();
+return}a._reloadCount+=1;c.find("iframe").attr("src",a.uploadPage);return}if(k.isSPBusyAnimation(f)&&!f.find("input[type='file']").length){a.log("Upload.onIframeChange("+d+"): SP processing page (GearPage)... Exiting and waiting for next page...");return}f.find("input[type='file']").closest("table").appendTo(f.find("#SPControlUploadModUI")).removeClass("ms-authoringcontrols");var n=f.find("#SPControlUploadModUI").find("input[type='file']").closest("tr").siblings().css("display","none").end().end().siblings("tr .ms-error").css("display",
+"").end().on("change focus click",function(d){d=b(this).val();var c="",e="/_layouts/images/urn-content-classes-smartfolder16.gif";if(d){try{c=d.substr(d.lastIndexOf(".")+1)}catch(g){c="GEN"}e="/_layouts/images/IC"+c.toUpperCase()+".GIF";d=d.replace(/\\/g,"/").split("/").pop()||d}else d=a.selectFileMessage;f.find("#SPControlUploadModUI > div").html(d).css("background-image","url('"+e+"')")}).css({cursor:"pointer",height:"100px",position:"absolute",left:"0px",top:"0px",filter:"alpha(opacity=1)",opacity:"0.01",
+outline:"none","-moz-opacity":"0.01","font-size":"100px","z-index":"5"});h.on("mousemove",function(a){n.css({left:a.pageX-(n.width()-50),top:a.pageY-30}).blur()});a._lastError&&(a.showError({message:a._lastError}),a._lastError="");a._reloadCount=0;a.overwrite?f.find("input[type='checkbox'][name$='OverwriteSingle']").prop("checked","checked"):f.find("input[type='checkbox'][name$='OverwriteSingle']").prop("checked","");e.state=1;e.action="postLoad";e.hideOverlay=!0}else{a.log("Upload.onIframeChange("+
+a._iframeLoadId+"): File uploaded to server! Need ["+a.uploadDonePage+"] to be done.");e.state=3;e.action="postLoad";e.hideOverlay=!0;e.file=a.getUploadedFileRow();if(k.isSameUrlPage(e.pageUrl,a.uploadDonePage))a.log("Upload.onIframeChange("+a._iframeLoadId+"): Upload widget process DONE!"),e.isUploadDone=!0,e.hideOverlay=!1,a.showHideBusy(),a.showHideSuccess();else if(a.log("Upload.onIframeChange("+a._iframeLoadId+"): Post Upload Form being displayed! Hooking into form.onsubmit!"),h.length){var m=
+h.prop("onsubmit"),l=h.find(a.filenameInputSelector).eq(0);l.length&&(h.children(":visible").css("display","none").addClass("ptWasVisible"),l.closest("div[id^='WebPart']").appendTo(h).css("display","").removeClass("ptWasVisible"));h[0].onsubmit=function(){a.log("Upload.onIframeChange("+d+"): iframe form.onsubmit triggered!");a.showHideBusy();var c=!0;b.isFunction(a.onPageChange)&&(c=a.onPageChange.call(a.$ele,b.extend({},e,{state:3,action:"preLoad"})));if(!1===c)return a.showHideBusy(!0),c;b.isFunction(m)&&
+(c=m());if(!1===c)return a.showHideBusy(!0),c;a.showHideFullForm(!0);return c}}b(c.find("iframe")[0].contentWindow).unload(function(d){a.log("Upload.onIframeChange("+a._iframeLoadId+"): iframe.unload() triggered!");a.showHideBusy();a.showHideFullForm(!0);if(b.isFunction(a.onPageChange))return a.onPageChange.call(a.$ele,b.extend({},e,{state:3,action:"preLoad"}))})}a.log("Upload.onIframeChange("+a._iframeLoadId+"): iframe page setup done!");a.onPageChange&&a.onPageChange.call(a.$ele,e);if("postload"!==
+e.action.toLowerCase()||!0===e.hideOverlay)a.showHideBusy(!0),!1===e.isUploadDone&&3===e.state&&a.showHideFullForm();e.isUploadDone&&(a.resetWidget(),a.$successCntr.animate({opacity:1},3E3,function(){a.showHideSuccess(!0)}),b.isFunction(a.onUploadDone)&&a.onUploadDone.call(a.$ele,e.file))}}},500))};k.isSameUrlPage=function(b,c){if(!b||!c)return!1;var a=function(a){var b=u.createElement("a");b.href=a;return unescape(b.pathname)},d=String(a(b)).toLowerCase(),a=String(a(c)).toLowerCase();return d===
+a};b.pt.getEscapedUrl=escapeProperly;b.pt.getUnEscapedUrl=unescapeProperly;b.pt.getListUID=function(e){if(!e)return"";var c="";if(b.pt._cache["getListUID:"+e])return c=b.pt._cache["getListUID:"+e];h.getList({listName:e,async:!1,completefunc:function(a,d){c=b(a.responseXML).find("List").attr("ID")}});c&&(b.pt._cache["getListUID:"+e]=c);return c};k.log=function(){var e,c,a=1,d=0,f=!1,h=!1,g=["#FFFFFF","#F5F5F2"];"undefined"===typeof console||"undefined"===typeof console.debug?e=function(){var b,f,e=
+"";b=0;for(f=arguments.length;b<f;b++)e+='<div style="padding: .1em .1em;background-color:'+g[d]+'"><span>['+a+"] </span>"+arguments[b]+"</div>",a++,d=1===d?0:1;e&&(c.append(e),c.dialog("isOpen")||c.dialog("open"))}:f=!0;return function(){h||(h=!0,f||(c=b("<div><h2>SPWidgets Debug Output</h2></div>").appendTo("body").dialog({title:"Debug output",height:300})));if(f){var a,d;a=0;for(d=arguments.length;a<d;a++)console.debug(arguments[a])}else e.apply(this,arguments)}}();k.StyleSheet="/**\n * FILE: jquery.SPControlUpload.css\n * \n * \n */\n.spcontrolupload .mainContainer {\n\tposition: relative;\n\tdisplay:block;\n\theight: 4em;\n}\n\n.spcontrolupload .iFrameWindow,\n.spcontrolupload .buttonPane,\n.spcontrolupload .spwidget-success-cntr,\n.spcontrolupload .loadingOverlay {\n    position: absolute;\n    top: 0px;\n    height: 3em;\n    width: 100%;\n}\n.spcontrolupload .buttonPane {\n    left: 0px;\n    width: 10%;\n    overflow: hidden;\n    cursor: pointer;\n}\n.spcontrolupload .buttonPane .upload_button {\n    font-weight: bold;\n    font-size: 1.1em;\n    text-align: center;\n    margin-top: .8em;\n}\n\n.spcontrolupload .iFrameWindow {\n    width: 90%;\n    left: 10%;\n    overflow: hidden;\n}\n.spcontrolupload .iFrameWindow iframe {\n\toverflow: auto;\n\twidth: 100%;\n\theight: 99%;\n}\n\n.spcontrolupload .spwidget-show-full-form .iFrameWindow {\n    overflow: auto;\n    width: 100%;\n    margin: 0em;\n    left: 0px;\n    right: auto;\n    z-index: 5;\n}\n\n.spcontrolupload .loadingOverlayMsg {\n\tfont-size: 1em;\n\tbackground-position: left top;\n    background-repeat: no-repeat;\n    background-image: url('/_layouts/images/loadingcirclests16.gif');\n    margin: 0.5em;\n    padding-left: 25px;\n}\n\n.spcontrolupload .spwidget-success-cntr,\n.spcontrolupload .spwidget-error-cntr {\n    display: none;\n}\n.spcontrolupload div.spwidget-msg-cntr {\n    margin: 0.5em .5em .5em 3em;\n\tfont-size: 1em;\n\tbackground-position: left top;\n    background-repeat: no-repeat;    \n}\n.spcontrolupload .spwidget-close {\n    color: red;\n    font-size: xx-small;\n    font-weight: bold;\n    vertical-align: super;\n    cursor: pointer;\n}\n\n.spcontrolupload .spwidget-success-cntr div.spwidget-msg-cntr {\n    background-image: url('/_layouts/images/STS_ListItem_43216.gif');\n    padding-left: 30px;\n}\n\n.spcontrolupload .spwidget-error-cntr {\n    bottom: -1.5em;\n    left: 0px;\n    width: 100%;\n    position: absolute;\n}\n\n/* For debug/dev purpose. Add it to .spcontrolupload container */\n.spcontrolupload-dev-mode .iFrameWindow {\n    overflow: auto !important;\n    height: auto !important;\n    z-index: 5 !important;\n}\n.spcontrolupload-dev-mode .iFrameWindow iframe {\n    overflow: scroll !important;\n}\n\n";
 k.HtmlUI='<div class="SPControlUploadUI spcontrolupload">\n    <div class="mainContainer">\n        <div class="buttonPane ui-state-default">\n            <div class="upload_button">\n                Upload\n            </div>\n        </div>\n        <div class="iFrameWindow ui-state-default">\n            <iframe name="SPControlUploadUI" frameborder="0" scrollbars="yes" scrolling="yes"></iframe>\n        </div>\n        <div class="loadingOverlay ui-widget-content">\n            <div class="loadingOverlayMsg"></div>\n        </div>\n        <div class="spwidget-success-cntr ui-widget-content">\n            <div class="spwidget-msg-cntr">\n                <span class="spwidget-msg">Upload Successful!</span> \n                <span class="spwidget-close">x</span> \n            </div>\n        </div>\n        <div class="spwidget-error-cntr ui-state-error">\n            <div class="spwidget-msg-cntr">\n                <span class="spwidget-msg">Error</span> \n                <span class="spwidget-close">x</span> \n            </div>\n        </div>\n    </div>\n</div>\n\n<div id="SPControlUploadModUI" \n    style="\n        position:   absolute;\n        width:      99.9%;\n        height:     99.9%;\n        left:       0px;\n        top:        0px;\n        padding-left:       .5em;\n        background-color:   white;">\n    <div class="SPControlUploadModUIFileSelected"\n        style="\n        background-position: left center;\n        background-repeat: no-repeat;\n        background-image: url(\'/_layouts/images/urn-content-classes-smartfolder16.gif\');\n        padding: 0.5em 2em;">Select...</div>\n</div>\n'})(s);
-(function(c){var k={isInitDone:!1,evNamespace:".spwidgets.spdatefield"};c.SPWidgets.defaults.date={allowMultiples:!1,delimeter:";",remainOpen:!0,datepicker:{dateFormat:"mm/dd/yy",buttonImage:"/_layouts/images/CALENDAR.GIF",showOn:"both",buttonImageOnly:!0},dateTemplate:'{{date}} <span class="spwidgets-item-remove">[x]</span>',showTimepicker:!1,timeFormat:" {{hour}}:{{minutes}} {{ampm}}",timeUTC:!0,labelHour:"Hour",labelMinutes:"Minutes",labelAMPM:"AM|PM",labelTime:"Time",labelSet:"Set",onSelect:null};
-c.fn.SPDateField=function(e){var b=arguments,d=this;k.isInitDone||(k.isInitDone=!0,""!==k.styleSheet&&c('<style type="text/css">\n\n'+k.styleSheet+"\n\n</style>").prependTo("head"),c("body").on("click"+k.evNamespace,k.onPageClick));return"string"===typeof e?function(){var a=String(b[0]).toLowerCase(),e=d;c(d).each(function(l,f){if(c(d).hasClass("hasSPDateField")){var k=c(f),h=k.data("SPDateFieldInstance");if(h&&0<k.length)switch(a){case "getdate":e=h.getDate();break;case "setdate":b[1]&&h.setDate({date:b[1],
-format:b[2]||h.opt.datepicker.dateFormat});break;case "removedate":b[1]&&h.removeDate({date:b[1],format:b[2]||h.opt.datepicker.dateFormat});break;case "reset":h.reset();break;case "destroy":h.destroy()}}});return e}():this.each(function(){var a={$ele:c(this).addClass("hasSPDateField"),isInline:!1,inlineCntr:null};if(!a.$ele.is("input[type='text']")){if(a.$ele.is(":input"))return;a.isInline=!0;a.inlineCntr=c(this);a.$ele=c('<input name="spdatefieldinline" value="" type="text" style="display:none" />')}a.opt=
-c.extend(!0,{},c.SPWidgets.defaults.date,e);a.$ui=c(k.htmlTemplate).filter("div.spwidget-date-cntr").clone();a.isInline?(a.$ui.appendTo(a.inlineCntr).addClass("spwidget-inline").css("display","none"),a.$ele.appendTo(a.$ui)):a.$ui.insertAfter(a.$ele).css("display","none");a.eleOrigVal=a.$ele.val();a.$ele.val("");a.$input=a.$ui.find("input[name='SPDateFieldInput']").val(a.$ele.val());a.$inputCntr=a.$input.closest(".spwidget-date-input-cntr");a.$dtCntr=a.$ui.find("div.spwidget-date-selected-cntr");a.getDate=
-function(){var c={input:a.$ele.val(),dates:[]};c.input&&(a.opt.allowMultiples?c.dates=c.input.split(a.opt.delimeter):c.dates.push(c.input));return c};a.reset=function(){a.$input.val("").datepicker("hide");a.$ele.val("").change();a.$dtCntr.empty();return a};a.setDate=function(b){var d=c.extend({},{date:"",time:"",format:a.opt.datepicker.dateFormat,setDatepicker:!0,triggerEvent:!0},b),f=a.$ele.val(),e="",k;if(!d.date)return a;c.isArray(d.date)||(d.date=[d.date]);c.each(d.date,function(b,g){var h=g,
-r="",u="";if(!(h instanceof Date))if(h=String(h),-1<h.indexOf("T"))h=c.SPWidgets.parseDateString(h);else try{h=c.datepicker.parseDate(d.format,g)}catch(v){return a}k=h;r=c.datepicker.formatDate("yy-mm-dd",h);u=c.datepicker.formatDate(a.opt.datepicker.dateFormat,h);a.opt.showTimepicker&&(r=c.SPWidgets.SPGetDateString(h,a.opt._timeFmt),u+=a.$timepicker.formatTime(h));a.opt.allowMultiples?0>f.indexOf(r)&&(f&&(f+=a.opt.delimeter),f+=r,e+='<span class="spwidgets-item" data-spwidget_dt1="'+r+'" data-spwidget_dt2="'+
-u+'">'+c.SPWidgets.fillTemplate({tmplt:a.opt.dateTemplate,data:{date:u}})+" </span>"):(f=r,e=u)});a.opt.allowMultiples?a.$dtCntr.append(e):d.setDatepicker&&(a.$input.val(e),a.isInline&&!a.opt.showTimepicker?a.$inputCntr.datepicker("setDate",k):a.isInline&&a.$timepicker.updateDateTimeWidgets(k));a.$ele.val(f);d.triggerEvent&&(a.isInline||a.$ele.change(),c.isFunction(a.opt.onSelect)&&a.opt.onSelect.call(a.isInline?a.inlineCntr:a.$ele));return a};a.removeDate=function(b){var d=c.extend({},{date:"",format:a.opt.datepicker.dateFormat},
-b),f=a.getDate();if(!d.date)return a;c.isArray(d.date)||(d.date=[d.date]);c.each(d.date,function(b,e){var g=e,h="",k="";if(!(g instanceof Date))try{g=c.datepicker.parseDate(d.format,e)}catch(r){return a}h=a.opt.showTimepicker?c.SPWidgets.SPGetDateString(g,a.opt._timeFmt):c.datepicker.formatDate("yy-mm-dd",g);k=RegExp("("+a.opt.delimeter+")?"+h,"g");f.input=f.input.replace(k,"");a.opt.allowMultiples&&a.$dtCntr.find("span[data-spwidget_dt1='"+h+"']").remove()});f.input=f.input.replace(RegExp("^"+a.opt.delimeter),
-"").replace(RegExp(a.opt.delimeter+"$"),"");a.$ele.val(f.input).change();return a};a.destroy=function(){a.$ele.removeData("SPDateFieldInstance");a.$ele.removeClass("hasSPDateField").css("display","");a.$ui.css("display","none");a.$input.datepicker("hide");a.$input.datepicker("destroy");a.$timepicker&&(a.$timepicker.$timePicker.off(".spdatefield"),a.$input.off(".spdatefield"));a.isInline&&a.inlineCntr.removeClass("hasSPDateField").removeData("SPDateFieldInstance");a.$ui.remove()};a.createDatePicker=
-function(){var b={};if(a.opt.showTimepicker){b.$selectorCntr=c(k.htmlTemplate).filter("div.spwidget-datetime-selector").clone().appendTo(a.$inputCntr).css("display","none");b.$datePicker=b.$selectorCntr.find("div.spwidget-date-selector");b.$timePicker=b.$selectorCntr.find("div.spwidget-time-selector");b.$setButton=b.$selectorCntr.find("div.spwidget-btn-set");b.$hourSelect=b.$timePicker.find("select.spwidget-hour");b.$minSelect=b.$timePicker.find("select.spwidget-min");b.$ampmSelect=b.$timePicker.find("select.spwidget-ampm");
-b.heightDone=!1;b.firstShowDone=!1;b.getTime=function(){var a={hour:b.$hourSelect.val(),minutes:b.$minSelect.val(),ampm:b.$ampmSelect.val()};a.hour24=a.hour;"PM"===a.ampm&&"12"!==a.hour?a.hour24=String(parseInt(a.hour)+12):"AM"===a.ampm&&"12"===a.hour&&(a.hour24="0");return a};b.formatTime=function(d){var f=d,e="";d instanceof Date?(f={hour:d.getHours(),hour24:String(d.getHours()),minutes:String(d.getMinutes()),ampm:"AM"},12<f.hour?(f.hour=String(f.hour-12),f.ampm="PM"):12===f.hour&&(f.ampm="PM"),
-f.hour=String(f.hour),"0"===f.hour&&(f.hour="12"),2>String(f.minutes).length&&(f.minutes="0"+f.minutes)):d||(f=b.getTime());return e=c.SPWidgets.fillTemplate(a.opt.timeFormat,f)};b.setDateTime=function(c){var d=b.getTime();c instanceof Date||(c=b.$datePicker.datepicker("getDate"),null===c&&(c=new Date));c.setHours(d.hour24);c.setMinutes(d.minutes);a.setDate({date:c,format:a.opt.datepicker.dateFormat,setDatepicker:!0});b.execUsersCallback(a.$input.val())};b.updateDateTimeWidgets=function(a){var c;
-a instanceof Date||(a=new Date);c=a.getHours();0===c?c="12":12<c&&(c-=12);b.$hourSelect.val(c);for(c=a.getMinutes();c%5;)--c;10>c&&(c="0"+c);b.$minSelect.val(c);11<a.getHours()?b.$ampmSelect.val("PM"):b.$ampmSelect.val("AM");b.$datePicker.datepicker("setDate",a)};b.showPicker=function(){b.$selectorCntr.show(function(){var d;b.heightDone||(b.heightDone=!0,c.SPWidgets.makeSameHeight(b.$datePicker.find("div.ui-datepicker-inline").add(b.$timePicker)));b.firstShowDone||(b.firstShowDone=!0,d=a.getDate(),
-d=d.dates.length?c.SPWidgets.parseDateString(d.dates[d.dates.length-1]):new Date,b.updateDateTimeWidgets(d))}).position({my:"left top",at:"left bottom",of:a.$input})};b.execUsersCallback=function(d,e){c.isFunction(a.opt.datepicker._onSelect)&&a.opt.datepicker._onSelect.call(b.$datePicker,d,e)};a.opt.datepicker.altFormat="";a.opt.datepicker.altField="";if(a.opt.datepicker.buttonImage&&!a.isInline)c('<img class="ui-datepicker-trigger" src="'+a.opt.datepicker.buttonImage+'" alt="..." title="...">').appendTo(a.$inputCntr).on("click"+
-k.evNamespace,function(){b.showPicker()});if(a.opt.allowMultiples||a.isInline)b.$selectorCntr.addClass("spwidget-date-multiples-cntr"),b.$setButton.find("div.spwidget-btn").button({label:a.opt.labelSet}).on("click"+k.evNamespace,function(a){b.setDateTime();return this});b.$timePicker.find("div.ui-widget-header").html(a.opt.labelTime).end().find("div.spwidget-time-hour > label").html(a.opt.labelHour).end().find("div.spwidget-time-min > label").html(a.opt.labelMinutes).end().find("div.spwidget-time-ampm > label").html(a.opt.labelAMPM).end();
-c.isFunction(a.opt.datepicker.onSelect)&&(a.opt.datepicker._onSelect=a.opt.datepicker.onSelect);a.opt.datepicker.numberOfMonths=1;a.opt.datepicker.onSelect=function(c,d){if(a.opt.allowMultiples||a.isInline)return this;b.setDateTime(new Date(d.currentYear,d.currentMonth,d.currentDay))};b.$datePicker.datepicker(a.opt.datepicker);b.$timePicker.on("change"+k.evNamespace+" keyup"+k.evNamespace,"select",function(c){c.stopPropagation();c.preventDefault();if(a.opt.allowMultiples||a.isInline)return this;b.setDateTime();
-return this});a.isInline&&(a.$input.css("display","none"),b.$selectorCntr.addClass("spwidget-inline").css("display",""));if(!a.isInline)a.$input.on("focus"+k.evNamespace,function(){b.showPicker()})}else a.opt.allowMultiples&&a.opt.remainOpen&&(a.opt.datepicker.showAnim=""),c.isFunction(a.opt.datepicker.onSelect)&&(a.opt.datepicker._onSelect=a.opt.datepicker.onSelect),a.opt.datepicker.onSelect=function(b,d){a.setDate({date:b,format:d.settings.dateFormat,setDatepicker:!1});c.isFunction(a.opt.datepicker._onSelect)&&
-a.opt.datepicker._onSelect.call(this,b,d);a.opt.allowMultiples&&a.$input.val("");a.opt.allowMultiples&&(a.opt.remainOpen&&!a.isInline)&&setTimeout(function(){a.$input.datepicker("show")},5)},a.isInline?(a.$inputCntr.datepicker(a.opt.datepicker),a.$input.css("display","none")):a.$input.datepicker(a.opt.datepicker);return b};a.opt._timeFmt=a.opt.timeUTC?"utc":"local";a.opt.datepicker.altFormat="yy-mm-dd";a.opt.datepicker.altField=a.$ele;a.opt.allowMultiples&&(a.opt.datepicker.altFormat="",a.opt.datepicker.altField=
-"",a.$dtCntr.css("display","").on("click",".spwidgets-item-remove",function(b){b=c(b.target).closest(".spwidgets-item").data("spwidget_dt1");a.opt.allowMultiples&&(b=c.SPWidgets.parseDateString(b));a.removeDate({date:b,format:"yy-mm-dd"})}));a.$ele.css("display","none").data("SPDateFieldInstance",a);a.isInline&&a.inlineCntr.data("SPDateFieldInstance",a);a.$timepicker=a.createDatePicker();a.eleOrigVal&&a.setDate({date:a.eleOrigVal.split(a.opt.delimeter),format:"yy-mm-dd",triggerEvent:!1});a.$input.on("change",
-function(b){b.stopPropagation();a.$ele.change()});a.$ui.css("display","")})};k.onPageClick=function(e){e=c(e.target);var b=c("div.spwidget-datetime-selector:visible:not('.spwidget-inline')"),d=null;if(!c.contains(document.documentElement,e[0]))return this;b.length&&(d=e.closest("div.spwidget-datetime-selector"),!d.length&&e.is("input.spwidget-date-datepicker,.ui-datepicker-trigger")&&(d=e.parent().find("div.spwidget-datetime-selector")),b.not(d).hide());return this};k.styleSheet='.spwidget-date-cntr {\n    display: inline-block;   \n    position: relative;\n}\n.spwidget-date-cntr div.spwidget-date-input-cntr {\n    position: relative;\n}\n.spwidget-date-cntr input {\n    width: 99%;\n}\n.spwidget-date-cntr img.ui-datepicker-trigger {\n    display: block;\n    position: absolute;\n    right: 2%;\n    top: .3em;\n}\n\n.spwidget-date-cntr .spwidgets-item-remove {\n    color: red;\n    font-size: xx-small;\n    vertical-align: super;\n    cursor: pointer;\n}\n/** --------------------------- Date and Time picker -- */\n.spwidget-date-cntr div.spwidget-datetime-selector {\n    padding: .5em;\n    position: absolute;\n    width: 28em;\n    z-index: 1;\n}\n.spwidget-date-cntr div.spwidget-datetime-selector div.ui-datepicker-inline {\n    width: 14em;\n}\n\n.spwidget-date-cntr div.spwidget-datetime-selector div.spwidget-date-selector,\n.spwidget-date-cntr div.spwidget-datetime-selector div.spwidget-time-selector {\n    float: left;\n}\n.spwidget-date-cntr div.spwidget-selectors:before,\n.spwidget-date-cntr div.spwidget-selectors:after {\n    content: "";\n    display: table;\n    line-height: 0;\n}\n.spwidget-date-cntr div.spwidget-selectors:after {\n    clear: both;    \n}\n.spwidget-date-cntr div.spwidget-datetime-selector select.spwidget-hour,\n.spwidget-date-cntr div.spwidget-datetime-selector select.spwidget-min,\n.spwidget-date-cntr div.spwidget-datetime-selector select.spwidget-ampm {\n    font-size: 1.2em;\n}\n/* Time selector */\n.spwidget-date-cntr div.spwidget-time-selector {\n    margin-left: .2em;\n    width: 11em;\n}\n.spwidget-date-cntr div.spwidget-time-selector-cntr {\n    padding: .2em;\n}\n.spwidget-date-cntr div.spwidget-time-selector div.ui-widget-header {\n    text-align: center;\n    line-height: 2em;\n    margin-bottom: .5em;\n}\n.spwidget-date-cntr .spwidget-time-hour,\n.spwidget-date-cntr .spwidget-time-min,\n.spwidget-date-cntr .spwidget-time-ampm {\n    margin-top: .2em;\n    padding: .2em;\n}\n.spwidget-date-cntr .spwidget-time-selector-cntr select,\n.spwidget-date-cntr .spwidget-time-selector-cntr label {\n    overflow: hidden;\n    display: inline-block;\n    font-weight: bold;\n}\n.spwidget-date-cntr .spwidget-time-selector-cntr select {\n    width: 4em;\n}\n.spwidget-date-cntr .spwidget-time-selector-cntr label {\n    width: 5em;\n    font-size: .9em;\n}\n\n/* inline mode */\n.spwidget-date-cntr .spwidget-inline div.spwidget-datetime-selector {\n    position: relative;\n    width: 26em;\n}\n\n.spwidget-btn-set {\n    display: none;\n    position: absolute;\n    right: .2em;\n    bottom: .2em;\n}\n.spwidget-date-multiples-cntr .spwidget-btn-set {\n    display: block;\n}\n';
+(function(b){var k={isInitDone:!1,evNamespace:".spwidgets.spdatefield"};b.SPWidgets.defaults.date={allowMultiples:!1,delimeter:";",remainOpen:!0,datepicker:{dateFormat:"mm/dd/yy",buttonImage:"/_layouts/images/CALENDAR.GIF",showOn:"both",buttonImageOnly:!0},dateTemplate:'{{date}} <span class="spwidgets-item-remove">[x]</span>',showTimepicker:!1,timeFormat:" {{hour}}:{{minutes}} {{ampm}}",timeUTC:!0,labelHour:"Hour",labelMinutes:"Minutes",labelAMPM:"AM|PM",labelTime:"Time",labelSet:"Set",onSelect:null};
+b.fn.SPDateField=function(h){var e=arguments,c=this;k.isInitDone||(k.isInitDone=!0,""!==k.styleSheet&&b('<style type="text/css">\n\n'+k.styleSheet+"\n\n</style>").prependTo("head"),b("body").on("click"+k.evNamespace,k.onPageClick));return"string"===typeof h?function(){var a=String(e[0]).toLowerCase(),d=c;b(c).each(function(f,h){if(b(c).hasClass("hasSPDateField")){var g=b(h),k=g.data("SPDateFieldInstance");if(k&&0<g.length)switch(a){case "getdate":d=k.getDate();break;case "setdate":e[1]&&k.setDate({date:e[1],
+format:e[2]||k.opt.datepicker.dateFormat});break;case "removedate":e[1]&&k.removeDate({date:e[1],format:e[2]||k.opt.datepicker.dateFormat});break;case "reset":k.reset();break;case "destroy":k.destroy()}}});return d}():this.each(function(){var a={$ele:b(this).addClass("hasSPDateField"),isInline:!1,inlineCntr:null};if(!a.$ele.is("input[type='text']")){if(a.$ele.is(":input"))return;a.isInline=!0;a.inlineCntr=b(this);a.$ele=b('<input name="spdatefieldinline" value="" type="text" style="display:none" />')}a.opt=
+b.extend(!0,{},b.SPWidgets.defaults.date,h);a.$ui=b(k.htmlTemplate).filter("div.spwidget-date-cntr").clone();a.isInline?(a.$ui.appendTo(a.inlineCntr).addClass("spwidget-inline").css("display","none"),a.$ele.appendTo(a.$ui)):a.$ui.insertAfter(a.$ele).css("display","none");a.eleOrigVal=a.$ele.val();a.$ele.val("");a.$input=a.$ui.find("input[name='SPDateFieldInput']").val(a.$ele.val());a.$inputCntr=a.$input.closest(".spwidget-date-input-cntr");a.$dtCntr=a.$ui.find("div.spwidget-date-selected-cntr");a.getDate=
+function(){var b={input:a.$ele.val(),dates:[]};b.input&&(a.opt.allowMultiples?b.dates=b.input.split(a.opt.delimeter):b.dates.push(b.input));return b};a.reset=function(){a.$input.val("").datepicker("hide");a.$ele.val("").change();a.$dtCntr.empty();return a};a.setDate=function(d){var c=b.extend({},{date:"",time:"",format:a.opt.datepicker.dateFormat,setDatepicker:!0,triggerEvent:!0},d),e=a.$ele.val(),g="",h;if(!c.date)return a;b.isArray(c.date)||(c.date=[c.date]);b.each(c.date,function(d,k){var l=k,
+m="",v="";if(!(l instanceof Date))if(l=String(l),-1<l.indexOf("T"))l=b.SPWidgets.parseDateString(l);else try{l=b.datepicker.parseDate(c.format,k)}catch(q){return a}h=l;m=b.datepicker.formatDate("yy-mm-dd",l);v=b.datepicker.formatDate(a.opt.datepicker.dateFormat,l);a.opt.showTimepicker&&(m=b.SPWidgets.SPGetDateString(l,a.opt._timeFmt),v+=a.$timepicker.formatTime(l));a.opt.allowMultiples?0>e.indexOf(m)&&(e&&(e+=a.opt.delimeter),e+=m,g+='<span class="spwidgets-item" data-spwidget_dt1="'+m+'" data-spwidget_dt2="'+
+v+'">'+b.SPWidgets.fillTemplate({tmplt:a.opt.dateTemplate,data:{date:v}})+" </span>"):(e=m,g=v)});a.opt.allowMultiples?a.$dtCntr.append(g):c.setDatepicker&&(a.$input.val(g),a.isInline&&!a.opt.showTimepicker?a.$inputCntr.datepicker("setDate",h):a.isInline&&a.$timepicker.updateDateTimeWidgets(h));a.$ele.val(e);c.triggerEvent&&(a.isInline||a.$ele.change(),b.isFunction(a.opt.onSelect)&&a.opt.onSelect.call(a.isInline?a.inlineCntr:a.$ele));return a};a.removeDate=function(d){var c=b.extend({},{date:"",format:a.opt.datepicker.dateFormat},
+d),e=a.getDate();if(!c.date)return a;b.isArray(c.date)||(c.date=[c.date]);b.each(c.date,function(d,h){var k=h,m="",l="";if(!(k instanceof Date))try{k=b.datepicker.parseDate(c.format,h)}catch(q){return a}m=a.opt.showTimepicker?b.SPWidgets.SPGetDateString(k,a.opt._timeFmt):b.datepicker.formatDate("yy-mm-dd",k);l=RegExp("("+a.opt.delimeter+")?"+m,"g");e.input=e.input.replace(l,"");a.opt.allowMultiples&&a.$dtCntr.find("span[data-spwidget_dt1='"+m+"']").remove()});e.input=e.input.replace(RegExp("^"+a.opt.delimeter),
+"").replace(RegExp(a.opt.delimeter+"$"),"");a.$ele.val(e.input).change();return a};a.destroy=function(){a.$ele.removeData("SPDateFieldInstance");a.$ele.removeClass("hasSPDateField").css("display","");a.$ui.css("display","none");a.$input.datepicker("hide");a.$input.datepicker("destroy");a.$timepicker&&(a.$timepicker.$timePicker.off(".spdatefield"),a.$input.off(".spdatefield"));a.isInline&&a.inlineCntr.removeClass("hasSPDateField").removeData("SPDateFieldInstance");a.$ui.remove()};a.createDatePicker=
+function(){var d={};if(a.opt.showTimepicker){d.$selectorCntr=b(k.htmlTemplate).filter("div.spwidget-datetime-selector").clone().appendTo(a.$inputCntr).css("display","none");d.$datePicker=d.$selectorCntr.find("div.spwidget-date-selector");d.$timePicker=d.$selectorCntr.find("div.spwidget-time-selector");d.$setButton=d.$selectorCntr.find("div.spwidget-btn-set");d.$hourSelect=d.$timePicker.find("select.spwidget-hour");d.$minSelect=d.$timePicker.find("select.spwidget-min");d.$ampmSelect=d.$timePicker.find("select.spwidget-ampm");
+d.heightDone=!1;d.firstShowDone=!1;d.getTime=function(){var a={hour:d.$hourSelect.val(),minutes:d.$minSelect.val(),ampm:d.$ampmSelect.val()};a.hour24=a.hour;"PM"===a.ampm&&"12"!==a.hour?a.hour24=String(parseInt(a.hour)+12):"AM"===a.ampm&&"12"===a.hour&&(a.hour24="0");return a};d.formatTime=function(c){var e=c,g="";c instanceof Date?(e={hour:c.getHours(),hour24:String(c.getHours()),minutes:String(c.getMinutes()),ampm:"AM"},12<e.hour?(e.hour=String(e.hour-12),e.ampm="PM"):12===e.hour&&(e.ampm="PM"),
+e.hour=String(e.hour),"0"===e.hour&&(e.hour="12"),2>String(e.minutes).length&&(e.minutes="0"+e.minutes)):c||(e=d.getTime());return g=b.SPWidgets.fillTemplate(a.opt.timeFormat,e)};d.setDateTime=function(b){var c=d.getTime();b instanceof Date||(b=d.$datePicker.datepicker("getDate"),null===b&&(b=new Date));b.setHours(c.hour24);b.setMinutes(c.minutes);a.setDate({date:b,format:a.opt.datepicker.dateFormat,setDatepicker:!0});d.execUsersCallback(a.$input.val())};d.updateDateTimeWidgets=function(a){var b;
+a instanceof Date||(a=new Date);b=a.getHours();0===b?b="12":12<b&&(b-=12);d.$hourSelect.val(b);for(b=a.getMinutes();b%5;)--b;10>b&&(b="0"+b);d.$minSelect.val(b);11<a.getHours()?d.$ampmSelect.val("PM"):d.$ampmSelect.val("AM");d.$datePicker.datepicker("setDate",a)};d.showPicker=function(){d.$selectorCntr.show(function(){var c;d.heightDone||(d.heightDone=!0,b.SPWidgets.makeSameHeight(d.$datePicker.find("div.ui-datepicker-inline").add(d.$timePicker)));d.firstShowDone||(d.firstShowDone=!0,c=a.getDate(),
+c=c.dates.length?b.SPWidgets.parseDateString(c.dates[c.dates.length-1]):new Date,d.updateDateTimeWidgets(c))}).position({my:"left top",at:"left bottom",of:a.$input})};d.execUsersCallback=function(c,e){b.isFunction(a.opt.datepicker._onSelect)&&a.opt.datepicker._onSelect.call(d.$datePicker,c,e)};a.opt.datepicker.altFormat="";a.opt.datepicker.altField="";if(a.opt.datepicker.buttonImage&&!a.isInline)b('<img class="ui-datepicker-trigger" src="'+a.opt.datepicker.buttonImage+'" alt="..." title="...">').appendTo(a.$inputCntr).on("click"+
+k.evNamespace,function(){d.showPicker()});if(a.opt.allowMultiples||a.isInline)d.$selectorCntr.addClass("spwidget-date-multiples-cntr"),d.$setButton.find("div.spwidget-btn").button({label:a.opt.labelSet}).on("click"+k.evNamespace,function(a){d.setDateTime();return this});d.$timePicker.find("div.ui-widget-header").html(a.opt.labelTime).end().find("div.spwidget-time-hour > label").html(a.opt.labelHour).end().find("div.spwidget-time-min > label").html(a.opt.labelMinutes).end().find("div.spwidget-time-ampm > label").html(a.opt.labelAMPM).end();
+b.isFunction(a.opt.datepicker.onSelect)&&(a.opt.datepicker._onSelect=a.opt.datepicker.onSelect);a.opt.datepicker.numberOfMonths=1;a.opt.datepicker.onSelect=function(b,c){if(a.opt.allowMultiples||a.isInline)return this;d.setDateTime(new Date(c.currentYear,c.currentMonth,c.currentDay))};d.$datePicker.datepicker(a.opt.datepicker);d.$timePicker.on("change"+k.evNamespace+" keyup"+k.evNamespace,"select",function(b){b.stopPropagation();b.preventDefault();if(a.opt.allowMultiples||a.isInline)return this;d.setDateTime();
+return this});a.isInline&&(a.$input.css("display","none"),d.$selectorCntr.addClass("spwidget-inline").css("display",""));if(!a.isInline)a.$input.on("focus"+k.evNamespace,function(){d.showPicker()})}else a.opt.allowMultiples&&a.opt.remainOpen&&(a.opt.datepicker.showAnim=""),b.isFunction(a.opt.datepicker.onSelect)&&(a.opt.datepicker._onSelect=a.opt.datepicker.onSelect),a.opt.datepicker.onSelect=function(d,c){a.setDate({date:d,format:c.settings.dateFormat,setDatepicker:!1});b.isFunction(a.opt.datepicker._onSelect)&&
+a.opt.datepicker._onSelect.call(this,d,c);a.opt.allowMultiples&&a.$input.val("");a.opt.allowMultiples&&(a.opt.remainOpen&&!a.isInline)&&setTimeout(function(){a.$input.datepicker("show")},5)},a.isInline?(a.$inputCntr.datepicker(a.opt.datepicker),a.$input.css("display","none")):a.$input.datepicker(a.opt.datepicker);return d};a.opt._timeFmt=a.opt.timeUTC?"utc":"local";a.opt.datepicker.altFormat="yy-mm-dd";a.opt.datepicker.altField=a.$ele;a.opt.allowMultiples&&(a.opt.datepicker.altFormat="",a.opt.datepicker.altField=
+"",a.$dtCntr.css("display","").on("click",".spwidgets-item-remove",function(d){d=b(d.target).closest(".spwidgets-item").data("spwidget_dt1");a.opt.allowMultiples&&(d=b.SPWidgets.parseDateString(d));a.removeDate({date:d,format:"yy-mm-dd"})}));a.$ele.css("display","none").data("SPDateFieldInstance",a);a.isInline&&a.inlineCntr.data("SPDateFieldInstance",a);a.$timepicker=a.createDatePicker();a.eleOrigVal&&a.setDate({date:a.eleOrigVal.split(a.opt.delimeter),format:"yy-mm-dd",triggerEvent:!1});a.$input.on("change",
+function(b){b.stopPropagation();a.$ele.change()});a.$ui.css("display","")})};k.onPageClick=function(h){h=b(h.target);var e=b("div.spwidget-datetime-selector:visible:not('.spwidget-inline')"),c=null;if(!b.contains(u.documentElement,h[0]))return this;e.length&&(c=h.closest("div.spwidget-datetime-selector"),!c.length&&h.is("input.spwidget-date-datepicker,.ui-datepicker-trigger")&&(c=h.parent().find("div.spwidget-datetime-selector")),e.not(c).hide());return this};k.styleSheet='.spwidget-date-cntr {\n    display: inline-block;   \n    position: relative;\n}\n.spwidget-date-cntr div.spwidget-date-input-cntr {\n    position: relative;\n}\n.spwidget-date-cntr input {\n    width: 99%;\n}\n.spwidget-date-cntr img.ui-datepicker-trigger {\n    display: block;\n    position: absolute;\n    right: 2%;\n    top: .3em;\n}\n\n.spwidget-date-cntr .spwidgets-item-remove {\n    color: red;\n    font-size: xx-small;\n    vertical-align: super;\n    cursor: pointer;\n}\n/** --------------------------- Date and Time picker -- */\n.spwidget-date-cntr div.spwidget-datetime-selector {\n    padding: .5em;\n    position: absolute;\n    width: 28em;\n    z-index: 1;\n}\n.spwidget-date-cntr div.spwidget-datetime-selector div.ui-datepicker-inline {\n    width: 14em;\n}\n\n.spwidget-date-cntr div.spwidget-datetime-selector div.spwidget-date-selector,\n.spwidget-date-cntr div.spwidget-datetime-selector div.spwidget-time-selector {\n    float: left;\n}\n.spwidget-date-cntr div.spwidget-selectors:before,\n.spwidget-date-cntr div.spwidget-selectors:after {\n    content: "";\n    display: table;\n    line-height: 0;\n}\n.spwidget-date-cntr div.spwidget-selectors:after {\n    clear: both;    \n}\n.spwidget-date-cntr div.spwidget-datetime-selector select.spwidget-hour,\n.spwidget-date-cntr div.spwidget-datetime-selector select.spwidget-min,\n.spwidget-date-cntr div.spwidget-datetime-selector select.spwidget-ampm {\n    font-size: 1.2em;\n}\n/* Time selector */\n.spwidget-date-cntr div.spwidget-time-selector {\n    margin-left: .2em;\n    width: 11em;\n}\n.spwidget-date-cntr div.spwidget-time-selector-cntr {\n    padding: .2em;\n}\n.spwidget-date-cntr div.spwidget-time-selector div.ui-widget-header {\n    text-align: center;\n    line-height: 2em;\n    margin-bottom: .5em;\n}\n.spwidget-date-cntr .spwidget-time-hour,\n.spwidget-date-cntr .spwidget-time-min,\n.spwidget-date-cntr .spwidget-time-ampm {\n    margin-top: .2em;\n    padding: .2em;\n}\n.spwidget-date-cntr .spwidget-time-selector-cntr select,\n.spwidget-date-cntr .spwidget-time-selector-cntr label {\n    overflow: hidden;\n    display: inline-block;\n    font-weight: bold;\n}\n.spwidget-date-cntr .spwidget-time-selector-cntr select {\n    width: 4em;\n}\n.spwidget-date-cntr .spwidget-time-selector-cntr label {\n    width: 5em;\n    font-size: .9em;\n}\n\n/* inline mode */\n.spwidget-date-cntr .spwidget-inline div.spwidget-datetime-selector {\n    position: relative;\n    width: 26em;\n}\n\n.spwidget-btn-set {\n    display: none;\n    position: absolute;\n    right: .2em;\n    bottom: .2em;\n}\n.spwidget-date-multiples-cntr .spwidget-btn-set {\n    display: block;\n}\n';
 k.htmlTemplate='<div class="spwidget-date-cntr">\n    <div class="spwidget-date-selected-cntr" style="display:none;"></div>\n    <div class="spwidget-date-input-cntr">\n        <input class="spwidget-date-datepicker" name="SPDateFieldInput" value="" />\n    </div>\n</div>\n<div class="spwidget-datetime-selector ui-widget-content ui-corner-all">\n    <div class="spwidget-selectors">\n        <div class="spwidget-date-selector"></div>\n        <div class="spwidget-time-selector ui-widget-content ui-corner-all">\n            <div class="spwidget-time-selector-cntr">\n                <div class="ui-widget-header ui-helper-clearfix ui-corner-all">\n                    Time\n                </div>\n                <div class="spwidget-time-hour">\n                    <label>Hour</label>\n                    <select name="spwidget_hour" class="spwidget-hour">\n                        <option value="1"> 1</option>\n                        <option value="2"> 2</option>\n                        <option value="3"> 3</option>\n                        <option value="4"> 4</option>\n                        <option value="5"> 5</option>\n                        <option value="6"> 6</option>\n                        <option value="7"> 7</option>\n                        <option value="8"> 8</option>\n                        <option value="9"> 9</option>\n                        <option value="10">10</option>\n                        <option value="11">11</option>\n                        <option value="12">12</option>\n                    </select>\n                </div>\n                <div class="spwidget-time-min">   \n                    <label>Minutes</label>\n                    <select name="spwidget_min" class="spwidget-min">\n                        <option value="00">00</option>\n                        <option value="05">05</option>\n                        <option value="10">10</option>\n                        <option value="15">15</option>\n                        <option value="20">20</option>\n                        <option value="25">25</option>\n                        <option value="30">30</option>\n                        <option value="35">35</option>\n                        <option value="40">40</option>\n                        <option value="45">45</option>\n                        <option value="50">50</option>\n                        <option value="55">55</option>\n                    </select>\n                </div>\n                <div class="spwidget-time-ampm">\n                    <label>AM|PM</label>\n                    <select name="spwidget_ampm" class="spwidget-ampm">\n                        <option value="AM">AM</option>\n                        <option value="PM">PM</option>\n                    </select>\n                </div>\n            </div>\n        </div>\n    </div>\n    <div class="spwidget-btn-set">\n        <div class="spwidget-btn">\n            Set\n        </div>\n    </div>\n</div>\n'})(s);
-(function(c){var h={isInitDone:!1,templates:null};c.SPWidgets.defaults.filter={list:"",webURL:c().SPServices.SPGetCurrentSite(),columns:["Title"],textFieldTooltip:"Use a semicolon to delimiter multiple keywords.",peopleFieldTooltip:"Use [me] keyword to represent current user.",definedClass:"spwidget-column-dirty",showFilterButton:!0,showFilterButtonTop:!0,filterButtonLabel:"Filter",onFilterClick:null,onReady:null,onReset:null,ignoreKeywords:/^(of|and|a|an|to|by|the|or|from)$/i,delimeter:";",height:null};
-c.fn.SPFilterPanel=function(e){var b=arguments;h.isInitDone||(h.isInitDone=!0,""!==h.styleSheet&&c('<style type="text/css">\n\n'+h.styleSheet+"\n\n</style>").prependTo("head"),h.templates=c(h.htmlTemplate));return"string"===typeof e?this.eq(0).hasClass("hasSPFilterPanel")?function(c){c=c.eq(0).find("div.spwidget-filter").data("SPFilterPanelInst");var a=e.toLowerCase(),g=c.$ele;switch(a){case "getfilter":g=h.getFilterValues(c);break;case "setfilter":h.setFilterValues(c,b[1]);break;case "reset":h.doResetFilter(c);
-break;case "destroy":c.$ele.removeClass("hasSPFilterPanel").empty()}return g}(this):void 0:this.each(function(){var b=c.extend({},c.SPWidgets.defaults.filter,e),a={$ele:c(this),$ui:null,$uiFilterSortCntr:null,$uiFilterColumnCntr:null,$uiSortButtons:null,opt:b,getListDefinition:function(){return c.Deferred(function(a){c().SPServices({operation:"GetList",listName:b.list,cacheXML:!0,async:!0,webURL:b.webURL,completefunc:function(b,d){var e=c(b.responseXML);"error"===d?a.rejectWith(e,[b,d]):e.SPMsgHasError()?
-a.rejectWith(e,[b,d]):a.resolveWith(e,[b,d])}})}).promise()},showSortOrder:function(){a.$uiFilterColumnCntr.hide();a.$uiFilterSortCntr.show()},showFilterColumns:function(){a.$uiFilterSortCntr.hide();a.$uiFilterColumnCntr.show()},buildWidget:function(){return c.Deferred(function(b){a.getListDefinition().then(function(d,f){var p=this,n="",q=h.templates.filter("#filter_column").html();a.$ui=c(h.templates.filter("#filter_main_ui").html()).appendTo(a.$ele.empty().addClass("hasSPFilterPanel"));a.$uiFilterColumnCntr=
-a.$ui.find("div.spwidget-filter-column-cntr");a.$uiFilterSortCntr=a.$ui.find("div.spwidget-filter-sort-cntr");a.$list=p;a.opt.height&&a.$uiFilterColumnCntr.css("height",a.opt.height);c.each(a.opt.columns,function(b,d){var e=p.find("Field[DisplayName='"+d+"']"),f=q,g="",l=null;e.length||(e=p.find("Field[Name='"+d+"']"));if(e.length){l={type:null,otherFilterTypes:"",sp_type:e.attr("Type"),sp_format:e.attr("Format"),Name:e.attr("Name"),DisplayName:e.attr("DisplayName")};switch(e.attr("Type")){case "Choice":case "MultiChoice":e.find("CHOICES CHOICE").each(function(a,
-b){g+=c.SPWidgets.fillTemplate(h.templates.filter("#filter_choice_field").html(),{DisplayName:e.attr("DisplayName"),Name:e.attr("Name"),value:c(b).text()})});f=f.replace(/__COLUMN__UI__/,g).replace(/__OTHER_FILTER_TYPES__/,"");f=c.SPWidgets.fillTemplate(f,{DisplayName:e.attr("DisplayName"),type:"choice",Name:e.attr("Name")});break;case "Attachments":l.type="boolean";l.input_ui='<select name="'+l.Name+'" class="spwidget-input spwidget-filter-input"><option value=""></option><option value="1">Yes</option><option value="0">No</option></select>';
-f=c.SPWidgets.fillTemplate(f.replace(/__COLUMN__UI__/,l.input_ui).replace(/__OTHER_FILTER_TYPES__/,""),l);break;case "Lookup":case "LookupMulti":null===l.type&&(l.type="lookup",l.list=e.attr("List"),"Self"===l.list&&(l.list=p.find("List").attr("Title")));case "User":case "UserMulti":null===l.type&&(l.type="people");case "Counter":null===l.type&&(l.type="text",l.otherFilterTypes='<option value="Gt">Greater Than</option><option value="Lt">Less Than</option>');case "DateTime":null===l.type&&(l.type=
-"date",l.otherFilterTypes='<option value="Gt">After</option><option value="Lt">Before</option>',l.sp_format="DateOnly"!==e.attr("Format")?"DateTime":"DateOnly");default:null===l.type&&(l.type="text"),g=h.templates.filter("#filter_text_field").html(),f=f.replace(/__COLUMN__UI__/,g).replace(/__OTHER_FILTER_TYPES__/,l.otherFilterTypes),f=c.SPWidgets.fillTemplate(f,c.extend(l,{DisplayName:e.attr("DisplayName"),Name:e.attr("Name"),tooltip:a.opt.textFieldTooltip}))}n+=f}});a.$uiFilterColumnCntr.html(n);
-a.$ele.find("div.spwidget-type-lookup input").each(function(){var a=c(this);a.SPLookupField({list:a.closest("div.spwidget-column").data("spwidget_list"),template:'<div>{{Title}} <span class="spwidgets-item-remove">[x]</span></div>',listTemplate:"{{Title}}",allowMultiples:!0,readOnly:!1,filter:"",showSelector:!0});a.parent().find(".spwidget-tooltip").remove()});a.$ele.find("div.spwidget-type-people input").each(function(){var b=c(this),d="User";"PeopleOnly"!==p.find("Field[Name='"+b.attr("name")+"']").attr("UserSelectionMode")&&
-(d="All");b.pickSPUser({allowMultiple:!0,type:d});b.parent().find(".spwidget-tooltip").html(a.opt.peopleFieldTooltip)});a.$ele.find("div.spwidget-type-date").each(function(){var a=c(this);a.find("input").SPDateField({allowMultiples:!0,showTimepicker:"DateTime"===a.data("spwidget_sp_format")?!0:!1});a.find(".spwidget-tooltip").remove();a.find("select.spwidget-filter-type").val("Eq").find("option[value='Contains']").remove();return this});a.$ele.find(".spwidget-type-boolean div.spwidget-filter-type-cntr").css("display",
-"none");a.opt.showFilterButton||a.opt.showFilterButtonTop?a.$ui.find("div.spwidget-filter-button-cntr").each(function(){var b=c(this),d=c();a.opt.showFilterButtonTop&&(d=d.add(b.clone(!0)).prependTo(a.$ui));a.opt.showFilterButton?d=d.add(b):b.remove();d.find("button[name='filter']").button({icons:{primary:"ui-icon-search"},label:a.opt.filterButtonLabel}).on("click",h.onFilterButtonClick);d.find("button[name='reset']").button({icons:{primary:"ui-icon-arrowreturnthick-1-n"},text:!1}).on("click",function(b){h.doResetFilter(a);
-return this})}):a.$ui.find("div.spwidget-filter-button-cntr").remove();a.$ui.on("change.SPWidgets.SPFilterPanel","select.spwidget-filter-type,select.spwidget-sort-order",h.onFilterTypeChange).on("click.SPWidgets.SPFilterpanel","a.spwidget-column-action",h.onFilterTypeChange);if(""!==a.opt.definedClass)a.$ui.on("change.SPWidgets.SPFilterPanel",".spwidget-filter-input",h.onFilterInputChange);a.$ui.data("SPFilterPanelInst",a);c.isFunction(a.opt.onReady)&&a.opt.onReady.call(a.$ele,e);a.$ui.fadeIn().promise().then(function(){c(this).css("display",
-"");b.resolve()})}).fail(function(c,d){a.$ele.html('<div class="ui-state-error">Unable to retrieve list information. '+this.SPGetMsgError()+"</div>");b.reject()})}).promise()}};a.opt.ignoreKeywords&&!a.opt.ignoreKeywords instanceof RegExp&&(a.opt.ignoreKeywords=/Inst.opt.ignoreKeywords/i);a.buildWidget();return this})};h.onFilterInputChange=function(e){var b=c(this);e=b.closest("div.spwidget-filter-value-input");var d=e.closest("div.spwidget-column"),a=d.find("div.spwidget-filter-type-cntr select.spwidget-filter-type").val(),
-b=b.val(),g=e.closest("div.spwidget-filter").data("SPFilterPanelInst");d.is(".spwidget-type-choice")&&(e.find(".spwidget-filter-input:checked").length||(b=""));""!==b?d.addClass(g.opt.definedClass):"IsNull"!==a&&"IsNotNull"!==a&&d.removeClass(g.opt.definedClass);return this};h.onFilterTypeChange=function(e){e=c(this);var b=e.closest("div.spwidget-column"),d=b.find("div.spwidget-filter-type-cntr select.spwidget-match-type"),a=b.find("div.spwidget-filter-value-cntr"),g=a.find(".spwidget-input"),l="",
-f=b.data("spwidget_column_type"),p=e.val(),n=e.closest("div.spwidget-filter").data("SPFilterPanelInst");if(e.is("select.spwidget-sort-order"))e.val()?b.addClass("spwidget-has-sort-order"):b.removeClass("spwidget-has-sort-order");else if(e.is("a.spwidget-column-action"))l=e.data("action"),"up"!==l&&"down"!==l||h.moveColumn(b,"up"===l?!0:!1);else return"IsNull"===p||"IsNotNull"===p?(a.addClass("spwidget-disabled"),g.attr("disabled","disabled"),d.attr("disabled","disabled"),b.addClass(n.opt.definedClass)):
-(a.removeClass("spwidget-disabled"),g.removeAttr("disabled","disabled"),d.removeAttr("disabled"),"choice"===f||"multichoice"===f?g.filter(":checkbox").each(function(){var a=c(this);if(a.is(":checked"))return l+=a.val(),!1}):l+=g.val(),l||b.removeClass(n.opt.definedClass)),this};h.onFilterButtonClick=function(e){e=c(this).closest("div.spwidget-filter").data("SPFilterPanelInst");var b=null;c.isFunction(e.opt.onFilterClick)&&(b=h.getFilterValues(e),e.opt.onFilterClick.call(e.$ele,b));return this};h.doResetFilter=
-function(e){if(c.isFunction(e.onReset)&&!0===e.onReset.call(e.$ele,h.getFilterValues(e)))return e;e.$ui.find("div[data-spwidget_column_type='text'] input").val("").end().find("div[data-spwidget_column_type='choice'] input").prop("checked",!1).end().find("div[data-spwidget_column_type='boolean'] .spwidget-filter-value-input select").val("").end().find(".hasPickSPUser").pickSPUser("method","clear").end().find(".hasSPDateField").SPDateField("reset").end().find(".hasLookupSPField").SPLookupField("method",
-"clear");""!==e.opt.definedClass&&e.$ui.find("."+e.opt.definedClass).removeClass(e.opt.definedClass);e.$ui.find("select.spwidget-filter-type").each(function(){var b=c(this),d=b.val();if("IsNull"===d||"IsNotNull"===d)b.val("Eq"),b.change()});e.$ui.find("select.spwidget-sort-order").val("").change();return e};h.getFilterValues=function(e){function b(a){return c.SPWidgets.getCamlLogical({type:a.logicalType,values:a.values,onEachValue:function(b){return"<"+a.matchType+"><FieldRef Name='"+a.columnName+
-"' /><Value Type='Text'>"+c.SPWidgets.escapeXML(b)+"</Value></"+a.matchType+">"}})}var d={CAMLQuery:"",CAMLOrderBy:"",URLParams:"",filters:{},count:0},a=[],g="";e.$ui.find("div.spwidget-column").each(function(l,f){var p=c(f),n=p.find(".spwidget-input"),q=n.attr("name"),m=new h.ColumnFilter({columnName:q,matchType:p.find("select.spwidget-filter-type").val(),logicalType:p.find("select.spwidget-match-type").val(),sortOrder:p.find("select.spwidget-sort-order").val()}),p=p.data("spwidget_column_type"),
-s={};m.sortOrder&&(m.CAMLOrderBy+='<FieldRef Name="'+q+'" Ascending="'+("Asc"===m.sortOrder?'TRUE"':'FALSE"')+"/>");if("IsNull"===m.matchType||"IsNotNull"===m.matchType)m.CAMLQuery="<"+m.matchType+"><FieldRef Name='"+q+"' /></"+m.matchType+">",m.count+=1;else switch(p){case "choice":case "multichoice":n.each(function(){var a=c(this),b=a.val();a.is(":checked")&&m.values.push(b)});m.values.length&&(m.count=m.values.length,m.CAMLQuery=b(m));break;case "lookup":case "people":(function(){var a=[];n.each(function(){var b=
-c(this),b=c.SPWidgets.parseLookupFieldValue(b.val()),d,e;d=0;for(e=b.length;d<e;d++)b[d].id&&(m.values.push(b[d].id+";#"+b[d].title),a.push(b[d].id))});m.values.length&&(m.count=m.values.length,m.CAMLQuery=c.SPWidgets.getCamlLogical({type:m.logicalType,values:a,onEachValue:function(a){return"<"+m.matchType+"><FieldRef Name='"+m.columnName+"' LookupId='True'/><Value Type='Lookup'>"+a+"</Value></"+m.matchType+">"}}))})();break;case "date":n.each(function(){var a=n.SPDateField("getDate");a.dates.length&&
-(m.values=a.dates,m.count=m.values.length,m.CAMLQuery=c.SPWidgets.getCamlLogical({type:m.logicalType,values:m.values,onEachValue:function(a){return"<"+m.matchType+"><FieldRef Name='"+m.columnName+"'/><Value Type='DateTime'>"+a+"</Value></"+m.matchType+">"}}));return!1});break;case "text":case "boolean":String(c.trim(n.val())).length&&function(){var a=n.val().split(e.opt.delimeter),d,f,g;d=0;for(f=a.length;d<f;d++)g=c.trim(a[d]),!e.opt.ignoreKeywords.test(g)&&g&&m.values.push(g);m.CAMLQuery=b(m);m.count=
-m.values.length}()}if(0<m.count||m.CAMLOrderBy)a.push(m.CAMLQuery),d.count+=m.count,d.filters[q]=m,s[q]={matchType:m.matchType,logicalType:m.logicalType,values:m.values,sortOrder:m.sortOrder},m.URLParams=c.param(s,!1),""!==d.URLParams&&(d.URLParams+="&"),d.URLParams+=m.URLParams,m.CAMLOrderBy&&(g+=m.CAMLOrderBy)});1<d.count?d.CAMLQuery=c.SPWidgets.getCamlLogical({type:"AND",values:a}):1===d.count&&(d.CAMLQuery=a[0]);g&&(d.CAMLOrderBy+="<OrderBy>"+g+"</OrderBy>");return d};h.setFilterValues=function(e,
-b){if("object"!==typeof b||c.isEmptyObject(b))return e;h.doResetFilter(e);c.each(b,function(b,a){var g=e.$ui.find(".spwidget-filter-input[name='"+b+"']"),l=g.closest("div.spwidget-column"),f=l.data("spwidget_column_type"),p=l.find("select[name='"+b+"_type']"),n=l.find("div.spwidget-filter-type-cntr select.spwidget-match-type"),q=l.find("select.spwidget-sort-order"),m=new h.ColumnFilter;c.extend(m,a);"boolean"!==f&&(m.matchType&&"boolean"!==f&&p.val(m.matchType),m.logicalType&&n.val(m.logicalType));
-if("boolean"===f||"IsNull"!==a.matchType&&"IsNotNull"!==a.matchType)switch(f){case "text":case "boolean":m.values instanceof Array?g.val(m.values.join(e.opt.delimeter)):g.val(m.values);break;case "choice":case "multichoice":c.each(m.values,function(a,b){g.filter("[value='"+b+"']").prop("checked",!0)});break;case "lookup":g.SPLookupField("method","add",m.values.join(";#"));break;case "people":g.pickSPUser("method","add",m.values.join(";#"));break;case "date":"DateTime"===l.data("spwidget_sp_format")?
-g.SPDateField("setDate",m.values):g.SPDateField("setDate",m.values,"yy-mm-dd")}else p.change();m.sortOrder&&("asc"===String(m.sortOrder).toLowerCase()?q.val("Asc"):q.val("Des"));q.change();g.change()});return e};h.ColumnFilter=function(c){var b=new function(){};"object"!==typeof c&&(c={});b.columnName=c.columnName||"";b.matchType=c.matchType||"";b.logicalType=c.logicalType||"";b.sortOrder=c.sortOrder||"";b.values=c.values||[];b.CAMLQuery=c.CAMLQuery||"";b.CAMLOrderBy=c.CAMLOrderBy||"";b.URLParams=
-c.URLParams||"";b.count=c.count||0;return b};h.moveColumn=function(c,b){var d=c.parent().children(),a=d.length,d=d.index(c);if(!b||0!==d)if(b||d+1!==a)b?c.insertBefore(c.prev()):c.insertAfter(c.next())};h.styleSheet='/**\n * Stylesheet for the Board widget\n *\n * BUILD: August 22, 2014 - 04:37 PM\n */\ndiv.spwidget-filter {\n    width: 100%;\n    position: relative;\n}\ndiv.spwidget-filter .spwidget-date-cntr,\ndiv.spwidget-filter .spwidgets-lookup-cntr {\n    display: block;\n}\ndiv.spwidget-filter .spwidget-filter-column-cntr {\n    overflow:auto;\n    position: relative;\n}\n/* Adjust the width of the widget inputs inside the filter panel */\ndiv.spwidget-filter .spwidget-type-text input.spwidget-filter-input,\ndiv.spwidget-filter .spwidget-type-people input.ui-autocomplete-input,\ndiv.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input {\n    width: 95%;\n}\n\ndiv.spwidget-filter .spwidgets-lookup-cntr {\n    width: 96%;\n}\ndiv.spwidget-filter .spwidget-date-cntr div.spwidget-date-input-cntr {\n    width: 97%\n}\n\n/* FIELD CONTAINER */\ndiv.spwidget-filter div.spwidget-column {\n    padding: .5em;\n    margin: .5em;\n    position: relative;\n    border-bottom: 1px solid  darkgray;\n    box-shadow: 1px 1px 1px 0 lightgray inset;\n}\n\n/* FIELD ACTIONS */\ndiv.spwidget-filter div.spwidget-column-actions {\n    position: absolute;\n    right: 1%;\n    top: 10%;\n}\ndiv.spwidget-filter div.spwidget-column-actions a {\n    display:block;\n}\n\ndiv.spwidget-filter div.spwidget-column-sort-actions {\n    display:none\n}\n\ndiv.spwidget-filter div.spwidget-has-sort-order div.spwidget-column-sort-actions {\n    display: block;\n}\n\n/* DIMED ITEMS - FULL OPACITY ON HOVER */\ndiv.spwidget-filter div.spwidget-filter-type-cntr,\ndiv.spwidget-filter div.spwidget-column-actions a {\n    opacity: .6;\n    filter: Alpha(opacity=60);\n}\ndiv.spwidget-filter div.spwidget-filter-type-cntr:hover,\ndiv.spwidget-filter div.spwidget-column-actions a:hover {\n    opacity: 1;\n}\n/* FILTER OPTIONS */\ndiv.spwidget-filter div.spwidget-filter-type-cntr {\n    position: absolute;\n    font-size: .8em;\n    top: .6em;\n    right: 8%;\n}\ndiv.spwidget-filter div.spwidget-filter-type-cntr select {\n    text-overflow: ellipsis;\n    width: 5em;\n}\n\n/* FILTER VALUE CONTAINER */\ndiv.spwidget-filter div.spwidget-filter-value-cntr {\n    width: 96%;\n}\n\ndiv.spwidget-filter div.spwidget-filter-value-cntr > label {\n    display: block;\n    padding: .2em;\n    font-weight: bold;\n}\ndiv.spwidget-filter div.spwidget-column-dirty div.spwidget-filter-value-cntr > label {\n    color: #FF0000;\n}\ndiv.spwidget-filter .spwidget-tooltip {\n    display: block;\n    font-size: .8em;\n    font-style: italic;\n}\n\n/* LOOKUP FIELDS */\ndiv.spwidget-filter div.spwidgets-lookup-cntr div.spwidgets-lookup-selected > div.spwidgets-item {\n    display: block;\n    margin-left: 0px;\n}\n\n/* CHOICE FIELDS */\ndiv.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input {\n    max-height: 6em;\n    overflow: auto;\n    -moz-appearance: textfield;\n    -webkit-appearance: textfield;\n    background-color: white;\n    background-color: -moz-field;\n    border: 1px solid  darkgray;\n    box-shadow: 1px 1px 1px 0 lightgray inset;\n    font: -moz-field;\n    font: -webkit-small-control;\n    padding: 2px 5px;\n}\ndiv.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input label {\n    display: block;\n    padding: .2em;\n}\n\n/** DISABLED COLUMN VALUE CONTAINER */\ndiv.spwidget-filter .spwidget-disabled {\n    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";\n    filter: alpha(opacity=50);\n    opacity: 0.5;\n}\n\n/** Button container */\ndiv.spwidget-filter div.spwidget-filter-button-cntr {\n    padding: .5em 4%;\n    margin-top: .5em;\n    text-align: right;\n}\n\n';
-h.htmlTemplate='<div id="filter_main_ui">\n    <div class="spwidget-filter" style="display: none;">\n        <div class="spwidget-filter-column-cntr ui-widget-content"></div>\n        <div class="spwidget-filter-button-cntr">\n            <button type="button" class="spwidget-button ui-priority-secondary" name=\'reset\'>Reset</button>\n            <button type="button" class="spwidget-button" name=\'filter\'>Filter</button>\n        </div>\n    </div>\n</div>\n<div id="filter_column">\n    <div class="spwidget-column spwidget-type-{{type}}"\n            data-spwidget_column_type="{{type}}"\n            data-spwidget_list="{{list}}"\n            data-spwidget_sp_type="{{sp_type}}"\n            data-spwidget_sp_format="{{sp_format}}" >\n        <div class="spwidget-filter-value-cntr">\n            <label>{{DisplayName}}</label>\n            <div class="spwidget-filter-value-input">\n                __COLUMN__UI__\n            </div>\n        </div>\n        <div class="spwidget-filter-type-cntr" title="Match Options">\n            <select name="{{Name}}_type" class="spwidget-filter-type" tabindex="-1">\n                <option value="Contains">Contains</option>\n                <option value="Eq" selected="selected">Equal</option>\n                <option value="Neq">Not Equal</option>\n                <option value="IsNull">Is Blank</option>\n                <option value="IsNotNull">Is Not Blank</option>\n                __OTHER_FILTER_TYPES__\n            </select>\n            <select name="{{Name}}_match" class="spwidget-match-type" tabindex="-1">\n                <option value="Or" selected="selected">Any</option>\n                <option value="And">All</option>\n            </select>\n            <select name="{{Name}}_order" class="spwidget-sort-order" tabindex="-1">\n                <option value="" selected="selected">Sort</option>\n                <option value="Asc">&#9650; Ascending</option>\n                <option value="Des">&#9660; Descending</option>\n            </select>\n        </div>\n        <div class="spwidget-column-actions">\n            <a style="display:none;" href="javascript:" tabindex="-1" data-action="remove" class="spwidget-column-action">\n                <span class="ui-icon ui-icon-circle-close">remove</span>\n            </a>\n            <div class="spwidget-column-sort-actions">\n                <a href="javascript:" tabindex="-1" data-action="up" class="spwidget-column-action" title="Move up">\n                    <span class="ui-icon ui-icon-circle-arrow-n">Move Up</span>\n                </a>\n                <a href="javascript:" tabindex="-1" data-action="down" class="spwidget-column-action" title="Move down">\n                    <span class="ui-icon ui-icon-circle-arrow-s">Move Down</span>\n                </a>\n            </div>\n        </div>\n    </div>\n</div>\n<div id="filter_text_field">\n    <input name="{{Name}}" title="{{DisplayName}}" type="text" value="" class="spwidget-input spwidget-filter-input" />\n    <span class="spwidget-tooltip">{{tooltip}}</span>\n</div>\n<div id="filter_choice_field">\n    <label>\n        <input name="{{Name}}" title="{{DisplayName}}" type="checkbox" value="{{value}}" class="spwidget-input spwidget-filter-input" />\n        {{value}}\n    </label>\n</div>\n'})(s)})(jQuery);
+(function(b){var k={},h=b.SPWidgets.SPAPI;k.isInitDone=!1;k.templates=null;b.SPWidgets.defaults.filter={list:"",webURL:h.getSiteUrl(),columns:["Title"],textFieldTooltip:"Use a semicolon to delimiter multiple keywords.",peopleFieldTooltip:"Use [me] keyword to represent current user.",definedClass:"spwidget-column-dirty",showFilterButton:!0,showFilterButtonTop:!0,filterButtonLabel:"Filter",onFilterClick:null,onReady:null,onReset:null,ignoreKeywords:/^(of|and|a|an|to|by|the|or|from)$/i,delimeter:";",
+height:null};b.fn.SPFilterPanel=function(e){var c=arguments;k.isInitDone||(k.isInitDone=!0,""!==k.styleSheet&&b('<style type="text/css">\n\n'+k.styleSheet+"\n\n</style>").prependTo("head"),k.templates=b(k.htmlTemplate));return"string"===typeof e?this.eq(0).hasClass("hasSPFilterPanel")?function(a){a=a.eq(0).find("div.spwidget-filter").data("SPFilterPanelInst");var b=e.toLowerCase(),f=a.$ele;switch(b){case "getfilter":f=k.getFilterValues(a);break;case "setfilter":k.setFilterValues(a,c[1]);break;case "reset":k.doResetFilter(a);
+break;case "destroy":a.$ele.removeClass("hasSPFilterPanel").empty()}return f}(this):void 0:this.each(function(){var a=b.extend({},b.SPWidgets.defaults.filter,e),d={$ele:b(this),$ui:null,$uiFilterSortCntr:null,$uiFilterColumnCntr:null,$uiSortButtons:null,opt:a,getListDefinition:function(){return b.Deferred(function(d){h.getList({listName:a.list,cacheXML:!0,async:!0,webURL:a.webURL,completefunc:function(a,c){var e=b(a.responseXML);"error"===c?d.rejectWith(e,[a,c]):e.SPMsgHasError()?d.rejectWith(e,[a,
+c]):d.resolveWith(e,[a,c])}})}).promise()},showSortOrder:function(){d.$uiFilterColumnCntr.hide();d.$uiFilterSortCntr.show()},showFilterColumns:function(){d.$uiFilterSortCntr.hide();d.$uiFilterColumnCntr.show()},buildWidget:function(){return b.Deferred(function(a){d.getListDefinition().then(function(c,g){var h=this,m="",q=k.templates.filter("#filter_column").html();d.$ui=b(k.templates.filter("#filter_main_ui").html()).appendTo(d.$ele.empty().addClass("hasSPFilterPanel"));d.$uiFilterColumnCntr=d.$ui.find("div.spwidget-filter-column-cntr");
+d.$uiFilterSortCntr=d.$ui.find("div.spwidget-filter-sort-cntr");d.$list=h;d.opt.height&&d.$uiFilterColumnCntr.css("height",d.opt.height);b.each(d.opt.columns,function(a,c){var e=h.find("Field[DisplayName='"+c+"']"),f=q,g="",n=null;e.length||(e=h.find("Field[Name='"+c+"']"));if(e.length){n={type:null,otherFilterTypes:"",sp_type:e.attr("Type"),sp_format:e.attr("Format"),Name:e.attr("Name"),DisplayName:e.attr("DisplayName")};switch(e.attr("Type")){case "Choice":case "MultiChoice":e.find("CHOICES CHOICE").each(function(a,
+d){g+=b.SPWidgets.fillTemplate(k.templates.filter("#filter_choice_field").html(),{DisplayName:e.attr("DisplayName"),Name:e.attr("Name"),value:b(d).text()})});f=f.replace(/__COLUMN__UI__/,g).replace(/__OTHER_FILTER_TYPES__/,"");f=b.SPWidgets.fillTemplate(f,{DisplayName:e.attr("DisplayName"),type:"choice",Name:e.attr("Name")});break;case "Attachments":n.type="boolean";n.input_ui='<select name="'+n.Name+'" class="spwidget-input spwidget-filter-input"><option value=""></option><option value="1">Yes</option><option value="0">No</option></select>';
+f=b.SPWidgets.fillTemplate(f.replace(/__COLUMN__UI__/,n.input_ui).replace(/__OTHER_FILTER_TYPES__/,""),n);break;case "Lookup":case "LookupMulti":null===n.type&&(n.type="lookup",n.list=e.attr("List"),"Self"===n.list&&(n.list=h.find("List").attr("Title")));case "User":case "UserMulti":null===n.type&&(n.type="people");case "Counter":null===n.type&&(n.type="text",n.otherFilterTypes='<option value="Gt">Greater Than</option><option value="Lt">Less Than</option>');case "DateTime":null===n.type&&(n.type=
+"date",n.otherFilterTypes='<option value="Gt">After</option><option value="Lt">Before</option>',n.sp_format="DateOnly"!==e.attr("Format")?"DateTime":"DateOnly");default:null===n.type&&(n.type="text"),g=k.templates.filter("#filter_text_field").html(),f=f.replace(/__COLUMN__UI__/,g).replace(/__OTHER_FILTER_TYPES__/,n.otherFilterTypes),f=b.SPWidgets.fillTemplate(f,b.extend(n,{DisplayName:e.attr("DisplayName"),Name:e.attr("Name"),tooltip:d.opt.textFieldTooltip}))}m+=f}});d.$uiFilterColumnCntr.html(m);
+d.$ele.find("div.spwidget-type-lookup input").each(function(){var a=b(this);a.SPLookupField({list:a.closest("div.spwidget-column").data("spwidget_list"),template:'<div>{{Title}} <span class="spwidgets-item-remove">[x]</span></div>',listTemplate:"{{Title}}",allowMultiples:!0,readOnly:!1,filter:"",showSelector:!0});a.parent().find(".spwidget-tooltip").remove()});d.$ele.find("div.spwidget-type-people input").each(function(){var a=b(this),c="User";"PeopleOnly"!==h.find("Field[Name='"+a.attr("name")+"']").attr("UserSelectionMode")&&
+(c="All");a.pickSPUser({allowMultiple:!0,type:c});a.parent().find(".spwidget-tooltip").html(d.opt.peopleFieldTooltip)});d.$ele.find("div.spwidget-type-date").each(function(){var a=b(this);a.find("input").SPDateField({allowMultiples:!0,showTimepicker:"DateTime"===a.data("spwidget_sp_format")?!0:!1});a.find(".spwidget-tooltip").remove();a.find("select.spwidget-filter-type").val("Eq").find("option[value='Contains']").remove();return this});d.$ele.find(".spwidget-type-boolean div.spwidget-filter-type-cntr").css("display",
+"none");d.opt.showFilterButton||d.opt.showFilterButtonTop?d.$ui.find("div.spwidget-filter-button-cntr").each(function(){var a=b(this),c=b();d.opt.showFilterButtonTop&&(c=c.add(a.clone(!0)).prependTo(d.$ui));d.opt.showFilterButton?c=c.add(a):a.remove();c.find("button[name='filter']").button({icons:{primary:"ui-icon-search"},label:d.opt.filterButtonLabel}).on("click",k.onFilterButtonClick);c.find("button[name='reset']").button({icons:{primary:"ui-icon-arrowreturnthick-1-n"},text:!1}).on("click",function(a){k.doResetFilter(d);
+return this})}):d.$ui.find("div.spwidget-filter-button-cntr").remove();d.$ui.on("change.SPWidgets.SPFilterPanel","select.spwidget-filter-type,select.spwidget-sort-order",k.onFilterTypeChange).on("click.SPWidgets.SPFilterpanel","a.spwidget-column-action",k.onFilterTypeChange);if(""!==d.opt.definedClass)d.$ui.on("change.SPWidgets.SPFilterPanel",".spwidget-filter-input",k.onFilterInputChange);d.$ui.data("SPFilterPanelInst",d);b.isFunction(d.opt.onReady)&&d.opt.onReady.call(d.$ele,e);d.$ui.fadeIn().promise().then(function(){b(this).css("display",
+"");a.resolve()})}).fail(function(b,c){d.$ele.html('<div class="ui-state-error">Unable to retrieve list information. '+this.SPGetMsgError()+"</div>");a.reject()})}).promise()}};d.opt.ignoreKeywords&&!d.opt.ignoreKeywords instanceof RegExp&&(d.opt.ignoreKeywords=/Inst.opt.ignoreKeywords/i);d.buildWidget();return this})};k.onFilterInputChange=function(e){var c=b(this);e=c.closest("div.spwidget-filter-value-input");var a=e.closest("div.spwidget-column"),d=a.find("div.spwidget-filter-type-cntr select.spwidget-filter-type").val(),
+c=c.val(),f=e.closest("div.spwidget-filter").data("SPFilterPanelInst");a.is(".spwidget-type-choice")&&(e.find(".spwidget-filter-input:checked").length||(c=""));""!==c?a.addClass(f.opt.definedClass):"IsNull"!==d&&"IsNotNull"!==d&&a.removeClass(f.opt.definedClass);return this};k.onFilterTypeChange=function(e){e=b(this);var c=e.closest("div.spwidget-column"),a=c.find("div.spwidget-filter-type-cntr select.spwidget-match-type"),d=c.find("div.spwidget-filter-value-cntr"),f=d.find(".spwidget-input"),h="",
+g=c.data("spwidget_column_type"),m=e.val(),p=e.closest("div.spwidget-filter").data("SPFilterPanelInst");if(e.is("select.spwidget-sort-order"))e.val()?c.addClass("spwidget-has-sort-order"):c.removeClass("spwidget-has-sort-order");else if(e.is("a.spwidget-column-action"))h=e.data("action"),"up"!==h&&"down"!==h||k.moveColumn(c,"up"===h?!0:!1);else return"IsNull"===m||"IsNotNull"===m?(d.addClass("spwidget-disabled"),f.attr("disabled","disabled"),a.attr("disabled","disabled"),c.addClass(p.opt.definedClass)):
+(d.removeClass("spwidget-disabled"),f.removeAttr("disabled","disabled"),a.removeAttr("disabled"),"choice"===g||"multichoice"===g?f.filter(":checkbox").each(function(){var a=b(this);if(a.is(":checked"))return h+=a.val(),!1}):h+=f.val(),h||c.removeClass(p.opt.definedClass)),this};k.onFilterButtonClick=function(e){e=b(this).closest("div.spwidget-filter").data("SPFilterPanelInst");var c=null;b.isFunction(e.opt.onFilterClick)&&(c=k.getFilterValues(e),e.opt.onFilterClick.call(e.$ele,c));return this};k.doResetFilter=
+function(e){if(b.isFunction(e.onReset)&&!0===e.onReset.call(e.$ele,k.getFilterValues(e)))return e;e.$ui.find("div[data-spwidget_column_type='text'] input").val("").end().find("div[data-spwidget_column_type='choice'] input").prop("checked",!1).end().find("div[data-spwidget_column_type='boolean'] .spwidget-filter-value-input select").val("").end().find(".hasPickSPUser").pickSPUser("method","clear").end().find(".hasSPDateField").SPDateField("reset").end().find(".hasLookupSPField").SPLookupField("method",
+"clear");""!==e.opt.definedClass&&e.$ui.find("."+e.opt.definedClass).removeClass(e.opt.definedClass);e.$ui.find("select.spwidget-filter-type").each(function(){var c=b(this),a=c.val();if("IsNull"===a||"IsNotNull"===a)c.val("Eq"),c.change()});e.$ui.find("select.spwidget-sort-order").val("").change();return e};k.getFilterValues=function(e){function c(a){return b.SPWidgets.getCamlLogical({type:a.logicalType,values:a.values,onEachValue:function(c){return"<"+a.matchType+"><FieldRef Name='"+a.columnName+
+"' /><Value Type='Text'>"+b.SPWidgets.escapeXML(c)+"</Value></"+a.matchType+">"}})}var a={CAMLQuery:"",CAMLOrderBy:"",URLParams:"",filters:{},count:0},d=[],f="";e.$ui.find("div.spwidget-column").each(function(h,g){var m=b(g),p=m.find(".spwidget-input"),q=p.attr("name"),l=new k.ColumnFilter({columnName:q,matchType:m.find("select.spwidget-filter-type").val(),logicalType:m.find("select.spwidget-match-type").val(),sortOrder:m.find("select.spwidget-sort-order").val()}),m=m.data("spwidget_column_type"),
+s={};l.sortOrder&&(l.CAMLOrderBy+='<FieldRef Name="'+q+'" Ascending="'+("Asc"===l.sortOrder?'TRUE"':'FALSE"')+"/>");if("IsNull"===l.matchType||"IsNotNull"===l.matchType)l.CAMLQuery="<"+l.matchType+"><FieldRef Name='"+q+"' /></"+l.matchType+">",l.count+=1;else switch(m){case "choice":case "multichoice":p.each(function(){var a=b(this),c=a.val();a.is(":checked")&&l.values.push(c)});l.values.length&&(l.count=l.values.length,l.CAMLQuery=c(l));break;case "lookup":case "people":(function(){var a=[];p.each(function(){var c=
+b(this),c=b.SPWidgets.parseLookupFieldValue(c.val()),d,e;d=0;for(e=c.length;d<e;d++)c[d].id&&(l.values.push(c[d].id+";#"+c[d].title),a.push(c[d].id))});l.values.length&&(l.count=l.values.length,l.CAMLQuery=b.SPWidgets.getCamlLogical({type:l.logicalType,values:a,onEachValue:function(a){return"<"+l.matchType+"><FieldRef Name='"+l.columnName+"' LookupId='True'/><Value Type='Lookup'>"+a+"</Value></"+l.matchType+">"}}))})();break;case "date":p.each(function(){var a=p.SPDateField("getDate");a.dates.length&&
+(l.values=a.dates,l.count=l.values.length,l.CAMLQuery=b.SPWidgets.getCamlLogical({type:l.logicalType,values:l.values,onEachValue:function(a){return"<"+l.matchType+"><FieldRef Name='"+l.columnName+"'/><Value Type='DateTime'>"+a+"</Value></"+l.matchType+">"}}));return!1});break;case "text":case "boolean":String(b.trim(p.val())).length&&function(){var a=p.val().split(e.opt.delimeter),d,f,g;d=0;for(f=a.length;d<f;d++)g=b.trim(a[d]),!e.opt.ignoreKeywords.test(g)&&g&&l.values.push(g);l.CAMLQuery=c(l);l.count=
+l.values.length}()}if(0<l.count||l.CAMLOrderBy)d.push(l.CAMLQuery),a.count+=l.count,a.filters[q]=l,s[q]={matchType:l.matchType,logicalType:l.logicalType,values:l.values,sortOrder:l.sortOrder},l.URLParams=b.param(s,!1),""!==a.URLParams&&(a.URLParams+="&"),a.URLParams+=l.URLParams,l.CAMLOrderBy&&(f+=l.CAMLOrderBy)});1<a.count?a.CAMLQuery=b.SPWidgets.getCamlLogical({type:"AND",values:d}):1===a.count&&(a.CAMLQuery=d[0]);f&&(a.CAMLOrderBy+="<OrderBy>"+f+"</OrderBy>");return a};k.setFilterValues=function(e,
+c){if("object"!==typeof c||b.isEmptyObject(c))return e;k.doResetFilter(e);b.each(c,function(a,c){var f=e.$ui.find(".spwidget-filter-input[name='"+a+"']"),h=f.closest("div.spwidget-column"),g=h.data("spwidget_column_type"),m=h.find("select[name='"+a+"_type']"),p=h.find("div.spwidget-filter-type-cntr select.spwidget-match-type"),q=h.find("select.spwidget-sort-order"),l=new k.ColumnFilter;b.extend(l,c);"boolean"!==g&&(l.matchType&&"boolean"!==g&&m.val(l.matchType),l.logicalType&&p.val(l.logicalType));
+if("boolean"===g||"IsNull"!==c.matchType&&"IsNotNull"!==c.matchType)switch(g){case "text":case "boolean":l.values instanceof Array?f.val(l.values.join(e.opt.delimeter)):f.val(l.values);break;case "choice":case "multichoice":b.each(l.values,function(a,b){f.filter("[value='"+b+"']").prop("checked",!0)});break;case "lookup":f.SPLookupField("method","add",l.values.join(";#"));break;case "people":f.pickSPUser("method","add",l.values.join(";#"));break;case "date":"DateTime"===h.data("spwidget_sp_format")?
+f.SPDateField("setDate",l.values):f.SPDateField("setDate",l.values,"yy-mm-dd")}else m.change();l.sortOrder&&("asc"===String(l.sortOrder).toLowerCase()?q.val("Asc"):q.val("Des"));q.change();f.change()});return e};k.ColumnFilter=function(b){var c=new function(){};"object"!==typeof b&&(b={});c.columnName=b.columnName||"";c.matchType=b.matchType||"";c.logicalType=b.logicalType||"";c.sortOrder=b.sortOrder||"";c.values=b.values||[];c.CAMLQuery=b.CAMLQuery||"";c.CAMLOrderBy=b.CAMLOrderBy||"";c.URLParams=
+b.URLParams||"";c.count=b.count||0;return c};k.moveColumn=function(b,c){var a=b.parent().children(),d=a.length,a=a.index(b);if(!c||0!==a)if(c||a+1!==d)c?b.insertBefore(b.prev()):b.insertAfter(b.next())};k.styleSheet='/**\n * Stylesheet for the Board widget\n *\n * BUILD: August 23, 2014 - 10:14 AM\n */\ndiv.spwidget-filter {\n    width: 100%;\n    position: relative;\n}\ndiv.spwidget-filter .spwidget-date-cntr,\ndiv.spwidget-filter .spwidgets-lookup-cntr {\n    display: block;\n}\ndiv.spwidget-filter .spwidget-filter-column-cntr {\n    overflow:auto;\n    position: relative;\n}\n/* Adjust the width of the widget inputs inside the filter panel */\ndiv.spwidget-filter .spwidget-type-text input.spwidget-filter-input,\ndiv.spwidget-filter .spwidget-type-people input.ui-autocomplete-input,\ndiv.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input {\n    width: 95%;\n}\n\ndiv.spwidget-filter .spwidgets-lookup-cntr {\n    width: 96%;\n}\ndiv.spwidget-filter .spwidget-date-cntr div.spwidget-date-input-cntr {\n    width: 97%\n}\n\n/* FIELD CONTAINER */\ndiv.spwidget-filter div.spwidget-column {\n    padding: .5em;\n    margin: .5em;\n    position: relative;\n    border-bottom: 1px solid  darkgray;\n    box-shadow: 1px 1px 1px 0 lightgray inset;\n}\n\n/* FIELD ACTIONS */\ndiv.spwidget-filter div.spwidget-column-actions {\n    position: absolute;\n    right: 1%;\n    top: 10%;\n}\ndiv.spwidget-filter div.spwidget-column-actions a {\n    display:block;\n}\n\ndiv.spwidget-filter div.spwidget-column-sort-actions {\n    display:none\n}\n\ndiv.spwidget-filter div.spwidget-has-sort-order div.spwidget-column-sort-actions {\n    display: block;\n}\n\n/* DIMED ITEMS - FULL OPACITY ON HOVER */\ndiv.spwidget-filter div.spwidget-filter-type-cntr,\ndiv.spwidget-filter div.spwidget-column-actions a {\n    opacity: .6;\n    filter: Alpha(opacity=60);\n}\ndiv.spwidget-filter div.spwidget-filter-type-cntr:hover,\ndiv.spwidget-filter div.spwidget-column-actions a:hover {\n    opacity: 1;\n}\n/* FILTER OPTIONS */\ndiv.spwidget-filter div.spwidget-filter-type-cntr {\n    position: absolute;\n    font-size: .8em;\n    top: .6em;\n    right: 8%;\n}\ndiv.spwidget-filter div.spwidget-filter-type-cntr select {\n    text-overflow: ellipsis;\n    width: 5em;\n}\n\n/* FILTER VALUE CONTAINER */\ndiv.spwidget-filter div.spwidget-filter-value-cntr {\n    width: 96%;\n}\n\ndiv.spwidget-filter div.spwidget-filter-value-cntr > label {\n    display: block;\n    padding: .2em;\n    font-weight: bold;\n}\ndiv.spwidget-filter div.spwidget-column-dirty div.spwidget-filter-value-cntr > label {\n    color: #FF0000;\n}\ndiv.spwidget-filter .spwidget-tooltip {\n    display: block;\n    font-size: .8em;\n    font-style: italic;\n}\n\n/* LOOKUP FIELDS */\ndiv.spwidget-filter div.spwidgets-lookup-cntr div.spwidgets-lookup-selected > div.spwidgets-item {\n    display: block;\n    margin-left: 0px;\n}\n\n/* CHOICE FIELDS */\ndiv.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input {\n    max-height: 6em;\n    overflow: auto;\n    -moz-appearance: textfield;\n    -webkit-appearance: textfield;\n    background-color: white;\n    background-color: -moz-field;\n    border: 1px solid  darkgray;\n    box-shadow: 1px 1px 1px 0 lightgray inset;\n    font: -moz-field;\n    font: -webkit-small-control;\n    padding: 2px 5px;\n}\ndiv.spwidget-filter div.spwidget-type-choice div.spwidget-filter-value-input label {\n    display: block;\n    padding: .2em;\n}\n\n/** DISABLED COLUMN VALUE CONTAINER */\ndiv.spwidget-filter .spwidget-disabled {\n    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";\n    filter: alpha(opacity=50);\n    opacity: 0.5;\n}\n\n/** Button container */\ndiv.spwidget-filter div.spwidget-filter-button-cntr {\n    padding: .5em 4%;\n    margin-top: .5em;\n    text-align: right;\n}\n\n';
+k.htmlTemplate='<div id="filter_main_ui">\n    <div class="spwidget-filter" style="display: none;">\n        <div class="spwidget-filter-column-cntr ui-widget-content"></div>\n        <div class="spwidget-filter-button-cntr">\n            <button type="button" class="spwidget-button ui-priority-secondary" name=\'reset\'>Reset</button>\n            <button type="button" class="spwidget-button" name=\'filter\'>Filter</button>\n        </div>\n    </div>\n</div>\n<div id="filter_column">\n    <div class="spwidget-column spwidget-type-{{type}}"\n            data-spwidget_column_type="{{type}}"\n            data-spwidget_list="{{list}}"\n            data-spwidget_sp_type="{{sp_type}}"\n            data-spwidget_sp_format="{{sp_format}}" >\n        <div class="spwidget-filter-value-cntr">\n            <label>{{DisplayName}}</label>\n            <div class="spwidget-filter-value-input">\n                __COLUMN__UI__\n            </div>\n        </div>\n        <div class="spwidget-filter-type-cntr" title="Match Options">\n            <select name="{{Name}}_type" class="spwidget-filter-type" tabindex="-1">\n                <option value="Contains">Contains</option>\n                <option value="Eq" selected="selected">Equal</option>\n                <option value="Neq">Not Equal</option>\n                <option value="IsNull">Is Blank</option>\n                <option value="IsNotNull">Is Not Blank</option>\n                __OTHER_FILTER_TYPES__\n            </select>\n            <select name="{{Name}}_match" class="spwidget-match-type" tabindex="-1">\n                <option value="Or" selected="selected">Any</option>\n                <option value="And">All</option>\n            </select>\n            <select name="{{Name}}_order" class="spwidget-sort-order" tabindex="-1">\n                <option value="" selected="selected">Sort</option>\n                <option value="Asc">&#9650; Ascending</option>\n                <option value="Des">&#9660; Descending</option>\n            </select>\n        </div>\n        <div class="spwidget-column-actions">\n            <a style="display:none;" href="javascript:" tabindex="-1" data-action="remove" class="spwidget-column-action">\n                <span class="ui-icon ui-icon-circle-close">remove</span>\n            </a>\n            <div class="spwidget-column-sort-actions">\n                <a href="javascript:" tabindex="-1" data-action="up" class="spwidget-column-action" title="Move up">\n                    <span class="ui-icon ui-icon-circle-arrow-n">Move Up</span>\n                </a>\n                <a href="javascript:" tabindex="-1" data-action="down" class="spwidget-column-action" title="Move down">\n                    <span class="ui-icon ui-icon-circle-arrow-s">Move Down</span>\n                </a>\n            </div>\n        </div>\n    </div>\n</div>\n<div id="filter_text_field">\n    <input name="{{Name}}" title="{{DisplayName}}" type="text" value="" class="spwidget-input spwidget-filter-input" />\n    <span class="spwidget-tooltip">{{tooltip}}</span>\n</div>\n<div id="filter_choice_field">\n    <label>\n        <input name="{{Name}}" title="{{DisplayName}}" type="checkbox" value="{{value}}" class="spwidget-input spwidget-filter-input" />\n        {{value}}\n    </label>\n</div>\n'})(s)})(jQuery,
+window,document);
 
 
 //-------- END of SPWidgets plugin: inserted by build script ----------------- 
