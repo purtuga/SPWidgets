@@ -213,13 +213,13 @@
                         });
 
 
+                        dfd.resolveWith($, [lists, xdata, status]);
+
                         if ($.isFunction(options.completefunc)) {
 
-                            options.completefunc.call($, xdata, status, lists);
+                            options.completefunc(xdata, status, lists);
 
                         }
-
-                        dfd.resolveWith($, [lists, xdata, status]);
 
                     }//end: $.ajax().success()
                 });

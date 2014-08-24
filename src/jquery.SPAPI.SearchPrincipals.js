@@ -144,7 +144,7 @@
 
                         reqPromise.then(function(xdata, status){
 
-                            options.completefunc.call($, xdata, status);
+                            options.completefunc(xdata, status);
 
                         });
 
@@ -193,13 +193,13 @@
 
                         }
 
+                        dfd.resolveWith($, [xdata, status]);
+
                         if ($.isFunction(options.completefunc)) {
 
-                            options.completefunc.call($, xdata, status);
+                            options.completefunc(xdata, status);
 
                         }
-
-                        dfd.resolveWith($, [xdata, status]);
 
                     }//end: $.ajax().success()
                 });

@@ -151,7 +151,7 @@
      * @function
      *
      * @param {Object} options
-     * @param {String} options.listname
+     * @param {String} options.listName
      * @param {String, Array<Array>, Array<Object>, Array<String>} options.updates
      * @param {Object} [options.webUrl=current_site]
      * @param {Object} [options.async=true]

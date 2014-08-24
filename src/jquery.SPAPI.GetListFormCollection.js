@@ -102,7 +102,7 @@
 
                 options.webURL += "_vti_bin/Forms.asmx";
 
-                options.cacheKey = options.webURL + "?List=" + options.listname;
+                options.cacheKey = options.webURL + "?List=" + options.listName;
                 options.isCached = Me.cache.isCached(options.cacheKey);
 
                 // If cacheXML is true and we have a cached version, return it.
@@ -116,7 +116,7 @@
 
                         reqPromise.then(function(xdata, status){
 
-                            options.completefunc.call($, xdata, status);
+                            options.completefunc(xdata, status);
 
                         });
 
@@ -162,13 +162,14 @@
 
                         }
 
+                        dfd.resolveWith($, [xdata, status]);
+
                         if ($.isFunction(options.completefunc)) {
 
-                            options.completefunc.call($, xdata, status);
+                            options.completefunc(xdata, status);
 
                         }
 
-                        dfd.resolveWith($, [xdata, status]);
 
                     }//end: $.ajax().success()
                 });

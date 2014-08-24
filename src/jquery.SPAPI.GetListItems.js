@@ -75,11 +75,7 @@
             Me          = null,
             callerFn    = function(){
 
-                            if (Me === null) {
-
-                                Me = this;
-
-                            }
+                            if (Me === null) { Me = this; }
 
                             return getRows.apply(this, arguments);
 
@@ -192,12 +188,6 @@
 
                         if (status === "error" || Me.doesMsgHaveError(data)) {
 
-                            if ($.isFunction(options.completefunc)) {
-
-                                options.completefunc(data, status, rows);
-
-                            }
-
                             // If cacheXML was true, then remove this from cache.
                             // No point in caching failures.
                             if (options.cacheXML) {
@@ -208,6 +198,11 @@
 
                             dfd.rejectWith($, [ rows, data, status ]);
 
+                            if ($.isFunction(options.completefunc)) {
+
+                                options.completefunc(data, status, rows);
+
+                            }
                             return;
 
                         }
@@ -217,13 +212,13 @@
                                 nodeName:   "z:row"
                             });
 
+                        dfd.resolveWith($, [ rows, data, status ]);
+
                         if ($.isFunction(options.completefunc)) {
 
                             options.completefunc(data, status, rows);
 
                         }
-
-                        dfd.resolveWith($, [ rows, data, status ]);
 
                     }//end: $.ajax().success()
                 });

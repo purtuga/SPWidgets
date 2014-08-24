@@ -57,9 +57,11 @@
      */
     API.getList = (function() {
 
-        var getList     = null,
+        var Me          = null,
+            getList     = null,
             callerFn    = function(){
 
+                    if (Me === null) { Me  = this; }
                     getList.apply(this, arguments);
 
             };
@@ -76,8 +78,7 @@
         // Makes the ajax call to sharepoint and returns a jQuery.promise
         getList = function(opt) {
 
-            var Me  = this,
-                options = $.extend({}, callerFn.defaults, opt),
+            var options = $.extend({}, callerFn.defaults, opt),
                 reqPromise;
 
 
@@ -93,7 +94,7 @@
 
             options.webURL += "_vti_bin/Lists.asmx";
 
-            options.cacheKey = options.webURL + "?List=" + options.listname;
+            options.cacheKey = options.webURL + "?List=" + options.listName;
             options.isCached = Me.cache.isCached(options.cacheKey);
 
             // If cacheXML is true and we have a cached version, return it.
@@ -107,7 +108,7 @@
 
                     reqPromise.then(function(data, textStatus, jqXHR){
 
-                        options.completefunc.call($, jqXHR, textStatus);
+                        options.completefunc(jqXHR, textStatus);
 
                     });
 
@@ -141,17 +142,19 @@
                 })
                 .done(function(data, textStatus, jqXHR){
 
+                    dfd.resolveWith($, [data, textStatus, jqXHR]);
+
                     if ($.isFunction(options.completefunc)) {
 
                         // Call the complete function (same signature as SPServices)
-                        options.completefunc.call($, jqXHR, textStatus);
+                        options.completefunc(jqXHR, textStatus);
 
                     }
 
-                    dfd.resolveWith($, [data, textStatus, jqXHR]);
-
                 })
                 .fail(function(){
+
+                    dfd.rejectWith($, arguments);
 
                     // If cacheXML was true, then remove this from cache.
                     // No point in caching failures.
@@ -161,7 +164,6 @@
 
                     }
 
-                    dfd.rejectWith($, arguments);
 
                 });
 
