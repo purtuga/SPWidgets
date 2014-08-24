@@ -3,15 +3,15 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *
- * @version 20140824033307
+ * @version 20140824050509
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  *
  * @requires jQuery.js {@link http://jquery.com}
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  *
- * Build Date:  Paul:August 24, 2014 03:33 PM
- * Version:     20140824033307
+ * Build Date:  Paul:August 24, 2014 05:05 PM
+ * Version:     20140824050509
  *
  */
 ;(function($, window, document, undefined){
@@ -53,51 +53,16 @@
         }
 
         $.SPWidgets             = {};
-        $.SPWidgets.version     = "20140824033307";
+        $.SPWidgets.version     = "20140824050509";
         $.SPWidgets.defaults    = {};
         $.SPWidgets.SPAPI       = SPAPI;
 
-        /**
-         * Given an XML message as returned by the Sharepoint WebServices API,
-         * this method will check if it contains an error and return a boolean
-         * indicating that.
-         *
-         *  @return {Boolean} true|false
-         *
-         */
+        // Here for backwards compatibility. Wraps API.doesMsgHaveError()
         $.fn.SPMsgHasError = function() {
 
-            var spErrCode   = $(this).find("ErrorCode"),
-                response    = false;
+            return SPAPI.doesMsgHaveError(this);
 
-            if ( !spErrCode.length ) {
-
-                if ( $(this).find("faultcode").length ) {
-
-                    return true;
-
-                } else {
-
-                    return false;
-
-                }
-
-            }
-
-            spErrCode.each(function(){
-
-                if ( $(this).text() !== "0x00000000" ) {
-
-                    response = true;
-                    return false;
-
-                }
-
-            });
-
-            return response;
-
-        }; /* $.fn.SPMsgHasError() */
+        };
 
         /**
          * Given a sharepoint webservices response, this method will
@@ -944,9 +909,11 @@
      */
     API.getList = (function() {
 
-        var getList     = null,
+        var Me          = null,
+            getList     = null,
             callerFn    = function(){
 
+                    if (Me === null) { Me  = this; }
                     getList.apply(this, arguments);
 
             };
@@ -963,8 +930,7 @@
         // Makes the ajax call to sharepoint and returns a jQuery.promise
         getList = function(opt) {
 
-            var Me  = this,
-                options = $.extend({}, callerFn.defaults, opt),
+            var options = $.extend({}, callerFn.defaults, opt),
                 reqPromise;
 
 
@@ -980,7 +946,7 @@
 
             options.webURL += "_vti_bin/Lists.asmx";
 
-            options.cacheKey = options.webURL + "?List=" + options.listname;
+            options.cacheKey = options.webURL + "?List=" + options.listName;
             options.isCached = Me.cache.isCached(options.cacheKey);
 
             // If cacheXML is true and we have a cached version, return it.
@@ -994,7 +960,7 @@
 
                     reqPromise.then(function(data, textStatus, jqXHR){
 
-                        options.completefunc.call($, jqXHR, textStatus);
+                        options.completefunc(jqXHR, textStatus);
 
                     });
 
@@ -1028,17 +994,19 @@
                 })
                 .done(function(data, textStatus, jqXHR){
 
+                    dfd.resolveWith($, [data, textStatus, jqXHR]);
+
                     if ($.isFunction(options.completefunc)) {
 
                         // Call the complete function (same signature as SPServices)
-                        options.completefunc.call($, jqXHR, textStatus);
+                        options.completefunc(jqXHR, textStatus);
 
                     }
 
-                    dfd.resolveWith($, [data, textStatus, jqXHR]);
-
                 })
                 .fail(function(){
+
+                    dfd.rejectWith($, arguments);
 
                     // If cacheXML was true, then remove this from cache.
                     // No point in caching failures.
@@ -1048,7 +1016,6 @@
 
                     }
 
-                    dfd.rejectWith($, arguments);
 
                 });
 
@@ -1174,7 +1141,7 @@
 
                 options.webURL += "_vti_bin/Forms.asmx";
 
-                options.cacheKey = options.webURL + "?List=" + options.listname;
+                options.cacheKey = options.webURL + "?List=" + options.listName;
                 options.isCached = Me.cache.isCached(options.cacheKey);
 
                 // If cacheXML is true and we have a cached version, return it.
@@ -1188,7 +1155,7 @@
 
                         reqPromise.then(function(xdata, status){
 
-                            options.completefunc.call($, xdata, status);
+                            options.completefunc(xdata, status);
 
                         });
 
@@ -1234,13 +1201,14 @@
 
                         }
 
+                        dfd.resolveWith($, [xdata, status]);
+
                         if ($.isFunction(options.completefunc)) {
 
-                            options.completefunc.call($, xdata, status);
+                            options.completefunc(xdata, status);
 
                         }
 
-                        dfd.resolveWith($, [xdata, status]);
 
                     }//end: $.ajax().success()
                 });
@@ -1340,11 +1308,7 @@
             Me          = null,
             callerFn    = function(){
 
-                            if (Me === null) {
-
-                                Me = this;
-
-                            }
+                            if (Me === null) { Me = this; }
 
                             return getRows.apply(this, arguments);
 
@@ -1457,12 +1421,6 @@
 
                         if (status === "error" || Me.doesMsgHaveError(data)) {
 
-                            if ($.isFunction(options.completefunc)) {
-
-                                options.completefunc(data, status, rows);
-
-                            }
-
                             // If cacheXML was true, then remove this from cache.
                             // No point in caching failures.
                             if (options.cacheXML) {
@@ -1473,6 +1431,11 @@
 
                             dfd.rejectWith($, [ rows, data, status ]);
 
+                            if ($.isFunction(options.completefunc)) {
+
+                                options.completefunc(data, status, rows);
+
+                            }
                             return;
 
                         }
@@ -1482,13 +1445,13 @@
                                 nodeName:   "z:row"
                             });
 
+                        dfd.resolveWith($, [ rows, data, status ]);
+
                         if ($.isFunction(options.completefunc)) {
 
                             options.completefunc(data, status, rows);
 
                         }
-
-                        dfd.resolveWith($, [ rows, data, status ]);
 
                     }//end: $.ajax().success()
                 });
@@ -2070,13 +2033,13 @@
                         });
 
 
+                        dfd.resolveWith($, [lists, xdata, status]);
+
                         if ($.isFunction(options.completefunc)) {
 
-                            options.completefunc.call($, xdata, status, lists);
+                            options.completefunc(xdata, status, lists);
 
                         }
-
-                        dfd.resolveWith($, [lists, xdata, status]);
 
                     }//end: $.ajax().success()
                 });
@@ -2577,7 +2540,7 @@
 
                         reqPromise.then(function(xdata, status){
 
-                            options.completefunc.call($, xdata, status);
+                            options.completefunc(xdata, status);
 
                         });
 
@@ -2626,13 +2589,13 @@
 
                         }
 
+                        dfd.resolveWith($, [xdata, status]);
+
                         if ($.isFunction(options.completefunc)) {
 
-                            options.completefunc.call($, xdata, status);
+                            options.completefunc(xdata, status);
 
                         }
-
-                        dfd.resolveWith($, [xdata, status]);
 
                     }//end: $.ajax().success()
                 });
@@ -2809,7 +2772,7 @@
      * @function
      *
      * @param {Object} options
-     * @param {String} options.listname
+     * @param {String} options.listName
      * @param {String, Array<Array>, Array<Object>, Array<String>} options.updates
      * @param {Object} [options.webUrl=current_site]
      * @param {Object} [options.async=true]
