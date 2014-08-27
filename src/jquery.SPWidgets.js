@@ -282,8 +282,6 @@
          */
         $.SPWidgets.getCamlLogical = function(options){
 
-            // FIXME: BUG: getCamlLogical() currently alters values array given on input.
-
             var o = $.extend(
                         {},
                         {   type:           "AND",
@@ -297,6 +295,8 @@
                 total       = 0,
                 last        = 0,
                 haveFn      = false,
+                newLogical  = "",
+                totalBuilt  = 0,
                 i;
 
             o.type = String(o.type).toUpperCase();
@@ -314,35 +314,65 @@
 
             }
 
-            logical = tagOpen;
+            // logical = tagOpen;
             total   = o.values.length;
             last    = (total - 1);
             haveFn  = $.isFunction(o.onEachValue);
 
-            if (total < 2){
-
-                logical = "";
-
-            }
-
+            // Loop through all query logical strings and build
+            // the overall filter logical
             for ( i=0; i<total; i++){
+
+                newLogical = '';
+
                 if (haveFn) {
-                    logical += String(o.onEachValue(o.values[i])).toString();
+
+                    newLogical += String(o.onEachValue(o.values[i])).toString();
+
                 } else {
-                    logical += String(o.values[i]).toString();
+
+                    newLogical += String(o.values[i]).toString();
+
                 }
-                if ((last - i) > 1){
-                    logical += $.SPWidgets.getCamlLogical(
-                                $.extend({}, o, {
-                                    values: o.values.slice((i + 1), (total - i))
-                                })
-                            );
-                    break;
+
+                if (newLogical) {
+
+                    logical += newLogical;
+                    totalBuilt++;
+
+                    // If the total number of items is >2, then build the rest
+                    // of the logicals by calling this method again with the
+                    // remainder of the filters as input.
+                    if ((last - i) > 1){
+
+                        newLogical = $.SPWidgets.getCamlLogical(
+                                    $.extend({}, o, {
+                                        values: o.values.slice((i + 1), (total - i))
+                                    })
+                                );
+
+                        // If building the remainder of the filter returned
+                        // something, then add it to the list and incrment the
+                        // number of logicals built.
+                        if (newLogical) {
+
+                            totalBuilt++;
+                            logical += newLogical;
+
+                        }
+
+                        // Break out of this loop, even if there are other
+                        // items... The call above will take care of the others
+                        break;
+                    }
+
                 }
+
             }
 
-            if (total > 1){
-                logical += tagClose;
+            if (totalBuilt > 1){
+
+                logical = tagOpen + logical + tagClose;
             }
 
             return logical;

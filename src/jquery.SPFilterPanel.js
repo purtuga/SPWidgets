@@ -1269,29 +1269,6 @@
             // list of column that the user entered values for.
             if (thisColFilter.count > 0 || thisColFilter.CAMLOrderBy) {
 
-                colFilters.push(thisColFilter.CAMLQuery);
-
-                filters.count           += thisColFilter.count;
-                filters.filters[colName] = thisColFilter;
-
-                // Create the URLParams for this column
-                thisColUrlParam[ colName ] = {
-                    matchType:      thisColFilter.matchType,
-                    logicalType:    thisColFilter.logicalType,
-                    values:         thisColFilter.values,
-                    sortOrder:      thisColFilter.sortOrder
-                };
-
-                thisColFilter.URLParams = $.param(thisColUrlParam, false);
-
-                if (filters.URLParams !== "") {
-
-                    filters.URLParams += "&";
-
-                }
-
-                filters.URLParams += thisColFilter.URLParams;
-
                 // If OrderBY value were defined for this column, then add it
                 // to overall filter
                 if (thisColFilter.CAMLOrderBy) {
@@ -1299,6 +1276,35 @@
                     orderByValues += thisColFilter.CAMLOrderBy;
 
                 }
+
+                // If we have a filter defined for this column, then
+                // prepare it for the overall query.
+                if (thisColFilter.count > 0) {
+
+                    colFilters.push(thisColFilter.CAMLQuery);
+                    filters.count += thisColFilter.count;
+                    filters.filters[colName] = thisColFilter;
+
+                    // Create the URLParams for this column
+                    thisColUrlParam[ colName ] = {
+                        matchType:      thisColFilter.matchType,
+                        logicalType:    thisColFilter.logicalType,
+                        values:         thisColFilter.values,
+                        sortOrder:      thisColFilter.sortOrder
+                    };
+
+                    thisColFilter.URLParams = $.param(thisColUrlParam, false);
+
+                    if (filters.URLParams !== "") {
+
+                        filters.URLParams += "&";
+
+                    }
+
+                    filters.URLParams += thisColFilter.URLParams;
+
+                }
+
 
             }
 

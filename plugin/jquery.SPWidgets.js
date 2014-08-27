@@ -3,15 +3,15 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *
- * @version 20140824050509
+ * @version 20140827071822
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  *
  * @requires jQuery.js {@link http://jquery.com}
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  *
- * Build Date:  Paul:August 24, 2014 05:05 PM
- * Version:     20140824050509
+ * Build Date:  Paul:August 27, 2014 07:18 PM
+ * Version:     20140827071822
  *
  */
 ;(function($, window, document, undefined){
@@ -53,7 +53,7 @@
         }
 
         $.SPWidgets             = {};
-        $.SPWidgets.version     = "20140824050509";
+        $.SPWidgets.version     = "20140827071822";
         $.SPWidgets.defaults    = {};
         $.SPWidgets.SPAPI       = SPAPI;
 
@@ -282,8 +282,6 @@
          */
         $.SPWidgets.getCamlLogical = function(options){
 
-            // FIXME: BUG: getCamlLogical() currently alters values array given on input.
-
             var o = $.extend(
                         {},
                         {   type:           "AND",
@@ -297,6 +295,8 @@
                 total       = 0,
                 last        = 0,
                 haveFn      = false,
+                newLogical  = "",
+                totalBuilt  = 0,
                 i;
 
             o.type = String(o.type).toUpperCase();
@@ -314,35 +314,65 @@
 
             }
 
-            logical = tagOpen;
+            // logical = tagOpen;
             total   = o.values.length;
             last    = (total - 1);
             haveFn  = $.isFunction(o.onEachValue);
 
-            if (total < 2){
-
-                logical = "";
-
-            }
-
+            // Loop through all query logical strings and build
+            // the overall filter logical
             for ( i=0; i<total; i++){
+
+                newLogical = '';
+
                 if (haveFn) {
-                    logical += String(o.onEachValue(o.values[i])).toString();
+
+                    newLogical += String(o.onEachValue(o.values[i])).toString();
+
                 } else {
-                    logical += String(o.values[i]).toString();
+
+                    newLogical += String(o.values[i]).toString();
+
                 }
-                if ((last - i) > 1){
-                    logical += $.SPWidgets.getCamlLogical(
-                                $.extend({}, o, {
-                                    values: o.values.slice((i + 1), (total - i))
-                                })
-                            );
-                    break;
+
+                if (newLogical) {
+
+                    logical += newLogical;
+                    totalBuilt++;
+
+                    // If the total number of items is >2, then build the rest
+                    // of the logicals by calling this method again with the
+                    // remainder of the filters as input.
+                    if ((last - i) > 1){
+
+                        newLogical = $.SPWidgets.getCamlLogical(
+                                    $.extend({}, o, {
+                                        values: o.values.slice((i + 1), (total - i))
+                                    })
+                                );
+
+                        // If building the remainder of the filter returned
+                        // something, then add it to the list and incrment the
+                        // number of logicals built.
+                        if (newLogical) {
+
+                            totalBuilt++;
+                            logical += newLogical;
+
+                        }
+
+                        // Break out of this loop, even if there are other
+                        // items... The call above will take care of the others
+                        break;
+                    }
+
                 }
+
             }
 
-            if (total > 1){
-                logical += tagClose;
+            if (totalBuilt > 1){
+
+                logical = tagOpen + logical + tagClose;
             }
 
             return logical;
@@ -11438,7 +11468,7 @@
 /**
  * @fileOverview - List filter panel widget
  *
- * BUILD: Paul:August 24, 2014 01:19 PM
+ * BUILD: Paul:August 27, 2014 07:18 PM
  *
  */
 (function($){
@@ -12706,28 +12736,6 @@
             // list of column that the user entered values for.
             if (thisColFilter.count > 0 || thisColFilter.CAMLOrderBy) {
 
-                colFilters.push(thisColFilter.CAMLQuery);
-
-                filters.count           += thisColFilter.count;
-                filters.filters[colName] = thisColFilter;
-
-                // Create the URLParams for this column
-                thisColUrlParam[ colName ] = {
-                    matchType:      thisColFilter.matchType,
-                    logicalType:    thisColFilter.logicalType,
-                    values:         thisColFilter.values,
-                    sortOrder:      thisColFilter.sortOrder
-                };
-
-                thisColFilter.URLParams = $.param(thisColUrlParam, false);
-
-                if (filters.URLParams !== "") {
-
-                    filters.URLParams += "&";
-
-                }
-
-                filters.URLParams += thisColFilter.URLParams;
 
                 // If OrderBY value were defined for this column, then add it
                 // to overall filter
@@ -12736,6 +12744,35 @@
                     orderByValues += thisColFilter.CAMLOrderBy;
 
                 }
+
+                // If we have a filter defined for this column, then
+                // prepare it for the overall query.
+                if (thisColFilter.count > 0) {
+
+                    colFilters.push(thisColFilter.CAMLQuery);
+                    filters.count += thisColFilter.count;
+                    filters.filters[colName] = thisColFilter;
+
+                    // Create the URLParams for this column
+                    thisColUrlParam[ colName ] = {
+                        matchType:      thisColFilter.matchType,
+                        logicalType:    thisColFilter.logicalType,
+                        values:         thisColFilter.values,
+                        sortOrder:      thisColFilter.sortOrder
+                    };
+
+                    thisColFilter.URLParams = $.param(thisColUrlParam, false);
+
+                    if (filters.URLParams !== "") {
+
+                        filters.URLParams += "&";
+
+                    }
+
+                    filters.URLParams += thisColFilter.URLParams;
+
+                }
+
 
             }
 
