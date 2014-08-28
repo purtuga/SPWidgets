@@ -17,7 +17,8 @@
     var API = namespace || {},
         /**
          * Returns an array of String representing the updates that need
-         * to be made.
+         * to be made. Handles the updates being defined in a variety of
+         * ways: array-of-arrays, array-of-objects, array-of-strings, string.
          *
          * @param {Object} options
          *
@@ -30,22 +31,28 @@
 
             function processArrayOfObjects(updArray) {
 
-                var i,j, col, thisUpd;
+                var i,j, col,
+                    thisUpd = '';
+
+                // Loop through the list of objects (updates)
                 for(i=0,j=updArray.length; i<j; i++){
 
                     thisUpd = '';
 
+                    // Build the fields to be updated for this update
                     for (col in updArray[i]) {
 
                         if (updArray[i].hasOwnProperty(col)) {
 
-                            thisUpd = '<Field Name="' + col + '">' +
+                            thisUpd += '<Field Name="' + col + '">' +
                                       updArray[i][col] + '</Field>';
 
                         }
 
                     }
 
+                    // If this column has fields to be updated, create
+                    // the method agregate around it
                     if (thisUpd) {
 
                         updates.push(
@@ -61,14 +68,19 @@
 
             }
 
+            // Array-of-arrays
+            // 1 single update (outer-array) with multiple fields to be
+            // updated (inner-arrays's)
             function processArrayOfArrays(updArray) {
 
-                var i,j, col, thisUpd;
+                var thisUpd = '',
+                    i,j, col;
+
                 for(i=0,j=updArray.length; i<j; i++){
 
                     if ($.isArray(updArray[i])) {
 
-                        thisUpd = '<Field Name="' + updArray[i][0] + '">' +
+                        thisUpd += '<Field Name="' + updArray[i][0] + '">' +
                                   updArray[i][1] + '</Field>';
 
                     }
@@ -88,10 +100,17 @@
 
             }
 
+            // Backwards compatability to SPServices: if we don't have
+            // options.updates defined, but we have .ID and .valuepairs,
+            // Then do array-of-arrays
+            if (!options.updates && options.ID && options.valuepairs) {
+
+                options.valuepairs.push(["ID", options.ID]);
+                processArrayOfArrays(options.valuepairs);
 
             // If options.updates is a string, then just add it as is to
             // the array
-            if (ofType === "string"){
+            } else if (ofType === "string"){
 
                 updates.push(options.updates);
 
@@ -119,13 +138,6 @@
 
             }
 
-            // Backwards compatability to SPServices
-            if (options.ID && options.valuepairs) {
-
-                options.valuepairs.push(["ID", options.ID]);
-                processArrayOfArrays(options.valuepairs);
-
-            }
 
             return updates;
 
