@@ -218,6 +218,14 @@ Methods
             }
 
 
+-   **reset()**<br />
+    Resets the filter panel and returns all column values back to their default values.
+
+    Usage:
+
+        $("#listFilter").SPFilterPanel("reset");
+
+
 -   **destroy()**<br />
     Removes the widget from the UI.
 

@@ -52,7 +52,11 @@
                                             '</Where>' +
                                             filters.CAMLOrderBy +
                                         '</Query>';
-                            $textarea.val( vkbeautify.xml( query ) );
+                            $textarea.val(
+                                vkbeautify.xml( query ) +
+                                "\n\n--------------------------\n" +
+                                decodeURIComponent(filters.URLParams)
+                            );
 
                             $results.html("<p>Loading...</p>");
 
@@ -80,8 +84,6 @@
 
                                 } //end: completefunc()
                             });
-
-
 
                         } //end: onFilterClick()
                     });
@@ -144,6 +146,35 @@
 
             }
         });
+
+    // Setup setFilter test
+    $cntr.find('a#spwidgets_demo_filter_test_setfilter')
+        .button()
+        .on("click", function(ev){
+
+            $demoCntr.SPFilterPanel("setfilter", {
+                ID: {
+                    values: ["one", "two"],
+                    matchType: "Contains",
+                    sortOrder: "Asc"
+                }
+            });
+
+        });
+
+    // Setup sortOrder setfilter
+    $cntr.find('a#spwidgets_demo_filter_test_sortOrder')
+        .button()
+        .on("click", function(ev){
+
+            $demoCntr.SPFilterPanel("setfilter", {
+                ID: {
+                    sortOrder: "Asc"
+                }
+            });
+
+        });
+
 
 
 })(SPWIDGET_DEMO.JQUERY || jQuery);

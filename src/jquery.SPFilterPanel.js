@@ -751,11 +751,11 @@
 
         }
 
-        if (val !== "") {
+        if (Filter.isColumnDirty($col)) {
 
             $col.addClass(Inst.opt.definedClass);
 
-        } else if (matchType !== 'IsNull' && matchType !== 'IsNotNull') {
+        } else {
 
             $col.removeClass(Inst.opt.definedClass);
 
@@ -787,16 +787,24 @@
                                 .closest("div.spwidget-filter")
                                 .data("SPFilterPanelInst");
 
-        // If its the sort column, then show/hide order buttons
+                // If its the sort column, then show/hide order buttons
         if ($ele.is("select.spwidget-sort-order")) {
 
             if ($ele.val()) {
 
                 $col.addClass('spwidget-has-sort-order');
+                $col.addClass(Inst.opt.definedClass);
 
             } else {
 
                 $col.removeClass('spwidget-has-sort-order');
+
+                // revove dirty flag if no value set
+                if (!Filter.isColumnDirty($col)) {
+
+                    $col.removeClass(Inst.opt.definedClass);
+
+                }
 
             }
 
@@ -837,28 +845,7 @@
             // no value is defined for it. For Checkboxes (choice)
             // we need to first grab the checkboxes and then see
             // if they are checked.
-            if (colType === "choice" || colType === "multichoice") {
-
-                $colInput.filter(":checkbox").each(function(){
-
-                    var $this = $(this);
-
-                    if ($this.is(":checked")) {
-
-                        inputVal += $this.val();
-                        return false;
-
-                    }
-
-                });
-
-            } else {
-
-                inputVal += $colInput.val();
-
-            }
-
-            if (!inputVal ) {
+            if (!Filter.isColumnDirty($col)) {
 
                 $col.removeClass(Inst.opt.definedClass);
 
@@ -1269,11 +1256,14 @@
             // list of column that the user entered values for.
             if (thisColFilter.count > 0 || thisColFilter.CAMLOrderBy) {
 
+                thisColUrlParam[ colName ] = {};
+
                 // If OrderBY value were defined for this column, then add it
                 // to overall filter
                 if (thisColFilter.CAMLOrderBy) {
 
                     orderByValues += thisColFilter.CAMLOrderBy;
+                    thisColUrlParam[colName].sortOrder = thisColFilter.sortOrder;
 
                 }
 
@@ -1285,26 +1275,23 @@
                     filters.count += thisColFilter.count;
                     filters.filters[colName] = thisColFilter;
 
-                    // Create the URLParams for this column
-                    thisColUrlParam[ colName ] = {
-                        matchType:      thisColFilter.matchType,
-                        logicalType:    thisColFilter.logicalType,
-                        values:         thisColFilter.values,
-                        sortOrder:      thisColFilter.sortOrder
-                    };
-
-                    thisColFilter.URLParams = $.param(thisColUrlParam, false);
-
-                    if (filters.URLParams !== "") {
-
-                        filters.URLParams += "&";
-
-                    }
-
-                    filters.URLParams += thisColFilter.URLParams;
+                    // Create the URLParams for this column filter value
+                    thisColUrlParam[colName].matchType      = thisColFilter.matchType;
+                    thisColUrlParam[colName].logicalType    = thisColFilter.logicalType;
+                    thisColUrlParam[colName].values         = thisColFilter.values;
 
                 }
 
+                thisColFilter.URLParams = $.param(thisColUrlParam, false);
+
+                // Add this column's URL params to the overall filter value
+                if (filters.URLParams !== "") {
+
+                    filters.URLParams += "&";
+
+                }
+
+                filters.URLParams += thisColFilter.URLParams;
 
             }
 
@@ -1569,6 +1556,59 @@
             $col.insertAfter($col.next());
 
         }
+
+    };
+
+    /**
+     * Returns a boolean indicating whether the column is dirty or not.
+     *
+     * @param {jQuery} $col
+     *
+     * @return {Boolean}
+     */
+    Filter.isColumnDirty = function($col){
+
+        var response    = false,
+            colType     = $col.data("spwidget_column_type"),
+            $colInput   = $col.find(".spwidget-input");
+
+        // Lets check the value of the field first.
+        if (colType === "choice" || colType === "multichoice") {
+
+            $colInput.filter(":checkbox").each(function(){
+
+                var $this = $(this);
+
+                if ($this.is(":checked")) {
+
+                    response = true;
+                    return false;
+
+                }
+
+            });
+
+        } else if ($colInput.val()) {
+
+            response = true;
+
+        }
+
+        // If response is still false, lets check on the select fields
+        // that can still impact column definition
+        if (!response) {
+
+            $colInput = $col.find("select.spwidget-sort-order");
+
+            if ($colInput.val()) {
+
+                response = true;
+
+            }
+
+        }
+
+        return response;
 
     };
 

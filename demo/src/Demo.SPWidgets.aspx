@@ -1,6 +1,6 @@
 <%-- SPWIDGETS DEMO PAGE --%>
 <%-- BUILD _BUILD_VERSION_NUMBER_ --%>
-<%@ Page language="C#" MasterPageFile="~masterurl/default.master"    Inherits="Microsoft.SharePoint.WebPartPages.WebPartPage,Microsoft.SharePoint,Version=12.0.0.0,Culture=neutral,PublicKeyToken=71e9bce111e9429c" %> 
+<%@ Page language="C#" MasterPageFile="~masterurl/default.master"    Inherits="Microsoft.SharePoint.WebPartPages.WebPartPage,Microsoft.SharePoint,Version=12.0.0.0,Culture=neutral,PublicKeyToken=71e9bce111e9429c" %>
 <%@ Register Tagprefix="SharePoint" Namespace="Microsoft.SharePoint.WebControls" Assembly="Microsoft.SharePoint, Version=12.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %>
 <%@ Register Tagprefix="Utilities" Namespace="Microsoft.SharePoint.Utilities" Assembly="Microsoft.SharePoint, Version=12.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %>
 <%@ Import Namespace="Microsoft.SharePoint" %>
@@ -41,27 +41,27 @@ SPWidgets - Widgets for building custom UIs
 <asp:Content ContentPlaceHolderId="PlaceHolderMain" runat="server">
 
 <script type="text/javascript">
-/** 
+/**
  * SPWidgets Demo
- * 
+ *
  * Build Date:  _BUILD_VERSION_DATE_
- * Version:     _BUILD_VERSION_NUMBER_ 
- * 
+ * Version:     _BUILD_VERSION_NUMBER_
+ *
  */
 </script>
 <div id="spwidgets_demo_cntr" class="ui-widget-content" style="display:none;">
-    
+
 <div class="spwidgets-demo-cntr">
-    
+
     <div class="spwidgets-demo-top-banner ui-state-active">
         <h1>Demo of SPWidgets</h1>
         <p class="ui-widget-content ui-corner-all">
-            SPWidgets is a set of Sharepoint widgets meant to facilitate the 
-            building of custom UI's. This demo contains a showcase of the widgets 
-            that are available and serves to only scratch at the possibilities 
-            of what can be accomplished with them.  Visit the project at 
+            SPWidgets is a set of Sharepoint widgets meant to facilitate the
+            building of custom UI's. This demo contains a showcase of the widgets
+            that are available and serves to only scratch at the possibilities
+            of what can be accomplished with them.  Visit the project at
             <a href="http://purtuga.github.io/SPWidgets/">purtuga.github.io/SPWidgets</a>
-        </p> 
+        </p>
     </div>
     <div id="ptTabsCntr" style="display: none;">
         <ul>
@@ -76,8 +76,8 @@ SPWidgets - Widgets for building custom UIs
         <div id="SPControlUploadDemo">
             <h2>Upload Plugin</h2>
             <div style="padding: 1em;margin: 3em auto;" class="ui-state-highlight">
-                Once an existing Document Library is selected, you will be presented 
-                with an upload button that will allow you to upload files to the 
+                Once an existing Document Library is selected, you will be presented
+                with an upload button that will allow you to upload files to the
                 root of the library selected.
             </div>
             <hr/>
@@ -100,14 +100,14 @@ SPWidgets - Widgets for building custom UIs
                                 </tr>
                             </thead>
                             <tbody>
-                                
+
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <div id="SPControlPickUserDemo">
             <h2>People Picker</h2>
             <div style="min-height: 300px;">
@@ -119,7 +119,7 @@ SPWidgets - Widgets for building custom UIs
                     the selected user information in the formta expected for update to
                     the sharepoing list (ID;#userName)
                 </div>
-                
+
                 <div>
                     <h3>Demo 1: Basic People Picker</h3>
                     <p>A basic setup on an input element.<br/>(Note: Once a person is selected here, Demo number two will be initiated and made visible below.</p>
@@ -127,15 +127,15 @@ SPWidgets - Widgets for building custom UIs
                         <label>User Name</label>
                         <input type="text" name="spuserdemo" value="" />
                         <div id="sp_control_pick_user_detail" style="margin-top: 1em;padding:1em;"></div>
-                        
+
                     </div>
                     <div>
                         <h4>Events Output</h4>
                         <div id="SPControlPickUserEventOut">
-                            
+
                         </div>
                     </div>
-                    
+
                 </div>
                 <hr/>
                 <div id="spuserdemo2cntr" style="display:none;">
@@ -145,17 +145,17 @@ SPWidgets - Widgets for building custom UIs
                         <label>Person</label>
                         <input type="text" name="spuserdemo2" value="" />
                         <div id="sp_control_pick_user_detail2" style="margin-top: 1em;padding:1em;"></div>
-                        
+
                     </div>
                 </div>
-                
+
             </div>
         </div>
-        
+
         <div id="SPControlBoardDemo">
-            
+
             <h2>Kan-Ban Board Widget</h2>
-            
+
             <div class="spwidget-demo-tabs">
                 <ul>
                     <li>
@@ -175,7 +175,7 @@ SPWidgets - Widgets for building custom UIs
                     </li>
                 </ul>
                 <div id="spwidgets_demo_board_demo">
-                    
+
                     <p>
                         Click below to select a list followed by a column from
                         that list. Reminder: Column must be of a type supported
@@ -183,45 +183,45 @@ SPWidgets - Widgets for building custom UIs
                         The Board is configured to be displayed with a fixed height
                         of 500px.
                     </p>
-                    
+
                     <div class="spwidgets-demo-lists"></div>
                     <div class="spwidgets-demo-columns"></div>
-                    
+
                     <div class="spwidget-board-demo-cntr"></div>
-                    
+
                 </div>
                 <div id="spwidgets_demo_board_output">
-                    
+
                     <p>
                     Events fired by the widget will populate data here.
                     </p>
-                    
+
                     <div class="spwidget-demo-code ui-widget-content ui-corner-all"></div>
-                    
+
                 </div>
                 <div id="spwidgets_demo_board_about">
-                    
+
                     <p>
                     The Board widget displays a Kan-Ban type board for list items, allowing
                     the user to quickly move items around between states. The example below
                     is using the Tasks List commonly used in all Sharepoint Sites, and
                     specifically, the Status Field of that List.
                     </p>
-                    
+
                 </div>
             </div>
-            
+
         </div>
-        
+
         <div id="SPControlLookupFieldDemo">
             <h2>Lookup Field Widget</h2>
-            
+
             <div class="spwidget-demo-fluid spwidget-demo-float-cntr">
                 <div class="ui-widget-content ui-corner-all spwidget-demo-float">
-                    
+
                     <p>Click below to select a List.</p>
                     <div class="spwidgets-demo-lists"></div>
-                    
+
                     <div class="spwidgets-demo-lookup-examples">
                         <div>
                             <h3>Example 1</h3>
@@ -230,7 +230,7 @@ SPWidgets - Widgets for building custom UIs
                                 <input name="example1" value="" />
                             </div>
                         </div>
-                
+
                         <div>
                             <h3>Example 2</h3>
                             <p>Field below allows user to select
@@ -239,14 +239,14 @@ SPWidgets - Widgets for building custom UIs
                                 <input name="example2" value="" />
                             </div>
                         </div>
-                        
+
                         <div>
                             <h3>Example 3</h3>
                             <p>Field below allows user to select
                                 mulitple values (multi-select) and displays
                                 the selector, which allows the user the ability
-                                to "browse" the list looking for the correct value. 
-                                In addition, the List items are sorted by ID in 
+                                to "browse" the list looking for the correct value.
+                                In addition, the List items are sorted by ID in
                                 Descending order.</p>
                             <div>
                                 <input name="example3" value="" />
@@ -255,10 +255,10 @@ SPWidgets - Widgets for building custom UIs
                                 <a href="javascript:" class="spwidgets-demo-lookup-example3-clear-all">Clear All</a>
                             </div>
                         </div>
-                        
+
                     </div>
-                    
-                    
+
+
                 </div>
                 <div class="spwidget-demo-float">
                     <div class="spwidget-demo-tabs">
@@ -275,47 +275,47 @@ SPWidgets - Widgets for building custom UIs
                             </li>
                         </ul>
                         <div id="spwidgets_demo_lookup_output">
-                            
+
                             <p>
                                 Area below will capture out of events from the demo.
                             </p>
-                            
+
                             <div class="spwidget-demo-code ui-widget-content ui-corner-all"></div>
-                            
+
                         </div>
-                        
+
                         <div id="spwidgets_demo_lookup_about">
-                            
+
                             <p>
                             The Lookup Field widget provides a custom interface for List/Library
                             field of type Lookup. It turns an input field into a Type-Ahead/autocomplete
                             field allowing the user to start typing values and select a match from
                             the suggestion.
                             </p>
-                            
+
                         </div>
-                        
+
                     </div>
                 </div>
             </div>
-            
+
         </div>
-        
+
         <div id="SPControlListFilterPanel">
-            
+
             <h2>List Filter Widget Demo</h2>
-            
+
             <div class="spwidget-demo-fluid spwidget-demo-float-cntr">
                 <div class="ui-widget-content ui-corner-all spwidget-demo-float">
-                    
+
                     <p>This demo uses one of lists available on this site (picker below) and displays a filter panel for the fields on that list.</p>
-                    
+
                     <p>Click below to select a List.</p>
                     <div class="spwidgets-demo-lists"></div>
-                    
+
                     <div class="spwidgets-list-filter ui-widget-content" style="padding: .5em;">
                     </div>
-                    
+
                 </div>
                 <div class="spwidget-demo-float">
                     <div class="spwidget-demo-tabs">
@@ -337,17 +337,17 @@ SPWidgets - Widgets for building custom UIs
                             </li>
                         </ul>
                         <div id="spwidgets_demo_filter_results">
-                            
+
                             <p>
                                 The results from the filter defined are displayed below.
                                 Results are limited only to the first 10 matches and the
                                 first 3 columns..
                             </p>
-                            
+
                             <div class="spwidgets-demo-filter-result-output">
-                                
+
                             </div>
-                            
+
                         </div>
                         <div id="spwidgets_demo_filter_output">
                             <p>
@@ -357,43 +357,55 @@ SPWidgets - Widgets for building custom UIs
                                 <textarea name="camlquery" class="spwidget-demo-code"></textarea>
                             </div>
                         </div>
-                        
+
                         <div id="spwidgets_demo_filter_about">
-                            
+
                             <p>
                             The List Filter widget displays a filter panel to collect information from the
-                            user. Data can be used to then retrieve rows from the list 
+                            user. Data can be used to then retrieve rows from the list
                             using the criteria provided by the user.
                             </p>
-                            
-                            <p>Slider below is used for testing purposes.</p>
-                            
+
+                            <h3>Test: filter panel width adjustment</h3>
+
                             <div style="padding: .5em; margin-bottom: 2em;margin-top:2em;">
                                 <div style="margin-bottom: 1em;">
-                                    Use slider below to test width of container holding the 
+                                    Use slider below to test width of container holding the
                                     filter panel and see how the content adjusts to the new
                                      width.</div>
                                 <div class="ui-widget-content spwidgets-list-filter-slider-value ui-corner-all" style="text-align:center;width:5em;padding:.5em;margin:.2em;font-size:1.5em;font-weight:bold;">100%</div>
                                 <div class="spwidgets-list-filter-width" style="width: 50%;"></div>
                             </div>
-                            
+
+                            <h3>Test: setFilter</h3>
+                            <p>Set the ID column value via setFilter method. The column should be populated with a value of 'one;two', a match type of 'Contains' and a sort order of 'Ascending'. The column should be shown as dirty.</p>
+                            <p>
+                                <a id="spwidgets_demo_filter_test_setfilter" href="javascript:">Run</a>
+                            </p>
+
+                            <h3>Test: setFilter - sortOrder only</h3>
+                            <p>Set the ID column sortOrder only via setFilter method. Only the sort order should be set to 'Ascending' and the column should show dirty.</p>
+                            <p>
+                                <a id="spwidgets_demo_filter_test_sortOrder" href="javascript:">Run</a>
+                            </p>
+
                         </div>
-                        
+
                     </div>
                 </div>
             </div>
-            
+
         </div><!-- end: #SPControlListFilterPanel -->
-        
+
         <div id="SPDateField">
-            
+
             <h2>Date Widget</h2>
-            
+
             <div class="spwidget-demo-fluid spwidget-demo-float-cntr">
                 <div class="ui-widget-content ui-corner-all spwidget-demo-float">
-                    
+
                     <div class="spwidget-demo-samples">
-                        
+
                         <p>
                             <h3>Example 1: Default</h3>
                             <p>Default functionality.</p>
@@ -417,7 +429,7 @@ SPWidgets - Widgets for building custom UIs
                                 <input class="spwidget-demo-input" type="text" name="example3" value="" />
                             </div>
                         </p>
-                        
+
                         <hr>
                         <p>
                             <h3>Example 4: Pre-Defined Inputs</h3>
@@ -429,7 +441,7 @@ SPWidgets - Widgets for building custom UIs
                                 <input class="spwidget-demo-input" type="text" name="example4" value="2013-08-01;2013-08-02" />
                             </div>
                         </p>
-                        
+
                         <hr>
                         <p>
                             <h3>Example 5: Date and Time Picker</h3>
@@ -439,13 +451,13 @@ SPWidgets - Widgets for building custom UIs
                                 and the date string for use with SharePoint's API will include
                                 the time element in it. When picker is displayed, it will have
                                 the currently selected date pre-selected or if not has been set
-                                yet, it will defaul to current time/date.                               
+                                yet, it will defaul to current time/date.
                             </p>
                             <div>
                                 <input class="spwidget-demo-input" type="text" name="example5" value="" />
                             </div>
                         </p>
-                        
+
                         <hr>
                         <p>
                             <h3>Example 6: Date and Time Picker - Allow Multiples</h3>
@@ -457,22 +469,22 @@ SPWidgets - Widgets for building custom UIs
                                 <input class="spwidget-demo-input" type="text" name="example6" value="" />
                             </div>
                         </p>
-                        
+
                         <hr>
                         <p>
                             <h3>Example 7: Date and Time Picker - Pre-Defined Inputs</h3>
                             <p>
                                 In this example, the input field used to bind SPDateField widget
-                                was already storing 2 dates: August 1, 2013 1:05 AM and 
-                                August 2, 2013 4:30PM.  This instance also shows the use of 
+                                was already storing 2 dates: August 1, 2013 1:05 AM and
+                                August 2, 2013 4:30PM.  This instance also shows the use of
                                 localized labels, like Time, Hour, Minutes.
                             </p>
                             <div>
-                                <input class="spwidget-demo-input" type="text" name="example7" 
+                                <input class="spwidget-demo-input" type="text" name="example7"
                                     value="2013-08-01T01:05:00;2013-08-02T16:30:00" />
                             </div>
                         </p>
-                        
+
                         <hr>
                         <p>
                             <h3>Example 8: Date Picker Displayed inline on a non-input element</h3>
@@ -483,7 +495,7 @@ SPWidgets - Widgets for building custom UIs
                             </p>
                             <div class="spwidget-spdatefield-demo8"></div>
                         </p>
-                        
+
                         <hr>
                         <p>
                             <h3>Example 9: Date and Time Picker Displayed inline on a non-input element</h3>
@@ -494,10 +506,10 @@ SPWidgets - Widgets for building custom UIs
                             </p>
                             <div class="spwidget-spdatefield-demo9"></div>
                         </p>
-                        
+
                         <p style="height: 15em;"></p>
                     </div>
-                    
+
                 </div>
                 <div class="spwidget-demo-float">
                     <div class="spwidget-demo-tabs">
@@ -513,44 +525,44 @@ SPWidgets - Widgets for building custom UIs
                                 </a>
                             </li>
                         </ul>
-                        
+
                         <div id="spwidgets_demo_date_results">
                             <p>
-                                As the dates are selected, the demo will output data to this 
+                                As the dates are selected, the demo will output data to this
                                 area when the input element's change event is triggered.
                             </p>
                             <div class="spwidget-output">
-                                
+
                             </div>
                         </div>
-                        
+
                         <div id="spwidgets_demo_date_about">
                             <p>
-                                SPDateField is a widgets wrapped around jQuery UI Datepicker that 
-                                allows the user to pick one or more dates using their own locale 
-                                format, while storing the SharePoint friendly format (YYY-MM-DD) 
+                                SPDateField is a widgets wrapped around jQuery UI Datepicker that
+                                allows the user to pick one or more dates using their own locale
+                                format, while storing the SharePoint friendly format (YYY-MM-DD)
                                 in the input field to which this widget was bound to.
                             </p>
                         </div>
-                        
+
                     </div>
                 </div>
             </div>
-            
+
         </div> <!-- end: #SPDateField -->
-        
+
         <div id="SPWidgetsAbout">
-            
+
             <p>
                 Below are the version of software currently being used for this demo showcase.
             </p>
-            
+
             <ul class="spwidgets-demo-info-cntr">
-                
+
             </ul>
-            
+
         </div> <!-- END: #SPWidgetsAbout -->
-        
+
     </div>
     <div>
         <span>Build: </span><span>_BUILD_VERSION_NUMBER_</span>
@@ -558,7 +570,7 @@ SPWidgets - Widgets for building custom UIs
     <div>
         <div id="themeSwitchWidget"></div>
     </div>
-    
+
 </div>
 </div>
 
@@ -567,63 +579,63 @@ SPWidgets - Widgets for building custom UIs
 //__HAS_EMBEDED_DATA_FROM_BUILD__
 
 setTimeout(function(){
-    
+
     (function($){
-        
+
         var jQuery = $;
-        
+
         $(function(){
-            
+
             $('<link rel="stylesheet" type="text/css" href="' +
-                window.location.protocol + 
+                window.location.protocol +
                 '//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/redmond/jquery-ui.css" />'
             )
             .appendTo("head");
-            
+
 //-------- demo code below: inserted by build script -----------------
 
 //__BUILD:DEMO_CODE__
 
 //----------------- end of demo code (above) -------------------------
-            
+
         }); //end: ready()
-        
+
     })(
         // Execute the function below to load all the needed libraries
         // and then return the jQuery object as input to the function
         // above.
         (function(){
-            
-            if (!window.SPWIDGET_DEMO) {
-                
-                window.SPWIDGET_DEMO = {};
-                
-            }
-            
-            window.SPWIDGET_DEMO.JQUERY = null;
-            
-//-------- 3rd Party Libs below: inserted by build script ----------------- 
-            
-//__BUILD:EXT_LIBS__
-            
-//-------- 3rd Party Libs above: inserted by build script ----------------- 
 
-//-------- START SPWidgets plugin: inserted by build script ----------------- 
+            if (!window.SPWIDGET_DEMO) {
+
+                window.SPWIDGET_DEMO = {};
+
+            }
+
+            window.SPWIDGET_DEMO.JQUERY = null;
+
+//-------- 3rd Party Libs below: inserted by build script -----------------
+
+//__BUILD:EXT_LIBS__
+
+//-------- 3rd Party Libs above: inserted by build script -----------------
+
+//-------- START SPWidgets plugin: inserted by build script -----------------
 
 //__BUILD:DEMO_SPWIDGETS__
 
-//-------- END of SPWidgets plugin: inserted by build script ----------------- 
-            
+//-------- END of SPWidgets plugin: inserted by build script -----------------
+
             // Get private version of jQuery for use by this demo only!
             SPWIDGET_DEMO.JQUERY = jQuery.noConflict(true);
-            
+
             return SPWIDGET_DEMO.JQUERY || jQuery;
-            
+
         })()
     ); //end: initialize all code
-    
+
 }, 2000); //end: setTimeout
-    
+
 </script>
 
 </asp:Content>
