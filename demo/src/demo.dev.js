@@ -149,9 +149,8 @@
 
                     // 6. jquery.SPWidgets.js
                     Main.loadScript(
-                        SPWIDGET_DEMO.BIN_DIR + "src/jquery.SPWidgets.js?rev=" + Main._version,
-                        null,
-                        true
+                        SPWIDGET_DEMO.BIN_DIR +
+                        "src/jquery.SPWidgets.js?rev=" + Main._version
                     )
                     .then(function(){
 

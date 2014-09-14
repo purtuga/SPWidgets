@@ -3,15 +3,15 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *
- * @version 20140828024742
+ * @version 20140914102526
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  *
  * @requires jQuery.js {@link http://jquery.com}
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  *
- * Build Date:  August 28, 2014 - 02:47 PM
- * Version:     20140828024742
+ * Build Date:  Paul:September 14, 2014 10:25 AM
+ * Version:     20140914102526
  *
  */
 ;(function($, window, document, undefined){
@@ -53,7 +53,7 @@
         }
 
         $.SPWidgets             = {};
-        $.SPWidgets.version     = "20140828024742";
+        $.SPWidgets.version     = "20140914102526";
         $.SPWidgets.defaults    = {};
         $.SPWidgets.SPAPI       = SPAPI;
 
@@ -2128,8 +2128,8 @@
     }
 
     /**
-     * Returns the current site URL. URL will end with a forward slash (/).
-     *
+     * Returns the current site URL. URL will end with a forward slash (/) and
+     * will always be a fully qualified url (starting with http...).
      * If this function is unable to determine the SiteUrl from data already
      * loaded, then it will call a webservice to retrieve it. That call to
      * the webservice will be syncronous.
@@ -2145,15 +2145,48 @@
      */
     API.getSiteUrl = (function() {
 
-        // TODO: should we allow this method to be called async=true? with default to false?
-
         // Cache of site urls
         var siteUrl    = {};
 
+        /**
+         * Takes a relative URL (ex. /you/page.aspx) and returns the full
+         * url starting wtih http...
+         */
+        function getFullUrl(pageAddress) {
+
+            // if URL does not end with "/" then insert it
+            if (pageAddress && pageAddress.charAt(pageAddress.length - 1) !== "/") {
+
+                pageAddress += "/";
+
+            }
+
+            if (pageAddress.indexOf("http") > -1) {
+
+                return pageAddress;
+
+            }
+
+            pageAddress = document.location.protocol + "//" +
+                document.location.hostname +
+                (           Number(document.location.port) !== 80
+                        &&  Number(document.location.port) > 0
+                    ?   document.location.port
+                    :   ""
+                ) +
+                pageAddress;
+
+            return pageAddress;
+
+        }
+
+
+        // return caller function
         return function(pageUrl) {
 
             var page        = '',
-                isThisPage  = false;
+                isThisPage  = false,
+                errorMessage = "getSiteUrl(): Unable to determine site url from " + pageUrl;
 
             if (!pageUrl) {
 
@@ -2177,7 +2210,7 @@
 
             if (!page) {
 
-                throw("getSiteUrl(): Unable to determine site url from " + pageUrl);
+                throw new Error(errorMessage);
 
             }
 
@@ -2209,21 +2242,11 @@
 
                 }
 
+                // ensure we get a full url starting with http
                 if (siteUrl[page]) {
 
-                    // If URL does not start with http, then insert it.
-                    if (siteUrl[page].indexOf("http") !== 0) {
-
-                        siteUrl[page] = document.location.protocol + "//" +
-                                document.location.hostname +
-                                (           Number(document.location.port) !== 80
-                                        &&  Number(document.location.port) > 0
-                                    ?   document.location.port
-                                    :   ""
-                                ) +
-                                siteUrl[page];
-
-                    }
+                    siteUrl[page] = getFullUrl(siteUrl[page]);
+                    return siteUrl[page];
 
                 }
 
@@ -2244,7 +2267,7 @@
                     dataType:       "xml",
                     success:        function(xDoc) {
 
-                        siteUrl[page] = $(xDoc).find("WebUrlFromPageUrlResult").text();
+                        siteUrl[page] = $(xDoc).find("WebUrlFromPageUrlResult").text() || '';
 
 
                     } //end: success
@@ -2252,12 +2275,14 @@
 
             } //end: if()
 
-            // if URL does not end with "/" then insert it
-            if (siteUrl[page] && siteUrl[page].charAt(siteUrl[page].length - 1) !== "/") {
+            if (!siteUrl[page]) {
 
-                siteUrl[page] += "/";
+                delete siteUrl[page];
+                throw new Error(errorMessage);
 
             }
+
+            siteUrl[page] = getFullUrl(siteUrl[page]);
 
             return siteUrl[page] || "";
 
