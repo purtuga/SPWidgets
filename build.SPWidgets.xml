@@ -742,6 +742,8 @@ DEPLOYING TO: ${me.deploy.location}
 	                <replacestring from='"' to='\"' />
 	                <prefixlines prefix='+ "' />
 	                <replaceregex pattern="$" replace='\\\\n"' />
+                	<!-- replace script end tags so they don't interfer with script loading --> 
+                    <replaceregex pattern='&lt;\/script>' replace='\\\\x3c/script>' />
 	                <tokenfilter>
 	                    <filetokenizer/>
 	                    <replaceregex pattern='^\+ \"' replace='"' />
@@ -749,6 +751,8 @@ DEPLOYING TO: ${me.deploy.location}
 	                    <replaceregex pattern='\"\r\n$' replace='"' />
 	                    <replaceregex pattern='\"\r$' replace='"' />
 	                    <replaceregex pattern='\"\n$' replace='"' />
+	                	
+	                	
 	                </tokenfilter>
 	            </filterchain>
 	        </loadfile>

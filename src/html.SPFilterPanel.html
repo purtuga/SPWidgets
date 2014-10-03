@@ -1,4 +1,4 @@
-<div id="filter_main_ui">
+<script type="text/html" id="filter_main_ui">
     <div class="spwidget-filter" style="display: none;">
         <div class="spwidget-filter-column-cntr ui-widget-content"></div>
         <div class="spwidget-filter-button-cntr">
@@ -6,8 +6,8 @@
             <button type="button" class="spwidget-button" name='filter'>Filter</button>
         </div>
     </div>
-</div>
-<div id="filter_column">
+</script>
+<script type="text/html" id="filter_column">
     <div class="spwidget-column spwidget-type-{{type}}"
             data-spwidget_column_type="{{type}}"
             data-spwidget_list="{{list}}"
@@ -52,14 +52,14 @@
             </div>
         </div>
     </div>
-</div>
-<div id="filter_text_field">
+</script>
+<script type="text/html" id="filter_text_field">
     <input name="{{Name}}" title="{{DisplayName}}" type="text" value="" class="spwidget-input spwidget-filter-input" />
     <span class="spwidget-tooltip">{{tooltip}}</span>
-</div>
-<div id="filter_choice_field">
+</script>
+<script type="text/html" id="filter_choice_field">
     <label>
         <input name="{{Name}}" title="{{DisplayName}}" type="checkbox" value="{{value}}" class="spwidget-input spwidget-filter-input" />
         {{value}}
     </label>
-</div>
+</script>

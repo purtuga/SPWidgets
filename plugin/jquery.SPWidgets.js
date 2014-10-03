@@ -3,15 +3,15 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *
- * @version 20140914102526
+ * @version 20141003023527
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  *
  * @requires jQuery.js {@link http://jquery.com}
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  *
- * Build Date:  Paul:September 14, 2014 10:25 AM
- * Version:     20140914102526
+ * Build Date:  Paul:October 03, 2014 02:35 PM
+ * Version:     20141003023527
  *
  */
 ;(function($, window, document, undefined){
@@ -53,7 +53,7 @@
         }
 
         $.SPWidgets             = {};
-        $.SPWidgets.version     = "20140914102526";
+        $.SPWidgets.version     = "20141003023527";
         $.SPWidgets.defaults    = {};
         $.SPWidgets.SPAPI       = SPAPI;
 
@@ -2180,7 +2180,6 @@
 
         }
 
-
         // return caller function
         return function(pageUrl) {
 
@@ -3078,7 +3077,7 @@
  *  -   jQuery-UI Draggable
  *
  *
- * BUILD: Paul:August 24, 2014 03:17 PM
+ * BUILD: October 03, 2014 - 02:25 PM
  */
 
 ;(function($){
@@ -5714,7 +5713,7 @@
  * THe user, however, is presented with the existing items
  * and has the ability to Remove them and add new ones.
  *
- * BUILD: Paul:August 24, 2014 03:28 PM
+ * BUILD: October 03, 2014 - 02:25 PM
  *
  */
 
@@ -7270,14 +7269,14 @@
  * on jQuery UI's Autocomplete.
  *
  *
- * @version 20140824011532NUMBER_
+ * @version 20141003022505NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  * @see     TODO: site url
  *
  * @requires jQuery.js {@link http://jquery.com}
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  *
- * Build Date Paul:August 24, 2014 01:15 PM
+ * Build Date October 03, 2014 - 02:25 PM
  *
  */
 (function($){
@@ -8287,13 +8286,13 @@
  * through the many SP pages and without having to leave the user's current page.
  *
  *
- * @version 20140824030707NUMBER_
+ * @version 20141003022505NUMBER_
  * @author  Paul Tavares, www.purtuga.com
  *
  * @requires jQuery.js {@link http://jquery.com}
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  *
- * Build Date Paul:August 24, 2014 03:07 PM
+ * Build Date October 03, 2014 - 02:25 PM
  *
  */
 ;(function($){
@@ -9964,7 +9963,7 @@
  * jquery.SPDateField.js
  * The SPDateField widget. Introduced with v2.2, August 2013
  * 
- * BUILD: August 23, 2014 - 10:14 AM
+ * BUILD: October 03, 2014 - 02:25 PM
  * 
  */
 ;(function($){
@@ -11505,7 +11504,7 @@
 /**
  * @fileOverview - List filter panel widget
  *
- * BUILD: Paul:August 28, 2014 11:18 AM
+ * BUILD: Paul:October 03, 2014 02:30 PM
  *
  */
 (function($){
@@ -13267,7 +13266,7 @@
      * Stores the HTML template for each Filter widget.
      * Value is set at build time.
      */
-    Filter.htmlTemplate = "<div id=\"filter_main_ui\">\n"
+    Filter.htmlTemplate = "<script type=\"text/html\" id=\"filter_main_ui\">\n"
 + "    <div class=\"spwidget-filter\" style=\"display: none;\">\n"
 + "        <div class=\"spwidget-filter-column-cntr ui-widget-content\"></div>\n"
 + "        <div class=\"spwidget-filter-button-cntr\">\n"
@@ -13275,8 +13274,8 @@
 + "            <button type=\"button\" class=\"spwidget-button\" name='filter'>Filter</button>\n"
 + "        </div>\n"
 + "    </div>\n"
-+ "</div>\n"
-+ "<div id=\"filter_column\">\n"
++ "\x3c/script>\n"
++ "<script type=\"text/html\" id=\"filter_column\">\n"
 + "    <div class=\"spwidget-column spwidget-type-{{type}}\"\n"
 + "            data-spwidget_column_type=\"{{type}}\"\n"
 + "            data-spwidget_list=\"{{list}}\"\n"
@@ -13321,17 +13320,17 @@
 + "            </div>\n"
 + "        </div>\n"
 + "    </div>\n"
-+ "</div>\n"
-+ "<div id=\"filter_text_field\">\n"
++ "\x3c/script>\n"
++ "<script type=\"text/html\" id=\"filter_text_field\">\n"
 + "    <input name=\"{{Name}}\" title=\"{{DisplayName}}\" type=\"text\" value=\"\" class=\"spwidget-input spwidget-filter-input\" />\n"
 + "    <span class=\"spwidget-tooltip\">{{tooltip}}</span>\n"
-+ "</div>\n"
-+ "<div id=\"filter_choice_field\">\n"
++ "\x3c/script>\n"
++ "<script type=\"text/html\" id=\"filter_choice_field\">\n"
 + "    <label>\n"
 + "        <input name=\"{{Name}}\" title=\"{{DisplayName}}\" type=\"checkbox\" value=\"{{value}}\" class=\"spwidget-input spwidget-filter-input\" />\n"
 + "        {{value}}\n"
 + "    </label>\n"
-+ "</div>\n";
++ "\x3c/script>\n";
 //_HAS_FILTER_HTML_TEMPLATE_
 
 })(jQuery); /***** End of module: jquery.SPFilterPanel.js */
