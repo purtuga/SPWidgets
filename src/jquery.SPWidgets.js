@@ -143,12 +143,24 @@
 
             if (!$.isArray(data)) {
 
-                data = [ data ];
+                if (!data) {
+
+                    data = [{}];
+
+                } else {
+
+                    data = [ data ];
+
+                }
 
             }
 
+            // If we have tokens in the template, then replace them
             if (opt.tokens !== null) {
 
+                // If data tokens were passed in on input, then use them
+                // in looking for that token in the template and replacing
+                // it with the value defined.
                 for(x=0,y=data.length; x<y; x++){
 
                     item = opt.template;
@@ -171,6 +183,10 @@
                     opt.response += item;
 
                 }
+
+            } else {
+
+                opt.response = opt.template;
 
             }
 

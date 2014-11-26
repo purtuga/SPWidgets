@@ -44,6 +44,10 @@
      *      Only used when asJQuery=false.
      *
      * @return {Array|jQuery}
+     *      Each object that represents an XML node will contain properties
+     *      for each attribute found on that node. Also, the Object will
+     *      contain a special attribute - ___xmlNode - that is the actual
+     *      xml node.
      *
      * @example
      *
@@ -51,6 +55,14 @@
      *      xDoc: jgXHR.responseXML,
      *      nodeName: "z:row"
      *  });
+     *
+     * // returns something similar to the following:
+     *  {
+     *      ID: "123",
+     *      Title: "item title",
+     *      ___xmlNode: XMLElement
+     *  }
+     *
      *
      */
     API.getNodesFromXml = function(options) {
@@ -116,13 +128,16 @@
 
             }
 
+            // Also store the original xml node
+            row.___xmlNode = ele;
+
             return row;
 
         };
 
         for (i=0,j=nodes.length; i<j; i++){
 
-            nodeList.push( getNodeAsObj(nodes[i]) );
+            nodeList.push(getNodeAsObj(nodes[i]));
 
         }
 

@@ -412,8 +412,13 @@
 
                                     }
 
-                                // COUNTER: Inser additional filter types
+                                // COUNTER,
+                                // Number
+                                // Insert additional filter types
                                 case "Counter":
+                                case "Number":
+                                case "RatingCount":
+                                case "Likes":
 
                                     if (model.type === null) {
 
