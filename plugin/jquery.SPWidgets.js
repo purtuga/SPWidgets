@@ -3,15 +3,15 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *
- * @version 20141003023527
+ * @version 20141212062553
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  *
  * @requires jQuery.js {@link http://jquery.com}
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  *
- * Build Date:  Paul:October 03, 2014 02:35 PM
- * Version:     20141003023527
+ * Build Date:  Paul:December 12, 2014 06:25 PM
+ * Version:     20141212062553
  *
  */
 ;(function($, window, document, undefined){
@@ -53,7 +53,7 @@
         }
 
         $.SPWidgets             = {};
-        $.SPWidgets.version     = "20141003023527";
+        $.SPWidgets.version     = "20141212062553";
         $.SPWidgets.defaults    = {};
         $.SPWidgets.SPAPI       = SPAPI;
 
@@ -143,12 +143,24 @@
 
             if (!$.isArray(data)) {
 
-                data = [ data ];
+                if (!data) {
+
+                    data = [{}];
+
+                } else {
+
+                    data = [ data ];
+
+                }
 
             }
 
+            // If we have tokens in the template, then replace them
             if (opt.tokens !== null) {
 
+                // If data tokens were passed in on input, then use them
+                // in looking for that token in the template and replacing
+                // it with the value defined.
                 for(x=0,y=data.length; x<y; x++){
 
                     item = opt.template;
@@ -171,6 +183,10 @@
                     opt.response += item;
 
                 }
+
+            } else {
+
+                opt.response = opt.template;
 
             }
 
@@ -1156,44 +1172,44 @@
             var options = $.extend({}, callerFn.defaults, opt),
                 reqPromise;
 
+            if (!options.webURL) {
+
+                options.webURL = Me.getSiteUrl();
+
+            } else if (options.webURL.charAt(options.webURL.length - 1) !== "/") {
+
+                options.webURL += "/";
+
+            }
+
+            options.webURL += "_vti_bin/Forms.asmx";
+
+            options.cacheKey = options.webURL + "?List=" + options.listName;
+            options.isCached = Me.cache.isCached(options.cacheKey);
+
+            // If cacheXML is true and we have a cached version, return it.
+            if (options.cacheXML && options.isCached) {
+
+                reqPromise =  Me.cache(options.cacheKey);
+
+                // If a completefunc was defined on this call,
+                // execute it.
+                if ($.isFunction(options.completefunc)) {
+
+                    reqPromise.then(function(xdata, status){
+
+                        options.completefunc(xdata, status);
+
+                    });
+
+                }
+
+                return reqPromise;
+
+            }
+
             // Return a deferred.
             reqPromise = $.Deferred(function(dfd){
-
-                if (!options.webURL) {
-
-                    options.webURL = Me.getSiteUrl();
-
-                } else if (options.webURL.charAt(options.webURL.length - 1) !== "/") {
-
-                    options.webURL += "/";
-
-                }
-
-                options.webURL += "_vti_bin/Forms.asmx";
-
-                options.cacheKey = options.webURL + "?List=" + options.listName;
-                options.isCached = Me.cache.isCached(options.cacheKey);
-
-                // If cacheXML is true and we have a cached version, return it.
-                if (options.cacheXML && options.isCached) {
-
-                    reqPromise =  Me.cache(options.cacheKey);
-
-                    // If a completefunc was defined on this call,
-                    // execute it.
-                    if ($.isFunction(options.completefunc)) {
-
-                        reqPromise.then(function(xdata, status){
-
-                            options.completefunc(xdata, status);
-
-                        });
-
-                    }
-
-                    return reqPromise;
-
-                }
 
                 // If cacheXML is FALSE, and we have a cached version of this key,
                 // then remove the cached version - basically reset
@@ -1551,6 +1567,10 @@
      *      Only used when asJQuery=false.
      *
      * @return {Array|jQuery}
+     *      Each object that represents an XML node will contain properties
+     *      for each attribute found on that node. Also, the Object will
+     *      contain a special attribute - ___xmlNode - that is the actual
+     *      xml node.
      *
      * @example
      *
@@ -1558,6 +1578,14 @@
      *      xDoc: jgXHR.responseXML,
      *      nodeName: "z:row"
      *  });
+     *
+     * // returns something similar to the following:
+     *  {
+     *      ID: "123",
+     *      Title: "item title",
+     *      ___xmlNode: XMLElement
+     *  }
+     *
      *
      */
     API.getNodesFromXml = function(options) {
@@ -1623,13 +1651,16 @@
 
             }
 
+            // Also store the original xml node
+            row.___xmlNode = ele;
+
             return row;
 
         };
 
         for (i=0,j=nodes.length; i<j; i++){
 
-            nodeList.push( getNodeAsObj(nodes[i]) );
+            nodeList.push(getNodeAsObj(nodes[i]));
 
         }
 
@@ -1944,44 +1975,44 @@
             var options = $.extend({}, callerFn.defaults, opt),
                 reqPromise;
 
+            if (!options.webURL) {
+
+                options.webURL = Me.getSiteUrl();
+
+            } else if (options.webURL.charAt(options.webURL.length - 1) !== "/") {
+
+                options.webURL += "/";
+
+            }
+
+            options.webURL += "_vti_bin/SiteData.asmx";
+
+            options.cacheKey = options.webURL + "?" + [options.filter].join("|");
+            options.isCached = Me.cache.isCached(options.cacheKey);
+
+            // If cacheXML is true and we have a cached version, return it.
+            if (options.cacheXML && options.isCached) {
+
+                reqPromise =  Me.cache(options.cacheKey);
+
+                // If a completefunc was defined on this call,
+                // execute it.
+                if ($.isFunction(options.completefunc)) {
+
+                    reqPromise.then(function(lists, xdata, status){
+
+                        options.completefunc.call($, xdata, status, lists);
+
+                    });
+
+                }
+
+                return reqPromise;
+
+            }
+
             // Return a deferred.
             reqPromise = $.Deferred(function(dfd){
-
-                if (!options.webURL) {
-
-                    options.webURL = Me.getSiteUrl();
-
-                } else if (options.webURL.charAt(options.webURL.length - 1) !== "/") {
-
-                    options.webURL += "/";
-
-                }
-
-                options.webURL += "_vti_bin/SiteData.asmx";
-
-                options.cacheKey = options.webURL + "?" + [options.filter].join("|");
-                options.isCached = Me.cache.isCached(options.cacheKey);
-
-                // If cacheXML is true and we have a cached version, return it.
-                if (options.cacheXML && options.isCached) {
-
-                    reqPromise =  Me.cache(options.cacheKey);
-
-                    // If a completefunc was defined on this call,
-                    // execute it.
-                    if ($.isFunction(options.completefunc)) {
-
-                        reqPromise.then(function(lists, xdata, status){
-
-                            options.completefunc.call($, xdata, status, lists);
-
-                        });
-
-                    }
-
-                    return reqPromise;
-
-                }
 
                 // If cacheXML is FALSE, and we have a cached version of this key,
                 // then remove the cached version - basically reset
@@ -2559,50 +2590,50 @@
             var options = $.extend({}, callerFn.defaults, opt),
                 reqPromise;
 
+            if (!options.webURL) {
+
+                options.webURL = Me.getSiteUrl();
+
+            } else if (options.webURL.charAt(options.webURL.length - 1) !== "/") {
+
+                options.webURL += "/";
+
+            }
+
+            options.webURL += "_vti_bin/People.asmx";
+
+            options.cacheKey = options.webURL + "?" +
+                [
+                    options.searchText,
+                    options.maxResults,
+                    options.principalType
+                ].join("|");
+            options.isCached = Me.cache.isCached(options.cacheKey);
+
+            // If cacheXML is true and we have a cached version, return it.
+            if (options.cacheXML && options.isCached) {
+
+                reqPromise =  Me.cache(options.cacheKey);
+
+                // If a completefunc was defined on this call,
+                // execute it.
+                if ($.isFunction(options.completefunc)) {
+
+                    reqPromise.then(function(xdata, status){
+
+                        options.completefunc(xdata, status);
+
+                    });
+
+                }
+
+                return reqPromise;
+
+            }
+
             // Return a deferred.
             reqPromise = $.Deferred(function(dfd){
 
-
-                if (!options.webURL) {
-
-                    options.webURL = Me.getSiteUrl();
-
-                } else if (options.webURL.charAt(options.webURL.length - 1) !== "/") {
-
-                    options.webURL += "/";
-
-                }
-
-                options.webURL += "_vti_bin/People.asmx";
-
-                options.cacheKey = options.webURL + "?" +
-                    [
-                        options.searchText,
-                        options.maxResults,
-                        options.principalType
-                    ].join("|");
-                options.isCached = Me.cache.isCached(options.cacheKey);
-
-                // If cacheXML is true and we have a cached version, return it.
-                if (options.cacheXML && options.isCached) {
-
-                    reqPromise =  Me.cache(options.cacheKey);
-
-                    // If a completefunc was defined on this call,
-                    // execute it.
-                    if ($.isFunction(options.completefunc)) {
-
-                        reqPromise.then(function(xdata, status){
-
-                            options.completefunc(xdata, status);
-
-                        });
-
-                    }
-
-                    return reqPromise;
-
-                }
 
                 // If cacheXML is FALSE, and we have a cached version of this key,
                 // then remove the cached version - basically reset
@@ -11504,7 +11535,7 @@
 /**
  * @fileOverview - List filter panel widget
  *
- * BUILD: Paul:October 03, 2014 02:30 PM
+ * BUILD: November 26, 2014 - 11:13 AM
  *
  */
 (function($){
@@ -11915,8 +11946,13 @@
 
                                     }
 
-                                // COUNTER: Inser additional filter types
+                                // COUNTER,
+                                // Number
+                                // Insert additional filter types
                                 case "Counter":
+                                case "Number":
+                                case "RatingCount":
+                                case "Likes":
 
                                     if (model.type === null) {
 
