@@ -94,44 +94,44 @@
             var options = $.extend({}, callerFn.defaults, opt),
                 reqPromise;
 
+            if (!options.webURL) {
+
+                options.webURL = Me.getSiteUrl();
+
+            } else if (options.webURL.charAt(options.webURL.length - 1) !== "/") {
+
+                options.webURL += "/";
+
+            }
+
+            options.webURL += "_vti_bin/SiteData.asmx";
+
+            options.cacheKey = options.webURL + "?" + [options.filter].join("|");
+            options.isCached = Me.cache.isCached(options.cacheKey);
+
+            // If cacheXML is true and we have a cached version, return it.
+            if (options.cacheXML && options.isCached) {
+
+                reqPromise =  Me.cache(options.cacheKey);
+
+                // If a completefunc was defined on this call,
+                // execute it.
+                if ($.isFunction(options.completefunc)) {
+
+                    reqPromise.then(function(lists, xdata, status){
+
+                        options.completefunc.call($, xdata, status, lists);
+
+                    });
+
+                }
+
+                return reqPromise;
+
+            }
+
             // Return a deferred.
             reqPromise = $.Deferred(function(dfd){
-
-                if (!options.webURL) {
-
-                    options.webURL = Me.getSiteUrl();
-
-                } else if (options.webURL.charAt(options.webURL.length - 1) !== "/") {
-
-                    options.webURL += "/";
-
-                }
-
-                options.webURL += "_vti_bin/SiteData.asmx";
-
-                options.cacheKey = options.webURL + "?" + [options.filter].join("|");
-                options.isCached = Me.cache.isCached(options.cacheKey);
-
-                // If cacheXML is true and we have a cached version, return it.
-                if (options.cacheXML && options.isCached) {
-
-                    reqPromise =  Me.cache(options.cacheKey);
-
-                    // If a completefunc was defined on this call,
-                    // execute it.
-                    if ($.isFunction(options.completefunc)) {
-
-                        reqPromise.then(function(lists, xdata, status){
-
-                            options.completefunc.call($, xdata, status, lists);
-
-                        });
-
-                    }
-
-                    return reqPromise;
-
-                }
 
                 // If cacheXML is FALSE, and we have a cached version of this key,
                 // then remove the cached version - basically reset
