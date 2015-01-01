@@ -3,15 +3,15 @@
  * jQuery plugin offering multiple Sharepoint widgets that can be used
  * for creating customized User Interfaces (UI).
  *
- * @version 20141212062553
+ * @version 20150101051036
  * @author  Paul Tavares, www.purtuga.com, paultavares.wordpress.com
  * @see     http://purtuga.github.com/SPWidgets/
  *
  * @requires jQuery.js {@link http://jquery.com}
  * @requires jQuery-ui.js {@link http://jqueryui.com}
  *
- * Build Date:  Paul:December 12, 2014 06:25 PM
- * Version:     20141212062553
+ * Build Date:  January 01, 2015 - 05:10 PM
+ * Version:     20150101051036
  *
  */
 ;(function($, window, document, undefined){
@@ -53,7 +53,7 @@
         }
 
         $.SPWidgets             = {};
-        $.SPWidgets.version     = "20141212062553";
+        $.SPWidgets.version     = "20150101051036";
         $.SPWidgets.defaults    = {};
         $.SPWidgets.SPAPI       = SPAPI;
 
@@ -1321,6 +1321,7 @@
      * @param {String} [opt.viewName=""]
      * @param {String} [opt.CAMLViewFields=""]
      * @param {String} [opt.CAMLQuery=""]
+     * @param {String} [opt.CAMLQueryOptions=""]
      * @param {String|Number} [opt.CAMLRowLimit=""]
      * @param {String} [opt.operation="GetListItems"]
      *      Value Could also be set to "GetListItemChangesSinceToken".
@@ -1345,6 +1346,7 @@
      *  namespace.getSiteUrl()
      *  namespace.getNodesFromXml()
      *  namespace.doesMsgHaveError()
+     *  namespace.cache()
      *
      *
      */
@@ -1368,6 +1370,7 @@
             CAMLViewFields: '',
             CAMLQuery:      '',
             CAMLRowLimit:   '',
+            CAMLQueryOptions:   '',
             operation:      'GetListItems', // Optionally: set it to = GetListItemChangesSinceToken
             cacheXML:       false,
             async:          true,
@@ -1400,6 +1403,7 @@
                     options.CAMLViewFields,
                     options.CAMLQuery,
                     options.CAMLRowLimit,
+                    options.CAMLQueryOptions,
                     options.operation,
                     options.changeToken
                 ].join("|");
