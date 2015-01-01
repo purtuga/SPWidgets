@@ -42,6 +42,7 @@
      * @param {String} [opt.viewName=""]
      * @param {String} [opt.CAMLViewFields=""]
      * @param {String} [opt.CAMLQuery=""]
+     * @param {String} [opt.CAMLQueryOptions=""]
      * @param {String|Number} [opt.CAMLRowLimit=""]
      * @param {String} [opt.operation="GetListItems"]
      *      Value Could also be set to "GetListItemChangesSinceToken".
@@ -66,6 +67,7 @@
      *  namespace.getSiteUrl()
      *  namespace.getNodesFromXml()
      *  namespace.doesMsgHaveError()
+     *  namespace.cache()
      *
      *
      */
@@ -89,6 +91,7 @@
             CAMLViewFields: '',
             CAMLQuery:      '',
             CAMLRowLimit:   '',
+            CAMLQueryOptions:   '',
             operation:      'GetListItems', // Optionally: set it to = GetListItemChangesSinceToken
             cacheXML:       false,
             async:          true,
@@ -121,6 +124,7 @@
                     options.CAMLViewFields,
                     options.CAMLQuery,
                     options.CAMLRowLimit,
+                    options.CAMLQueryOptions,
                     options.operation,
                     options.changeToken
                 ].join("|");
