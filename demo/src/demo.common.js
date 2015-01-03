@@ -2,7 +2,7 @@
  * @fileOverview demo.common.js
  * Common file for all demos. Initiates the UI on the page.
  *
- * @version _BUILD_VERSION_NUMBER_
+ * @version @BUILD
  *
  */
 (function($){

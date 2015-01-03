@@ -1,7 +1,4 @@
-<%-- SPWIDGETS DEMO PAGE --%>
-<%-- Simply open this page in a browser and all scripts files --%>
-<%-- will be loaded individually and thus available in browser --%>
-<%-- debugging tools (like Firefox) --%>
+<%-- SPWIDGETS DEV PAGE--%>
 <%@ Page language="C#" MasterPageFile="~masterurl/default.master"    Inherits="Microsoft.SharePoint.WebPartPages.WebPartPage,Microsoft.SharePoint,Version=12.0.0.0,Culture=neutral,PublicKeyToken=71e9bce111e9429c" %>
 <%@ Register Tagprefix="SharePoint" Namespace="Microsoft.SharePoint.WebControls" Assembly="Microsoft.SharePoint, Version=12.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %>
 <%@ Register Tagprefix="Utilities" Namespace="Microsoft.SharePoint.Utilities" Assembly="Microsoft.SharePoint, Version=12.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %>
@@ -16,7 +13,7 @@
 <asp:Content ContentPlaceHolderId="PlaceHolderAdditionalPageHead" runat="server">
 
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
-
+<link rel="stylesheet" type="text/css" href="./demo.css?@BUILD"/>
 <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 <![endif]-->
@@ -67,44 +64,58 @@ window.SPWIDGET_DEMO = {
     //      http://yoursite/plugins/spwidgets/src/
     // the variable below would be defined as:
     //          http://yoursite/plugins/spwidgets/
-    BIN_DIR: '',
+    BIN_DIR: '../../',
 
     JQUERY: null
 
 };
 
 </script>
-<div id="spwidgets_demo_cntr" class="ui-widget-content">
-
-</div>
+<div id="spwidgets_demo_cntr" class="ui-widget-content"></div>
+<script type="text/javascript" src="../../vendor/requirejs/require.js"></script>
 <script type="text/javascript">
 
-    if (!SPWIDGET_DEMO.BIN_DIR) {
+(function(){
+    var require = requirejs.config({
+            baseUrl: SPWIDGET_DEMO.BIN_DIR,
+            urlArgs: '@BUILD',
+            paths: {
+                jquery:                 'vendor/jquery/dist/jquery',
+                'jquery-ui':            'vendor/jquery-ui/jquery-ui',
+                less:                   'vendor/require-less/less',
+                lessc:                  'vendor/require-less/lessc',
+                normalize:              'vendor/require-less/normalize',
+                text:                   'vendor/requirejs-text/text'
+            },
+            shim: {
+                'jquery-ui': {
+                    deps: ['jquery']
+                },
+                'SPWidgets': {
+                    deps: ['jquery', 'jquery-ui']
+                }
+            },
+            less: {
+                relativeUrls: true
+            }
+        });
 
-        SPWIDGET_DEMO.BIN_DIR = GetUrlKeyValue("BIN_DIR");
+    require([
+        'require',
+        'jquery',
+        // JQuery Plugins
+        'jquery-ui',
+        "src/SPWidgets"
+    ], function($){
 
-    }
+        // Load the demo code
+        require(["demo/src/demo.dev"], function(demoDev){
+            demoDev.init();
+        });
 
-    if (!SPWIDGET_DEMO.BIN_DIR) {
+    });
 
-        document.write(
-            '<h1 style="color:red;">' +
-                'BIN_DIR not defined. Add the following parameter to the URL and refresh the page:<br><br>' +
-                '<code>?BIN_DIR=url_to_src_folder</code><br><br>' +
-                'Replace <code>url_to_src_folder</code> with the URL to folder that' +
-                ' contains the src, demo folders. URL value must include the trailing' +
-                ' forward slash. Ex: <code>http://yoursite/Documents/AppBin/SPWidgets/</code>' +
-            '</h1>'
-        );
-
-    } else {
-
-        document.write(
-            '<script type="text/javascript" src="' + SPWIDGET_DEMO.BIN_DIR +
-            'demo/src/demo.dev.js?rev=_BUILD_VERSION_NUMBER_"></' + 'script>'
-        );
-
-    }
+}());
 
 </script>
 

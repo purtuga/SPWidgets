@@ -1,37 +1,48 @@
-/**
- * Displays data from a list in Kan-Ban board using a specific column from
- * that list.  Column (at this point) is assume to be a CHOICE type of field.
- *
- * Dependencies:
- *
- *  -   jQuery-UI Draggable
- *
- *
- * BUILD: _BUILD_VERSION_DATE_
- */
-
-;(function($){
-
-    "use strict";
-    /*jslint nomen: true, plusplus: true */
-    /*global SPWidgets */
+define([
+    'jquery',
+    '../spapi/getSiteUrl',
+    '../spapi/getList',
+    '../spapi/getListFormCollection',
+    '../spapi/getListItems',
+    '../spapi/updateListItems',
+    '../sputils/getNodesFromXml',
+    '../sputils/fillTemplate',
+    '../uiutils/makeSameHeight',
+    '../uiutils/addHoverEffect',
+    'text!./board.html',
+    //-----------------------------
+    'less!./board'
+], function(
+    $,
+    getSiteUrl,
+    getList,
+    getListFormCollection,
+    getListItems,
+    updateListItems,
+    getNodesFromXml,
+    fillTemplate,
+    makeSameHeight,
+    addHoverEffect,
+    boardTemplate
+){
 
     /**
-     * @class Baard
+     * Displays data from a list in Kan-Ban board using a specific column from
+     * that list.  Column (at this point) is assume to be a CHOICE type of field.
+     * @namespace board
      */
     var Board   = {},
-        SPAPI   = $.SPWidgets.SPAPI;
-
-    /** @property {Boolean} */
-    Board.initDone = false;
+        showBoard;
 
     /** @property {Integer} The max number of columns that can be built (not displayed) */
     Board.maxColumns = 20;
 
     /**
      * Board widget default options.
+     * @name board.defaults
+     * @type {Object}
      */
-    $.SPWidgets.defaults.board = {
+    Board.defaults = {
         list:                   '',
         field:                  '',
         CAMLQuery:              '<Query></Query>',
@@ -39,7 +50,7 @@
         fieldFilter:            null,
         optionalLabel:          '(none)',
         template:               null,
-        webURL:                 SPAPI.getSiteUrl(),
+        webURL:                 getSiteUrl(), //FIXME: this call needs to be deferred until first usage.
         showColPicker:          false,
         colPickerLabel:         "Columns",
         colPickerVisible:       [],
@@ -62,6 +73,9 @@
      * and setting cache = true. In some implementations
      * it may be desirable to get these defintions ahead of calling this
      * widget so that a cached version is used.
+     *
+     * @param {HTMLElement|jQuery|Selector} containers
+     *      The elements where the board will be created.
      *
      * @param {Object} options
      *
@@ -346,32 +360,16 @@
      *
      *
      */
-    $.fn.SPShowBoard = function(options){
+    showBoard = function(containers, options){
 
         // TODO: need to determine how to page large datasets.
 
-        // If initialization was not done yet, then do it now.
-        // if the global styles have not yet been inserted into the page, do it now
-        if (!Board.initDone) {
-
-            Board.initDone = true;
-
-            if (Board.styleSheet !== "") {
-
-                $('<style type="text/css">' + "\n\n" +
-                        Board.styleSheet + "\n\n</style>" )
-                    .prependTo("head");
-
-            }
-
-        }
-
-        // Capture original set of input arguments.
-        var args    = arguments,
-            retVal  = this;
+        // Capture original set of input options (no containers).
+        var args    = Array.prototype.slice.call(arguments, 1);
+            retVal  = containers;
 
         // Attach the board to each element
-        this.each(function(){
+        $(containers).each(function(){
 
             var ele         = $(this),
                 isMethod    = (typeof options === "string"),
@@ -437,7 +435,7 @@
 
             // Define this Widget instance
             opt = $.extend({},
-                $.SPWidgets.defaults.board,
+                Board.defaults,
                 options,
                 {
                     ele:                ele,
@@ -470,7 +468,7 @@
 
                             // Get List information (use cached if already done in prior calls)
                             // and get list of States to build
-                            SPAPI.getList({
+                            getList({
                                 listName:   opt.list,
                                 cacheXML:   true,
                                 async:      false,
@@ -594,7 +592,7 @@
 
                                             // Query the lookup table and get the rows that
                                             // should be used to build the states
-                                            SPAPI.getListItems({
+                                            getListItems({
                                                 listName:       f.attr("List"),
                                                 async:          true,
                                                 cacheXML:       true,
@@ -646,7 +644,7 @@
 
                                                     // Loop thorugh all rows and build the
                                                     // array of states.
-                                                    $rows = SPAPI.getNodesFromXml({
+                                                    $rows = getNodesFromXml({
                                                         xDoc: xData.responseXML,
                                                         node: "z:row",
                                                         asJQuery: true
@@ -779,7 +777,7 @@
                             // call GetListItems operation.
                             } else {
 
-                                SPAPI.getListItems({
+                                getListItems({
                                     listName:       opt.list,
                                     async:          true,
                                     CAMLQuery:      opt.CAMLQuery,
@@ -951,7 +949,7 @@
                             // ELSE: Caller did not define function for template
                             } else {
 
-                                newItem = $.SPWidgets.fillTemplate(opt.template, thisListRow );
+                                newItem = fillTemplate(opt.template, thisListRow );
 
                             }
 
@@ -1125,7 +1123,7 @@
                             }
 
                             // Add the mouseover hover affect.
-                            $.pt.addHoverEffect(ele.find(".spwidget-board-state-item"));
+                            addHoverEffect(ele.find(".spwidget-board-state-item"));
 
 
          // console.timeEnd("Board.ShowItemsOnBoard().InsertIntoDOM");
@@ -1314,7 +1312,7 @@
 
                         function loadFormCollection() {
 
-                            SPAPI.getListFormCollection({
+                            getListFormCollection({
                                 listName:       opt.list,
                                 webURL:         opt.webURL,
                                 cacheXML:       true,
@@ -2007,7 +2005,7 @@
                         // Set the height of the headers
                         if (opt.headersCntr.is(":visible")) {
 
-                            $.SPWidgets.makeSameHeight(
+                            makeSameHeight(
                                 opt.headersCntr.find("div.spwidget-board-state:visible"),
                                 0,
                                 'min-height'
@@ -2034,7 +2032,7 @@
                         // We also remove the fixed height from these if set.
                         if (opt.statesCntr.is(":visible")) {
 
-                            $.SPWidgets.makeSameHeight(
+                            makeSameHeight(
                                 opt.statesCntr
                                     .find("div.spwidget-board-state:visible")
                                     .css("height", ""),
@@ -2122,7 +2120,7 @@
                 }
 
                 // Populate the element with the board template
-                ele.html($(Board.htmlTemplate).filter("div.spwidget-board"));
+                ele.html($(boardTemplate).filter("div.spwidget-board"));
 
                 // Get a copy of the state column for both headers and values
                 opt.tmpltHeader  = $("<div/>")
@@ -2271,7 +2269,7 @@
                         }
 
                         // Make update to SP item
-                        SPAPI.updateListItems({
+                        updateListItems({
                             listName:       opt.list,
                             async:          true,
                             ID:             itemId,
@@ -2303,7 +2301,7 @@
 
                                 }
 
-                                row = SPAPI.getNodesFromXml({
+                                row = getNodesFromXml({
                                     xDoc: xData.responseXML,
                                     nodeName: "z:row"
                                 });
@@ -2328,7 +2326,7 @@
                                             )
                                             .toLowerCase(),
                             gotoUrl     = "",
-                            thisPageUrl = $.pt.getEscapedUrl(window.location.href);
+                            thisPageUrl = encodeURIComponent(window.location.href);
 
                         // TODO: enhance to open item in dialog (SP2010) if that feature is on
 
@@ -2360,7 +2358,8 @@
                 // If no template was defined, use default
                 if (opt.template === null) {
 
-                    opt.template = $( Board.htmlTemplate )
+                    // FIXME: need to split the item template into its own HTML file
+                    opt.template = $( boardTemplate )
                                     .filter("div.spwidget-item-template");
 
                 }
@@ -2433,21 +2432,8 @@
 
     };//end: $.fn.SPShowBoard()
 
-    /**
-     * @property
-     * Stores the Style sheet that is inserted into the page the first
-     * time SPShowBoard() is called.
-     * Value is set at build time.
-     */
-    Board.styleSheet = "_INCLUDE_BOARD_CSS_TEMPLATE_";
+    showBoard.defaults = Board.defaults;
+    return showBoard;
 
+});
 
-    /**
-     * @property
-     * Stores the HTML template for each Board widget.
-     * Value is set at build time.
-     */
-    Board.htmlTemplate = "_INCLUDE_BOARD_HTML_TEMPLATE_";
-
-
-})(jQuery);

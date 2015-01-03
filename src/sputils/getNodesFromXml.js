@@ -1,34 +1,4 @@
-/**
- * By default, this API method will add its self to jQuery under the following
- * namespace: $.SPAPI. This can be altered by defining an object named 'SPAPI'
- * just prior to loading/executing this code.
- *
- * @Example
- *
- *  // Load this API method into a custom namespace
- *  <script type="text/javascript">
- *      var SPAPI = {};
- *  </script>
- *  <script type"text/javascript" src="path/to/this/file.js"/>
- *
- */
-(function($, namespace){
-
-    var API = namespace || {};
-
-    if (!namespace) {
-
-        if (typeof $.SPAPI === "undefined") {
-
-            $.SPAPI = API;
-
-        } else {
-
-            API = $.SPAPI;
-
-        }
-
-    }
+define(["jquery"], function($){
 
     /**
      * Returns the requested nodes from the given xml document
@@ -65,7 +35,7 @@
      *
      *
      */
-    API.getNodesFromXml = function(options) {
+    var getNodesFromXml = function(options) {
 
         var opt     = $.extend({}, {
                         xDoc:       null,
@@ -145,5 +115,6 @@
 
     }; //end: API.getNodesFromXml
 
-})(jQuery, (typeof SPAPI !== "undefined" ? SPAPI : undefined));
+    return getNodesFromXml;
 
+});

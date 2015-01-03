@@ -63,4 +63,8 @@ RCS
 RCSLOG
 SCCS
 _$*
+vendor
+node_modules
+me.*
+
 

@@ -44,8 +44,8 @@ SPWidgets - Widgets for building custom UIs
 /**
  * SPWidgets Demo
  *
- * Build Date:  _BUILD_VERSION_DATE_
- * Version:     _BUILD_VERSION_NUMBER_
+ * Build Date:  @DATE
+ * Version:     @VERSION @BUILD
  *
  */
 </script>
@@ -565,7 +565,7 @@ SPWidgets - Widgets for building custom UIs
 
     </div>
     <div>
-        <span>Build: </span><span>_BUILD_VERSION_NUMBER_</span>
+        <span>Build: </span><span>@BUILD</span>
     </div>
     <div>
         <div id="themeSwitchWidget"></div>

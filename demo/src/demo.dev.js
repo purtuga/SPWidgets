@@ -1,23 +1,23 @@
-/**
- * demo.dev.js
- * Contains code that is loaded with the Dev.SPWidgets.html file
- * which assists with development, testing and debuging.
- *
- * This module assumes that window.SPWIDGET_DEMO and most important
- * window.SPWIDGET_DEMO.BIN_DIR has already been set. This
- * will be used to load each file individually into the page.
- *
- */
-(function(){
+define([
+    'jquery'
+], function(
+    $
+){
 
-    "use strict";
-    /*jslint nomen: true, plusplus: true */
-    /*global SPWidgets, SPWIDGET_DEMO */
+    /**
+     * demo.dev.js
+     * Contains code that is loaded with the Dev.SPWidgets.html file
+     * which assists with development, testing and debuging.
+     *
+     * This module assumes that window.SPWIDGET_DEMO and most important
+     * window.SPWIDGET_DEMO.BIN_DIR has already been set. This
+     * will be used to load each file individually into the page.
+     *
+     */
 
     var Main = SPWIDGET_DEMO.Dev = {};
 
-    Main._version = '_BUILD_VERSION_NUMBER_';
-    //Force Build: __HAS_EMBEDED_DATA_FROM_BUILD__
+    Main._version = '@BUILD';
 
     /**
      * Loads a script using DOm elemnets instead of jQuery's
@@ -118,149 +118,67 @@
      */
     Main.init = function() {
 
-        // 1. jQuery
+        // jQuery UI style (from google)
+        $('<link rel="stylesheet" type="text/css" href="' +
+            window.location.protocol +
+            '//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/redmond/jquery-ui.css" />').appendTo("head");
+
+
+        // 4. vkBeautiry.js (xml beatifier)
         Main.loadScript(
-            SPWIDGET_DEMO.BIN_DIR + "demo/src/ext/jquery.js",
+            SPWIDGET_DEMO.BIN_DIR +
+            "demo/src/ext/vkBeautify.js?rev=" + Main._version);
+
+        // Load the UI from the regular Demo page into the container here
+        $("#spwidgets_demo_cntr").load(
+            String(SPWIDGET_DEMO.BIN_DIR).replace(/ /g, "%20") +
+            "demo/src/Demo.SPWidgets.aspx .spwidgets-demo-cntr",
             function(){
 
-                //--------------------------------
-                //   Other 3rd Party Modules
-                //--------------------------------
-
-                // 2. jQuery UI style (from google)
-                $('<link rel="stylesheet" type="text/css" href="' +
-                    window.location.protocol +
-                    '//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/redmond/jquery-ui.css" />').appendTo("head");
-
-                $.when(
-
-                // 3. jQuery UI
+                // 13. demo.common.js
                 Main.loadScript(
                     SPWIDGET_DEMO.BIN_DIR +
-                    "demo/src/ext/jquery-ui.js?rev=" + Main._version),
-
-                    // 4. vkBeautiry.js (xml beatifier)
-                    Main.loadScript(
-                        SPWIDGET_DEMO.BIN_DIR +
-                        "demo/src/ext/vkBeautify.js?rev=" + Main._version)
-
+                    "demo/src/demo.common.js?rev=" + Main._version
                 )
                 .then(function(){
 
-                    // 6. jquery.SPWidgets.js
+                    // 14. widget.upload.demo.js
                     Main.loadScript(
                         SPWIDGET_DEMO.BIN_DIR +
-                        "src/jquery.SPWidgets.js?rev=" + Main._version
-                    )
-                    .then(function(){
+                        "demo/src/widget.upload.demo.js?rev=" + Main._version);
 
-                        //--------------------------------
-                        //       SPWidgets Modules
-                        //--------------------------------
+                    // 15. widget.peoplepicker.demo.js
+                    Main.loadScript(
+                        SPWIDGET_DEMO.BIN_DIR +
+                        "demo/src/widget.peoplepicker.demo.js?rev=" + Main._version);
 
-                        $.when(
+                    // 16. widget.board.demo.js
+                    Main.loadScript(
+                        SPWIDGET_DEMO.BIN_DIR +
+                        "demo/src/widget.board.demo.js?rev=" + Main._version);
 
-                            // 7. jquery.SPControlUpload.js
-                            Main.loadScript(
-                                SPWIDGET_DEMO.BIN_DIR +
-                                "src/jquery.SPControlUpload.js?rev=" + Main._version),
+                    // 17. widget.lookup.demo.js
+                    Main.loadScript(
+                        SPWIDGET_DEMO.BIN_DIR +
+                        "demo/src/widget.lookup.demo.js?rev=" + Main._version);
 
-                            // 8. jquery.SPControlPickUser.js
-                            Main.loadScript(
-                                SPWIDGET_DEMO.BIN_DIR +
-                                "src/jquery.SPControlPickUser.js?rev=" + Main._version),
+                    // 18. widget.filter.demo.js
+                    Main.loadScript(
+                        SPWIDGET_DEMO.BIN_DIR +
+                        "demo/src/widget.filter.demo.js?rev=" + Main._version);
 
-                            // 9. jquery.SPControlBoard.js
-                            Main.loadScript(
-                                SPWIDGET_DEMO.BIN_DIR +
-                                "src/jquery.SPControlBoard.js?rev=" + Main._version),
+                    // 19. widget.filter.demo.js
+                    Main.loadScript(
+                        SPWIDGET_DEMO.BIN_DIR +
+                        "demo/src/widget.date.demo.js?rev=" + Main._version);
 
-                            // 10. jquery.SPControlLookupField.js
-                            Main.loadScript(
-                                SPWIDGET_DEMO.BIN_DIR +
-                                "src/jquery.SPControlLookupField.js?rev=" + Main._version),
+                }); //end: load() UI
 
-                            // 11. jquery.SPFilterPanel.js
-                            Main.loadScript(
-                                SPWIDGET_DEMO.BIN_DIR +
-                                "src/jquery.SPFilterPanel.js?rev=" + Main._version),
-
-                            // 11.a. jquery.SPDateField.js
-                            Main.loadScript(
-                                SPWIDGET_DEMO.BIN_DIR +
-                                "src/jquery.SPDateField.js?rev=" + Main._version)
-
-                        )
-                        .then(function(){
-
-                            //--------------------------------
-                            //       DEMO MODULES
-                            //--------------------------------
-
-                            // 12 Load the UI
-                            $("#spwidgets_demo_cntr")
-                                .load(
-                                    String(SPWIDGET_DEMO.BIN_DIR).replace(/ /g, "%20") +
-                                    "demo/src/Demo.SPWidgets.aspx .spwidgets-demo-cntr",
-                                    function(){
-
-                                        // 13. demo.common.js
-                                        Main.loadScript(
-                                                SPWIDGET_DEMO.BIN_DIR +
-                                                "demo/src/demo.common.js?rev=" + Main._version
-                                            )
-                                            .then(function(){
-
-                                                // 14. widget.upload.demo.js
-                                                Main.loadScript(
-                                                    SPWIDGET_DEMO.BIN_DIR +
-                                                    "demo/src/widget.upload.demo.js?rev=" + Main._version);
-
-                                                // 15. widget.peoplepicker.demo.js
-                                                Main.loadScript(
-                                                    SPWIDGET_DEMO.BIN_DIR +
-                                                    "demo/src/widget.peoplepicker.demo.js?rev=" + Main._version);
-
-                                                // 16. widget.board.demo.js
-                                                Main.loadScript(
-                                                    SPWIDGET_DEMO.BIN_DIR +
-                                                    "demo/src/widget.board.demo.js?rev=" + Main._version);
-
-                                                // 17. widget.lookup.demo.js
-                                                Main.loadScript(
-                                                    SPWIDGET_DEMO.BIN_DIR +
-                                                    "demo/src/widget.lookup.demo.js?rev=" + Main._version);
-
-                                                // 18. widget.filter.demo.js
-                                                Main.loadScript(
-                                                    SPWIDGET_DEMO.BIN_DIR +
-                                                    "demo/src/widget.filter.demo.js?rev=" + Main._version);
-
-                                                // 19. widget.filter.demo.js
-                                                Main.loadScript(
-                                                    SPWIDGET_DEMO.BIN_DIR +
-                                                    "demo/src/widget.date.demo.js?rev=" + Main._version);
-
-                                            });
-
-                                    } // getScript.callback
-                                );//end: .load()
-
-                        }); //end: .then()
-
-                    }); //end: .then() spwidgets based module loaded
-
-                }); //end: .then()
-
-            } //end: loadScript.callback
-        );
+            } // getScript.callback
+        );//end: .load()
 
     }; // Main.init()
 
-    //--------------------
+    return Main;
 
-    Main.init();
-
-
-})();
-
+});

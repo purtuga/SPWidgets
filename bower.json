@@ -1,0 +1,21 @@
+{
+    "name": "SPWidgets",
+    "version": "2.5",
+    "authors": ["Paul T."],
+    "description": "SharePoint widgets and tools for custom client side web solutions",
+    "license": "MIT",
+    "private": false,
+    "ignore": ["node_modules", "bower_components", "vendor", "test", "tests"],
+    "dependencies": {
+        "jquery": "^1.11.1",
+        "jquery-ui": "^1.11.2"
+    },
+    "devDependencies": {
+        "requirejs": "^2.1.15",
+        "require-less": "^0.1.5",
+        "requirejs-text": "~2.0.12"
+    },
+    "resolutions": {
+        "jquery": "1.11.1"
+    }
+}

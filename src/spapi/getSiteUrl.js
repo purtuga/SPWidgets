@@ -1,34 +1,4 @@
-/**
- * By default, this API method will add its self to jQuery under the following
- * namespace: $.SPAPI. This can be altered by defining an object named 'SPAPI'
- * just prior to loading/executing this code.
- *
- * @Example
- *
- *  // Load this API method into a custom namespace
- *  <script type="text/javascript">
- *      var SPAPI = {};
- *  </script>
- *  <script type"text/javascript" src="path/to/this/file.js"/>
- *
- */
-(function($, namespace){
-
-    var API = namespace || {};
-
-    if (!namespace) {
-
-        if (typeof $.SPAPI === "undefined") {
-
-            $.SPAPI = API;
-
-        } else {
-
-            API = $.SPAPI;
-
-        }
-
-    }
+define(["jquery"], function($){
 
     /**
      * Returns the current site URL. URL will end with a forward slash (/) and
@@ -46,7 +16,7 @@
      * @throws Unable to determine site url
      *
      */
-    API.getSiteUrl = (function() {
+    var getSiteUrl = (function() {
 
         // Cache of site urls
         var siteUrl    = {};
@@ -72,10 +42,10 @@
 
             pageAddress = document.location.protocol + "//" +
                 document.location.hostname +
-                (           Number(document.location.port) !== 80
-                        &&  Number(document.location.port) > 0
-                    ?   document.location.port
-                    :   ""
+                (   Number(document.location.port) !== 80 &&
+                    Number(document.location.port) > 0 ?
+                        document.location.port :
+                        ""
                 ) +
                 pageAddress;
 
@@ -129,8 +99,9 @@
 
                 // DO we have _spPageContextInfo to work with? Then use
                 // the webServerRelativeUrl param of it.
-                if (    typeof _spPageContextInfo !== "undefined"
-                    &&  _spPageContextInfo.webServerRelativeUrl
+                if (
+                    typeof _spPageContextInfo !== "undefined" &&
+                    _spPageContextInfo.webServerRelativeUrl
                 ) {
 
                     siteUrl[page] = _spPageContextInfo.webServerRelativeUrl;
@@ -190,7 +161,10 @@
 
         }; //end: return: function
 
-    })(); // end: API.getSiteUrl()
+    })(); // end: getSiteUrl()
 
-})(jQuery, (typeof SPAPI !== "undefined" ? SPAPI : undefined));
+    return getSiteUrl;
+
+});
+
 

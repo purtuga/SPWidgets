@@ -1,58 +1,41 @@
-/**
- * @fileOverview jquery.SPControlUpload.js
- * jQuery plugin that interacts with Sharepoint built in Upload.aspx through an iframe
- * to provide to the user an upload UI without leaving actually leaving the page, thus
- * simulating an ajax file upload interaction.
- * Currently used to upload files to a Document Library with out having the user go
- * through the many SP pages and without having to leave the user's current page.
- *
- *
- * @version _BUILD_VERSION_NUMBER_NUMBER_
- * @author  Paul Tavares, www.purtuga.com
- *
- * @requires jQuery.js {@link http://jquery.com}
- * @requires jQuery-ui.js {@link http://jqueryui.com}
- *
- * Build Date _BUILD_VERSION_DATE_
- *
- */
-;(function($){
-
-    // Commented out strict mode. Causing errors.  "use strict";
-    /*jslint nomen: true, plusplus: true */
-    /*global SPWidgets, unescapeProperly, escapeProperly */
+define([
+    'jquery',
+    'text!./upload.html',
+    '../spapi/getList',
+    '../spapi/getListItems',
+    '../spapi/getSiteUrl',
+    '../sputils/getSPVersion',
+    //------------------------------
+    'less!./upload'
+], function(
+    $,
+    uploadTemplate,
+    getList,
+    getListItems,
+    getSiteUrl,
+    getSPVersion
+){
 
     /**
-     *  jQuery definition
-     *  @see    http://jquery.com/
-     *  @name   jQuery
-     *  @class  jQuery Library
+     * jQuery plugin that interacts with Sharepoint built in Upload.aspx through an iframe
+     * to provide to the user an upload UI without leaving actually leaving the page, thus
+     * simulating an ajax file upload interaction.
+     * Currently used to upload files to a Document Library with out having the user go
+     * through the many SP pages and without having to leave the user's current page
      */
 
-    /**
-     * jQuery 'fn' definition to anchor all public plugin methods.
-     * @see         http://jquery.com/
-     * @name        fn
-     * @class       jQuery Library public method anchor
-     * @memberOf    jQuery
-     */
-
-    /**
-     * @name        Upload
-     * @class       Upload widget
-     */
     var Upload = {},
-        SPAPI   = $.SPWidgets.SPAPI;
+        upload;
 
     /**
      * @property {Boolean} Tracks if the CSS injection into the page has been done.
      */
-    Upload.isSPUploadCssDone = false;
+    Upload.isInitDone = false;
 
     /**
      * Defaults
      */
-    $.SPWidgets.defaults.upload = {
+    Upload.defaults = {
         listName:               '',
         folderPath:             '',
         uploadDonePage:         '',
@@ -169,29 +152,21 @@
      *
      *
      */
-    $.fn.SPControlUpload = function (options) {
+    upload = function (options) {
 
         // if the global styles have not yet been inserted into the page, do it now
-        if (!Upload.isSPUploadCssDone) {
+        if (!Upload.isInitDone) {
 
-            Upload.isSPUploadCssDone = true;
-
-            $('<style type="text/css">' + "\n\n" +
-                Upload.StyleSheet + "\n\n</style>"
-            )
-            .prependTo("head");
-
-            if (!$.SPWidgets.defaults.upload.webURL) {
-
-                $.SPWidgets.defaults.upload.webURL = SPAPI.getSiteUrl();
-
+            Upload.isInitDone = true;
+            if (!Upload.defaults.webURL) {
+                Upload.defaults.webURL = getSiteUrl();
             }
 
         }
 
         return $(this).each(function(){
 
-            var opt = $.extend({}, $.SPWidgets.defaults.upload, options),
+            var opt = $.extend({}, Upload.defaults, options),
                 overlayCss;
             /**
              * Define the log method for this instance.
@@ -402,7 +377,7 @@
 
                 var lastFile = {};
 
-                SPAPI.getListItems({
+                getListItems({
                     async:          false,
                     webURL:         opt.webURL,
                     listName:       opt.listName,
@@ -493,7 +468,7 @@
             // If list Name is not the UID, then get it now
             if (opt.listName && opt.listName.indexOf("{") !== 0) {
 
-                opt.listName = $.pt.getListUID(opt.listName);
+                opt.listName = Upload.getListUID(opt.listName);
 
             }
             // If list name is not defined - error
@@ -507,7 +482,7 @@
             // If user did not define the Upload page on input, then set it depending
             // on SP version. Else, if the user defined the upload page, ensure it
             // is a full url starting at http...
-            opt.spVersion       = $.SPWidgets.getSPVersion(true);
+            opt.spVersion       = getSPVersion(true);
             opt.userUploadPage  = opt.uploadPage;
             opt.uploadPage      = String(opt.uploadPage);
 
@@ -569,9 +544,9 @@
 
             // Create additional non-overridable options
             opt._uploadUrlParams    = "?List=" +
-                                      $.pt.getEscapedUrl(opt.listName) + "&RootFolder=" +
-                                      $.pt.getEscapedUrl(opt.folderPath) + "&Source=" +
-                                      $.pt.getEscapedUrl(opt.uploadDonePage) +
+                                      encodeURIComponent(opt.listName) + "&RootFolder=" +
+                                      encodeURIComponent(opt.folderPath) + "&Source=" +
+                                      encodeURIComponent(opt.uploadDonePage) +
                                       "&" + (new Date()).getTime() + "=1&" + opt.uploadUrlOpt;
             opt.uploadPage          = opt.uploadPage + opt._uploadUrlParams;
             opt._lastError          = "";
@@ -652,7 +627,7 @@
 
             // Create the UI on the page
             opt.$cntr = $(
-                    $(Upload.HtmlUI).filter("div.SPControlUploadUI").clone()
+                    $(uploadTemplate).filter("div.SPControlUploadUI").clone()
                 )
                 .appendTo(opt.$ele.addClass("hasSPControlUploadUI").empty())
                 .data("SPControlUploadOptions", opt);
@@ -714,9 +689,9 @@
 
             return this;
 
-        });//each()
+        });// return each()
 
-    };// $.fn.SPControlUpload
+    };// upload
 
     /**
      * FUNCTION: Upload.onUpload()
@@ -963,7 +938,7 @@
                             .hide()
                             .end()
                         .append(
-                            $(Upload.HtmlUI).filter("div#SPControlUploadModUI").clone() )
+                            $(uploadTemplate).filter("div#SPControlUploadModUI").clone() )
                         .find("div.SPControlUploadModUIFileSelected")
                             .html(opt.selectFileMessage);
 
@@ -1360,23 +1335,6 @@
 
     };// Upload.isSameUrlPage()
 
-
-    /**
-     * Uses sharepoint default function from {/_layouts/1033/core.js}
-     * for escaping urls.
-     *
-     * @function
-     */
-    $.pt.getEscapedUrl = escapeProperly;
-
-    /**
-     * Uses sharepoint default function from {/_layouts/1033/core.js}
-     * to un-escape urls.
-     * @function
-     */
-    $.pt.getUnEscapedUrl = unescapeProperly;
-
-
     /**
      * Given a List name or a DOcument Library name, this method will retrieve
      * it's UID from SP.
@@ -1386,28 +1344,26 @@
      * @memberOf jQuery.pt
      *
      */
-    $.pt.getListUID = function(listName) {
+    Upload.getListUID = function(listName) {
+
         if (!listName) {
             return "";
         }
+
         var id = "";
-        if ($.pt._cache["getListUID:" + listName]) {
-            id = $.pt._cache["getListUID:" + listName];
-            return id;
-        }
-        SPAPI.getList({
-            listName: listName,
-            async: false,
-            completefunc: function (xData, Status) {
+
+        getList({
+            listName:   listName,
+            async:      false,
+            cacheXML:   true,
+            completefunc: function (xData/*, Status*/) {
                 id = $(xData.responseXML).find("List").attr("ID");
             }
         });
-        if (id) {
-            $.pt._cache["getListUID:" + listName] = id;
-        }
+
         return id;
 
-    };// $.pt.getListUID()
+    };// Upload.getListUID()
 
 
     /**
@@ -1515,22 +1471,9 @@
 
     })(); // end: Upload.log();
 
+    upload.defaults = Upload.defaults;
+    return upload;
 
-    /**
-     * @property
-     * Stores the Style sheet that is inserted into the page the first
-     * time SPControlUpload is called.
-     * Value is set at build time.
-     *
-     */
-    Upload.StyleSheet = "_INCLUDE_SPUPLOAD_CSS_TEMPLATE_";
+});
 
-    /**
-     * @property
-     * Stores the HTML templates used by this widget.
-     * Populated during the build process from the
-     * html.SPControlUpload.html file
-     */
-    Upload.HtmlUI = "_INCLUDE_SPUPLOAD_HTML_TEMPLATE_";
 
-})(jQuery);

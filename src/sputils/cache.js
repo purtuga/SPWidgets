@@ -1,36 +1,6 @@
-/**
- * By default, this API method will add its self to jQuery under the following
- * namespace: $.SPAPI. This can be altered by defining an object named 'SPAPI'
- * just prior to loading/executing this code.
- *
- * @Example
- *
- *  // Load this API method into a custom namespace
- *  <script type="text/javascript">
- *      var SPAPI = {};
- *  </script>
- *  <script type"text/javascript" src="path/to/this/file.js"/>
- *
- */
-(function($, namespace){
+define([], function(){
 
-    var API = namespace || {};
-
-    if (!namespace) {
-
-        if (typeof $.SPAPI === "undefined") {
-
-            $.SPAPI = API;
-
-        } else {
-
-            API = $.SPAPI;
-
-        }
-
-    }
-
-    /**
+     /**
      * Simple caching function.
      * @function
      *
@@ -54,10 +24,10 @@
      *  none
      *
      */
-    API.cache = (function(){
+    var cache = (function(){
 
         var cacheData   = {},
-            fnCaller    = function(key, value){
+            fnCaller    = function cache(key, value){
 
                 if (!key) {
 
@@ -77,31 +47,53 @@
 
             };
 
+        /**
+         * Clear specific key from cache.
+         * @function cache.clear
+         * @param {Object} key
+         */
         fnCaller.clear = function(key){
 
             delete cacheData[key];
 
         };
-
+        /**
+         * Clears all cached data
+         * @fucntion cache.clearAll
+         */
         fnCaller.clearAll = function(){
 
             cacheData = {};
 
         };
-
+         /**
+         * Gets a cached piece of data
+         * @function cache.get
+         * @param {Object} key
+         */
         fnCaller.get = function(key) {
 
             return cacheData[key];
 
         };
-
+        /**
+         * Caches a piece of data.
+         * @function cache.set
+         * @param {Object} key
+         * @param {Object} value
+         */
         fnCaller.set = function(key, value) {
 
             cacheData[key] = value;
             return value;
 
         };
-
+        /**
+         * Returns a boolean indicating if the give key has cached data.
+         * @function cache.isCached
+         * @param {Object} key
+         * @return {Boolean}
+         */
         fnCaller.isCached = function(key){
 
             if (cacheData.hasOwnProperty(key)) {
@@ -117,4 +109,6 @@
 
     })(); //end: cache method.
 
-})(jQuery, (typeof SPAPI !== "undefined" ? SPAPI : undefined));
+    return cache;
+
+});

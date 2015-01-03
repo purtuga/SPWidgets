@@ -1,33 +1,40 @@
-/**
- * @fileOverview - List filter panel widget
- *
- * BUILD: _BUILD_VERSION_DATE_
- *
- */
-(function($){
+define([
+    'jquery',
+    'text!./filterPanel.html',
+    '../spapi/getSiteUrl',
+    '../spapi/getList',
+    '../sputils/parseLookupFieldValue',
+    '../sputils/fillTemplate',
+    '../sputils/getCamlLogical',
+    '../sputils/xmlEscape',
+    //------------------------------
+    'less!./filterPanel'
+], function(
+    $,
+    filterPanelTemplate,
+    getSiteUrl,
+    getList,
+    parseLookupFieldValue,
+    fillTemplate,
+    getCamlLogical,
+    xmlEscape
+){
 
-    "use strict";
-    /*jslint nomen: true, plusplus: true */
-    /*global SPWidgets */
-
-    /**
-     * @class Filter
-     */
     var Filter  = {},
-        SPAPI   = $.SPWidgets.SPAPI;
+        filterPanel;
 
     /** @property {Boolean} Is initialization done */
     Filter.isInitDone = false;
 
-    /** @property {jQuery} jQuery object with templates. Loaded from Filter.htmlTemplate during initialization */
+    /** @property {jQuery} jQuery object with templates.*/
     Filter.templates = null;
 
     /**
      * Default options.
      */
-    $.SPWidgets.defaults.filter = {
+    Filter.defaults = {
         list:                   '',
-        webURL:                 SPAPI.getSiteUrl(),
+        webURL:                 getSiteUrl(), // FIXME: this needs to be deferred until first call
         columns:                ['Title'],
         textFieldTooltip:       'Use a semicolon to delimiter multiple keywords.',
         peopleFieldTooltip:     'Use [me] keyword to represent current user.',
@@ -81,31 +88,23 @@
      *      Removes the widget from the page.
      *
      */
-    $.fn.SPFilterPanel = function(options){
+    filterPanel = function(containers, options){
 
-        var arg = arguments;
+        var arg = Array.prototype.slice.call(arguments, 1)
+            $this = $(containers);
 
         // If initialization is not yet done, then do it now
         if ( !Filter.isInitDone ) {
 
             Filter.isInitDone = true;
-
-            if ( Filter.styleSheet !== "" ) {
-
-                $('<style type="text/css">' + "\n\n" +
-                        Filter.styleSheet + "\n\n</style>" )
-                    .prependTo("head");
-
-            }
-
-            Filter.templates = $( Filter.htmlTemplate );
+            Filter.templates = $( filterPanelTemplate );
 
         }
 
         // If input was a string, then must be a method.
         if (typeof options === "string") {
 
-            if (!this.eq(0).hasClass("hasSPFilterPanel")) {
+            if (!$this.eq(0).hasClass("hasSPFilterPanel")) {
 
                 return;
 
@@ -158,16 +157,16 @@
 
                 return response;
 
-            })(this);
+            })($this);
 
         } //end: if(): options === string
 
         // --------------------------------
         // Build the plugin on each element
         // --------------------------------
-        return this.each(function(){
+        return $this.each(function(){
 
-            var opt     = $.extend({}, $.SPWidgets.defaults.filter, options),
+            var opt     = $.extend({}, Filter.defaults, options),
                 /**
                  * @class Inst
                  * Widget instance
@@ -194,7 +193,7 @@
                 return $.Deferred(function(dfd){
 
                     // Get List Definition
-                    SPAPI.getList({
+                    getList({
                         listName:       opt.list,
                         cacheXML:       true,
                         async:          true,
@@ -333,7 +332,7 @@
 
                                     $thisCol.find("CHOICES CHOICE").each(function(i,v){
 
-                                        inputUI += $.SPWidgets.fillTemplate(
+                                        inputUI += fillTemplate(
                                                 Filter.templates
                                                     .filter("#filter_choice_field")
                                                         .html(),
@@ -350,7 +349,7 @@
                                                 .replace(/__COLUMN__UI__/, inputUI)
                                                 .replace(/__OTHER_FILTER_TYPES__/, '');
 
-                                    thisColUI = $.SPWidgets.fillTemplate(
+                                    thisColUI = fillTemplate(
                                         thisColUI,
                                         {
                                             DisplayName: $thisCol.attr("DisplayName"),
@@ -373,7 +372,7 @@
                                         '<option value="0">No</option>' +
                                         '</select>';
 
-                                    thisColUI = $.SPWidgets.fillTemplate(
+                                    thisColUI = fillTemplate(
                                         thisColUI
                                             .replace(/__COLUMN__UI__/, model.input_ui)
                                             .replace(/__OTHER_FILTER_TYPES__/, ''),
@@ -469,7 +468,7 @@
                                                 .replace(/__COLUMN__UI__/, inputUI)
                                                 .replace(/__OTHER_FILTER_TYPES__/, model.otherFilterTypes);
 
-                                    thisColUI = $.SPWidgets.fillTemplate(
+                                    thisColUI = fillTemplate(
                                             thisColUI,
                                             $.extend(
                                                 model,
@@ -1026,7 +1025,7 @@
          */
         function getColumnCAMLQuery(colFilterObj) {
 
-            return $.SPWidgets.getCamlLogical({
+            return getCamlLogical({
                     type:           colFilterObj.logicalType,
                     values:         colFilterObj.values,
                     onEachValue:    function(filterVal){
@@ -1034,7 +1033,7 @@
                         return "<" + colFilterObj.matchType +
                                 "><FieldRef Name='" + colFilterObj.columnName +
                                 "' /><Value Type='Text'>" +
-                                $.SPWidgets.escapeXML(filterVal) +
+                                xmlEscape.escape(filterVal) +
                                 "</Value></" + colFilterObj.matchType + ">";
 
                     }
@@ -1135,8 +1134,7 @@
 
 
                                 var $lookup     = $(this),
-                                    lookupVals  = $.SPWidgets
-                                                    .parseLookupFieldValue(
+                                    lookupVals  = parseLookupFieldValue(
                                                         $lookup.val()
                                                     ),
                                     i,j;
@@ -1162,7 +1160,7 @@
                             if (thisColFilter.values.length) {
 
                                 thisColFilter.count     = thisColFilter.values.length;
-                                thisColFilter.CAMLQuery = $.SPWidgets.getCamlLogical({
+                                thisColFilter.CAMLQuery = getCamlLogical({
                                         type:           thisColFilter.logicalType,
                                         values:         lookupIDs,
                                         onEachValue:    function(filterVal){
@@ -1193,7 +1191,7 @@
 
                                 thisColFilter.values    = dtObj.dates;
                                 thisColFilter.count     = thisColFilter.values.length;
-                                thisColFilter.CAMLQuery = $.SPWidgets.getCamlLogical({
+                                thisColFilter.CAMLQuery = getCamlLogical({
                                     type:           thisColFilter.logicalType,
                                     values:         thisColFilter.values,
                                     onEachValue:    function(filterVal){
@@ -1305,7 +1303,7 @@
         // Build the CAMLQuery
         if (filters.count > 1) {
 
-            filters.CAMLQuery = $.SPWidgets.getCamlLogical({
+            filters.CAMLQuery = getCamlLogical({
                                     type:   'AND',
                                     values: colFilters
                                 });
@@ -1617,19 +1615,7 @@
 
     };
 
-    /**
-     * @property
-     * Stores the Style sheet that is inserted into the page the first
-     * time SPFilterPanel() is called.
-     * Value is set at build time.
-     */
-    Filter.styleSheet = "_INCLUDE_FILTER_CSS_TEMPLATE_";
+    filterPanel.defaults = Filter.defaults;
+    return filterPanel;
 
-    /**
-     * @property
-     * Stores the HTML template for each Filter widget.
-     * Value is set at build time.
-     */
-    Filter.htmlTemplate = "_INCLUDE_FILTER_HTML_TEMPLATE_";
-
-})(jQuery); /***** End of module: jquery.SPFilterPanel.js */
+});

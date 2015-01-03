@@ -1,0 +1,30 @@
+{
+  "curly": true,
+  "eqeqeq": true,
+  "immed": true,
+  "latedef": true,
+  "newcap": true,
+  "noarg": true,
+  "sub": true,
+  "undef": true,
+  "unused": true,
+  "boss": true,
+  "eqnull": true,
+  "node": true,
+  "loopfunc": true,
+  "browser": true,
+  "expr": true,
+  "globals": {
+    "SP": true,
+    "window": true, 
+    "document": true, 
+    "location": true, 
+    "alert": true, 
+    "tinymce": true,
+    "unescape": true,
+    "prompt": true,
+    "confirm": true,
+    "define": true,
+    "jQuery": true
+  }
+}

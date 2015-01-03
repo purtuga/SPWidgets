@@ -1,34 +1,10 @@
-/**
- * By default, this API method will add its self to jQuery under the following
- * namespace: $.SPAPI. This can be altered by defining an object named 'SPAPI'
- * just prior to loading/executing this code.
- *
- * @Example
- *
- *  // Load this API method into a custom namespace
- *  <script type="text/javascript">
- *      var SPAPI = {};
- *  </script>
- *  <script type"text/javascript" src="path/to/this/file.js"/>
- *
- */
-(function($, namespace){
-
-    var API = namespace || {};
-
-    if (!namespace) {
-
-        if (typeof $.SPAPI === "undefined") {
-
-            $.SPAPI = API;
-
-        } else {
-
-            API = $.SPAPI;
-
-        }
-
-    }
+define([
+    "jquery",
+    "./getSiteUrl",
+], function(
+    $,
+    getSiteUrl
+){
 
     /**
      * Given a list of users, this method will resolve those if they
@@ -55,20 +31,11 @@
      * .getSiteUrl()
      *
      */
-    API.resolvePrincipals = (function(options) {
+    var resolvePrincipals = (function(options) {
 
         var getData     = null,
-            Me          = null,
             callerFn    = function(){
-
-                            if (Me === null) {
-
-                                Me = this;
-
-                            }
-
                             return getData.apply(this, arguments);
-
                         };
 
         // Define defaults. User can change these on their function attachment.
@@ -88,7 +55,7 @@
 
             if (!options.webURL) {
 
-                options.webURL = Me.getSiteUrl();
+                options.webURL = getSiteUrl();
 
             } else if (options.webURL.charAt(options.webURL.length - 1) !== "/") {
 
@@ -153,5 +120,7 @@
 
     })();
 
-})(jQuery, (typeof SPAPI !== "undefined" ? SPAPI : undefined));
+    return resolvePrincipals;
+
+});
 

@@ -1,20 +1,35 @@
-/**
- * Widget that turn an input field into a lookup field. The
- * field will store only the ID's (one or more) for the items
- * that the user picks.
- * THe user, however, is presented with the existing items
- * and has the ability to Remove them and add new ones.
- *
- * BUILD: _BUILD_VERSION_DATE_
- *
- */
+define([
+    'jquery',
+    'text!./lookupField.html',
+    '../spapi/getListItems',
+    '../sputils/fillTemplate',
+    '../sputils/getCamlLogical',
+    '../sputils/getNodesFromXml',
+    '../sputils/parseLookupFieldValue',
+    '../sputils/xmlEscape',
+    // ------------------------
+    'less!./lookupField'
+], function(
+    $,
+    lookupFieldTemplate,
+    getListItems,
+    fillTemplate,
+    getCamlLogical,
+    getNodesFromXml,
+    parseLookupFieldValue,
+    xmlEscape
+){
 
-;(function($){
-
-    "use strict";
-    /*jslint nomen: true, plusplus: true */
-    /*global SPWidgets */
-
+    /**
+     * Widget that turn an input field into a lookup field. The
+     * field will store only the ID's (one or more) for the items
+     * that the user picks.
+     * THe user, however, is presented with the existing items
+     * and has the ability to Remove them and add new ones.
+     *
+     * BUILD: _BUILD_VERSION_DATE_
+     *
+     */
 
     /**
      * Namespace for pickSPUser specific methods.
@@ -22,13 +37,12 @@
      * @class       Namespace for lookup Field plugin
      */
     var Lookup = {
-        _islookupFieldCssDone:  false,
         _isLookupbodyEventDone: false
     },
-    SPAPI = $.SPWidgets.SPAPI;
+    lookupField;
 
     // Default options
-    $.SPWidgets.defaults.LookupField = {
+    Lookup.defaults = {
         list:               '',
         allowMultiples:     true,
         inputLabel:         '',
@@ -58,6 +72,9 @@
     /**
      *
      * Converts the selection into a Sharepoint Lookup Field.
+     *
+     * @param {HTMLElement|jQuery|selector} containers
+     *      Containers that will receive the lookupField
      *
      * @param {Object} options
      *
@@ -226,23 +243,14 @@
      *
      *
      */
-    $.fn.SPLookupField = function(options) {
-
-        // if the global styles have not yet been inserted into the page, do it now
-        if (!Lookup._islookupFieldCssDone) {
-            Lookup._islookupFieldCssDone = true;
-            $('<style type="text/css">' + "\n\n" +
-                    Lookup.styleSheet +
-                    "\n\n</style>")
-                .prependTo("head");
-        }
+    lookupField = function(containers, options) {
 
         // Store the arguments given to this function. Used later if the
         // user is trying to execute a method of this plugin.
-        var arg = arguments;
+        var arg = Array.prototype.slice.call(arguments, 1);
 
         // Initiate each selection as a Lookup element
-        this.each(function(){
+        return $(containers).each(function(){
 
             var ele = $(this);
 
@@ -337,7 +345,7 @@
             // Options for this element
             var o = $.extend(
                     {},
-                    $.SPWidgets.defaults.LookupField,
+                    Lookup.defaults,
                     options,
                     {
                         _ele: ele.css("display", "none").addClass("hasLookupSPField")
@@ -401,7 +409,7 @@
                         var thisItemUI =
                                 $('<div class="spwidgets-item spwidgets-item-id-' + item.ID +
                                         '" data-spid="' + item.ID + '" style="display:none">' +
-                                        $.SPWidgets.fillTemplate(o.template, item) +
+                                        fillTemplate(o.template, item) +
                                         '</div>'
                                     )
                                     .appendTo( itemCntr )
@@ -568,7 +576,7 @@
                     var opt     = $.extend({}, {
                                     async: true
                                 }, options),
-                        items = $.SPWidgets.parseLookupFieldValue(o._ele.val());
+                        items = parseLookupFieldValue(o._ele.val());
 
                     if (!items.length) {
 
@@ -577,12 +585,12 @@
 
                     }
 
-                    SPAPI.getListItems({
+                    getListItems({
                         operation: "GetListItems",
                         async:      opt.async,
                         listName:   o.list,
                         CAMLQuery:  '<Query><Where>' +
-                                $.SPWidgets.getCamlLogical({
+                                getCamlLogical({
                                     type:   'OR',
                                     values: items,
                                     onEachValue: function(n){
@@ -689,7 +697,7 @@
             //---------------------------------------------------
 
             // Create the UI container and store the options object in the input field
-            o._cntr                 = $(Lookup.htmlTemplate)
+            o._cntr                 = $(lookupFieldTemplate)
                                         .find(".spwidgets-lookup-cntr").clone(1);
             // Insert the widget container into the UI
             if (o.uiContainer === null) {
@@ -911,7 +919,7 @@
                                             "<Value Type='Text'>" + keywords[i] + "</Value></Contains>" );
                                     }
                                 }
-                                filterItems.push($.SPWidgets.getCamlLogical({
+                                filterItems.push(getCamlLogical({
                                     values: fieldFilters,
                                     type:   "AND"
                                 }));
@@ -919,7 +927,7 @@
                         }
 
                         // Build the query using OR statements
-                        var camlFilter = $.SPWidgets.getCamlLogical({
+                        var camlFilter = getCamlLogical({
                                             values: filterItems,
                                             type:   "OR"
                                         });
@@ -927,14 +935,14 @@
                         // If caller defined extra REQUIRED criteria, then
                         // build it into the query.
                         if (o.filter) {
-                            camlFilter = $.SPWidgets.getCamlLogical({
+                            camlFilter = getCamlLogical({
                                 values: [camlFilter, o.filter],
                                 type:   "AND"
                             });
                         }
 
                         // Find the items based on the user's input
-                        SPAPI.getListItems({
+                        getListItems({
                             operation:      "GetListItems",
                             listName:       o.list,
                             async:          true,
@@ -947,7 +955,7 @@
                                 $.each(rows, function(i, thisDt){
 
                                     thisDt.value = "";
-                                    thisDt.label = $.SPWidgets.fillTemplate(o.listTemplate, thisDt );
+                                    thisDt.label = fillTemplate(o.listTemplate, thisDt );
 
                                     // Add to cache
                                     cache[termCacheName].push(thisDt);
@@ -1028,8 +1036,6 @@
             return this;
 
         });
-
-        return this;
 
     };//end: $.fn.SPLookupField()
 
@@ -1256,7 +1262,7 @@
                 // Get the data from the list using the user's filter,
                 // maxResult and SelectFields. Then populate the selector
                 // with the data found.
-                SPAPI.getListItems({
+                getListItems({
                     operation:      "GetListItems",
                     listName:       Inst.list,
                     async:          true,
@@ -1270,7 +1276,7 @@
 
                                     return '<QueryOptions>' +
                                         "<Paging ListItemCollectionPositionNext='" +
-                                        $.SPWidgets.escapeXML(opt.nextPageToken) +
+                                        xmlEscape.escape(opt.nextPageToken) +
                                         "'/></QueryOptions>";
 
                                 }
@@ -1279,7 +1285,7 @@
                     completefunc:   function(xData, status, rows){
 
                         var $resp       = $(xData.responseXML),
-                            $rsData     = SPAPI.getNodesFromXml({
+                            $rsData     = getNodesFromXml({
                                             xDoc: xData.responseXML,
                                             nodeName: "rs:data",
                                             asJQuery: true
@@ -1305,7 +1311,7 @@
                             // the Autocomplete widget. Ensure consistency should we
                             // do more with this in the future.
                             row.value = "";
-                            row.label = $.SPWidgets.fillTemplate(Inst.listTemplate, row );
+                            row.label = fillTemplate(Inst.listTemplate, row );
 
                             rowsHtml += '<div class="spwidget-lookup-item" data-spwidgetsindex="' +
                                         i + '">' + row.label + '</div>';
@@ -1396,25 +1402,9 @@
 
     }; //end: Lookup.doSelectorDataInit()
 
-    /**
-     * @property
-     * @memberOf    Lookup.lookupField
-     * Stores the Style sheet that is inserted into the page the first
-     * time lookupField is called.
-     * Value is set at build time.
-     *
-     */
-    Lookup.styleSheet = "_INCLUDE_LOOKUP_CSS_TEMPLATE_";;
+    lookupField.defaults = Lookup.defaults;
+    return lookupField;
+
+});
 
 
-    /**
-     * @property
-     * @memberOf    Lookup.lookupField
-     * Stores the HTML template for each lookup field.
-     * Value is set at build time.
-     *
-     */
-    Lookup.htmlTemplate = "_INCLUDE_LOOKUP_HTML_TEMPLATE_";
-
-
-})(jQuery);

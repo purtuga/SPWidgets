@@ -1,35 +1,14 @@
-/**
- * By default, this API method will add its self to jQuery under the following
- * namespace: $.SPAPI. This can be altered by defining an object named 'SPAPI'
- * just prior to loading/executing this code.
- *
- * @Example
- *
- *  // Load this API method into a custom namespace
- *  <script type="text/javascript">
- *      var SPAPI = {};
- *  </script>
- *  <script type"text/javascript" src="path/to/this/file.js"/>
- *
- */
-(function($, namespace){
-
-    var API = namespace || {};
-
-    if (!namespace) {
-
-        if (typeof $.SPAPI === "undefined") {
-
-            $.SPAPI = API;
-
-        } else {
-
-            API = $.SPAPI;
-
-        }
-
-    }
-
+define([
+    "jquery",
+    "../sputils/cache",
+    "./getSiteUrl",
+    "../sputils/doesMsgHaveError"
+], function(
+    $,
+    cache,
+    getSiteUrl,
+    doesMsgHaveError
+){
 
     /**
      * Given a list name, this method will query the SP service and retrieve
@@ -48,23 +27,12 @@
      *      XMLDocument : Response from Sharepoint
      *      status : the ajax status string (error or success)
      *
-     * Depends on:
-     *
-     * .getSiteUrl()
-     * .doesMsgHaveError()
-     * .cache()
      */
-    API.getListFormCollection = (function(){
+    var getListFormCollection = (function(){
 
         var getData     = null,
             Me          = null,
-            callerFn    = function(){
-
-                            if (Me === null) {
-
-                                Me = this;
-
-                            }
+            callerFn    = function getListFormCollection(){
 
                             return getData.apply(this, arguments);
 
@@ -89,7 +57,7 @@
 
             if (!options.webURL) {
 
-                options.webURL = Me.getSiteUrl();
+                options.webURL = getSiteUrl();
 
             } else if (options.webURL.charAt(options.webURL.length - 1) !== "/") {
 
@@ -100,12 +68,12 @@
             options.webURL += "_vti_bin/Forms.asmx";
 
             options.cacheKey = options.webURL + "?List=" + options.listName;
-            options.isCached = Me.cache.isCached(options.cacheKey);
+            options.isCached = cache.isCached(options.cacheKey);
 
             // If cacheXML is true and we have a cached version, return it.
             if (options.cacheXML && options.isCached) {
 
-                reqPromise =  Me.cache(options.cacheKey);
+                reqPromise =  cache(options.cacheKey);
 
                 // If a completefunc was defined on this call,
                 // execute it.
@@ -130,7 +98,7 @@
                 // then remove the cached version - basically reset
                 if (options.isCached) {
 
-                    Me.cache.clear(options.cacheKey);
+                    cache.clear(options.cacheKey);
 
                 }
 
@@ -147,13 +115,13 @@
                     complete:       function(xdata, status) {
 
                         // Process Error from status
-                        if (status === "error" || Me.doesMsgHaveError(xdata)) {
+                        if (status === "error" || doesMsgHaveError(xdata)) {
 
                             // If cacheXML was true, then remove this from cache.
                             // No point in caching failures.
                             if (options.cacheXML) {
 
-                                Me.cache.clear(options.cacheKey);
+                                cache.clear(options.cacheKey);
 
                             }
 
@@ -179,7 +147,7 @@
             // If cacheXML was true, then cache this promise
             if (options.cacheXML) {
 
-                Me.cache(options.cacheKey, reqPromise);
+                cache(options.cacheKey, reqPromise);
 
             }
 
@@ -191,4 +159,6 @@
 
     })(); //end: API.getListFormCollection()
 
-})(jQuery, (typeof SPAPI !== "undefined" ? SPAPI : undefined));
+    return getListFormCollection;
+
+});

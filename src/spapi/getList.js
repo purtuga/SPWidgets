@@ -1,36 +1,14 @@
-/**
- * By default, this API method will add its self to jQuery under the following
- * namespace: $.SPAPI. This can be altered by defining an object named 'SPAPI'
- * just prior to loading/executing this code.
- *
- * @Example
- *
- *  // Load this API method into a custom namespace
- *  <script type="text/javascript">
- *      var SPAPI = {};
- *  </script>
- *  <script type"text/javascript" src="path/to/this/file.js"/>
- *
- */
-(function($, namespace){
+define([
+    "jquery",
+    "../sputils/cache",
+    "./getSiteUrl"
+], function(
+    $,
+    cache,
+    getSiteUrl
+){
 
-    var API = namespace || {};
-
-    if (!namespace) {
-
-        if (typeof $.SPAPI === "undefined") {
-
-            $.SPAPI = API;
-
-        } else {
-
-            API = $.SPAPI;
-
-        }
-
-    }
-
-    /**
+     /**
      * Get a list definition from sharepoint or return its cached version
      * if one exists.
      * @function
@@ -49,20 +27,13 @@
      * @return {jQuery.Promise}
      *          Resolved with 3 input params: data, textStatus, jqXHR
      *
-     * Depends on:
-     *
-     * .cache()
-     * .getSiteUrl()
-     *
      */
-    API.getList = (function() {
+    var getList = (function() {
 
-        var Me          = null,
-            getList     = null,
-            callerFn    = function(){
+        var getListData = null,
+            callerFn    = function getList(){
 
-                    if (Me === null) { Me  = this; }
-                    getList.apply(this, arguments);
+                    getListData.apply(this, arguments);
 
             };
 
@@ -76,7 +47,7 @@
         };
 
         // Makes the ajax call to sharepoint and returns a jQuery.promise
-        getList = function(opt) {
+        getListData = function(opt) {
 
             var options = $.extend({}, callerFn.defaults, opt),
                 reqPromise;
@@ -84,7 +55,7 @@
 
             if (!options.webURL) {
 
-                options.webURL = Me.getSiteUrl();
+                options.webURL = getSiteUrl();
 
             } else if (options.webURL.charAt(options.webURL.length - 1) !== "/") {
 
@@ -95,12 +66,12 @@
             options.webURL += "_vti_bin/Lists.asmx";
 
             options.cacheKey = options.webURL + "?List=" + options.listName;
-            options.isCached = Me.cache.isCached(options.cacheKey);
+            options.isCached = cache.isCached(options.cacheKey);
 
             // If cacheXML is true and we have a cached version, return it.
             if (options.cacheXML && options.isCached) {
 
-                reqPromise =  Me.cache(options.cacheKey);
+                reqPromise =  cache(options.cacheKey);
 
                 // If a completefunc was defined on this call,
                 // execute it.
@@ -122,7 +93,7 @@
             // then remove the cached version - basically reset
             if (options.isCached) {
 
-                Me.cache.clear(options.cacheKey);
+                cache.clear(options.cacheKey);
 
             }
 
@@ -160,7 +131,7 @@
                     // No point in caching failures.
                     if (options.cacheXML) {
 
-                        Me.cache.clear(options.cacheKey);
+                        cache.clear(options.cacheKey);
 
                     }
 
@@ -172,7 +143,7 @@
             // If cacheXML was true, then cache this promise
             if (options.cacheXML) {
 
-                Me.cache(options.cacheKey, reqPromise);
+                cache(options.cacheKey, reqPromise);
 
             }
 
@@ -182,6 +153,9 @@
 
         return callerFn;
 
-    })(); //end: API.getList()
+    })(); //end: .getList()
 
-})(jQuery, (typeof SPAPI !== "undefined" ? SPAPI : undefined));
+
+    return getList;
+
+});

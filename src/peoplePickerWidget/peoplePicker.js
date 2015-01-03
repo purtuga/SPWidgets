@@ -1,39 +1,34 @@
-/**
- * @fileOverview jquery.SPControlPickUser.js
- * jQuery plugin that attaches to an input field and provide a people
- * picker widget for interaction by the user. This Plugin is dependent
- * on jQuery UI's Autocomplete.
- *
- *
- * @version _BUILD_VERSION_NUMBER_NUMBER_
- * @author  Paul Tavares, www.purtuga.com
- * @see     TODO: site url
- *
- * @requires jQuery.js {@link http://jquery.com}
- * @requires jQuery-ui.js {@link http://jqueryui.com}
- *
- * Build Date _BUILD_VERSION_DATE_
- *
- */
-(function($){
-
-    /*jslint nomen: true, plusplus: true */
-    /*global SPWidgets */
-
-    var SPAPI   = $.SPWidgets.SPAPI;
+define([
+    'jquery',
+    'text!./peoplePicker.html',
+    '../spapi/getSiteUrl',
+    '../spapi/searchPrincipals',
+    '../spapi/resolvePrincipals',
+    '../sputils/parseLookupFieldValue',
+    '../uiutils/addHoverEffect',
+    //------------------------
+    'less!./peoplePicker'
+], function(
+    $,
+    peoplePickerTemplate,
+    getSiteUrl,
+    searchPrincipals,
+    resolvePrincipals,
+    parseLookupFieldValue,
+    addHoverEffect
+){
 
     /**
-     * Namespace for pickSPUser specific methods.
-     * @name        pickSPUser
-     * @class       Namespace for pickSPUser plugin
-     * @memberOf    jQuery.pt
+     * jQuery plugin that attaches to an input field and provide a people
+     * picker widget for interaction by the user. This Plugin is dependent
+     * on jQuery UI's Autocomplete.
      */
-    $.pt.pickSPUser = {
-        _isPickSPUserCssDone: false
-    };
+
+    var People = {},
+        peoplePicker;
 
     // Store defaults in SPWidgets object.
-    $.SPWidgets.defaults.peoplePicker = {
+    People.defaults = {
         allowMultiples:     true,
         maxSearchResults:   50,
         webURL:             null,
@@ -61,77 +56,74 @@
      * input field will be updated at the same time, thus it will always
      * be ready to be submitted as part of an update to the server.
      *
-     * @alias $.pickSPUser()
-     * @alias jQuery.pickSPUser()
-     * @alias $().pickSPUser()
-     * @alias jQuery().pickSPUser()
-     *
+     * @param {HTMLElement|jQuery|Selector} containers
+     *      Containers that will receive the peoplePickers
      *
      * @param {Object} options
-     *                      Object with the options. See below.
+     *      Object with the options. See below.
      *
      * @param {Boolean} [options.allowMultiples=true]
-     *                      Determine whether multiple users can be picked.
+     *      Determine whether multiple users can be picked.
      *
      * @param {String} [options.webURL=currentSiteUrl]
-     *                  The URL of the site
+     *      The URL of the site
      *
      * @param {String} [options.type='User']
-     *                  The type of search to conduct. Default is User. Others
-     *                  include: None, DistributionList, SecurityGroup,
-     *                  SharePointGroup, All
+     *      The type of search to conduct. Default is User. Others
+     *      include: None, DistributionList, SecurityGroup,
+     *      SharePointGroup, All
      *
      * @param {Interger} [options.maxSearchResults=50]
-     *                      The max number of results to be returned from the
-     *                      server.
+     *      The max number of results to be returned from the
+     *      server.
      *
      * @param {jQuery}  [options.appendTo=null]
-     *                      The container where to where the autocomplete suggestion
-     *                      should be appended.
+     *      The container where to where the autocomplete suggestion
+     *      should be appended.
      *
      * @param {Number} [options.minLength=3]
-     *                      The minimum number of characters the user must type before
-     *                      suggestions are retrieved. Given directly to jQuery UI's
-     *                      Autocomplete widget.
+     *      The minimum number of characters the user must type before
+     *      suggestions are retrieved. Given directly to jQuery UI's
+     *      Autocomplete widget.
+     *
      * @param {Function} [options.onPickUser=null]
-     *                      Function that is called when user makes a selection.
-     *                      Function will have a context (this keyword) of the
-     *                      input field to which this plugin is called on, and
-     *                      will be given one input param; an object containing
-     *                      information about the selected user.
+     *      Function that is called when user makes a selection.
+     *      Function will have a context (this keyword) of the
+     *      input field to which this plugin is called on, and
+     *      will be given one input param; an object containing
+     *      information about the selected user.
      *
      * @param {Function} [options.onCreate=null]
-     *                      Function that is called after the widget has been
-     *                      initiated on an input element.
-     *                      Function will have a context (this keyword) of the
-     *                      input field to which this plugin is called on, which
-     *                      will also be provided as the first argument to the
-     *                      function.
+     *      Function that is called after the widget has been
+     *      initiated on an input element.
+     *      Function will have a context (this keyword) of the
+     *      input field to which this plugin is called on, which
+     *      will also be provided as the first argument to the
+     *      function.
      *
      * @param {Function} [options.onRemoveUser=null]
-     *                      Function called when removing a user from the selected
-     *                      list. Returning false (boolean) will cancel the removal
-     *                      of the person from the selected list.
-     *                      Function will have a context (this keyword) of the
-     *                      input field to which this plugin is called on, and is
-     *                      given 3 input params: $input, $personUI, personObj
+     *      Function called when removing a user from the selected
+     *      list. Returning false (boolean) will cancel the removal
+     *      of the person from the selected list.
+     *      Function will have a context (this keyword) of the
+     *      input field to which this plugin is called on, and is
+     *      given 3 input params: $input, $personUI, personObj
      *
      * @param {String} [options.inputPlaceholder="Type and Pick"]
-     *                      The text to appear in the HTML5 placeholder attribute
-     *                      of the input field.
+     *      The text to appear in the HTML5 placeholder attribute
+     *      of the input field.
+     *
      * @param {String} [options.resolvePrincipals=true]
-     *                      If set to true, any user that is suggested but not yet
-     *                      part of the site collection user info list (their id
-     *                      is -1) will be automatically added.
+     *      If set to true, any user that is suggested but not yet
+     *      part of the site collection user info list (their id
+     *      is -1) will be automatically added.
      *
      * @param {Function} [options.filterSuggestions=null]
-     *                      A callback function to be used in filtering the
-     *                      suggestions values retrieved from the server. This
-     *                      callback, if defined, must return an array of objects.
-     *
+     *      A callback function to be used in filtering the
+     *      suggestions values retrieved from the server. This
+     *      callback, if defined, must return an array of objects.
      *
      * @return {jQuery} selection
-     *
      *
      *
      * METHODS:
@@ -179,21 +171,12 @@
      *
      *
      */
-    $.fn.pickSPUser = function(options) {
-
-        // if the global styles have not yet been inserted into the page, do it now
-        if (!$.pt.pickSPUser._isPickSPUserCssDone) {
-            $.pt.pickSPUser._isPickSPUserCssDone = true;
-            $('<style type="text/css">' + "\n\n" +
-                    $.pt.pickSPUser.styleSheet +
-                    "\n\n</style>")
-                .prependTo("head");
-        }
+    peoplePicker = function(containers, options) {
 
         // Store the arguments given to this function. Used later if the
         // user is trying to execute a method of this plugin.
-        var arg     = arguments,
-            $this   = this;
+        var arg     = Array.prototype.slice.call(arguments, 1),
+            $this   = $(containers);
 
         // If input is a string, then it must be an action (method).
         // Process only the first element in the selection.
@@ -205,7 +188,7 @@
 
                 if (ele.is("input") && ele.hasClass("hasPickSPUser")){
 
-                    return $.pt.pickSPUser.handleAction.apply(ele, arg);
+                    return People.handleAction.apply(ele, arg);
 
                 }
 
@@ -215,17 +198,14 @@
 
         }
 
-        // Define options with globals
-        // var options = $.extend({}, options2);
-
         // Initiate each selection as a pickSPUser element
-        this.each(function(){
+        return $this.each(function(){
 
             var ele = $(this);
 
             // Options for this element
             var o   = $.extend({},
-                    $.SPWidgets.defaults.peoplePicker,
+                    People.defaults,
                     options,
                     {
                         eleUserInput: ele.css("display", "none").addClass("hasPickSPUser")
@@ -234,21 +214,21 @@
             // If no webURL, define it now
             if (!o.webURL) {
 
-                o.webURL = SPAPI.getSiteUrl();
+                o.webURL = getSiteUrl();
             }
 
             // insure that maxsearchResults is an interger
             o.maxSearchResults = parseInt(o.maxSearchResults) || 50;
 
             // Create pick user container and insert it after the input element
-            var cntr        = $($.pt.pickSPUser.htmlTemplate)
+            var cntr        = $(peoplePickerTemplate)
                                 .find(".pt-pickSPUser").clone(1).insertAfter(ele);
 
             o.eleSelected   = cntr.find("div.pt-pickSPUser-selected")
                                 .empty()
                                 .on("click", ".tt-delete-icon", function(){
 
-                                    $.pt.pickSPUser.removeUser(this);
+                                    People.removeUser(this);
 
                                 });
 
@@ -290,7 +270,7 @@
                     total       = curUsers.length,
                     i,id,user, $ui;
 
-                // TODO: use $.SPWidgets.parseLookupFieldValue instead of local logic to parse values
+                // TODO: use parseLookupFieldValue instead of local logic to parse values
 
                 for (i=0; i<total; i++){
 
@@ -304,7 +284,7 @@
 
                     }
 
-                    $ui     = $.pt.pickSPUser
+                    $ui     = People
                                 .getUserHtmlElement(o, id, user)
                                 .appendTo( o.eleSelected );
 
@@ -350,7 +330,7 @@
 
                 }
 
-                $.pt.addHoverEffect(
+                addHoverEffect(
                     o.eleSelected.find("div.pt-pickSPUser-person-cntr") );
 
                 // if we don't allow multiple, then hide the input area
@@ -360,7 +340,7 @@
 
                 }
 
-                $.pt.pickSPUser.storeListOfUsers(o.eleSelected, noEvents);
+                People.storeListOfUsers(o.eleSelected, noEvents);
 
             }; //end: o.addPeopleToList()
 
@@ -376,7 +356,7 @@
 
                 return $.Deferred(function(dfd){
 
-                    SPAPI.searchPrincipals({
+                    searchPrincipals({
                         searchText:     searchString,
                         maxResults:     o.maxSearchResults,
                         principalType:  o.type,
@@ -526,7 +506,7 @@
                          */
                         var addToSelectionList = function() {
 
-                            var $newPersonUI = $.pt.pickSPUser.getUserHtmlElement(
+                            var $newPersonUI = People.getUserHtmlElement(
                                         o, u.item.accountId, u.item.displayName
                                     )
                                     .appendTo( o.eleSelected );
@@ -534,9 +514,9 @@
                             // Store a copy of the user object on the UI
                             $newPersonUI.data("pickspuser_object", u.item);
 
-                            $.pt.pickSPUser.storeListOfUsers(cntr);
+                            People.storeListOfUsers(cntr);
 
-                            $.pt.addHoverEffect(
+                            addHoverEffect(
                                 cntr.find("div.pt-pickSPUser-person-cntr") );
 
                             // clear out the autocomplete box
@@ -568,7 +548,7 @@
                         // Else, let's resolve the user before we add them.
                         } else {
 
-                            SPAPI.resolvePrincipals({
+                            resolvePrincipals({
                                 principalKeys: u.item.accountName
                             })
                             .then(function(xmlDoc, status){
@@ -619,8 +599,6 @@
             return this;
         });
 
-        return this;
-
     };// $.fn.pickSPUser()
 
     /**
@@ -633,9 +611,9 @@
      * @return {jQuery} Html element
      *
      */
-    $.pt.pickSPUser.getUserHtmlElement = function(opt, id, name){
+    People.getUserHtmlElement = function(opt, id, name){
 
-        var ele = $($.pt.pickSPUser.htmlTemplate)
+        var ele = $(peoplePickerTemplate)
                     .find(".pt-pickSPUser-person").clone(1);
         ele.attr("data-pickSPUserID", id);
         ele.find("span.pt-person-name")
@@ -644,7 +622,7 @@
             .attr("data-pickSPUserNAME", name);
         return ele;
 
-    };// $.pt.pickSPUser.getUserHtmlElement()
+    };// People.getUserHtmlElement()
 
 
     /**
@@ -662,7 +640,7 @@
      * @return {undefined}
      *
      */
-    $.pt.pickSPUser.removeUser = function(ele){
+    People.removeUser = function(ele){
 
         var cntr        = $(ele).closest("div.pt-pickSPUser"),
             o           = cntr.data("pickSPUserContainerOpt"),
@@ -691,7 +669,7 @@
         // remove user from the view
         $personUI.fadeOut('fast', function(){
             $(this).remove();
-            $.pt.pickSPUser.storeListOfUsers(cntr);
+            People.storeListOfUsers(cntr);
         });
 
         // if AllowMultiple is false, then make the picker input visible
@@ -708,7 +686,7 @@
         );
 
         return;
-    };// $.pt.pickSPUser.removeUser()
+    };// People.removeUser()
 
 
     /**
@@ -726,7 +704,7 @@
      * @return {undefined}
      *
      */
-    $.pt.pickSPUser.storeListOfUsers = function(ele, noEvents){
+    People.storeListOfUsers = function(ele, noEvents){
 
         var cntr    = $(ele).closest("div.pt-pickSPUser"),
             opt     = cntr.data("pickSPUserContainerOpt"),
@@ -770,7 +748,7 @@
         }
 
         return;
-    };// $.pt.pickSPUser.storeListOfUsers()
+    };// People.storeListOfUsers()
 
     /**
      * Handles method actions given to $().pickSPUser()
@@ -782,7 +760,7 @@
      * @return {this}
      *
      */
-    $.pt.pickSPUser.handleAction = function(type, action, options) {
+    People.handleAction = function(type, action, options) {
 
         type    = String(type).toLowerCase();
         action  = String(action).toLowerCase();
@@ -848,7 +826,7 @@
 
                         if (rmEle.length) {
 
-                            $.pt.pickSPUser.removeUser(rmEle);
+                            People.removeUser(rmEle);
 
                         }
 
@@ -858,7 +836,7 @@
 
                 case "getselected":
 
-                    ret = $.SPWidgets.parseLookupFieldValue(o.eleUserInput.val());
+                    ret = parseLookupFieldValue(o.eleUserInput.val());
 
                     break;
 
@@ -868,56 +846,11 @@
 
         return ret;
 
-    };// $.pt.pickSPUser.handleAction()
+    };// People.handleAction()
 
+    peoplePicker.defaults = People.defaults;
+    return peoplePicker;
 
-    /**
-     * @property
-     * Stores the Style sheet that is inserted into the page the first
-     * time pickSPUser is called.
-     * Value is set at build time.
-     *
-     */
-    $.pt.pickSPUser.styleSheet = "_INCLUDE_PICKSPUSER_CSS_TEMPLATE_";
+});
 
-
-    /**
-     * @property
-     * Stores the HTML template for each people picker.
-     * Value is set at build time.
-     *
-     */
-    $.pt.pickSPUser.htmlTemplate = "_INCLUDE_PICKSPUSER_HTML_TEMPLATE_";
-
-    /**
-     * Given a list of elements, this will add a hover affect to
-     * those elements by toggling some classes from jQuery UI
-     *
-     * @memberof jQuery.pt
-     *
-     * @param {jQuery|String} ele   A jQuery selector or object containing
-     *                              the list of elements to receive the hover
-     *                              effect.
-     * @return {jQuery}
-     *
-     * @example
-     *
-     *      $(".tt-hover-animate").addHoverEffect();
-     *      $(".container a").addHoverEffect();
-     *
-     */
-    $.pt.addHoverEffect = function(ele){
-        return $(ele).each(function(){
-                if ($(this).hasClass("addHoverEffectDone")) {
-                    return;
-                } else {
-                    $(this).addClass("addHoverEffectDone");
-                };
-                var e = this;
-                $(e).mouseenter(function(){$(e).toggleClass("ui-state-hover");});
-                $(e).mouseleave(function(){$(e).toggleClass("ui-state-hover");});
-            });
-    };// $.pt.addHoverEffect()
-
-})(jQuery);
 
