@@ -318,7 +318,7 @@ module.exports = function(grunt) {
                 '<%= buildFolder %>'
             ],
             build: [
-                '<%= buildFolder %>/demo/src/Dev.*.aspx'
+                '<%= buildFolder %>/demo/src/*.aspx'
             ]
         },
         concat : {
@@ -410,7 +410,7 @@ module.exports = function(grunt) {
                 src : 'Gruntfile.js'
             },
             src : {
-                src : ['src------/**/*.js', 'demo-----/src/*.js']
+                src : ['src/**/*.js', 'demo/src/*.js']
             },
             test : {
                 src : ['test/**/*.js']

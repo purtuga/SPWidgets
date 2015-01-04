@@ -56,4 +56,6 @@ define([], function(){
 
     }; //end: parseLookupFieldValue
 
+    return parseLookupFieldValue;
+
 });

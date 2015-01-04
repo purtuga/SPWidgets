@@ -31,7 +31,7 @@ define([
      * .getSiteUrl()
      *
      */
-    var resolvePrincipals = (function(options) {
+    var resolvePrincipals = (function() {
 
         var getData     = null,
             callerFn    = function(){

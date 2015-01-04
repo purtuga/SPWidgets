@@ -63,6 +63,9 @@ define([
      * uploading a file to a Sharepoint location (library) without having
      * to leave the current page that the user is currently on.
      *
+     * @param {HTMLElement|jQuery|selector} containers
+     *      The elements where the widget should be initialized.
+     *
      * @param {Object} options  Object with the options below.
      *
      * @param {String} options.listName REQUIRED. The name or UID of the list.
@@ -152,7 +155,7 @@ define([
      *
      *
      */
-    upload = function (options) {
+    upload = function (containers, options) {
 
         // if the global styles have not yet been inserted into the page, do it now
         if (!Upload.isInitDone) {
@@ -164,7 +167,7 @@ define([
 
         }
 
-        return $(this).each(function(){
+        return $(containers).each(function(){
 
             var opt = $.extend({}, Upload.defaults, options),
                 overlayCss;
@@ -517,7 +520,7 @@ define([
 
                 var s = "/";
 
-                if (opt.uploadPage.indexOf('/') == 0) {
+                if (opt.uploadPage.indexOf('/') === 0) {
 
                     s = "";
 
@@ -633,7 +636,7 @@ define([
                 .data("SPControlUploadOptions", opt);
 
             opt.$buttonCntr = opt.$cntr.find("div.buttonPane")
-                    .click(function(ev){
+                    .click(function(/*ev*/){
 
                         Upload.onUpload(this);
 
@@ -652,7 +655,7 @@ define([
 
             // Setup success message closure listner and include user's message
             opt.$successCntr
-                .on("click", ".spwidget-close", function(ev){
+                .on("click", ".spwidget-close", function(/*ev*/){
 
                     opt.showHideSuccess(true);
 
@@ -661,7 +664,7 @@ define([
                     .html(opt.uploadDoneMessage);
 
             // Setup error message closure
-            opt.$errorCntr.on("click", ".spwidget-close", function(ev){
+            opt.$errorCntr.on("click", ".spwidget-close", function(/*ev*/){
 
                 opt.clearError();
 
@@ -679,7 +682,7 @@ define([
 
             opt.$cntr.find("iframe")
                 .css("height", opt.checkInFormHeight)
-                .load(function(ev){
+                .load(function(/*ev*/){
 
                     Upload.onIframeChange(opt.$ele.find(".SPControlUploadUI"));
 
@@ -946,9 +949,10 @@ define([
                     // Capture error message and reload the page.
                     // SP2010 Seems to behave differntly and land display errors a little
                     // differently... so we try the <title> tag adn then the form action value.
-                    if (    new RegExp(/error/i).test($.trim(page.find(".ms-pagetitle").text()))
-                        ||  new RegExp(/error/i).test($.trim(page.find("title").text()))
-                        ||  new RegExp(/error\.aspx/i).test($.trim(page.find("form").attr("action")))
+                    if (
+                        new RegExp(/error/i).test($.trim(page.find(".ms-pagetitle").text())) ||
+                        new RegExp(/error/i).test($.trim(page.find("title").text())) ||
+                        new RegExp(/error\.aspx/i).test($.trim(page.find("form").attr("action")))
                     ) {
 
                         opt.log("Upload.onIframeChange(" + id + "): page displaying an error... Storing it and reloading upload form.");
@@ -972,8 +976,9 @@ define([
                     // SP2010 Code
                     // If this is the new SP2010 "Processing..." page, then
                     // the just exit... there is nothing for us to do yet...
-                    if (    Upload.isSPBusyAnimation(page)
-                        &&  !page.find("input[type='file']").length
+                    if (
+                        Upload.isSPBusyAnimation(page) &&
+                        !page.find("input[type='file']").length
                     ) {
 
                         opt.log("Upload.onIframeChange(" + id +
@@ -1002,7 +1007,7 @@ define([
                                 .siblings("tr .ms-error")
                                     .css("display", "")
                                     .end()
-                            .on("change focus click", function(ev){
+                            .on("change focus click", function(/*ev*/){
 
                                     var $this       = $(this),
                                         filePath    = $this.val(),
@@ -1025,8 +1030,7 @@ define([
                                                 fileExt.toUpperCase() + ".GIF";
 
                                         // Get only the file name
-                                        filePath =  (filePath.replace(/\\/g, '/').split('/').pop())
-                                                    || filePath;
+                                        filePath =  (filePath.replace(/\\/g, '/').split('/').pop()) || filePath;
 
                                     } else {
 
@@ -1225,7 +1229,7 @@ define([
                     // unloaded.. At this point, nothing can be done to prevent
                     // the page from being submitted, but we can still execute
                     // the caller's function.
-                    $(e.find("iframe")[0].contentWindow).unload(function(evv){
+                    $(e.find("iframe")[0].contentWindow).unload(function(/*evv*/){
 
                         opt.log("Upload.onIframeChange(" + opt._iframeLoadId +
                             "): iframe.unload() triggered!");
@@ -1383,8 +1387,9 @@ define([
                 '#F5F5F2'
             ];
 
-        if (    typeof console === "undefined"
-            ||  typeof console.debug === "undefined"
+        if (
+            typeof console === "undefined" ||
+            typeof console.debug === "undefined"
         ) {
 
             logit = function(){
@@ -1459,7 +1464,7 @@ define([
 
                     console.debug(arguments[i]);
 
-                };
+                }
 
             } else {
 

@@ -31,11 +31,8 @@ define([
     var getListFormCollection = (function(){
 
         var getData     = null,
-            Me          = null,
             callerFn    = function getListFormCollection(){
-
                             return getData.apply(this, arguments);
-
                         };
 
         // Define defaults. User can change these on their function attachment.

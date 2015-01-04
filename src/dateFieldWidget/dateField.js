@@ -524,10 +524,7 @@ define([
                     if ($.isFunction(Inst.opt.onSelect)) {
 
                         Inst.opt.onSelect.call(
-                            (   Inst.isInline
-                                ?   Inst.inlineCntr
-                                :   Inst.$ele
-                            )
+                            ( Inst.isInline ? Inst.inlineCntr : Inst.$ele )
                         );
 
                     }
@@ -927,7 +924,7 @@ define([
                         wdg.$selectorCntr
                                 .show(function(){
 
-                                    var currentDate, tmpVal;
+                                    var currentDate;
 
                                     if (!wdg.heightDone) {
 
@@ -1036,7 +1033,7 @@ define([
                         wdg.$selectorCntr.addClass("spwidget-date-multiples-cntr");
                         wdg.$setButton.find("div.spwidget-btn")
                             .button({label: Inst.opt.labelSet})
-                            .on("click" + SPDate.evNamespace, function(ev){
+                            .on("click" + SPDate.evNamespace, function(/*ev*/){
 
                                 wdg.setDateTime();
 

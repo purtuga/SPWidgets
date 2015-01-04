@@ -1,4 +1,5 @@
 define(["jquery"], function($){
+    /* global _spPageContextInfo, L_Menu_BaseUrl */
 
     /**
      * Returns the current site URL. URL will end with a forward slash (/) and

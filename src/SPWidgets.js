@@ -68,7 +68,7 @@ define([
         parseLookupFieldValue:  parseLookupFieldValue,
         SPGetDateString:        getDateString,
         makeSameHeight:         makeSameHeight,
-         /**
+        /**
          * Returns information about the runtime as it applies
          * to SPWidgets.
          *

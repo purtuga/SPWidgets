@@ -1,4 +1,4 @@
-define([], function(){
+define(['jquery'], function($){
 
     /**
      * An extreemly lightweight template engine for replacing
@@ -24,10 +24,11 @@ define([], function(){
         }
 
         opt.response    = "";
-        opt.template    = (     typeof tmplt !== "string"
-                            ?   String($("<div/>").append(tmplt).html())
-                            :   tmplt
-                        );
+        opt.template    = (
+            typeof tmplt !== "string" ?
+                String($("<div/>").append(tmplt).html()) :
+                tmplt
+        );
         opt.tokens      = opt.template.match(/(\{\{.*?\}\})/g);
 
         if (!$.isArray(data)) {

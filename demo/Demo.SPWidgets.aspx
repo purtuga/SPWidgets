@@ -1,5 +1,5 @@
 <%-- SPWIDGETS DEMO PAGE --%>
-<%-- BUILD 20150101051036 --%>
+<%-- BUILD 20150102062141 --%>
 <%@ Page language="C#" MasterPageFile="~masterurl/default.master"    Inherits="Microsoft.SharePoint.WebPartPages.WebPartPage,Microsoft.SharePoint,Version=12.0.0.0,Culture=neutral,PublicKeyToken=71e9bce111e9429c" %>
 <%@ Register Tagprefix="SharePoint" Namespace="Microsoft.SharePoint.WebControls" Assembly="Microsoft.SharePoint, Version=12.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %>
 <%@ Register Tagprefix="Utilities" Namespace="Microsoft.SharePoint.Utilities" Assembly="Microsoft.SharePoint, Version=12.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %>
@@ -44,8 +44,8 @@ SPWidgets - Widgets for building custom UIs
 /**
  * SPWidgets Demo
  *
- * Build Date:  January 01, 2015 - 05:10 PM
- * Version:     20150101051036
+ * Build Date:  January 02, 2015 - 06:21 PM
+ * Version:     20150102062141
  *
  */
 </script>
@@ -565,7 +565,7 @@ SPWidgets - Widgets for building custom UIs
 
     </div>
     <div>
-        <span>Build: </span><span>20150101051036</span>
+        <span>Build: </span><span>20150102062141</span>
     </div>
     <div>
         <div id="themeSwitchWidget"></div>
@@ -598,7 +598,7 @@ setTimeout(function(){
  * @fileOverview demo.common.js
  * Common file for all demos. Initiates the UI on the page.
  *
- * @version 20150101051036
+ * @version 20150102062141
  *
  */
 (function($){
@@ -2682,7 +2682,7 @@ window.vkbeautify = new vkbeautify();
 
 //-------- START SPWidgets plugin: inserted by build script -----------------
 
-(function(n,y,u,t){var s=n,q={};u.head||(u.head=u.getElementsByTagName("head")[0]);(function(){try{n.pt||(n.pt={})}catch(c){n.pt={}}n.pt._cache===t&&(n.pt._cache={});n.SPWidgets={};n.SPWidgets.version="20150101051036";n.SPWidgets.defaults={};n.SPWidgets.SPAPI=q;n.fn.SPMsgHasError=function(){return q.doesMsgHaveError(this)};n.fn.SPGetMsgError=function(){var c=n(this),k="",e=c.find("ErrorCode"),d=0;e.length||(e=c.find("faultcode"));if(!e.length)return"";e.each(function(){var a=n(this);"0x00000000"!==
+(function(n,y,u,t){var s=n,q={};u.head||(u.head=u.getElementsByTagName("head")[0]);(function(){try{n.pt||(n.pt={})}catch(c){n.pt={}}n.pt._cache===t&&(n.pt._cache={});n.SPWidgets={};n.SPWidgets.version="20150102062141";n.SPWidgets.defaults={};n.SPWidgets.SPAPI=q;n.fn.SPMsgHasError=function(){return q.doesMsgHaveError(this)};n.fn.SPGetMsgError=function(){var c=n(this),k="",e=c.find("ErrorCode"),d=0;e.length||(e=c.find("faultcode"));if(!e.length)return"";e.each(function(){var a=n(this);"0x00000000"!==
 a.text()&&(d+=1,k+="("+d+") "+a.text()+": "+a.parent().children().not(a).text()+"\n")});return k=d+" error(s) encountered! \n"+k};n.SPWidgets.fillTemplate=function(c,k){var e,d,a,b,f,l,g,r,p;"object"===typeof c&&1===arguments.length&&(k=c.data,c=c.tmplt);e="";d="string"!==typeof c?String(n("<div/>").append(c).html()):c;a=d.match(/(\{\{.*?\}\})/g);n.isArray(k)||(k=k?[k]:[{}]);if(null!==a)for(l=0,g=k.length;l<g;l++){r=d;b=0;for(f=a.length;b<f;b++)a[b]=a[b].replace(/[\{\}]/g,""),p=k[l][a[b]]||"",n.isFunction(p)&&
 (p=p()),r=r.replace("{{"+a[b]+"}}",p);e+=r}else e=d;return e};n.SPWidgets.parseLookupFieldValue=function(c){var k=[],e=String(c).split(";#"),d=e.length,a,b;if(c===t)return k;for(c=0;c<d;c++)a=e[c],c++,b=e[c],(a||b)&&k.push({id:a,title:b});return k};n.SPWidgets.getCamlLogical=function(c){c=n.extend({},{type:"AND",values:[],onEachValue:null},c);var k="<And>",e="</And>",d="",a=0,b=0,f=!1,l="",g=0,r;c.type=String(c.type).toUpperCase();n.isArray(c.values)||(c.values=[c.values]);"AND"!==c.type&&(k="<Or>",
 e="</Or>");a=c.values.length;b=a-1;f=n.isFunction(c.onEachValue);for(r=0;r<a;r++)if(l="",l=f?l+String(c.onEachValue(c.values[r])).toString():l+String(c.values[r]).toString())if(d+=l,g++,1<b-r){if(l=n.SPWidgets.getCamlLogical(n.extend({},c,{values:c.values.slice(r+1,a-r)})))g++,d+=l;break}1<g&&(d=k+d+e);return d};n.SPWidgets.SPGetDateString=function(c,k){function e(c){return 10>c?"0"+c:c}k=String(k||"local").toLowerCase();c=c||new Date;var d="";return d="utc"===k?c.getUTCFullYear()+"-"+e(c.getUTCMonth()+

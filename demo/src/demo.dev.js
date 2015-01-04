@@ -3,6 +3,7 @@ define([
 ], function(
     $
 ){
+    /* global SPWIDGET_DEMO */
 
     /**
      * demo.dev.js
@@ -32,13 +33,13 @@ define([
      */
     Main.loadScript = function(jsUrl, callback, ensureNoCache){
 
-        var head    = document.head
-                        || document.getElementsByTagName("head")[0]
-                        || document.documentElement,
+        var head    = document.head ||
+                      document.getElementsByTagName("head")[0] ||
+                      document.documentElement,
             s       = document.createElement("script"),
             now     = (new Date()).getTime(),
             def     = null,
-            ret     = undefined;
+            ret;
 
         if (ensureNoCache === true) {
 

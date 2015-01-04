@@ -7,6 +7,9 @@ define([
     '../sputils/fillTemplate',
     '../sputils/getCamlLogical',
     '../sputils/xmlEscape',
+    '../lookupFieldWidget/lookupField',
+    '../peoplePickerWidget/peoplePicker',
+    '../dateFieldWidget/dateField',
     //------------------------------
     'less!./filterPanel'
 ], function(
@@ -17,7 +20,10 @@ define([
     parseLookupFieldValue,
     fillTemplate,
     getCamlLogical,
-    xmlEscape
+    xmlEscape,
+    lookupFieldWidget,
+    peoplePickerWidget,
+    dateFieldWidget
 ){
 
     var Filter  = {},
@@ -90,7 +96,7 @@ define([
      */
     filterPanel = function(containers, options){
 
-        var arg = Array.prototype.slice.call(arguments, 1)
+        var arg = Array.prototype.slice.call(arguments, 1),
             $this = $(containers);
 
         // If initialization is not yet done, then do it now
@@ -254,7 +260,7 @@ define([
 
                 return $.Deferred(function(dfd){
 
-                    Inst.getListDefinition().then(function(xData, status){
+                    Inst.getListDefinition().then(function(/*xData, status*/){
 
                         var $list   = this,
                             columns = '',
@@ -296,7 +302,6 @@ define([
                                                 v + "']" ),
                                 thisColUI = colUI,
                                 inputUI   = '',
-                                values    = null,
                                 model     = null;
 
                             if (!$thisCol.length) {
@@ -385,81 +390,89 @@ define([
                                 // === all types below use the input field ===
                                 //============================================
 
-                                // From here until DEFAUL, we only set the type.
-                                case "Lookup":
-                                case "LookupMulti":
-
-                                    if (model.type === null) {
-
-                                        model.type = 'lookup';
-                                        model.list = $thisCol.attr("List");
-
-                                        if ( model.list === "Self") {
-
-                                            model.list = $list.find("List").attr("Title");
-
-                                        }
-
-                                    }
-
-                                case "User":
-                                case "UserMulti":
-
-                                    if (model.type === null) {
-
-                                        model.type = 'people';
-
-                                    }
-
-                                // COUNTER,
-                                // Number
-                                // Insert additional filter types
-                                case "Counter":
-                                case "Number":
-                                case "RatingCount":
-                                case "Likes":
-
-                                    if (model.type === null) {
-
-                                        model.type = 'text';
-
-                                        model.otherFilterTypes =
-                                            '<option value="Gt">Greater Than</option>' +
-                                            '<option value="Lt">Less Than</option>';
-
-                                    }
-
-                                // Date and Time: Inser additional filter types
-                                // We control which type of widget is displayed
-                                // by ensuring that the sp_format is set correctly
-                                // here.
-                                case "DateTime":
-
-                                    if (model.type === null) {
-
-                                        model.type = 'date';
-
-                                        model.otherFilterTypes =
-                                            '<option value="Gt">After</option>' +
-                                            '<option value="Lt">Before</option>';
-
-                                       model.sp_format = (
-                                                $thisCol.attr("Format") !== "DateOnly"
-                                            ?   "DateTime"
-                                            :   "DateOnly"
-                                       );
-
-                                    }
-
                                 // DEFAULT: Show as a text field
                                 default:
 
-                                    if (model.type === null) {
+                                    // lets set the type on the Column
+                                    switch ($thisCol.attr("Type")) {
 
-                                        model.type = 'text';
+                                        case "Lookup":
+                                        case "LookupMulti":
 
-                                    }
+                                            if (model.type === null) {
 
+                                                model.type = 'lookup';
+                                                model.list = $thisCol.attr("List");
+
+                                                if ( model.list === "Self") {
+
+                                                    model.list = $list.find("List").attr("Title");
+
+                                                }
+
+                                            }
+                                            break;
+
+                                        case "User":
+                                        case "UserMulti":
+
+                                            if (model.type === null) {
+
+                                                model.type = 'people';
+
+                                            }
+                                            break;
+
+                                        // COUNTER,
+                                        // Number
+                                        // Insert additional filter types
+                                        case "Counter":
+                                        case "Number":
+                                        case "RatingCount":
+                                        case "Likes":
+
+                                            if (model.type === null) {
+
+                                                model.type = 'text';
+
+                                                model.otherFilterTypes =
+                                                    '<option value="Gt">Greater Than</option>' +
+                                                    '<option value="Lt">Less Than</option>';
+
+                                            }
+                                            break;
+
+                                        // Date and Time: Inser additional filter types
+                                        // We control which type of widget is displayed
+                                        // by ensuring that the sp_format is set correctly
+                                        // here.
+                                        case "DateTime":
+
+                                            if (model.type === null) {
+
+                                                model.type = 'date';
+
+                                                model.otherFilterTypes =
+                                                    '<option value="Gt">After</option>' +
+                                                    '<option value="Lt">Before</option>';
+
+                                               model.sp_format = (
+                                                    $thisCol.attr("Format") !== "DateOnly" ?
+                                                        "DateTime" :
+                                                        "DateOnly"
+                                               );
+
+                                            }
+                                            break;
+
+                                        default:
+
+                                            model.type = 'text';
+                                            break;
+
+                                    } //end: switch(): set the model.type only
+
+                                    // BUILD the input field for this.
                                     inputUI = Filter.templates
                                                 .filter("#filter_text_field")
                                                     .html();
@@ -497,17 +510,20 @@ define([
 
                                 var $field = $(this);
 
-                                $field.SPLookupField({
-                                    list:           $field
-                                                        .closest("div.spwidget-column")
-                                                        .data("spwidget_list"),
-                                    template:       '<div>{{Title}} <span class="spwidgets-item-remove">[x]</span></div>',
-                                    listTemplate:   '{{Title}}',
-                                    allowMultiples: true,
-                                    readOnly:       false,
-                                    filter:         '',
-                                    showSelector:   true
-                                });
+                                lookupFieldWidget(
+                                    $field,
+                                    {
+                                        list:           $field
+                                                            .closest("div.spwidget-column")
+                                                            .data("spwidget_list"),
+                                        template:       '<div>{{Title}} <span class="spwidgets-item-remove">[x]</span></div>',
+                                        listTemplate:   '{{Title}}',
+                                        allowMultiples: true,
+                                        readOnly:       false,
+                                        filter:         '',
+                                        showSelector:   true
+                                    }
+                                );
 
                                 $field.parent().find(".spwidget-tooltip").remove();
 
@@ -529,7 +545,7 @@ define([
 
                                 }
 
-                                $field.pickSPUser({
+                                peoplePickerWidget($field, {
                                     allowMultiple:  true,
                                     type:           peopleType
                                 });
@@ -546,13 +562,13 @@ define([
                                 var $column = $(this),
                                     $field  = $column.find("input");
 
-                                $field.SPDateField({
+                                dateFieldWidget($field, {
                                     allowMultiples: true,
                                     showTimepicker: (
-                                            $column.data("spwidget_sp_format") === "DateTime"
-                                            ?   true
-                                            :   false
-                                        )
+                                        $column.data("spwidget_sp_format") === "DateTime" ?
+                                            true :
+                                            false
+                                    )
                                 });
 
                                 $column.find(".spwidget-tooltip").remove();
@@ -617,7 +633,7 @@ define([
                                             },
                                             text: false
                                         })
-                                        .on("click", function(ev){
+                                        .on("click", function(/*ev*/){
 
                                             Filter.doResetFilter( Inst );
 
@@ -688,7 +704,7 @@ define([
                     }) //end: .then()
                     // IF getting the List definition fails, then display error
                     // in the widget container element.
-                    .fail(function(xData, status){
+                    .fail(function(/*xData, status*/){
 
                         var $msg = this;
 
@@ -708,8 +724,9 @@ define([
 
             // A few validations
 
-            if (    Inst.opt.ignoreKeywords
-                &&  !Inst.opt.ignoreKeywords instanceof RegExp
+            if (
+                Inst.opt.ignoreKeywords &&
+                !Inst.opt.ignoreKeywords instanceof RegExp
             ) {
 
                 Inst.opt.ignoreKeywords = /Inst.opt.ignoreKeywords/i;
@@ -734,12 +751,11 @@ define([
      *
      * @return {HTMLElement} this
      */
-    Filter.onFilterInputChange = function(ev){
+    Filter.onFilterInputChange = function(/*ev*/){
 
         var $input      = $(this),
             $cntr       = $input.closest("div.spwidget-filter-value-input"),
             $col        = $cntr.closest("div.spwidget-column"),
-            matchType   = $col.find("div.spwidget-filter-type-cntr select.spwidget-filter-type").val(),
             val         = $input.val(),
             Inst        = $cntr
                             .closest("div.spwidget-filter")
@@ -777,7 +793,7 @@ define([
      *
      * return {jQuery} this
      */
-    Filter.onFilterTypeChange = function(ev) {
+    Filter.onFilterTypeChange = function(/*ev*/) {
 
         var $ele            = $(this),
             $col            = $ele.closest("div.spwidget-column"),
@@ -785,7 +801,6 @@ define([
             $colValCntr     = $col.find("div.spwidget-filter-value-cntr"),
             $colInput       = $colValCntr.find(".spwidget-input"),
             inputVal        = '',
-            colType         = $col.data("spwidget_column_type"),
             eleValue        = $ele.val(),
             Inst            = $ele
                                 .closest("div.spwidget-filter")
@@ -868,7 +883,7 @@ define([
      *
      * @return {HTMLElement} this
      */
-    Filter.onFilterButtonClick = function(ev) {
+    Filter.onFilterButtonClick = function(/*ev*/) {
 
         var Inst    = $(this)
                         .closest("div.spwidget-filter")
@@ -919,19 +934,16 @@ define([
                 .end()
             // reset dropdown boxes
             .find("div[data-spwidget_column_type='boolean'] .spwidget-filter-value-input select")
-                .val("")
-                .end()
-            // reset people fields
-            .find(".hasPickSPUser")
-                .pickSPUser("method", "clear")
-                .end()
-            // reset date fields
-            .find(".hasSPDateField")
-                .SPDateField("reset")
-                .end()
-            // reset lookup fields
-            .find(".hasLookupSPField")
-                .SPLookupField("method", "clear");
+                .val("");
+
+        // reset date fields
+        dateFieldWidget(Inst.$ui.find(".hasSPDateField"), "reset");
+
+        // reset people fields
+        peoplePickerWidget(Inst.$ui.find(".hasPickSPUser"), "method", "clear");
+
+        // reset lookup fields
+        lookupFieldWidget(Inst.$ui.find(".hasLookupSPField"), "method", "clear");
 
         // Remove the Defined class
         if (Inst.opt.definedClass !== "") {
@@ -1059,7 +1071,6 @@ define([
                                         .find("select.spwidget-sort-order")
                                         .val()
                 })),
-                colFilterWasSet = false,
                 colType         = $thisCol.data("spwidget_column_type"),
                 thisColUrlParam = {};
 
@@ -1079,8 +1090,9 @@ define([
             // If the match type is IsNull or IsNotNull, then
             // build the match now... don't need to know which type
             // of column for these.
-            if (    thisColFilter.matchType === "IsNull"
-                ||  thisColFilter.matchType === "IsNotNull"
+            if (
+                thisColFilter.matchType === "IsNull" ||
+                thisColFilter.matchType === "IsNotNull"
             ) {
 
                 thisColFilter.CAMLQuery =
@@ -1134,9 +1146,7 @@ define([
 
 
                                 var $lookup     = $(this),
-                                    lookupVals  = parseLookupFieldValue(
-                                                        $lookup.val()
-                                                    ),
+                                    lookupVals  = parseLookupFieldValue($lookup.val()),
                                     i,j;
 
                                 for(i=0,j=lookupVals.length; i<j; i++){
@@ -1232,8 +1242,9 @@ define([
 
                                     thisKeyword = $.trim(keywords[i]);
 
-                                    if (    !Inst.opt.ignoreKeywords.test(thisKeyword)
-                                        &&  thisKeyword
+                                    if (
+                                        !Inst.opt.ignoreKeywords.test(thisKeyword) &&
+                                        thisKeyword
                                     ) {
 
                                         thisColFilter.values.push(thisKeyword);
@@ -1387,10 +1398,12 @@ define([
             }
 
             // if match type is IsNull or IsNotNull, then no need to set column value
-            if (    type === "boolean"
-                || (    filter.matchType !== "IsNull"
-                    &&  filter.matchType !== "IsNotNull"
-                    )
+            if (
+                type === "boolean" ||
+                (
+                    filter.matchType !== "IsNull" &&
+                    filter.matchType !== "IsNotNull"
+                )
             ) {
 
                 // Populate the values
@@ -1426,16 +1439,12 @@ define([
 
                     case "lookup":
 
-                        $input.SPLookupField("method", "add",
-                            thisFilter.values.join(";#") );
-
+                        lookupFieldWidget($input, "method", "add", thisFilter.values.join(";#") );
                         break;
 
                     case "people":
 
-                        $input.pickSPUser("method", "add",
-                            thisFilter.values.join(";#") );
-
+                        peoplePickerWidget($input, "method", "add", thisFilter.values.join(";#") );
                         break;
 
                     case "date":

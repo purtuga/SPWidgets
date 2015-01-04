@@ -41,7 +41,7 @@ define([
      * .doesMsgHaveError(0)
      *
      */
-    var getSiteListCollection = (function(options){
+    var getSiteListCollection = (function(){
 
         var getData     = null,
             callerFn    = function getSiteListCollection(){

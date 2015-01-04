@@ -252,19 +252,21 @@ define([
         // Initiate each selection as a Lookup element
         return $(containers).each(function(){
 
-            var ele = $(this);
+            var ele = $(this),
+                o;
 
             // TODO: may need to change code below if going to bind to other types of fields (like select)
             // FIXME: when allowing textarea, need to ensure that its definition is textonly (no HTML)
 
-            if (    ( !ele.is("input") && !ele.is("textarea") )
-                ||  ele.hasClass("hasLookupSPField")
+            if (
+                (!ele.is("input") && !ele.is("textarea")) ||
+                ele.hasClass("hasLookupSPField")
             ){
                 // if the first argument is a string, and this is an input
                 // field, then process methods
                 if (typeof options === "string" && ele.is("input")) {
 
-                    var o = ele.data("SPWidgetLookupFieldUI").data("SPWidgetLookupFieldOpt");
+                    o = ele.data("SPWidgetLookupFieldUI").data("SPWidgetLookupFieldOpt");
 
                     // METHOD
                     if (options.toLowerCase() === 'method') {
@@ -343,7 +345,7 @@ define([
             //-------------------------------------
 
             // Options for this element
-            var o = $.extend(
+            o = $.extend(
                     {},
                     Lookup.defaults,
                     options,
@@ -377,8 +379,9 @@ define([
                     wasUpdated  = false;
 
                 // If this is the first item, empty container
-                if (    !itemCntr.find("div.spwidgets-item").length
-                    ||  o.allowMultiples === false
+                if (
+                    !itemCntr.find("div.spwidgets-item").length ||
+                    o.allowMultiples === false
                 ) {
 
                     itemCntr.empty();
@@ -414,7 +417,7 @@ define([
                                     )
                                     .appendTo( itemCntr )
                                     .find(".spwidgets-item-remove")
-                                        .on("click.SPWidgets", function(ev){
+                                        .on("click.SPWidgets", function(/*ev*/){
 
                                             Lookup.removeItem(o,this);
 
@@ -643,7 +646,7 @@ define([
 
                     $.each(rows, function(i, row){
 
-                        if (row.ID == itemId){
+                        if (row.ID === itemId){
 
                             itemObj = row;
 
@@ -734,7 +737,7 @@ define([
                 o._queryInitDone    = false;
 
                 o._cntr.find(".spwidget-lookup-selector-showhide")
-                    .on("click", function(ev){
+                    .on("click", function(/*ev*/){
 
                         if (o._selectorCntr.is(":visible")) {
 
@@ -778,7 +781,7 @@ define([
 
                 // If user focuses on the Input field (autocomplete),
                 // then hide the selector if visible
-                o._lookupInputEle.on("focus", function(ev){
+                o._lookupInputEle.on("focus", function(/*ev*/){
 
                     if (o._selectorCntr.is(":visible")) {
 
@@ -854,7 +857,7 @@ define([
                      * Add format to the pick options and set height
                      * if it was defined on input.
                      */
-                    open:       function(ev, ui){
+                    open: function(/*ev, ui*/){
 
                         $(this).autocomplete("widget")
                             .each(function(){
@@ -893,8 +896,10 @@ define([
 
                         // If search term contains only digits, then do a search on ID
                         var term = String(request.term);
-                        if (    term.match(/\D/) === null
-                            &&  term.match(/\d/) !== null) {
+                        if (
+                            term.match(/\D/) === null &&
+                            term.match(/\d/) !== null
+                        ) {
 
                             filterItems.push(
                                 "<Eq><FieldRef Name='ID'/>" +
@@ -991,7 +996,7 @@ define([
                  */
                 .on("keyup.SPWidgets", function(ev){
 
-                    if (ev.which != 13 ) { return; }
+                    if (ev.which !== 13 ) { return; }
 
                     var v = $(ev.target).val();
 
@@ -1011,7 +1016,7 @@ define([
             if (o._ele.val()) {
 
                 o.showCurrentInputSelection()
-                    .then(function(xData, status){
+                    .then(function(/*xData, status*/){
 
                         // Call onReady function if one was defined.
                         if ($.isFunction(o.onReady)) {
@@ -1089,12 +1094,15 @@ define([
 
             // If AllowMultiple is false and msgNoItem is false
             // then hide the selected items container
-            if (    !o.msgNoItems
-                &&  (   o.allowMultiples === false
-                    ||  (   o.allowMultiples === true
-                        && cntr.find("div.spwidgets-item").length < 1
-                        )
+            if (
+                !o.msgNoItems &&
+                (
+                    o.allowMultiples === false ||
+                    (
+                        o.allowMultiples === true &&
+                        cntr.find("div.spwidgets-item").length < 1
                     )
+                )
             ) {
 
                 cntr.css("display", "none");
@@ -1199,11 +1207,10 @@ define([
                 hasMorePages:   true,
                 $lastPage:      $(),
                 queryXml:       (
-                                    Inst.filter
-                                    ?   '<Query><Where>' + Inst.filter +
-                                        '</Where>' + Inst.filterOrderBy + '</Query>'
-                                    :   '<Query>' + Inst.filterOrderBy + '</Query>'
-                                )
+                    Inst.filter ?
+                        '<Query><Where>' + Inst.filter + '</Where>' + Inst.filterOrderBy + '</Query>' :
+                        '<Query>' + Inst.filterOrderBy + '</Query>'
+               )
             };
 
         // If the global listner is not yet setup, do it now
@@ -1252,12 +1259,16 @@ define([
                 // If we're already busy getting results, exit...
                 if (opt.isLoading) {
 
-                    dfd.resolveWith($lastPage, [$lastPage]);
+                    dfd.resolveWith($, [opt.$lastPage]);
                     return;
 
                 }
 
                 opt.isLoading = true;
+
+                // Create this new page of data container and save it as the "last" page displayed.
+                var $page = $("<div/>").insertBefore(opt.$nextPage);
+                opt.$lastPage = $page;
 
                 // Get the data from the list using the user's filter,
                 // maxResult and SelectFields. Then populate the selector
@@ -1284,13 +1295,11 @@ define([
                             })(),
                     completefunc:   function(xData, status, rows){
 
-                        var $resp       = $(xData.responseXML),
-                            $rsData     = getNodesFromXml({
+                        var $rsData     = getNodesFromXml({
                                             xDoc: xData.responseXML,
                                             nodeName: "rs:data",
                                             asJQuery: true
                                         }).eq(0),
-                            $page       = $("<div/>").insertBefore(opt.$nextPage),
                             rowsHtml    = '';
 
                         // Store the NextPage Token
@@ -1340,7 +1349,7 @@ define([
                                     );
                                 })
                                 .end()
-                            .on("click", "div.spwidget-lookup-item", function(ev){
+                            .on("click", "div.spwidget-lookup-item", function(/*ev*/){
 
                                 var thisRowIndex = $(this).data("spwidgetsindex");
 
@@ -1364,7 +1373,7 @@ define([
         // Create the "next page" button
         opt.$nextPage = $('<div class="ui-state-highlight spwidget-lookup-selector-next">Next...</div>')
             .appendTo(opt.$resultsCntr.empty())
-            .click(function(ev){
+            .click(function(/*ev*/){
 
                 if (!opt.hasMorePages) {
 

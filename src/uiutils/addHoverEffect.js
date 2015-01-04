@@ -23,7 +23,7 @@ define(['jquery'], function($){
                     return;
                 } else {
                     $(this).addClass("addHoverEffectDone");
-                };
+                }
                 var e = this;
                 $(e).mouseenter(function(){$(e).toggleClass("ui-state-hover");});
                 $(e).mouseleave(function(){$(e).toggleClass("ui-state-hover");});

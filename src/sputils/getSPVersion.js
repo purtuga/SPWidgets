@@ -1,6 +1,6 @@
 define([], function(){
 
-    /** global: SP, _spPageContextInfo */
+    /* global SP, _spPageContextInfo */
 
     /**
      * Returns the SharePoint version number. This is accomplished by

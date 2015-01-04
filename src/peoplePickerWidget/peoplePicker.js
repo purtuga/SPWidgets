@@ -266,7 +266,7 @@ define([
              */
             o.addPeopleToList = function(peopleString, noEvents) {
 
-                var curUsers    = new String(peopleString).split(';#'),
+                var curUsers    = String(peopleString).split(';#'),
                     total       = curUsers.length,
                     i,id,user, $ui;
 
@@ -289,7 +289,7 @@ define([
                                 .appendTo( o.eleSelected );
 
                     // Get this user's info. and store it in the input element
-                    (function($thisUserUI, thisUserName, thisUserId){
+                    (function($thisUserUI, thisUserName/*, thisUserId*/){
 
                         var searchString = thisUserName;
 
@@ -300,7 +300,7 @@ define([
                         }
 
                         o.getSearchResults(searchString)
-                            .done(function(rows, xData, status){
+                            .done(function(rows/*, xData, status*/){
 
                                 var personName = String(thisUserName).toLowerCase();
 
@@ -461,7 +461,7 @@ define([
 
                         // Search SP
                         o.getSearchResults(request.term)
-                            .then(function(rows, xData, status){
+                            .then(function(rows/*, xData, status*/){
 
                                 cache[request.term].push
                                     .apply(
@@ -551,7 +551,7 @@ define([
                             resolvePrincipals({
                                 principalKeys: u.item.accountName
                             })
-                            .then(function(xmlDoc, status){
+                            .then(function(xmlDoc/*, status*/){
 
                                 // TODO: handle error conditions? (low risk of ocuring)
 
@@ -725,7 +725,7 @@ define([
 
                     return;
 
-                };
+                }
 
                 isDone[thisUserString] = true;
 

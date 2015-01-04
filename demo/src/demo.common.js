@@ -6,13 +6,15 @@
  *
  */
 (function($){
+    /* global SPWIDGET_DEMO */
 
     var Main    = SPWIDGET_DEMO;
 
-    Main.debug = (  String(window.location.search).indexOf("debug=1") > -1
-                    ?   true
-                    :   false
-                );
+    Main.debug = (
+        String(window.location.search).indexOf("debug=1") > -1 ?
+            true :
+            false
+    );
 
     /**
      * Given a container element, this method will insert a
@@ -54,7 +56,7 @@
         $.SPWidgets.SPAPI.getSiteListCollection({
             async:      false,
             cacheXML:   true,
-            completefunc: function (xData, Status) {
+            completefunc: function (xData/*, Status*/) {
 
                 var $siteLists  = $(xData.responseXML),
                     htmlList    = '';
@@ -112,7 +114,7 @@
                     .append(
                         '<div class="spwidgets-demo-list-selector ui-widget-content" style="display:none;">' +
                         htmlList + '</div>' )
-                    .on("click", "div.spwidgets-demo-list-selected", function(ev){
+                    .on("click", "div.spwidgets-demo-list-selected", function(/*ev*/){
 
                         var $this = $(this).html("Select...");
 
@@ -125,7 +127,7 @@
                             });
 
                     })
-                    .on("click", "a", function(ev){
+                    .on("click", "a", function(/*ev*/){
 
                         var $this   = $(this),
                             $list   = opt._lists
@@ -224,7 +226,7 @@
                         .append(
                             '<div class="spwidgets-demo-list-selector ui-widget-content" style="display:none;">' +
                             htmlList + '</div>' )
-                        .on("click", "div.spwidgets-demo-list-selected", function(ev){
+                        .on("click", "div.spwidgets-demo-list-selected", function(/*ev*/){
 
                             var $this = $(this).html("Column: Select...");
 
@@ -237,7 +239,7 @@
                                 });
 
                         })
-                        .on("click", "a", function(ev){
+                        .on("click", "a", function(/*ev*/){
 
                             var $this   = $(this),
                                 thisCol  = $this.data("column_name");

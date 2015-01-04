@@ -66,7 +66,7 @@ define([
         function processArrayOfArrays(updArray) {
 
             var thisUpd = '',
-                i,j, col;
+                i,j;
 
             for(i=0,j=updArray.length; i<j; i++){
 

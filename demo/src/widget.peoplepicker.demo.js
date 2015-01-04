@@ -2,7 +2,9 @@
  * widget.people.demo.js
  * Code for the people picker widget.
  */
-(function(){
+(function($){
+
+    /* global SPWIDGET_DEMO */
 
     var $cntr                   = $("#SPControlPickUserDemo"),
         $output                 = $cntr.find("#SPControlPickUserEventOut"),
@@ -40,7 +42,7 @@
 
     // SEtup listners
     $cntr
-        .on("spwidget:peoplePickerCreate", function(ev, $input){
+        .on("spwidget:peoplePickerCreate", function(/*ev, $input*/){
 
             logOutput("spwidget:peoplePickerCreate EVENT TRIGGERED!");
 
@@ -91,7 +93,7 @@
             }
 
         },
-        onCreate: function($input) {
+        onCreate: function(/*$input*/) {
 
             logOutput("onCreate CALLED!");
 

@@ -5,8 +5,7 @@
 (function($){
 
     "use strict";
-    /*jslint nomen: true, plusplus: true */
-    /*global SPWidgets, SPWIDGET_DEMO */
+    /*global SPWIDGET_DEMO */
 
     var Main        = SPWIDGET_DEMO,
         $ui         = Main.$ui.find("#SPControlUploadDemo"),
@@ -54,27 +53,27 @@
         $.SPWidgets.SPAPI.getListItems({
             async:      true,
             listName:   listName,
-            CAMLQuery:  '<Query><Where>'
-                    +       "<Neq>"
-                    +           "<FieldRef Name='ContentType' />"
-                    +           "<Value Type='Text'>Folder</Value>"
-                    +       "</Neq>"
-                    +   "</Where>"
-                    +   "<OrderBy>"
-                    +       "<FieldRef Name='Title' Ascending='True' />"
-                    +   "</OrderBy></Query>",
-            CAMLViewFields: "<ViewFields>"
-                    +   "<FieldRef Name='Title'/>"
-                    +   "<FieldRef Name='FileLeafRef'/>"
-                    +   "<FieldRef Name='Filename'/>"
-                    +   "<FieldRef Name='ContentType'/>"
-                    +   "<FieldRef Name='Editor'/>"
-                    +   "<FieldRef Name='Modified'/>"
-                    +   "<FieldRef Name='EncodedAbsUrl'/>"
-                    +   "<FieldRef Name='DocIcon'/>"
-                    +   "</ViewFields>",
+            CAMLQuery:  '<Query><Where>' +
+                    "<Neq>" +
+                        "<FieldRef Name='ContentType' />" +
+                        "<Value Type='Text'>Folder</Value>" +
+                    "</Neq>" +
+                    "</Where>" +
+                    "<OrderBy>"+
+                        "<FieldRef Name='Title' Ascending='True' />" +
+                    "</OrderBy></Query>",
+            CAMLViewFields: "<ViewFields>" +
+                    "<FieldRef Name='Title'/>" +
+                    "<FieldRef Name='FileLeafRef'/>" +
+                    "<FieldRef Name='Filename'/>" +
+                    "<FieldRef Name='ContentType'/>" +
+                    "<FieldRef Name='Editor'/>" +
+                    "<FieldRef Name='Modified'/>" +
+                    "<FieldRef Name='EncodedAbsUrl'/>" +
+                    "<FieldRef Name='DocIcon'/>" +
+                    "</ViewFields>",
             CAMLRowLimit: 0,
-            completefunc: function(xData, Status) {
+            completefunc: function(xData/*, Status*/) {
 
                 var r = $.SPWidgets.SPAPI.getNodesFromXml({
                             xDoc: xData.responseXML,

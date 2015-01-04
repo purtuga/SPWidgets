@@ -5,6 +5,8 @@
  */
 (function($){
 
+    /* global SPWIDGET_DEMO, vkbeautify */
+
     var Main        = SPWIDGET_DEMO,
         $cntr       = $("#SPControlListFilterPanel"),
         $textarea   = $cntr.find("textarea"),
@@ -95,7 +97,7 @@
                     listName:   listName,
                     cacheXML:   false,
                     async:      true,
-                    completefunc: function(xData, status) {
+                    completefunc: function(xData/*, status*/) {
 
                         var resp = $(xData.responseXML);
 
@@ -150,7 +152,7 @@
     // Setup setFilter test
     $cntr.find('a#spwidgets_demo_filter_test_setfilter')
         .button()
-        .on("click", function(ev){
+        .on("click", function(/*ev*/){
 
             $demoCntr.SPFilterPanel("setfilter", {
                 ID: {
@@ -165,7 +167,7 @@
     // Setup sortOrder setfilter
     $cntr.find('a#spwidgets_demo_filter_test_sortOrder')
         .button()
-        .on("click", function(ev){
+        .on("click", function(/*ev*/){
 
             $demoCntr.SPFilterPanel("setfilter", {
                 ID: {

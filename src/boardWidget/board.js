@@ -365,7 +365,7 @@ define([
         // TODO: need to determine how to page large datasets.
 
         // Capture original set of input options (no containers).
-        var args    = Array.prototype.slice.call(arguments, 1);
+        var args    = Array.prototype.slice.call(arguments, 1),
             retVal  = containers;
 
         // Attach the board to each element
@@ -541,7 +541,7 @@ define([
 
                                             }
 
-                                            f.find("CHOICES CHOICE").each(function(i,v){
+                                            f.find("CHOICES CHOICE").each(function(i/*,v*/){
 
                                                 var thisChoice = $(this).text();
 
@@ -650,7 +650,7 @@ define([
                                                         asJQuery: true
                                                     });
 
-                                                    $rows.each(function(i,v){
+                                                    $rows.each(function(i/*,v*/){
 
                                                         // If we reached a max column number, exit here.
                                                         if (i >= Board.maxColumns){
@@ -908,7 +908,6 @@ define([
                             delItems        = [],
                             chgItems        = [],
                             itemsForBoard   = {}, // each state as the key... string of html as value
-                            boardItemStr    = "",
                             boardItemCntr   = null,
                             thisRowState    = null,
                             thisRowID       = null,
@@ -1317,7 +1316,7 @@ define([
                                 webURL:         opt.webURL,
                                 cacheXML:       true,
                                 async:          false,
-                                completefunc:   function(xData, Status) {
+                                completefunc:   function(xData/*, Status*/) {
 
                                     // Need to check for errors?
 
@@ -1375,9 +1374,7 @@ define([
                         // it is the keyword 'all'.
                         if (!$.isArray(colList) || !colList.length) {
 
-                            if (    !$.isArray(colList)
-                                &&  String(colList).toLowerCase() !== "all"
-                            ) {
+                            if (!$.isArray(colList) && String(colList).toLowerCase() !== "all") {
 
                                 return;
 
@@ -1444,8 +1441,9 @@ define([
                         count = 0;
                         $.each(opt.states, function(i, colDef){
 
-                            if (    $.inArray(colDef.title, colList) > -1
-                                ||  $.inArray(colDef.name, colList) > -1
+                            if (
+                                $.inArray(colDef.title, colList) > -1 ||
+                                $.inArray(colDef.name, colList) > -1
                             ) {
 
                                 count++;
@@ -1769,9 +1767,7 @@ define([
                                 // it is the keyword 'all'.
                                 if (!$.isArray(colList) || !colList.length) {
 
-                                    if (    !$.isArray(colList)
-                                        &&  String(colList).toLowerCase() !== "all"
-                                    ) {
+                                    if (!$.isArray(colList) && String(colList).toLowerCase() !== "all") {
 
                                         return;
 
@@ -1855,7 +1851,7 @@ define([
                                     secondary: "ui-icon-circle-check"
                                 }
                             })
-                            .on("click", function(ev){
+                            .on("click", function(/*ev*/){
 
                                 var $selected   = Picker.getSelected(),
                                     colNum      = $selected.length;
@@ -1863,12 +1859,12 @@ define([
                                 // validate
                                 if (colNum > opt.maxColumnVisible) {
 
-                                    Picker.showMessage(opt.colPickerMaxColMsg)
+                                    Picker.showMessage(opt.colPickerMaxColMsg);
                                     return;
 
                                 } else if (colNum < 2) {
 
-                                    Picker.showMessage(opt.colPickerMinColMsg)
+                                    Picker.showMessage(opt.colPickerMinColMsg);
                                     return;
 
                                 }
@@ -1890,7 +1886,7 @@ define([
                                     primary: "ui-icon-radio-off"
                                 }
                             })
-                            .on("click", function(ev){
+                            .on("click", function(/*ev*/){
 
                                 var $sel = Picker.getSelected();
 
@@ -1917,7 +1913,7 @@ define([
                                     primary: "ui-icon-circle-close"
                                 }
                             })
-                            .on("click", function(ev){
+                            .on("click", function(/*ev*/){
 
                                 $colCntr.hide();
 
@@ -2112,7 +2108,7 @@ define([
                 } else if (opt.CAMLViewFields.indexOf(opt.field) < 0){
 
                     opt.CAMLViewFields = opt.CAMLViewFields.replace(
-                                    /\<\/ViewFields\>/i,
+                                    /<\/ViewFields\>/i,
                                     '<FieldRef Name="' +
                                         opt.field + '" /></ViewFields>'
                                 );
@@ -2382,7 +2378,7 @@ define([
                                 opacity:        ".80",
                                 placeholder:    "ui-state-highlight spwidget-board-placeholder",
                                 forcePlaceholderSize: true,
-                                remove:         function(ev, ui){
+                                remove:         function(/*ev, ui*/){
 
                                     opt.setBoardColumnHeight();
 
@@ -2416,7 +2412,7 @@ define([
                     });
 
             }) //end: .then() (get board states)
-            .fail(function(failureMsg, xData, status){
+            .fail(function(failureMsg/*, xData, status*/){
 
                 ele.append('<div class="ui-state-error"><p>' + failureMsg + '</p></div>');
 
