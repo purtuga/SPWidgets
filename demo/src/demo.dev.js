@@ -55,7 +55,7 @@ define([
 
         try {
 
-            if (typeof jQuery !== "undefined") {
+            if (typeof $ !== "undefined") {
 
                 def = $.Deferred();
                 ret = def.promise();
@@ -117,18 +117,7 @@ define([
     /**
      * Loads all the modules in the correct order.
      */
-    Main.init = function() {
-
-        // jQuery UI style (from google)
-        $('<link rel="stylesheet" type="text/css" href="' +
-            window.location.protocol +
-            '//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/redmond/jquery-ui.css" />').appendTo("head");
-
-
-        // 4. vkBeautiry.js (xml beatifier)
-        Main.loadScript(
-            SPWIDGET_DEMO.BIN_DIR +
-            "demo/src/ext/vkBeautify.js?rev=" + Main._version);
+    Main.devInit = function() {
 
         // Load the UI from the regular Demo page into the container here
         $("#spwidgets_demo_cntr").load(
@@ -143,42 +132,49 @@ define([
                 )
                 .then(function(){
 
-                    // 14. widget.upload.demo.js
-                    Main.loadScript(
-                        SPWIDGET_DEMO.BIN_DIR +
-                        "demo/src/widget.upload.demo.js?rev=" + Main._version);
+                    $.when(
+                        // 14. widget.upload.demo.js
+                        Main.loadScript(
+                            SPWIDGET_DEMO.BIN_DIR +
+                            "demo/src/widget.upload.demo.js?rev=" + Main._version),
 
-                    // 15. widget.peoplepicker.demo.js
-                    Main.loadScript(
-                        SPWIDGET_DEMO.BIN_DIR +
-                        "demo/src/widget.peoplepicker.demo.js?rev=" + Main._version);
+                        // 15. widget.peoplepicker.demo.js
+                        Main.loadScript(
+                            SPWIDGET_DEMO.BIN_DIR +
+                            "demo/src/widget.peoplepicker.demo.js?rev=" + Main._version),
 
-                    // 16. widget.board.demo.js
-                    Main.loadScript(
-                        SPWIDGET_DEMO.BIN_DIR +
-                        "demo/src/widget.board.demo.js?rev=" + Main._version);
+                        // 16. widget.board.demo.js
+                        Main.loadScript(
+                            SPWIDGET_DEMO.BIN_DIR +
+                            "demo/src/widget.board.demo.js?rev=" + Main._version),
 
-                    // 17. widget.lookup.demo.js
-                    Main.loadScript(
-                        SPWIDGET_DEMO.BIN_DIR +
-                        "demo/src/widget.lookup.demo.js?rev=" + Main._version);
+                        // 17. widget.lookup.demo.js
+                        Main.loadScript(
+                            SPWIDGET_DEMO.BIN_DIR +
+                            "demo/src/widget.lookup.demo.js?rev=" + Main._version),
 
-                    // 18. widget.filter.demo.js
-                    Main.loadScript(
-                        SPWIDGET_DEMO.BIN_DIR +
-                        "demo/src/widget.filter.demo.js?rev=" + Main._version);
+                        // 18. widget.filter.demo.js
+                        Main.loadScript(
+                            SPWIDGET_DEMO.BIN_DIR +
+                            "demo/src/widget.filter.demo.js?rev=" + Main._version),
 
-                    // 19. widget.filter.demo.js
-                    Main.loadScript(
-                        SPWIDGET_DEMO.BIN_DIR +
-                        "demo/src/widget.date.demo.js?rev=" + Main._version);
+                        // 19. widget.filter.demo.js
+                        Main.loadScript(
+                            SPWIDGET_DEMO.BIN_DIR +
+                            "demo/src/widget.date.demo.js?rev=" + Main._version)
+
+                    ).then(function(){
+
+                        SPWIDGET_DEMO.init();
+
+                    });
 
                 }); //end: load() UI
 
             } // getScript.callback
         );//end: .load()
 
-    }; // Main.init()
+    }; // Main.devInit()
 
     return Main;
 

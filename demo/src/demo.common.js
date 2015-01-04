@@ -8,219 +8,115 @@
 (function($){
     /* global SPWIDGET_DEMO */
 
-    var Main    = SPWIDGET_DEMO;
-
-    Main.debug = (
-        String(window.location.search).indexOf("debug=1") > -1 ?
-            true :
-            false
-    );
+    var Main = SPWIDGET_DEMO;
+    // an array of demos that will be initialized. Each demo adds its function to this array.
+    // Array alias is: window.SPWIDGET_DEMO
+    Main.demoInitializers = [];
 
     /**
-     * Given a container element, this method will insert a
-     * list of List and/or Libraries in the current site
-     * for the user to select/pick one.
-     *
-     * @param {Object} options
-     * @param {HTMLElement|jQuery} options.container
-     * @param {Boolean} [options.includeLibraries=true]
-     * @param {Boolean} [options.includeLists=true]
-     * @param {Function} [options.onListSelect=null]
-     *      Function will have the scope of the library picker
-     *      HTML element (as a jQuery object) and given 2 input
-     *      parameters - 1) jQuery object with the list definition
-     *      and 2) the html element that the user clicked on.
-     *
-     * @return {Object} Main
-     *
+     * Initialize the demos
      */
-    Main.insertListSelector = function(options) {
+    Main.init = function() {
 
-        var opt = $.extend({}, {
-                container:          null,
-                includeLibraries:   true,
-                includeLists:       true,
-                onListSelect:       null
-            },
-            options);
+        Main.debug = (
+            String(window.location.search).indexOf("debug=1") > -1 ?
+                true :
+                false
+        );
 
-        if (!opt.container) {
+        /**
+         * Given a container element, this method will insert a
+         * list of List and/or Libraries in the current site
+         * for the user to select/pick one.
+         *
+         * @param {Object} options
+         * @param {HTMLElement|jQuery} options.container
+         * @param {Boolean} [options.includeLibraries=true]
+         * @param {Boolean} [options.includeLists=true]
+         * @param {Function} [options.onListSelect=null]
+         *      Function will have the scope of the library picker
+         *      HTML element (as a jQuery object) and given 2 input
+         *      parameters - 1) jQuery object with the list definition
+         *      and 2) the html element that the user clicked on.
+         *
+         * @return {Object} Main
+         *
+         */
+        Main.insertListSelector = function(options) {
 
-            return Main;
-
-        }
-
-        opt.container = $(opt.container);
-
-        // Have the user pick which library to use in the demo.
-        $.SPWidgets.SPAPI.getSiteListCollection({
-            async:      false,
-            cacheXML:   true,
-            completefunc: function (xData/*, Status*/) {
-
-                var $siteLists  = $(xData.responseXML),
-                    htmlList    = '';
-
-                opt._lists = null;
-
-                // Get a set (array) of lists to work with
-                if (opt.includeLibraries && opt.includeLists) {
-
-                    opt._lists = $siteLists.find("_sList");
-
-                } else if (opt.includeLibraries) {
-
-                    opt._lists = $siteLists
-                                .find("_sList BaseType:contains('DocumentLibrary')")
-                                    .parent();
-
-                } else if (opt.includeLists) {
-
-                    opt._lists = $siteLists
-                                .find("_sList BaseType:contains('GenericList')")
-                                    .parent();
-
-                } else {
-
-                    return Main;
-
-                }
-
-                // If no lists define, then exit
-                if (!opt._lists || !opt._lists.length) {
-
-                    return Main;
-
-                }
-
-                // Loop through all lists and build the UI for it.
-                opt._lists.each(function(){
-
-                    var $list = $(this);
-
-                    htmlList +=
-                        '<a href="javascript:" class="ui-state-default" data-list_uid="' +
-                         $.trim($list.find("InternalName").text()) +
-                         '" data-list_name="' +
-                         $list.find("Title").text() + '">' +
-                         $list.find("Title").text() + ' </a>';
-
-                });
-
-                opt._widget = $('<div class="spwidgets-demo-list-picker">' +
-                        '<div class="ui-state-active spwidgets-demo-list-selected">Select List...</div>' +
-                        '</div>')
-                    .appendTo(opt.container)
-                    .append(
-                        '<div class="spwidgets-demo-list-selector ui-widget-content" style="display:none;">' +
-                        htmlList + '</div>' )
-                    .on("click", "div.spwidgets-demo-list-selected", function(/*ev*/){
-
-                        var $this = $(this).html("Select...");
-
-                        opt._widgetSelector
-                            .css("display", "")
-                            .position({
-                                my: "left top",
-                                at: "left top",
-                                of: $this
-                            });
-
-                    })
-                    .on("click", "a", function(/*ev*/){
-
-                        var $this   = $(this),
-                            $list   = opt._lists
-                                        .find(
-                                            "_sList InternalName:contains('" +
-                                            $this.data("list_uid") + "')"
-                                        )
-                                        .parent();
-
-                        opt._widgetSelector.hide();
-
-                        opt._widgetSelected.html("List: " + $list.find("Title").text());
-
-                        if ($.isFunction(opt.onListSelect)) {
-
-                            opt.onListSelect.call(
-                                opt.container, $list, $this);
-
-                        }
-
-                    });
-
-                opt._widgetSelector = opt._widget.find("div.spwidgets-demo-list-selector");
-                opt._widgetSelected = opt._widget.find("div.spwidgets-demo-list-selected");
-
-            }//end: completefunc()
-        });
-
-        return Main;
-
-    }; //end: Main.insertListSelector();
-
-
-    /**
-     * Inserts a list column selector into the defined container.
-     *
-     * @param {Object} options
-     * @param {Object} options
-     * @param {Object} options
-     * @param {Object} [options.onColumnSelect=null]
-     *          Called with a scope of container and 3 params:
-     *          thisCol, opt.listName, html a element
-     *
-     *
-     * @return {jQuery.Promise}
-     *          Resolved with scope of the container
-     *
-     */
-    Main.insertListColumnSelector = function(options) {
-
-        return $.Deferred(function(dfd){
-
-             var opt = $.extend({}, {
-                    container:      null,
-                    listName:       "",
-                    ColumnType:     "",
-                    onColumnSelect: null
+            var opt = $.extend({}, {
+                    container:          null,
+                    includeLibraries:   true,
+                    includeLists:       true,
+                    onListSelect:       null
                 },
                 options);
 
             if (!opt.container) {
 
-                dfd.resolve();
-                return;
+                return Main;
 
             }
 
-            opt.container = $(opt.container).empty();
+            opt.container = $(opt.container);
 
-            Main.getListColumns(opt.listName)
-                .then(function(columns){
+            // Have the user pick which library to use in the demo.
+            $.SPWidgets.SPAPI.getSiteListCollection({
+                async:      false,
+                cacheXML:   true,
+                completefunc: function (xData/*, Status*/) {
 
-                    var htmlList = "";
+                    var $siteLists  = $(xData.responseXML),
+                        htmlList    = '';
 
-                    // Loop through all lists and build the UI for it.
-                    $.each(columns, function(i, column){
+                    opt._lists = null;
 
-                        htmlList +=
-                            '<a href="javascript:" class="ui-state-default" data-list_name="' +
-                             opt.listName + '" data-column_name="' + column + '">' +
-                             column + ' </a>';
+                    // Get a set (array) of lists to work with
+                    if (opt.includeLibraries && opt.includeLists) {
 
-                    });
+                        opt._lists = $siteLists.find("_sList");
 
-                    // If no columns, entere default message
-                    if (htmlList === "") {
+                    } else if (opt.includeLibraries) {
 
-                        htmlList += '<div>No Columns!</div>';
+                        opt._lists = $siteLists
+                                    .find("_sList BaseType:contains('DocumentLibrary')")
+                                        .parent();
+
+                    } else if (opt.includeLists) {
+
+                        opt._lists = $siteLists
+                                    .find("_sList BaseType:contains('GenericList')")
+                                        .parent();
+
+                    } else {
+
+                        return Main;
 
                     }
 
+                    // If no lists define, then exit
+                    if (!opt._lists || !opt._lists.length) {
+
+                        return Main;
+
+                    }
+
+                    // Loop through all lists and build the UI for it.
+                    opt._lists.each(function(){
+
+                        var $list = $(this);
+
+                        htmlList +=
+                            '<a href="javascript:" class="ui-state-default" data-list_uid="' +
+                             $.trim($list.find("InternalName").text()) +
+                             '" data-list_name="' +
+                             $list.find("Title").text() + '">' +
+                             $list.find("Title").text() + ' </a>';
+
+                    });
+
                     opt._widget = $('<div class="spwidgets-demo-list-picker">' +
-                            '<div class="ui-state-active spwidgets-demo-list-selected">Select Column...</div>' +
+                            '<div class="ui-state-active spwidgets-demo-list-selected">Select List...</div>' +
                             '</div>')
                         .appendTo(opt.container)
                         .append(
@@ -228,7 +124,7 @@
                             htmlList + '</div>' )
                         .on("click", "div.spwidgets-demo-list-selected", function(/*ev*/){
 
-                            var $this = $(this).html("Column: Select...");
+                            var $this = $(this).html("Select...");
 
                             opt._widgetSelector
                                 .css("display", "")
@@ -242,16 +138,21 @@
                         .on("click", "a", function(/*ev*/){
 
                             var $this   = $(this),
-                                thisCol  = $this.data("column_name");
+                                $list   = opt._lists
+                                            .find(
+                                                "_sList InternalName:contains('" +
+                                                $this.data("list_uid") + "')"
+                                            )
+                                            .parent();
 
                             opt._widgetSelector.hide();
 
-                            opt._widgetSelected.html( "Column: " + thisCol );
+                            opt._widgetSelected.html("List: " + $list.find("Title").text());
 
-                            if ($.isFunction(opt.onColumnSelect)) {
+                            if ($.isFunction(opt.onListSelect)) {
 
-                                opt.onColumnSelect.call(
-                                    opt.container, thisCol, opt.listName, $this);
+                                opt.onListSelect.call(
+                                    opt.container, $list, $this);
 
                             }
 
@@ -260,159 +161,269 @@
                     opt._widgetSelector = opt._widget.find("div.spwidgets-demo-list-selector");
                     opt._widgetSelected = opt._widget.find("div.spwidgets-demo-list-selected");
 
-                    dfd.resolveWith(opt.container);
+                }//end: completefunc()
+            });
 
-                });
+            return Main;
 
-        })
-        .promise();
-
-
-    }; //end: Main.insertListColumnSelector()
+        }; //end: Main.insertListSelector();
 
 
-    /**
-     * Gets the list of columns names by using the Edit form
-     *
-     * @param {Object} listName
-     *
-     * @return {jQuery.Promise}
-     */
-    Main.getListColumns = function(listName){
+        /**
+         * Inserts a list column selector into the defined container.
+         *
+         * @param {Object} options
+         * @param {Object} options
+         * @param {Object} options
+         * @param {Object} [options.onColumnSelect=null]
+         *          Called with a scope of container and 3 params:
+         *          thisCol, opt.listName, html a element
+         *
+         *
+         * @return {jQuery.Promise}
+         *          Resolved with scope of the container
+         *
+         */
+        Main.insertListColumnSelector = function(options) {
 
-        return $.Deferred(function(dfd){
+            return $.Deferred(function(dfd){
 
-            $('<div style="display:none;"/>')
-                .load(
-                    String(
-                            $.SPWidgets.SPAPI.getSiteUrl() +
-                            "Lists/" + listName + "/NewForm.aspx"
-                        )
-                        .replace(/ /, "%20") +
-                        " .ms-formtable",
-                    function(){
+                 var opt = $.extend({}, {
+                        container:      null,
+                        listName:       "",
+                        ColumnType:     "",
+                        onColumnSelect: null
+                    },
+                    options);
 
-                        var $ele = $(this),
-                            cols = ['ID'];
+                if (!opt.container) {
 
-                        $ele.find(".ms-standardheader").each(function(){
+                    dfd.resolve();
+                    return;
 
-                            cols.push( $.trim( $(this).text().replace(/ \*/, "") ) );
+                }
+
+                opt.container = $(opt.container).empty();
+
+                Main.getListColumns(opt.listName)
+                    .then(function(columns){
+
+                        var htmlList = "";
+
+                        // Loop through all lists and build the UI for it.
+                        $.each(columns, function(i, column){
+
+                            htmlList +=
+                                '<a href="javascript:" class="ui-state-default" data-list_name="' +
+                                 opt.listName + '" data-column_name="' + column + '">' +
+                                 column + ' </a>';
 
                         });
 
-                        dfd.resolveWith($, [cols]);
+                        // If no columns, entere default message
+                        if (htmlList === "") {
 
-                        $ele.remove();
+                            htmlList += '<div>No Columns!</div>';
 
-                    }
-                );
+                        }
 
-        })
-        .promise();
+                        opt._widget = $('<div class="spwidgets-demo-list-picker">' +
+                                '<div class="ui-state-active spwidgets-demo-list-selected">Select Column...</div>' +
+                                '</div>')
+                            .appendTo(opt.container)
+                            .append(
+                                '<div class="spwidgets-demo-list-selector ui-widget-content" style="display:none;">' +
+                                htmlList + '</div>' )
+                            .on("click", "div.spwidgets-demo-list-selected", function(/*ev*/){
 
-    }; //end: getListColumns()
+                                var $this = $(this).html("Column: Select...");
 
-    /**
-     * Given an element, this method will setup it up for logging data,
-     * and return an object ready to interact with it.
-     */
-    Main.setupLogOutput = function(options) {
+                                opt._widgetSelector
+                                    .css("display", "")
+                                    .position({
+                                        my: "left top",
+                                        at: "left top",
+                                        of: $this
+                                    });
 
-        var opt     = $.extend({}, {
-                        container: null,
-                        fixHeight: true,
-                        height:     '40em'
-                    }, options),
-            Inst    = {},
-            css     = {
-                        padding: ".2em",
-                        position: "relative"
-                    };
+                            })
+                            .on("click", "a", function(/*ev*/){
 
-        if (!opt.container) {
+                                var $this   = $(this),
+                                    thisCol  = $this.data("column_name");
 
-            return;
+                                opt._widgetSelector.hide();
 
-        }
+                                opt._widgetSelected.html( "Column: " + thisCol );
 
-        opt.container = $(opt.container);
+                                if ($.isFunction(opt.onColumnSelect)) {
 
-        if (opt.fixHeight){
+                                    opt.onColumnSelect.call(
+                                        opt.container, thisCol, opt.listName, $this);
 
-            css.height      = opt.height;
-            css.overflow    = "auto";
+                                }
 
-        }
+                            });
 
-        opt.container
-            .addClass("ui-widget-content")
-            .css(css);
+                        opt._widgetSelector = opt._widget.find("div.spwidgets-demo-list-selector");
+                        opt._widgetSelected = opt._widget.find("div.spwidgets-demo-list-selected");
 
-        Inst.log = function(data) {
+                        dfd.resolveWith(opt.container);
 
-            opt.container.append('<div>' + data + '<div>');
-            opt.container.scrollTop(opt.container.children(":last").position().top);
+                    });
 
-        }; //end: log()
+            })
+            .promise();
 
-        return Inst;
 
-    }; //end: Main.setupLogOutput()
+        }; //end: Main.insertListColumnSelector()
 
-    Main.$ui = $("#spwidgets_demo_cntr")
-            .css("display", "")
-            .on("keyup", function(ev){
 
-                if (ev.which === 13) {
-                    ev.preventDefault();
-                    ev.stopPropagation();
-                }
+        /**
+         * Gets the list of columns names by using the Edit form
+         *
+         * @param {Object} listName
+         *
+         * @return {jQuery.Promise}
+         */
+        Main.getListColumns = function(listName){
 
-            });
+            return $.Deferred(function(dfd){
 
-    // Create TABs and make ui visible
-    Main.$ui.find("#ptTabsCntr")
-        .tabs()
-        .fadeIn("slow");
+                $('<div style="display:none;"/>')
+                    .load(
+                        String(
+                                $.SPWidgets.SPAPI.getSiteUrl() +
+                                "Lists/" + listName + "/NewForm.aspx"
+                            )
+                            .replace(/ /, "%20") +
+                            " .ms-formtable",
+                        function(){
 
-    // Populate the About page
-    $("#SPWidgetsAbout ul.spwidgets-demo-info-cntr").each(function(){
+                            var $ele = $(this),
+                                cols = ['ID'];
 
-        var $ul     = $(this);
+                            $ele.find(".ms-standardheader").each(function(){
 
-        setTimeout(function(){
+                                cols.push( $.trim( $(this).text().replace(/ \*/, "") ) );
 
-            var info    = $.SPWidgets.getRuntimeInfo(),
-                display = '',
-                key;
+                            });
 
-            for (key in info){
+                            dfd.resolveWith($, [cols]);
 
-                if (info.hasOwnProperty(key)) {
+                            $ele.remove();
 
-                    display += '<li>' + key + ': ' + info[key] + '</li>';
+                        }
+                    );
 
-                }
+            })
+            .promise();
+
+        }; //end: getListColumns()
+
+        /**
+         * Given an element, this method will setup it up for logging data,
+         * and return an object ready to interact with it.
+         */
+        Main.setupLogOutput = function(options) {
+
+            var opt     = $.extend({}, {
+                            container: null,
+                            fixHeight: true,
+                            height:     '40em'
+                        }, options),
+                Inst    = {},
+                css     = {
+                            padding: ".2em",
+                            position: "relative"
+                        };
+
+            if (!opt.container) {
+
+                return;
 
             }
 
-            $ul.append(display);
+            opt.container = $(opt.container);
+
+            if (opt.fixHeight){
+
+                css.height      = opt.height;
+                css.overflow    = "auto";
+
+            }
+
+            opt.container
+                .addClass("ui-widget-content")
+                .css(css);
+
+            Inst.log = function(data) {
+
+                opt.container.append('<div>' + data + '<div>');
+                opt.container.scrollTop(opt.container.children(":last").position().top);
+
+            }; //end: log()
+
+            return Inst;
+
+        }; //end: Main.setupLogOutput()
 
 
-        }, 2000);
+        //------------------------------------------
+        //   INITIALIZE THE DEMO UI
+        //------------------------------------------
+        Main.$ui = $("#spwidgets_demo_cntr")
+                .css("display", "")
+                .on("keyup", function(ev){
 
-    });
+                    if (ev.which === 13) {
+                        ev.preventDefault();
+                        ev.stopPropagation();
+                    }
+
+                });
+
+        // Create TABs and make ui visible
+        Main.$ui.find("#ptTabsCntr")
+            .tabs()
+            .fadeIn("slow");
+
+        // Populate the About page
+        $("#SPWidgetsAbout ul.spwidgets-demo-info-cntr").each(function(){
+
+            var $ul     = $(this);
+
+            setTimeout(function(){
+
+                var info    = $.SPWidgets.getRuntimeInfo(),
+                    display = '',
+                    key;
+
+                for (key in info){
+
+                    if (info.hasOwnProperty(key)) {
+
+                        display += '<li>' + key + ': ' + info[key] + '</li>';
+
+                    }
+
+                }
+
+                $ul.append(display);
 
 
- /* function return jQuery to closure above */
-})( (function($){
+            }, 2000);
 
-    var styles = "__BUILD_STYLES__";
+        });
 
-    $('<style type="text/css">' + styles + "</style>")
-        .appendTo(document.head || document.getElementsByTagName('head')[0]);
+        $.each(Main.demoInitializers, function(i, demoFn){
 
-    return $;
+            if ($.isFunction(demoFn)) {
+                demoFn();
+            }
 
-})(SPWIDGET_DEMO.JQUERY || jQuery) );
+        });
+
+    }; //end: init()
+
+}(SPWIDGET_DEMO.JQUERY || jQuery));

@@ -304,11 +304,10 @@ module.exports = function(grunt) {
 
         buildFolder: "<%= userOpt.buildLocation %>/<%= pkg.name %>",
 
-        banner : '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
-            '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
-            '<%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
-            '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
-            ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */\n',
+        banner : '/*! <%= pkg.title || pkg.name %> v<%= pkg.version %> ' +
+            '<%= grunt.template.today("yyyy-mm-dd") %> | <%= pkg.license  %> | ' +
+            'Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>' +
+            '<%= pkg.homepage ? " | " + pkg.homepage : "" %> */\n',
         // Task configuration.
         clean : {
             options: {
@@ -326,13 +325,11 @@ module.exports = function(grunt) {
                 banner : '<%= banner %>',
                 stripBanners : true
             },
-            dist : {
+            prod : {
                 src : [
-                    'src/jquery.<%= pkg.name %>.js',
-                    'src/vendor/SPGetListItems.js',
-                    'src/vendor/SPUpdateListItems.js'
+                    '<%= requirejs.compile.options.out %>'
                 ],
-                dest : 'dist/jquery.<%= pkg.name %>.js'
+                dest : '<%= requirejs.compile.options.out %>'
             },
         },
         copy: {
@@ -356,13 +353,11 @@ module.exports = function(grunt) {
                 src: [
                     "demo/**/*",
                     "src/**/*",
+                    "test/**/*",
                     "documentation/**/*",
                     "vendor/jquery/dist/jquery.js",
                     "vendor/jquery-ui/jquery-ui.js",
-                    "vendor/knockout/dist/knockout.js",
-                    "vendor/require-less/less.js",
-                    "vendor/require-less/lessc.js",
-                    "vendor/require-less/normalize.js",
+                    "vendor/require-less/*.js",
                     "vendor/requirejs/require.js",
                     "vendor/requirejs-text/text.js"
                 ]
@@ -375,7 +370,10 @@ module.exports = function(grunt) {
                 src:    [
                     "src/**/*",
                     "vendor/**/*",
-                    "demo/**/*"
+                    "demo/**/*",
+                    "test/**/*",
+                    'dist/jquery.<%= pkg.name %>.js',
+                    'dist/jquery.<%= pkg.name %>.min.js'
                 ],
                 dest:   "<%= userOpt.deployLocation %>",
                 expand: true,
@@ -388,15 +386,26 @@ module.exports = function(grunt) {
                         "deploy.timestamp--" + userOpt.deployLocation.replace(/\W/g, "") + ".txt"
                     )
                 )
+            },
+            prod: {
+                expand: true,
+                cwd: '<%= buildFolder %>/dist/',
+                src: [
+                    'jquery.<%= pkg.name %>.js',
+                    'jquery.<%= pkg.name %>.min.js',
+                    'jquery.<%= pkg.name %>.min.js.map'
+                ],
+                dest: "dist/"
             }
         },
         uglify : {
             options : {
-                banner : '<%= banner %>'
+                banner : '<%= banner %>',
+                sourceMap: true
             },
-            dist : {
-                src : '<%= concat.dist.dest %>',
-                dest : 'dist/jquery.<%= pkg.name %>.min.js'
+            prod : {
+                src : '<%= requirejs.compile.options.out %>',
+                dest : '<%= buildFolder %>/dist/jquery.<%= pkg.name %>.min.js'
             },
         },
         qunit : {
@@ -416,6 +425,7 @@ module.exports = function(grunt) {
                 src : ['test/**/*.js']
             },
         },
+
         watch : {
             gruntfile : {
                 files : '<%= jshint.gruntfile.src %>',
@@ -425,6 +435,7 @@ module.exports = function(grunt) {
                 files : [
                     'src/**/*',
                     'demo/**/*',
+                    'test/**/*',
                     '*.aspx'
                 ],
                 tasks : ['deploy']
@@ -433,7 +444,88 @@ module.exports = function(grunt) {
                 files : '<%= jshint.test.src %>',
                 tasks : ['jshint:test']
             },
-        }
+        },
+
+        requirejs: {
+
+            compile: {
+                options: {
+                    baseUrl: "<%= buildFolder %>/",
+                    paths: {
+                        jquery:                 'vendor/jquery/dist/jquery',
+                        'jquery-ui':            'vendor/jquery-ui/jquery-ui',
+                        less:                   'vendor/require-less/less',
+                        lessc:                  'vendor/require-less/lessc',
+                        'less-builder':         'vendor/require-less/less-builder',
+                        normalize:              'vendor/require-less/normalize',
+                        text:                   'vendor/requirejs-text/text'
+                    },
+                    shim: {
+                        'jquery-ui': {
+                            deps: ['jquery']
+                        },
+                        'SPWidgets': {
+                            deps: ['jquery', 'jquery-ui']
+                        }
+                    },
+                    less: {
+                        relativeUrls: true
+                    },
+                    exclude: [
+                        "less", "text", "normalize", "less-builder", "jquery", "jquery-ui"
+                    ],
+                    optimize: "none",
+                    wrap: {
+                        start: ';(function(factory){\n' +
+                                '    if ( typeof define === "function" && define.amd ) {\n' +
+                                    '        define([ "jquery" ], factory );\n' +
+                                '    } else {\n' +
+                                    '        factory( jQuery );' +
+                                '    }' +
+                            '}(function(jquery) {\n',
+                        end: '}));'
+                    },
+                    done: function(done, output) {
+                        var duplicates = require('rjs-build-analysis').duplicates(output);
+
+                        if (Object.keys(duplicates).length > 0) {
+                            grunt.log.subhead('Duplicates found in requirejs build:');
+                            for (var key in duplicates) {
+                                grunt.log.error(duplicates[key] + ": " + key);
+                            }
+                            return done(new Error('r.js built duplicate modules, please check the excludes option.'));
+                        } else {
+                            grunt.log.success("No duplicates found!");
+                        }
+
+                        done();
+                    },
+                    onModuleBundleComplete: function (data) {
+                        var fs = require('fs'),
+                            amdclean = require('amdclean'),
+                            outputFile = data.path;
+
+                            // Make a copy of the requireJS optmized file
+                            fs.writeFileSync(
+                                outputFile + ".compiled.js",
+                                fs.readFileSync(outputFile)
+                            );
+
+                            fs.writeFileSync(outputFile, amdclean.clean({
+                                'filePath': outputFile,
+                                'ignoreModules': ["jquery", "jquery-ui"],
+                                transformAMDChecks: false
+
+                            }));
+                    },
+                    name: "src/SPWidgets",
+                    out: "<%= buildFolder %>/dist/jquery.<%= pkg.name %>.js"
+                }
+
+
+            } // end: requirejs:compile
+
+        } //end: requirejs
 
     }); //end: config()
 
@@ -471,20 +563,13 @@ module.exports = function(grunt) {
 
     }); //end: target: build
 
-    // grunt.registerTask('build-prod', [
-        // "clean:prod",
-        // "build",
-        // "requirejs",
-        // "copy:privateVendorLibs",
-        // "concat:prod",
-        // "uglify:prod",
-        // "copy:fixScriptTags",
-        // "copy:prod",
-        // // Create debug version
-        // "copy:nonMinSpa",
-        // "copy:fixScriptTags",
-        // "copy:prodDebug"
-    // ]);
+    grunt.registerTask('build-prod', [
+        "build",
+        "requirejs",
+        "uglify:prod",
+        "concat:prod",
+        "copy:prod"
+    ]);
 //
     // grunt.registerTask('dist', [
         // "build-prod",
@@ -499,5 +584,6 @@ module.exports = function(grunt) {
      *
      */
     grunt.registerTask('deploy', ["build", "copy:deploy"]);
+
 
 }; //end: module.exports

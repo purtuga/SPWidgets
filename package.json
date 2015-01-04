@@ -10,10 +10,13 @@
         "type": "git",
         "url": "git@github.com:purtuga/SPWidgets.git"
     },
-    "author": "Paul Tavares",
+    "author": {
+        "name": "Paul Tavares"
+    },
+    "homepage": "http://purtuga.github.io/SPWidgets",
     "license": "MIT",
     "devDependencies": {
-        "amdclean": "^2.4.0",
+        "amdclean": "https://github.com/purtuga/amdclean/archive/master.tar.gz",
         "csso": "^1.3.11",
         "grunt": "~0.4.1",
         "grunt-contrib-clean": "~0.4.0",
