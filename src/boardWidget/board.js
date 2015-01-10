@@ -9,8 +9,8 @@ define([
     '../sputils/fillTemplate',
     '../uiutils/makeSameHeight',
     '../uiutils/addHoverEffect',
-    '../uiutils/doesMsgHaveError',
-    '../uiutils/getMsgError',
+    '../sputils/doesMsgHaveError',
+    '../sputils/getMsgError',
     'text!./board.html',
     //-----------------------------
     'less!./board'
@@ -2436,4 +2436,3 @@ define([
     return showBoard;
 
 });
-

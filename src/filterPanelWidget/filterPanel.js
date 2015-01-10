@@ -10,8 +10,8 @@ define([
     '../lookupFieldWidget/lookupField',
     '../peoplePickerWidget/peoplePicker',
     '../dateFieldWidget/dateField',
-    '../uiutils/doesMsgHaveError',
-    '../uiutils/getMsgError',
+    '../sputils/doesMsgHaveError',
+    '../sputils/getMsgError',
     //------------------------------
     'less!./filterPanel'
 ], function(
