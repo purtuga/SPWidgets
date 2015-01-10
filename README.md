@@ -44,7 +44,7 @@ Developing
 
 ## Getting Started
 
-Once the code has been forked and checked out, insure that following is run from since the project root folder:
+Once the code has been forked and checked out, insure that following is run from inside the project root folder:
 
 -   `npm install`
 -   `bower install`
@@ -75,6 +75,10 @@ SPWidgets is built using `grunt`. To find out what targets are available, run th
     grunt --help
 
 The first time `grunt` is run, a file called `me.build.json` will be created at the root of the project. This file contains build parameters that can be customized to the local env. (ex. set `buildLocation` to your computer's temp folder).
+
+To build the project, which will update the `dist` folder with the current changes, run the following:
+
+    grunt build-prod
 
 
 ## Deployment and Testing in a Real SharePoint Site

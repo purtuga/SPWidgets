@@ -10,6 +10,8 @@ define([
     '../lookupFieldWidget/lookupField',
     '../peoplePickerWidget/peoplePicker',
     '../dateFieldWidget/dateField',
+    '../uiutils/doesMsgHaveError',
+    '../uiutils/getMsgError',
     //------------------------------
     'less!./filterPanel'
 ], function(
@@ -23,7 +25,9 @@ define([
     xmlEscape,
     lookupFieldWidget,
     peoplePickerWidget,
-    dateFieldWidget
+    dateFieldWidget,
+    doesMsgHaveError,
+    getMsgError
 ){
 
     var Filter  = {},
@@ -215,7 +219,7 @@ define([
 
                             }
 
-                            if ($msg.SPMsgHasError()) {
+                            if (doesMsgHaveError($msg)) {
 
                                 dfd.rejectWith($msg, [xData, status]);
                                 return;
@@ -711,7 +715,7 @@ define([
                         Inst.$ele
                             .html(
                                 '<div class="ui-state-error">Unable to retrieve list information. ' +
-                                $msg.SPGetMsgError() + '</div>' );
+                                getMsgError($msg) + '</div>' );
 
                         dfd.reject();
 

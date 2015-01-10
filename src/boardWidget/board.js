@@ -9,6 +9,8 @@ define([
     '../sputils/fillTemplate',
     '../uiutils/makeSameHeight',
     '../uiutils/addHoverEffect',
+    '../uiutils/doesMsgHaveError',
+    '../uiutils/getMsgError',
     'text!./board.html',
     //-----------------------------
     'less!./board'
@@ -23,6 +25,8 @@ define([
     fillTemplate,
     makeSameHeight,
     addHoverEffect,
+    doesMsgHaveError,
+    getMsgError,
     boardTemplate
 ){
 
@@ -619,11 +623,11 @@ define([
                                                     var resp = $(xData.responseXML),
                                                         $rows;
 
-                                                    if ( resp.SPMsgHasError() ) {
+                                                    if ( doesMsgHaveError(resp) ) {
 
                                                          dfd.rejectWith(
                                                                 ele,
-                                                                [ resp.SPGetMsgError(), xData, status ]);
+                                                                [ getMsgError(resp), xData, status ]);
 
                                                         return;
 
@@ -799,11 +803,11 @@ define([
 
                                         var resp = $(xData.responseXML);
 
-                                        if ( resp.SPMsgHasError() ) {
+                                        if ( doesMsgHaveError(resp) ) {
 
                                              dfd.rejectWith(
                                                     ele,
-                                                    [ resp.SPGetMsgError(), xData, status ]);
+                                                    [ getMsgError(resp), xData, status ]);
 
                                             return;
 
@@ -2287,11 +2291,11 @@ define([
                                 var resp = $(xData.responseXML),
                                     row  = null;
 
-                                if ( resp.SPMsgHasError() ) {
+                                if ( doesMsgHaveError(resp) ) {
 
                                      dfd.rejectWith(
                                             ele,
-                                            [ resp.SPGetMsgError(), xData, status ]);
+                                            [ getMsgError(resp), xData, status ]);
 
                                     return;
 
