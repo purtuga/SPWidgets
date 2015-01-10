@@ -121,8 +121,7 @@ define([
 
         // Load the UI from the regular Demo page into the container here
         $("#spwidgets_demo_cntr").load(
-            String(SPWIDGET_DEMO.BIN_DIR).replace(/ /g, "%20") +
-            "demo/src/Demo.SPWidgets.aspx .spwidgets-demo-cntr",
+            String(SPWIDGET_DEMO.BIN_DIR).replace(/ /g, "%20") + "demo/src/demo.html",
             function(){
 
                 // 13. demo.common.js

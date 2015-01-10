@@ -1,19 +1,19 @@
 SPWidgets
 =========
 
-Sharepoint Custom UI Widgets that make building custom User Interfaces easier.
+SharePoint Custom UI Widgets that make building custom User Interfaces easier.
 
 Documentation
 -------------
 
-**See the [project page](http://purtuga.github.com/SPWidgets/) folder for full 
+**See the [project page](http://purtuga.github.com/SPWidgets/) folder for full
 detail on the usage of each available plugins.**
 
 
 Downloads
 ---------
 
-The compiled plugin can be found under the [_plugin_](https://github.com/purtuga/SPWidgets/tree/master/plugin) folder.
+The compiled plugin can be found under the [_dist/_](https://github.com/purtuga/SPWidgets/tree/master/dist) folder.
 
 
 License
@@ -24,24 +24,63 @@ Dual License support
 -   MIT http://www.opensource.org/licenses/mit-license.php
 -   GPL http://www.opensource.org/licenses/gpl-license.php
 
-User can pick whichever one applies best for their project
-and does'nt not have to contact me.
+User can pick whichever one applies best for their project and doesn’t not have to contact me.
 
 
-Developer/Contributor Notes
----------------------------
+Contributions
+-------------
 
-This project has been developed in Eclipse using the Aptana plugin.
-The project is built using Apached Ant (see file [build.SPWidgets.xml](https://github.com/purtuga/SPWidgets/blob/master/build.SPWidgets.xml)).  
-In addition to requiring Ant installed, Google Closure compiler (for minification) and Markdown.pl is needed. Perl is required in order to turn Markdown.pl.
+Contributions are welcome. Just fork the project, make your changes (see below for notes on development environment) and send me a Pull Request.  Note that before committing your changes, a `grunt build-prod` must be run so that all files are compiled.
 
-The tools should be downloaded and placed under:
 
-- BUILD/Tools/google-closure-compiler/
-- BUILD/Tools/markdown/
+Developing
+----------
 
-The project also allows you to "deploy" to a live sharepoint site by doing
-a file copy from the development BUILD folder to a sharepoint folder. In order
-to do so, the target location (the sharepoint location) must be setup in the me.build.properties
-file. This file is automatically created the first time the build file is ran.
+## Pre-requisites
+
+1.  `node` and `npm`
+2.  `grunt`
+3.  `bower`
+
+## Getting Started
+
+Once the code has been forked and checked out, insure that following is run from since the project root folder:
+
+-   `npm install`
+-   `bower install`
+
+This will install both the build dependencies as well as the runtime dependencies.
+
+The source is broken up into modules using the AMD pattern. Any new modules created should follow the same pattern. A few guidelines:
+
+1.  New widgets should be created in a new folder under `src/`. Widgets should have a calling signature that accepts at least two input parameters: a dom element to act on and an object of options. Example:
+
+        define(['jquery'], function($){
+            return function myWidget(domElements, options){
+                // build widget on to domElements
+            };
+        });
+
+2.  Any new module that should be exposed via `$.SPWidgets` should be added to `src/SPWidgets.js`.
+
+3.  New widgets need to have a Markdown documentation file under `documentation/`. The file should be named as `SPWidgets._new_widget_name.md`.
+
+3.  All API modules should return a jQuery Promise.
+
+
+## Build
+
+SPWidgets is built using `grunt`. To find out what targets are available, run the following command:
+
+    grunt --help
+
+The first time `grunt` is run, a file called `me.build.json` will be created at the root of the project. This file contains build parameters that can be customized to the local env. (ex. set `buildLocation` to your computer's temp folder).
+
+
+## Deployment and Testing in a Real SharePoint Site
+
+This project has a `deploy` build target (`grunt deploy`) that copies the built library along with a development version of the Demo to a SharePoint Document Library folder.  The location is set in a file called `me.build.json`, which is created at the root of the project the first time `grunt` is run, and should be the absolute path to the document library (ex. Office 365: `//myTestTenant.sharepoint.com@SSL/DavWWWRoot/sites/DevTest/Shared Documents/SPWidgets/`. Or if a drive was mapped, it could be set as `z:/Shared Documents/SPWidgets/).
+
+Once deployed, browse to the deployment location on the SharePoint site and click on `demo/src/Dev.SPWidgets.aspx`. This version of the Demo loads all modules using requireJS, which facilitates development and testing.
+
 

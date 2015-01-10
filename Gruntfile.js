@@ -12,7 +12,6 @@ module.exports = function(grunt) {
                 deployLocation: ''
             }, null, 4)
         );
-
         grunt.fail.fatal("me.build.json file is needed! \n" +
             "One was just created from template. You should Edit it now." );
         return;
@@ -82,7 +81,7 @@ module.exports = function(grunt) {
             //
             //      asJsString
             //
-            var re = /(?:(?:\/\/)|(?:<\!\-\-)|(?:\/\*)) {0,}BUILD_INCLUDE\(['"](.*)['"]\)(?:\[(.*)\])?/i,
+            var re = /(?:(?:\/\/)|(?:<\!\-\-)|(?:\/\*)) {0,}BUILD_INCLUDE\(['"](.*)['"]\)(?:\[(.*)\])?(?: {0,}(?:\-\-\>)| {0,}(?:\*\/))?/i,
                 match, file, fileIncludeOptions;
 
             while ((match = re.exec(fileContent)) !== null) {
@@ -255,11 +254,8 @@ module.exports = function(grunt) {
     // Validations
     // ----------------
     if (!userOpt.buildLocation) {
-
         grunt.fail.fatal("me.build.json: missing buildLocation value!" );
-
         return;
-
     }
 
     // Expand any templates in buildLocation... Uses custom data for expansion.
@@ -276,21 +272,15 @@ module.exports = function(grunt) {
     if (!grunt.file.exists(userOpt.buildLocation) ||
         !grunt.file.isDir(userOpt.buildLocation)
     ) {
-
         grunt.fail.fatal("me.build.json: buildLocation [" +
             userOpt.buildLocation + "] does not exist or not a directory!" );
-
         return;
-
     }
 
     // If the build folder is the same as this directory, error.
     if (grunt.file.isPathCwd(userOpt.buildLocation)) {
-
         grunt.fail.fatal("me.build.json: buildLocation cannot be current directory (cwd)!" );
-
         return;
-
     }
 
     // Task configuration.
@@ -325,12 +315,30 @@ module.exports = function(grunt) {
                 banner : '<%= banner %>',
                 stripBanners : true
             },
+            // PROD: insert the banner into the requireJS compiled file
             prod : {
                 src : [
                     '<%= requirejs.compile.options.out %>'
                 ],
                 dest : '<%= requirejs.compile.options.out %>'
             },
+            demo: {
+                options : {
+                    stripBanners : false
+                },
+                files: {
+                    '<%= buildFolder %>/demo.widgets.js': [
+                        '<%= buildFolder %>/demo/src/widget.*.demo.js'
+                    ],
+                    '<%= buildFolder %>/demo.vendor.js': [
+                        'vendor/jquery/dist/jquery.min.js',
+                        'vendor/jquery-ui/jquery-ui.min.js',
+                        '<%= buildFolder %>/demo/src/ext/vkBeautify.js',
+                        '<%= buildFolder %>/dist/jquery.<%= pkg.name %>.js',
+                        '<%= buildFolder %>/demo/src/demo.common.js'
+                    ]
+                }
+            }
         },
         copy: {
             options: {
@@ -340,6 +348,10 @@ module.exports = function(grunt) {
             },
             build: {
                 options: {
+                    processContentExclude: [
+                        '**/*.{png,gif,jpg,ico,psd}',
+                        'demo/src/Demo.SPWidgets.aspx'
+                    ],
                     processContent: function(fileContent, filePath){
                         return replaceBuildVariables(
                                     includeFile(fileContent, filePath),
@@ -396,6 +408,39 @@ module.exports = function(grunt) {
                     'jquery.<%= pkg.name %>.min.js.map'
                 ],
                 dest: "dist/"
+            },
+            prodFixScriptTags: {
+                options: {
+                    processContent: function(fileData/*, srcPath*/){
+                        return fileData.replace(/<\/script>/ig,'\\x3c/script>');
+                    }
+                },
+                cwd: '<%= buildFolder %>/dist/',
+                files: {
+                    '<%= buildFolder %>/dist/jquery.<%= pkg.name %>.js': [
+                        '<%= buildFolder %>/dist/jquery.<%= pkg.name %>.js'
+                    ],
+                    '<%= buildFolder %>/dist/jquery.<%= pkg.name %>.min.js': [
+                        '<%= buildFolder %>/dist/jquery.<%= pkg.name %>.min.js'
+                    ]
+                }
+            },
+            demo: {
+                options: {
+                    processContentExclude: [
+                        '**/*.{png,gif,jpg,ico,psd}'
+                    ],
+                    processContent: function(fileContent, filePath){
+                        return replaceBuildVariables(
+                                    includeFile(fileContent, filePath),
+                                    filePath
+                                );
+                    }
+                },
+                expand: true,
+                cwd: "<%= buildFolder %>/demo/src/",
+                src: 'Demo.SPWidgets.aspx',
+                dest: '<%= buildFolder %>/demo/'
             }
         },
         uglify : {
@@ -438,7 +483,7 @@ module.exports = function(grunt) {
                     'test/**/*',
                     '*.aspx'
                 ],
-                tasks : ['deploy']
+                tasks : ['build', 'deploy']
             },
             test : {
                 files : '<%= jshint.test.src %>',
@@ -476,6 +521,7 @@ module.exports = function(grunt) {
                     ],
                     optimize: "none",
                     wrap: {
+                        // AMD loader code
                         start: ';(function(factory){\n' +
                                 '    if ( typeof define === "function" && define.amd ) {\n' +
                                     '        define([ "jquery" ], factory );\n' +
@@ -535,7 +581,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-copy');
-    grunt.loadNpmTasks('grunt-contrib-compress');
     grunt.loadNpmTasks('grunt-contrib-requirejs');
     grunt.loadNpmTasks('grunt-jsdoc');
 
@@ -568,14 +613,11 @@ module.exports = function(grunt) {
         "requirejs",
         "uglify:prod",
         "concat:prod",
-        "copy:prod"
+        "copy:prodFixScriptTags",
+        "copy:prod",
+        "concat:demo",
+        "copy:demo"
     ]);
-//
-    // grunt.registerTask('dist', [
-        // "build-prod",
-        // "compress:dist",
-        // "compress:distDebug"
-    // ]);
 
     /**
      * Deploy task
@@ -583,7 +625,7 @@ module.exports = function(grunt) {
      * copy content from the build folder to the deploy destination.
      *
      */
-    grunt.registerTask('deploy', ["build", "copy:deploy"]);
+    grunt.registerTask('deploy', ["copy:deploy"]);
 
 
 }; //end: module.exports

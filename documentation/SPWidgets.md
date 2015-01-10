@@ -51,8 +51,7 @@ Dual License support
 -   [MIT](http://www.opensource.org/licenses/mit-license.php)
 -   [GPL](http://www.opensource.org/licenses/gpl-license.php)
 
-User can pick whichever one applies best for their project
-and does'nt not have to contact me.
+User can pick whichever one applies best for their project and does'nt not have to contact me.
 
 
 Author
@@ -67,18 +66,18 @@ Follow me at Twitter [@paul_tavares](https://twitter.com/paul_tavares)
 Version
 -------
 
--   Version: _BUILD_VERSION_NUMBER_
--   Build Date: _BUILD_VERSION_DATE_
+-   Version: @VERSION (@BUILD)
+-   Build Date: @DATE
 
 
 Install
 -------
 
-SPWidgets requires jQuery and jQuery UI libraries. These should be included or loaded first. There is only 1 SPWidgets file required to be included in the page. This file can be located in the plugin folder of the downloaded archive (zip, tar). There are two versions of it:
+SPWidgets requires jQuery and jQuery UI libraries. These should be included or loaded first. There is only 1 SPWidgets file required to be included in the page. This file can be located in the `dist` folder of the downloaded archive (zip, tar). There are two versions of it:
 
--   _jquery.SPWidgets.js_<br/>
+-   `jquery.SPWidgets.js`<br/>
     The un-minified version of SPWidgets, normally used for debugging during development cycle.
--   _jquery.SPWidgets.min.js_<br/>
+-   `jquery.SPWidgets.min.js`<br/>
     The minified version of SPWidgets, usually the preferred version for production environments.
 
 
