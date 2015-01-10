@@ -1200,7 +1200,7 @@ define([
 
                         $input.each(function(){
 
-                            var dtObj = $input.SPDateField("getDate");
+                            var dtObj = dateFieldWidget($input, "getDate");
 
                             if (dtObj.dates.length) {
 
@@ -1457,12 +1457,12 @@ define([
                         // If dateTime value, then let SPDateField parse values
                         if ($colUI.data("spwidget_sp_format") === "DateTime") {
 
-                            $input.SPDateField('setDate', thisFilter.values);
+                            dateFieldWidget($input, 'setDate', thisFilter.values);
 
                         // Regular dates - Provide format input
                         } else {
 
-                            $input.SPDateField('setDate', thisFilter.values, 'yy-mm-dd');
+                            dateFieldWidget($input, 'setDate', thisFilter.values, 'yy-mm-dd');
 
                         }
 
