@@ -30,6 +30,7 @@ define([
     getMsgError
 ){
 
+
     var Filter  = {},
         filterPanel;
 
