@@ -1,9 +1,13 @@
 define([
     "jquery",
-    "./getSiteUrl"
+    "./getSiteUrl",
+    "../sputils/doesMsgHaveError",
+    "../sputils/getMsgError"
 ], function(
     $,
-    getSiteUrl
+    getSiteUrl,
+    doesMsgHaveError,
+    getMsgError
 ){
 
     var
@@ -12,6 +16,7 @@ define([
      * to be made. Handles the updates being defined in a variety of
      * ways: array-of-arrays, array-of-objects, array-of-strings, string.
      *
+     * @private
      * @param {Object} options
      *
      * @return {Array<String>}
@@ -129,96 +134,98 @@ define([
             }
 
         }
-
-
         return updates;
 
-    };
+    }, //end: getUpdateArray
 
     /**
-     * Makes updates to list items in Sharepoint Lists and Libraries.
+     * Makes updates to list items in Sharepoint Lists and Libraries. For more
+     * information on this method, see {@link https://msdn.microsoft.com/en-us/library/lists.lists.updatelistitems(v=office.12).aspx}
      *
      * @function
      *
      * @param {Object} options
      * @param {String} options.listName
-     * @param {String, Array<Array>, Array<Object>, Array<String>} options.updates
+     * @param {String, Object, Array<Array>, Array<Object>, Array<String>} options.updates
+     *      A String, Object or an Array containing any of those types.
      * @param {Object} [options.webUrl=current_site]
      * @param {Object} [options.async=true]
+     * @param {String} [options.updateType='Update']
+     *      Used when the updates paramter is a non-string. The value will be used
+     *      to set the Cmd on the update. Valid values are 'Update' (default),
+     *      'New' and 'Delete'. Note that when using 'Udpate' and 'Delete' your
+     *      updates must include the ID property so that SharePoint knows on what
+     *      item it needs to act on.
+     *      {@link https://msdn.microsoft.com/en-us/library/ms459050(v=office.12).aspx}
+     * @param {String} [options.updateOnError='Continue']
+     *      Value is used on the Batch element to indicate what should be done if
+     *      an error is encountered. Valid values include 'Continue' (default) and
+     *      'Return'. {@link https://msdn.microsoft.com/en-us/library/ms437562(v=office.12).aspx}
      * @param {Object} [options.completefunc=null]
+     *      Deprecated.
      * @param {Object} [options.ID=null]
      *      Deprecated. Here for backwards compatability with SPServices
      * @param {Object} [options.valuepairs=null]
      *      Deprecated. Here for backwards compatability with SPServices
      *
-     *
      * @return {jQuery.Promise}
+     *      The promise returned is resolved with a {@link updateListItemsResponse}
+     *      object.
      *
-     * Dependencies
+     * @example
      *
-     *  .getSiteUrl()
+     * updateListItems({
+     *      listName: "Tasks",
+     *      updates: [
+     *          {
+     *              ID: "3",
+     *              Title: "Updated title"
+     *          },
+     *          {
+     *              ID: "4",
+     *              Title: "Updated title for 4"
+     *          }
+     *      ]
+     * })
+     * .then(function(response){
+     *      alert(response.message);
+     * })
      *
      *
      */
-    var updateListItems = (function(){
+    updateListItems = function (options) {
 
-        // TODO: Enhance to support batch processing when 'updates' is an array. with throlling
-        // see here: https://spservices.codeplex.com/workitem/10168
+        var opt = $.extend({}, updateListItems.defaults, options, { counter: 1});
 
-        var wsCall      = null,
-            callerFn    = function updateListItems(){
+        if (!opt.webURL) {
+            opt.webURL = getSiteUrl();
 
-                            return wsCall.apply(this, arguments);
+        } else if (opt.webURL.charAt(opt.webURL.length - 1) !== "/") {
+            opt.webURL += "/";
+        }
 
-                        };
+        // some backwards compatability for SPServices
+        opt.updateType = opt.batchCmd || opt.updateType;
 
-        // Define defaults. User can change these on their function attachment.
-        callerFn.defaults = {
-            listName:       '',
-            webURL:         '',
-            async:          true,
-            completefunc:   null,
-            updates:        '',
-            updateType:     'Update',
-            updateOnError:  'Continue'
-        };
+        // Get an array of Strings with all updates
+        opt._updates = getUpdateArray(opt).join("");
 
+        if (!/<\/Batch>/.test(opt._updates)) {
 
-        // Get rows from SP. Returns a JQuery.Promise
-        wsCall = function (opt) {
+            opt._updates = '<Batch OnError="Continue">' +
+                opt._updates + '</Batch>';
 
-            // FIXME: support for caching and default options
+        }
 
-            var options = $.extend({}, callerFn.defaults, opt, { counter: 1});
+        // FIXME: support for large set of updates - batch processing.
 
-            if (!options.webURL) {
+        return $.Deferred(function(dfd){
 
-                options.webURL = getSiteUrl();
-
-            } else if (options.webURL.charAt(options.webURL.length - 1) !== "/") {
-
-                options.webURL += "/";
-
-            }
-
-            // some backwards compatability for SPServices
-            options.updateType = options.batchCmd || options.updateType;
-
-            // Get an array of Strings with all updates
-            options._updates = getUpdateArray(options).join("");
-
-            if (!/<\/Batch>/.test(options._updates)) {
-
-                options._updates = '<Batch OnError="Continue">' +
-                    options._updates + '</Batch>';
-
-            }
-
-            return $.ajax({
+            $.ajax({
                 type:           "POST",
                 cache:          false,
-                async:          options.async,
-                url:            options.webURL + "_vti_bin/Lists.asmx",
+                async:          opt.async,
+                url:            opt.webURL + "_vti_bin/Lists.asmx",
                 beforeSend:     function(xhr) {
                     xhr.setRequestHeader(
                         'SOAPAction',
@@ -230,24 +237,82 @@ define([
                 data:           "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
                     "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
                     "<soap:Body><UpdateListItems xmlns=\"http://schemas.microsoft.com/sharepoint/soap/\">" +
-                    "<listName>" + options.listName + "</listName><updates>" +
-                    options._updates + "</updates></UpdateListItems></soap:Body></soap:Envelope>",
+                    "<listName>" + opt.listName + "</listName><updates>" +
+                    opt._updates + "</updates></UpdateListItems></soap:Body></soap:Envelope>",
                 complete:       function(data, status) {
 
-                    if ($.isFunction(options.completefunc)) {
-
-                        options.completefunc.call($, data, status);
-
+                    if ($.isFunction(opt.completefunc)) {
+                        opt.completefunc.call($, data, status);
                     }
 
                 }//end: $.ajax().success()
+            })
+            .always(function(data, status, jqXHR){
+
+                var
+                /**
+                 * Response object returned by updateListItems.
+                 *
+                 * @typedef updateListItemsResponse
+                 * @property {String} status
+                 *      The status of the update. Value will be
+                 *      either 'error' or 'success'
+                 * @property {String} message
+                 *      The message string. For a status of success, this
+                 *      will just be "Update successful.". For a status of
+                 *      error, this will include the errors returned by sharepoint.
+                 * @property {Object|jQuery.jqXHR} httpData
+                 * @property {Object|jQuery.jqXHR} xhrRequest
+                 */
+                response = {
+                    status      : "", //error || success
+                    message     : "", // message if any
+                    httpData    : data,
+                    xhrRequest  : jqXHR
+                };
+
+                // Error HTTP code received.
+                if (status === "error") {
+                    response.status = "error";
+                    response.message = data.statusText || "HTTP error.";
+                    dfd.rejectWith($, [response]);
+
+                // Success HTTP response - but was it successful?
+                } else {
+
+                    // If a SP processing error was encoutered, then
+                    // reject the deferred.
+                    if (doesMsgHaveError(data)) {
+                        response.status = "error";
+                        response.message = getMsgError(data);
+                        dfd.rejectWith($, [response]);
+
+                    // Else, SP processing was successful
+                    } else {
+                        response.status = "success";
+                        response.message = "Update Successful.";
+                        dfd.resolveWith($, [response]);
+
+                    }
+
+                }
+
             });
 
-        }; //end: wsCall()
+        }).promise(); //end: return promise
 
-        return callerFn;
+    }; //end: updateListItems()
 
-    })(); // updateListItems()
+    // Define defaults. User can change these on their function attachment.
+    updateListItems.defaults = {
+        listName:       '',
+        webURL:         '',
+        async:          true,
+        completefunc:   null,
+        updates:        '',
+        updateType:     'Update',
+        updateOnError:  'Continue'
+    };
 
     return updateListItems;
 

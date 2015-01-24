@@ -83,7 +83,7 @@ To build the project, which will update the `dist` folder with the current chang
 
 ## Deployment and Testing in a Real SharePoint Site
 
-This project has a `deploy` build target (`grunt deploy`) that copies the built library along with a development version of the Demo to a SharePoint Document Library folder.  The location is set in a file called `me.build.json`, which is created at the root of the project the first time `grunt` is run, and should be the absolute path to the document library (ex. Office 365: `//myTestTenant.sharepoint.com@SSL/DavWWWRoot/sites/DevTest/Shared Documents/SPWidgets/`. Or if a drive was mapped, it could be set as `z:/Shared Documents/SPWidgets/).
+This project has a `deploy` build target (`grunt deploy`) that copies the built library along with a development version of the Demo to a SharePoint Document Library folder.  The location is set in a file called `me.build.json`, which is created at the root of the project the first time `grunt` is run, and should be the absolute path to the document library (ex. Office 365: `//myTestTenant.sharepoint.com@SSL/DavWWWRoot/sites/DevTest/Shared Documents/SPWidgets/`. Or if a drive was mapped, it could be set as `z:/Shared Documents/SPWidgets/`).
 
 Once deployed, browse to the deployment location on the SharePoint site and click on `demo/src/Dev.SPWidgets.aspx`. This version of the Demo loads all modules using requireJS, which facilitates development and testing.
 
