@@ -14,7 +14,7 @@ define(["jquery"], function($){
             spErrCode   = $msg.find("ErrorCode"),
             response    = false;
 
-        if ( !spErrCode.length ) {
+        if ( !spErrCode.length || spErrCode.text() === "NoError") {
 
             if ( $msg.find("faultcode").length ) {
 
