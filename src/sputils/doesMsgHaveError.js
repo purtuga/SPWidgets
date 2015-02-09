@@ -14,7 +14,7 @@ define(["jquery"], function($){
             spErrCode   = $msg.find("ErrorCode"),
             response    = false;
 
-        if ( !spErrCode.length || spErrCode.text() === "NoError") {
+        if ( !spErrCode.length ) {
 
             if ( $msg.find("faultcode").length ) {
 
@@ -27,8 +27,8 @@ define(["jquery"], function($){
         }
 
         spErrCode.each(function(){
-
-            if ( $(this).text() !== "0x00000000" ) {
+			            
+            if ( $(this).text() !== "0x00000000" && $(this).text() !== "NoError" ) {
 
                 response = true;
                 return false;
