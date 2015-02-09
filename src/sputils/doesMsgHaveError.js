@@ -27,8 +27,8 @@ define(["jquery"], function($){
         }
 
         spErrCode.each(function(){
-
-            if ( $(this).text() !== "0x00000000" ) {
+			            
+            if ( $(this).text() !== "0x00000000" && $(this).text() !== "NoError" ) {
 
                 response = true;
                 return false;
