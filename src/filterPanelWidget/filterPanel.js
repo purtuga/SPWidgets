@@ -1,6 +1,9 @@
 define([
     'jquery',
     'text!./filterPanel.html',
+    'text!./filterPanelColumn.html',
+    'text!./filterPanelChoiceField.html',
+    'text!./filterPanelTextField.html',
     '../spapi/getSiteUrl',
     '../spapi/getList',
     '../sputils/parseLookupFieldValue',
@@ -17,6 +20,9 @@ define([
 ], function(
     $,
     filterPanelTemplate,
+    filterPanelColumnTemplate,
+    filterPanelChoiceFieldTemplate,
+    filterPanelTextFieldTemplate,
     getSiteUrl,
     getList,
     parseLookupFieldValue,
@@ -33,12 +39,6 @@ define([
 
     var Filter  = {},
         filterPanel;
-
-    /** @property {Boolean} Is initialization done */
-    Filter.isInitDone = false;
-
-    /** @property {jQuery} jQuery object with templates.*/
-    Filter.templates = null;
 
     /**
      * Default options.
@@ -103,14 +103,6 @@ define([
 
         var arg = Array.prototype.slice.call(arguments, 1),
             $this = $(containers);
-
-        // If initialization is not yet done, then do it now
-        if ( !Filter.isInitDone ) {
-
-            Filter.isInitDone = true;
-            Filter.templates = $( filterPanelTemplate );
-
-        }
 
         // If input was a string, then must be a method.
         if (typeof options === "string") {
@@ -269,19 +261,12 @@ define([
 
                         var $list   = this,
                             columns = '',
-                            colUI   = Filter.templates.filter("#filter_column").html();
+                            colUI   =$.trim(filterPanelColumnTemplate);
 
                         // Insert the UI into the page and set
                         // pointer ($ui) to it.
-                        Inst.$ui = $(
-                                Filter.templates
-                                    .filter("#filter_main_ui").html()
-                            )
-                            .appendTo(
-                                Inst.$ele
-                                    .empty()
-                                    .addClass("hasSPFilterPanel")
-                            );
+                        Inst.$ui = $($.trim(filterPanelTemplate)).appendTo(
+                                Inst.$ele.empty().addClass("hasSPFilterPanel") );
 
                         Inst.$uiFilterColumnCntr = Inst.$ui.find("div.spwidget-filter-column-cntr");
                         Inst.$uiFilterSortCntr   = Inst.$ui.find("div.spwidget-filter-sort-cntr");
@@ -343,15 +328,13 @@ define([
                                     $thisCol.find("CHOICES CHOICE").each(function(i,v){
 
                                         inputUI += fillTemplate(
-                                                Filter.templates
-                                                    .filter("#filter_choice_field")
-                                                        .html(),
-                                                {
-                                                    DisplayName:    $thisCol.attr("DisplayName"),
-                                                    Name:           $thisCol.attr("Name"),
-                                                    value:          $(v).text()
-                                                }
-                                            );
+                                            $.trim(filterPanelChoiceFieldTemplate),
+                                            {
+                                                DisplayName:    $thisCol.attr("DisplayName"),
+                                                Name:           $thisCol.attr("Name"),
+                                                value:          $(v).text()
+                                            }
+                                        );
 
                                     });
 
@@ -478,24 +461,17 @@ define([
                                     } //end: switch(): set the model.type only
 
                                     // BUILD the input field for this.
-                                    inputUI = Filter.templates
-                                                .filter("#filter_text_field")
-                                                    .html();
-
-                                    thisColUI = thisColUI
+                                    inputUI     = $.trim(filterPanelTextFieldTemplate);
+                                    thisColUI   = thisColUI
                                                 .replace(/__COLUMN__UI__/, inputUI)
                                                 .replace(/__OTHER_FILTER_TYPES__/, model.otherFilterTypes);
-
-                                    thisColUI = fillTemplate(
-                                            thisColUI,
-                                            $.extend(
-                                                model,
-                                                {
-                                                    DisplayName:    $thisCol.attr("DisplayName"),
-                                                    Name:           $thisCol.attr("Name"),
-                                                    tooltip:        Inst.opt.textFieldTooltip
-                                                })
-                                        );
+                                    thisColUI   = fillTemplate(thisColUI,
+                                        $.extend(model, {
+                                            DisplayName:    $thisCol.attr("DisplayName"),
+                                            Name:           $thisCol.attr("Name"),
+                                            tooltip:        Inst.opt.textFieldTooltip
+                                        })
+                                    );
 
                                     break;
 

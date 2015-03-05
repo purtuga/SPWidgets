@@ -1,6 +1,6 @@
-/*! SPWidgets v2.5.0 2015-01-10 | MIT | Copyright (c) 2015 Paul Tavares | http://purtuga.github.io/SPWidgets */
+/*! SPWidgets v2.5.1 2015-03-05 | MIT | Copyright (c) 2015 Paul Tavares | http://purtuga.github.io/SPWidgets */
 ;(function() {
-var src_spapi_getSiteUrl, src_sputils_cache, src_spapi_getList, src_sputils_doesMsgHaveError, src_spapi_getListFormCollection, src_sputils_getNodesFromXml, src_spapi_getListItems, src_spapi_updateListItems, src_sputils_fillTemplate, src_uiutils_makeSameHeight, src_uiutils_addHoverEffect, text_src_boardWidget_boardhtml, less_src_boardWidget_board, src_boardWidget_board, text_src_dateFieldWidget_dateFieldhtml, src_sputils_getDateString, src_sputils_parseDateString, less_src_dateFieldWidget_dateField, src_dateFieldWidget_dateField, text_src_lookupFieldWidget_lookupFieldhtml, src_sputils_getCamlLogical, src_sputils_parseLookupFieldValue, src_sputils_xmlEscape, less_src_lookupFieldWidget_lookupField, src_lookupFieldWidget_lookupField, text_src_peoplePickerWidget_peoplePickerhtml, src_spapi_searchPrincipals, src_spapi_resolvePrincipals, less_src_peoplePickerWidget_peoplePicker, src_peoplePickerWidget_peoplePicker, text_src_filterPanelWidget_filterPanelhtml, less_src_filterPanelWidget_filterPanel, src_filterPanelWidget_filterPanel, text_src_uploadWidget_uploadhtml, src_sputils_getSPVersion, less_src_uploadWidget_upload, src_uploadWidget_upload, src_sputils_getMsgError, src_spapi_getSiteListCollection, src_spapi_getUserProfile, src_SPWidgets;
+var src_spapi_getSiteUrl, src_sputils_cache, src_spapi_getList, src_sputils_doesMsgHaveError, src_spapi_getListFormCollection, src_sputils_getNodesFromXml, src_spapi_getListItems, src_sputils_getMsgError, src_spapi_updateListItems, src_sputils_fillTemplate, src_uiutils_makeSameHeight, src_uiutils_addHoverEffect, text_src_boardWidget_boardhtml, less_src_boardWidget_board, src_boardWidget_board, text_src_dateFieldWidget_dateFieldhtml, src_sputils_getDateString, src_sputils_parseDateString, less_src_dateFieldWidget_dateField, src_dateFieldWidget_dateField, text_src_lookupFieldWidget_lookupFieldhtml, src_sputils_getCamlLogical, src_sputils_parseLookupFieldValue, src_sputils_xmlEscape, less_src_lookupFieldWidget_lookupField, src_lookupFieldWidget_lookupField, text_src_peoplePickerWidget_peoplePickerhtml, src_spapi_searchPrincipals, src_spapi_resolvePrincipals, less_src_peoplePickerWidget_peoplePicker, src_peoplePickerWidget_peoplePicker, text_src_filterPanelWidget_filterPanelhtml, text_src_filterPanelWidget_filterPanelColumnhtml, text_src_filterPanelWidget_filterPanelChoiceFieldhtml, text_src_filterPanelWidget_filterPanelTextFieldhtml, less_src_filterPanelWidget_filterPanel, src_filterPanelWidget_filterPanel, text_src_uploadWidget_uploadhtml, src_sputils_getSPVersion, less_src_uploadWidget_upload, src_uploadWidget_upload, src_spapi_getSiteListCollection, src_spapi_getUserProfile, src_SPWidgets;
 (function (factory) {
   if (typeof define === 'function' && define.amd) {
     define(['jquery'], factory);
@@ -672,159 +672,257 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_spapi_getList, src_sputils_does
     //end: getListItems()
     return getListItems;
   }(jquery, src_sputils_cache, src_spapi_getSiteUrl, src_sputils_getNodesFromXml, src_sputils_doesMsgHaveError);
-  src_spapi_updateListItems = function ($, getSiteUrl) {
-    var
+  src_sputils_getMsgError = function ($) {
     /**
-     * Returns an array of String representing the updates that need
-     * to be made. Handles the updates being defined in a variety of
-     * ways: array-of-arrays, array-of-objects, array-of-strings, string.
+     * Given a sharepoint webservices response, this method will
+     * look to see if it contains an error and return that error
+     * formated as a string.
      *
-     * @param {Object} options
+     * @param {XMLDocument|jQuery|String} xmlMsg
+     * @return {String} errorMessage
      *
-     * @return {Array<String>}
      */
-    getUpdateArray = function (options) {
-      var updates = [], ofType = typeof options.updates;
-      function processArrayOfObjects(updArray) {
-        var i, j, col, thisUpd = '';
-        // Loop through the list of objects (updates)
-        for (i = 0, j = updArray.length; i < j; i++) {
-          thisUpd = '';
-          // Build the fields to be updated for this update
-          for (col in updArray[i]) {
-            if (updArray[i].hasOwnProperty(col)) {
-              thisUpd += '<Field Name="' + col + '">' + updArray[i][col] + '</Field>';
+    var getMsgError = function getMsgError(xmlMsg) {
+      var xMsg = $(xmlMsg), error = '', spErr = xMsg.find('ErrorCode'), count = 0;
+      if (!spErr.length) {
+        spErr = xMsg.find('faultcode');
+      }
+      if (!spErr.length) {
+        return '';
+      }
+      // Loop through and get all errors.
+      spErr.each(function () {
+        var thisErr = $(this);
+        if (thisErr.text() !== '0x00000000') {
+          count += 1;
+          error += '(' + count + ') ' + thisErr.text() + ': ' + thisErr.parent().children().not(thisErr).text() + '\n';
+        }
+      });
+      error = count + ' error(s) encountered! \n' + error;
+      return error;
+    };
+    /* SPGetMsgError() */
+    return getMsgError;
+  }(jquery);
+  src_spapi_updateListItems = function ($, getSiteUrl, doesMsgHaveError, getMsgError) {
+    var
+      /**
+       * Returns an array of String representing the updates that need
+       * to be made. Handles the updates being defined in a variety of
+       * ways: array-of-arrays, array-of-objects, array-of-strings, string.
+       *
+       * @private
+       * @param {Object} options
+       *
+       * @return {Array<String>}
+       */
+      getUpdateArray = function (options) {
+        var updates = [], ofType = typeof options.updates;
+        function processArrayOfObjects(updArray) {
+          var i, j, col, thisUpd = '';
+          // Loop through the list of objects (updates)
+          for (i = 0, j = updArray.length; i < j; i++) {
+            thisUpd = '';
+            // Build the fields to be updated for this update
+            for (col in updArray[i]) {
+              if (updArray[i].hasOwnProperty(col)) {
+                thisUpd += '<Field Name="' + col + '">' + updArray[i][col] + '</Field>';
+              }
+            }
+            // If this column has fields to be updated, create
+            // the method agregate around it
+            if (thisUpd) {
+              updates.push('<Method ID="' + options.counter + '" Cmd="' + options.updateType + '">' + thisUpd + '</Method>');
+              options.counter++;
             }
           }
-          // If this column has fields to be updated, create
-          // the method agregate around it
+        }
+        // Array-of-arrays
+        // 1 single update (outer-array) with multiple fields to be
+        // updated (inner-arrays's)
+        function processArrayOfArrays(updArray) {
+          var thisUpd = '', i, j;
+          for (i = 0, j = updArray.length; i < j; i++) {
+            if ($.isArray(updArray[i])) {
+              thisUpd += '<Field Name="' + updArray[i][0] + '">' + updArray[i][1] + '</Field>';
+            }
+          }
           if (thisUpd) {
             updates.push('<Method ID="' + options.counter + '" Cmd="' + options.updateType + '">' + thisUpd + '</Method>');
             options.counter++;
           }
         }
-      }
-      // Array-of-arrays
-      // 1 single update (outer-array) with multiple fields to be
-      // updated (inner-arrays's)
-      function processArrayOfArrays(updArray) {
-        var thisUpd = '', i, j;
-        for (i = 0, j = updArray.length; i < j; i++) {
-          if ($.isArray(updArray[i])) {
-            thisUpd += '<Field Name="' + updArray[i][0] + '">' + updArray[i][1] + '</Field>';
+        // Backwards compatability to SPServices: if we don't have
+        // options.updates defined, but we have .ID and .valuepairs,
+        // Then do array-of-arrays
+        if (!options.updates && options.ID && options.valuepairs) {
+          options.valuepairs.push([
+            'ID',
+            options.ID
+          ]);
+          processArrayOfArrays(options.valuepairs);  // If options.updates is a string, then just add it as is to
+                                                     // the array
+        } else if (ofType === 'string') {
+          updates.push(options.updates);
+        } else if ($.isArray(options.updates) && options.updates.length) {
+          ofType = typeof options.updates[0];
+          // Array<Object>
+          if (ofType === 'object') {
+            processArrayOfObjects(options.updates);  // Array<String>
+          } else if (ofType === 'string') {
+            updates.push.apply(updates, options.updates);  // Array<Array>
+          } else if ($.isArray(options.updates[0])) {
+            processArrayOfArrays(options.updates);
           }
         }
-        if (thisUpd) {
-          updates.push('<Method ID="' + options.counter + '" Cmd="' + options.updateType + '">' + thisUpd + '</Method>');
-          options.counter++;
-        }
-      }
-      // Backwards compatability to SPServices: if we don't have
-      // options.updates defined, but we have .ID and .valuepairs,
-      // Then do array-of-arrays
-      if (!options.updates && options.ID && options.valuepairs) {
-        options.valuepairs.push([
-          'ID',
-          options.ID
-        ]);
-        processArrayOfArrays(options.valuepairs);  // If options.updates is a string, then just add it as is to
-                                                   // the array
-      } else if (ofType === 'string') {
-        updates.push(options.updates);
-      } else if ($.isArray(options.updates) && options.updates.length) {
-        ofType = typeof options.updates[0];
-        // Array<Object>
-        if (ofType === 'object') {
-          processArrayOfObjects(options.updates);  // Array<String>
-        } else if (ofType === 'string') {
-          updates.push.apply(updates, options.updates);  // Array<Array>
-        } else if ($.isArray(options.updates[0])) {
-          processArrayOfArrays(options.updates);
-        }
-      }
-      return updates;
-    };
-    /**
-     * Makes updates to list items in Sharepoint Lists and Libraries.
-     *
-     * @function
-     *
-     * @param {Object} options
-     * @param {String} options.listName
-     * @param {String, Array<Array>, Array<Object>, Array<String>} options.updates
-     * @param {Object} [options.webUrl=current_site]
-     * @param {Object} [options.async=true]
-     * @param {Object} [options.completefunc=null]
-     * @param {Object} [options.ID=null]
-     *      Deprecated. Here for backwards compatability with SPServices
-     * @param {Object} [options.valuepairs=null]
-     *      Deprecated. Here for backwards compatability with SPServices
-     *
-     *
-     * @return {jQuery.Promise}
-     *
-     * Dependencies
-     *
-     *  .getSiteUrl()
-     *
-     *
-     */
-    var updateListItems = function () {
-      // TODO: Enhance to support batch processing when 'updates' is an array. with throlling
-      // see here: https://spservices.codeplex.com/workitem/10168
-      var wsCall = null, callerFn = function updateListItems() {
-          return wsCall.apply(this, arguments);
-        };
-      // Define defaults. User can change these on their function attachment.
-      callerFn.defaults = {
-        listName: '',
-        webURL: '',
-        async: true,
-        completefunc: null,
-        updates: '',
-        updateType: 'Update',
-        updateOnError: 'Continue'
-      };
-      // Get rows from SP. Returns a JQuery.Promise
-      wsCall = function (opt) {
-        // FIXME: support for caching and default options
-        var options = $.extend({}, callerFn.defaults, opt, { counter: 1 });
-        if (!options.webURL) {
-          options.webURL = getSiteUrl();
-        } else if (options.webURL.charAt(options.webURL.length - 1) !== '/') {
-          options.webURL += '/';
+        return updates;
+      },
+      //end: getUpdateArray
+      /**
+       * Makes updates to list items in Sharepoint Lists and Libraries. For more
+       * information on this method, see {@link https://msdn.microsoft.com/en-us/library/lists.lists.updatelistitems(v=office.12).aspx}
+       *
+       * @function
+       *
+       * @param {Object} options
+       * @param {String} options.listName
+       * @param {String, Object, Array<Array>, Array<Object>, Array<String>} options.updates
+       *      A String, Object or an Array containing any of those types.
+       * @param {Object} [options.webUrl=current_site]
+       * @param {Object} [options.async=true]
+       * @param {String} [options.updateType='Update']
+       *      Used when the updates paramter is a non-string. The value will be used
+       *      to set the Cmd on the update. Valid values are 'Update' (default),
+       *      'New' and 'Delete'. Note that when using 'Udpate' and 'Delete' your
+       *      updates must include the ID property so that SharePoint knows on what
+       *      item it needs to act on.
+       *      {@link https://msdn.microsoft.com/en-us/library/ms459050(v=office.12).aspx}
+       * @param {String} [options.updateOnError='Continue']
+       *      Value is used on the Batch element to indicate what should be done if
+       *      an error is encountered. Valid values include 'Continue' (default) and
+       *      'Return'. {@link https://msdn.microsoft.com/en-us/library/ms437562(v=office.12).aspx}
+       * @param {Object} [options.completefunc=null]
+       *      Deprecated.
+       * @param {Object} [options.ID=null]
+       *      Deprecated. Here for backwards compatability with SPServices
+       * @param {Object} [options.valuepairs=null]
+       *      Deprecated. Here for backwards compatability with SPServices
+       *
+       * @return {jQuery.Promise}
+       *      The promise returned is resolved with a {@link updateListItemsResponse}
+       *      object.
+       *
+       * @example
+       *
+       * updateListItems({
+       *      listName: "Tasks",
+       *      updates: [
+       *          {
+       *              ID: "3",
+       *              Title: "Updated title"
+       *          },
+       *          {
+       *              ID: "4",
+       *              Title: "Updated title for 4"
+       *          }
+       *      ]
+       * })
+       * .then(function(response){
+       *      alert(response.message);
+       * })
+       *
+       *
+       */
+      updateListItems = function (options) {
+        var opt = $.extend({}, updateListItems.defaults, options, { counter: 1 });
+        if (!opt.webURL) {
+          opt.webURL = getSiteUrl();
+        } else if (opt.webURL.charAt(opt.webURL.length - 1) !== '/') {
+          opt.webURL += '/';
         }
         // some backwards compatability for SPServices
-        options.updateType = options.batchCmd || options.updateType;
+        opt.updateType = opt.batchCmd || opt.updateType;
         // Get an array of Strings with all updates
-        options._updates = getUpdateArray(options).join('');
-        if (!/<\/Batch>/.test(options._updates)) {
-          options._updates = '<Batch OnError="Continue">' + options._updates + '</Batch>';
+        opt._updates = getUpdateArray(opt).join('');
+        if (!/<\/Batch>/.test(opt._updates)) {
+          opt._updates = '<Batch OnError="Continue">' + opt._updates + '</Batch>';
         }
-        return $.ajax({
-          type: 'POST',
-          cache: false,
-          async: options.async,
-          url: options.webURL + '_vti_bin/Lists.asmx',
-          beforeSend: function (xhr) {
-            xhr.setRequestHeader('SOAPAction', 'http://schemas.microsoft.com/sharepoint/soap/UpdateListItems');
-          },
-          contentType: 'text/xml;charset=utf-8',
-          dataType: 'xml',
-          data: '<?xml version="1.0" encoding="utf-8"?>' + '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + '<soap:Body><UpdateListItems xmlns="http://schemas.microsoft.com/sharepoint/soap/">' + '<listName>' + options.listName + '</listName><updates>' + options._updates + '</updates></UpdateListItems></soap:Body></soap:Envelope>',
-          complete: function (data, status) {
-            if ($.isFunction(options.completefunc)) {
-              options.completefunc.call($, data, status);
+        // FIXME: support for large set of updates - batch processing.
+        return $.Deferred(function (dfd) {
+          $.ajax({
+            type: 'POST',
+            cache: false,
+            async: opt.async,
+            url: opt.webURL + '_vti_bin/Lists.asmx',
+            beforeSend: function (xhr) {
+              xhr.setRequestHeader('SOAPAction', 'http://schemas.microsoft.com/sharepoint/soap/UpdateListItems');
+            },
+            contentType: 'text/xml;charset=utf-8',
+            dataType: 'xml',
+            data: '<?xml version="1.0" encoding="utf-8"?>' + '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + '<soap:Body><UpdateListItems xmlns="http://schemas.microsoft.com/sharepoint/soap/">' + '<listName>' + opt.listName + '</listName><updates>' + opt._updates + '</updates></UpdateListItems></soap:Body></soap:Envelope>',
+            complete: function (data, status) {
+              if ($.isFunction(opt.completefunc)) {
+                opt.completefunc.call($, data, status);
+              }
+            }  //end: $.ajax().success()
+          }).always(function (data, status, jqXHR) {
+            var
+            /**
+             * Response object returned by updateListItems.
+             *
+             * @typedef updateListItemsResponse
+             * @property {String} status
+             *      The status of the update. Value will be
+             *      either 'error' or 'success'
+             * @property {String} message
+             *      The message string. For a status of success, this
+             *      will just be "Update successful.". For a status of
+             *      error, this will include the errors returned by sharepoint.
+             * @property {Object|jQuery.jqXHR} httpData
+             * @property {Object|jQuery.jqXHR} xhrRequest
+             */
+            response = {
+              status: '',
+              //error || success
+              message: '',
+              // message if any
+              httpData: data,
+              xhrRequest: jqXHR
+            };
+            // Error HTTP code received.
+            if (status === 'error') {
+              response.status = 'error';
+              response.message = data.statusText || 'HTTP error.';
+              dfd.rejectWith($, [response]);  // Success HTTP response - but was it successful?
+            } else {
+              // If a SP processing error was encoutered, then
+              // reject the deferred.
+              if (doesMsgHaveError(data)) {
+                response.status = 'error';
+                response.message = getMsgError(data);
+                dfd.rejectWith($, [response]);  // Else, SP processing was successful
+              } else {
+                response.status = 'success';
+                response.message = 'Update Successful.';
+                dfd.resolveWith($, [response]);
+              }
             }
-          }  //end: $.ajax().success()
-        });
+          });
+        }).promise();  //end: return promise
       };
-      //end: wsCall()
-      return callerFn;
-    }();
-    // updateListItems()
+    //end: updateListItems()
+    // Define defaults. User can change these on their function attachment.
+    updateListItems.defaults = {
+      listName: '',
+      webURL: '',
+      async: true,
+      completefunc: null,
+      updates: '',
+      updateType: 'Update',
+      updateOnError: 'Continue'
+    };
     return updateListItems;
-  }(jquery, src_spapi_getSiteUrl);
+  }(jquery, src_spapi_getSiteUrl, src_sputils_doesMsgHaveError, src_sputils_getMsgError);
   src_sputils_fillTemplate = function ($) {
     /**
      * An extreemly lightweight template engine for replacing
@@ -950,9 +1048,9 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_spapi_getList, src_sputils_does
     // .addHoverEffect()
     return addHoverEffect;
   }(jquery);
-  text_src_boardWidget_boardhtml = '<div class="spwidget-board">\n    <div class="spwidget-board-settings" style="display:none;">\n        <div class=\'spwidget-board-settings-columns\'>Columns</div>\n        <div class="spwidget-board-column-list-cntr ui-widget-content ui-corner-all" style="display: none">\n            <div class="ui-state-default">\n                <span>\n                    <span class="spwidget-board-column-total"></span> \n                    <span class="spwidget-board-column-total-label">Selected.</span>\n                </span>\n                <button type="button" name="check" title="Check-Uncheck All">Check</button>\n                <button type="button" name="close" title="Close">Close</button>\n            </div>\n            <div class="spwidget-board-column-list">\n            </div>\n            <div class="ui-state-default">\n                <button type="button" name="apply">Apply</button>\n            </div>\n        </div>\n    </div>\n    <div class="spwidget-board-headers">\n        <div class="spwidget-board-headers-cntr">\n            <div class="spwidget-board-state ui-widget-content ui-corner-top">\n                <span class="spwidget-board-header-title"></span>\n                <span class="spwidget-state-item-stat-cntr">\n                    <span class="spwidget-item-stat ui-widget-content ui-corner-all spwidget-state-item-total">0</span>\n                </span>\n            </div>\n            <div style="clear:both;"></div>\n        </div>\n    </div>\n    <div style="clear:both;"></div>\n    <div class="spwidget-board-states">\n        <div class="spwidget-board-states-cntr">\n            <div class="spwidget-board-state ui-widget-content ui-corner-bottom"></div>\n            <div style="clear:both;"></div>\n        </div>\n    </div>\n    <div style="clear:both;"></div>\n</div>\n<div class="spwidget-item-template">\n    <div>\n        <div>#{{ID}}: {{Title}}</div>\n        <div class="ui-state-active ui-corner-all spwidget-board-item-actions">\n            <a class="spwidgets-board-action" href="javascript:" title="View Item" data-spwidgets_id="{{ID}}" data-spwidgets_board_action="view-item"><img src="/_layouts/images/icgen.gif" border="0"/></a>\n            <a class="spwidgets-board-action" href="javascript:" title="Edit Item" data-spwidgets_id="{{ID}}" data-spwidgets_board_action="edit-item"><img src="/_layouts/images/CMSEditSourceDoc.GIF" border="0"/></a>\n        </div>\n    </div>\n</div>\n';
+  text_src_boardWidget_boardhtml = '<div class="spwidget-board">\r\n    <div class="spwidget-board-settings" style="display:none;">\r\n        <div class=\'spwidget-board-settings-columns\'>Columns</div>\r\n        <div class="spwidget-board-column-list-cntr ui-widget-content ui-corner-all" style="display: none">\r\n            <div class="ui-state-default">\r\n                <span>\r\n                    <span class="spwidget-board-column-total"></span> \r\n                    <span class="spwidget-board-column-total-label">Selected.</span>\r\n                </span>\r\n                <button type="button" name="check" title="Check-Uncheck All">Check</button>\r\n                <button type="button" name="close" title="Close">Close</button>\r\n            </div>\r\n            <div class="spwidget-board-column-list">\r\n            </div>\r\n            <div class="ui-state-default">\r\n                <button type="button" name="apply">Apply</button>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <div class="spwidget-board-headers">\r\n        <div class="spwidget-board-headers-cntr">\r\n            <div class="spwidget-board-state ui-widget-content ui-corner-top">\r\n                <span class="spwidget-board-header-title"></span>\r\n                <span class="spwidget-state-item-stat-cntr">\r\n                    <span class="spwidget-item-stat ui-widget-content ui-corner-all spwidget-state-item-total">0</span>\r\n                </span>\r\n            </div>\r\n            <div style="clear:both;"></div>\r\n        </div>\r\n    </div>\r\n    <div style="clear:both;"></div>\r\n    <div class="spwidget-board-states">\r\n        <div class="spwidget-board-states-cntr">\r\n            <div class="spwidget-board-state ui-widget-content ui-corner-bottom"></div>\r\n            <div style="clear:both;"></div>\r\n        </div>\r\n    </div>\r\n    <div style="clear:both;"></div>\r\n</div>\r\n<div class="spwidget-item-template">\r\n    <div>\r\n        <div>#{{ID}}: {{Title}}</div>\r\n        <div class="ui-state-active ui-corner-all spwidget-board-item-actions">\r\n            <a class="spwidgets-board-action" href="javascript:" title="View Item" data-spwidgets_id="{{ID}}" data-spwidgets_board_action="view-item"><img src="/_layouts/images/icgen.gif" border="0"/></a>\r\n            <a class="spwidgets-board-action" href="javascript:" title="Edit Item" data-spwidgets_id="{{ID}}" data-spwidgets_board_action="edit-item"><img src="/_layouts/images/CMSEditSourceDoc.GIF" border="0"/></a>\r\n        </div>\r\n    </div>\r\n</div>\r\n';
   less_src_boardWidget_board = undefined;
-  src_boardWidget_board = function ($, getSiteUrl, getList, getListFormCollection, getListItems, updateListItems, getNodesFromXml, fillTemplate, makeSameHeight, addHoverEffect, boardTemplate) {
+  src_boardWidget_board = function ($, getSiteUrl, getList, getListFormCollection, getListItems, updateListItems, getNodesFromXml, fillTemplate, makeSameHeight, addHoverEffect, doesMsgHaveError, getMsgError, boardTemplate) {
     /**
      * Displays data from a list in Kan-Ban board using a specific column from
      * that list.  Column (at this point) is assume to be a CHOICE type of field.
@@ -1470,9 +1568,9 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_spapi_getList, src_sputils_does
                           return;
                         }
                         var resp = $(xData.responseXML), $rows;
-                        if (resp.SPMsgHasError()) {
+                        if (doesMsgHaveError(resp)) {
                           dfd.rejectWith(ele, [
-                            resp.SPGetMsgError(),
+                            getMsgError(resp),
                             xData,
                             status
                           ]);
@@ -1596,9 +1694,9 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_spapi_getList, src_sputils_does
                       return;
                     }
                     var resp = $(xData.responseXML);
-                    if (resp.SPMsgHasError()) {
+                    if (doesMsgHaveError(resp)) {
                       dfd.rejectWith(ele, [
-                        resp.SPGetMsgError(),
+                        getMsgError(resp),
                         xData,
                         status
                       ]);
@@ -2494,9 +2592,9 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_spapi_getList, src_sputils_does
                   return;
                 }
                 var resp = $(xData.responseXML), row = null;
-                if (resp.SPMsgHasError()) {
+                if (doesMsgHaveError(resp)) {
                   dfd.rejectWith(ele, [
-                    resp.SPGetMsgError(),
+                    getMsgError(resp),
                     xData,
                     status
                   ]);
@@ -2590,8 +2688,8 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_spapi_getList, src_sputils_does
     //end: $.fn.SPShowBoard()
     showBoard.defaults = Board.defaults;
     return showBoard;
-  }(jquery, src_spapi_getSiteUrl, src_spapi_getList, src_spapi_getListFormCollection, src_spapi_getListItems, src_spapi_updateListItems, src_sputils_getNodesFromXml, src_sputils_fillTemplate, src_uiutils_makeSameHeight, src_uiutils_addHoverEffect, text_src_boardWidget_boardhtml);
-  text_src_dateFieldWidget_dateFieldhtml = '<div class="spwidget-date-cntr">\n    <div class="spwidget-date-selected-cntr" style="display:none;"></div>\n    <div class="spwidget-date-input-cntr">\n        <input class="spwidget-date-datepicker" name="SPDateFieldInput" value="" />\n    </div>\n</div>\n<div class="spwidget-datetime-selector ui-widget-content ui-corner-all">\n    <div class="spwidget-selectors">\n        <div class="spwidget-date-selector"></div>\n        <div class="spwidget-time-selector ui-widget-content ui-corner-all">\n            <div class="spwidget-time-selector-cntr">\n                <div class="ui-widget-header ui-helper-clearfix ui-corner-all">\n                    Time\n                </div>\n                <div class="spwidget-time-hour">\n                    <label>Hour</label>\n                    <select name="spwidget_hour" class="spwidget-hour">\n                        <option value="1"> 1</option>\n                        <option value="2"> 2</option>\n                        <option value="3"> 3</option>\n                        <option value="4"> 4</option>\n                        <option value="5"> 5</option>\n                        <option value="6"> 6</option>\n                        <option value="7"> 7</option>\n                        <option value="8"> 8</option>\n                        <option value="9"> 9</option>\n                        <option value="10">10</option>\n                        <option value="11">11</option>\n                        <option value="12">12</option>\n                    </select>\n                </div>\n                <div class="spwidget-time-min">   \n                    <label>Minutes</label>\n                    <select name="spwidget_min" class="spwidget-min">\n                        <option value="00">00</option>\n                        <option value="05">05</option>\n                        <option value="10">10</option>\n                        <option value="15">15</option>\n                        <option value="20">20</option>\n                        <option value="25">25</option>\n                        <option value="30">30</option>\n                        <option value="35">35</option>\n                        <option value="40">40</option>\n                        <option value="45">45</option>\n                        <option value="50">50</option>\n                        <option value="55">55</option>\n                    </select>\n                </div>\n                <div class="spwidget-time-ampm">\n                    <label>AM|PM</label>\n                    <select name="spwidget_ampm" class="spwidget-ampm">\n                        <option value="AM">AM</option>\n                        <option value="PM">PM</option>\n                    </select>\n                </div>\n            </div>\n        </div>\n    </div>\n    <div class="spwidget-btn-set">\n        <div class="spwidget-btn">\n            Set\n        </div>\n    </div>\n</div>';
+  }(jquery, src_spapi_getSiteUrl, src_spapi_getList, src_spapi_getListFormCollection, src_spapi_getListItems, src_spapi_updateListItems, src_sputils_getNodesFromXml, src_sputils_fillTemplate, src_uiutils_makeSameHeight, src_uiutils_addHoverEffect, src_sputils_doesMsgHaveError, src_sputils_getMsgError, text_src_boardWidget_boardhtml);
+  text_src_dateFieldWidget_dateFieldhtml = '<div class="spwidget-date-cntr">\r\n    <div class="spwidget-date-selected-cntr" style="display:none;"></div>\r\n    <div class="spwidget-date-input-cntr">\r\n        <input class="spwidget-date-datepicker" name="SPDateFieldInput" value="" />\r\n    </div>\r\n</div>\r\n<div class="spwidget-datetime-selector ui-widget-content ui-corner-all">\r\n    <div class="spwidget-selectors">\r\n        <div class="spwidget-date-selector"></div>\r\n        <div class="spwidget-time-selector ui-widget-content ui-corner-all">\r\n            <div class="spwidget-time-selector-cntr">\r\n                <div class="ui-widget-header ui-helper-clearfix ui-corner-all">\r\n                    Time\r\n                </div>\r\n                <div class="spwidget-time-hour">\r\n                    <label>Hour</label>\r\n                    <select name="spwidget_hour" class="spwidget-hour">\r\n                        <option value="1"> 1</option>\r\n                        <option value="2"> 2</option>\r\n                        <option value="3"> 3</option>\r\n                        <option value="4"> 4</option>\r\n                        <option value="5"> 5</option>\r\n                        <option value="6"> 6</option>\r\n                        <option value="7"> 7</option>\r\n                        <option value="8"> 8</option>\r\n                        <option value="9"> 9</option>\r\n                        <option value="10">10</option>\r\n                        <option value="11">11</option>\r\n                        <option value="12">12</option>\r\n                    </select>\r\n                </div>\r\n                <div class="spwidget-time-min">   \r\n                    <label>Minutes</label>\r\n                    <select name="spwidget_min" class="spwidget-min">\r\n                        <option value="00">00</option>\r\n                        <option value="05">05</option>\r\n                        <option value="10">10</option>\r\n                        <option value="15">15</option>\r\n                        <option value="20">20</option>\r\n                        <option value="25">25</option>\r\n                        <option value="30">30</option>\r\n                        <option value="35">35</option>\r\n                        <option value="40">40</option>\r\n                        <option value="45">45</option>\r\n                        <option value="50">50</option>\r\n                        <option value="55">55</option>\r\n                    </select>\r\n                </div>\r\n                <div class="spwidget-time-ampm">\r\n                    <label>AM|PM</label>\r\n                    <select name="spwidget_ampm" class="spwidget-ampm">\r\n                        <option value="AM">AM</option>\r\n                        <option value="PM">PM</option>\r\n                    </select>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <div class="spwidget-btn-set">\r\n        <div class="spwidget-btn">\r\n            Set\r\n        </div>\r\n    </div>\r\n</div>';
   src_sputils_getDateString = function () {
     /**
      * Returns a date string in the format expected by Sharepoint
@@ -3565,7 +3663,7 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_spapi_getList, src_sputils_does
     dateField.defaults = SPDate.defaults;
     return dateField;
   }(jquery, text_src_dateFieldWidget_dateFieldhtml, src_sputils_fillTemplate, src_sputils_getDateString, src_sputils_parseDateString, src_uiutils_makeSameHeight);
-  text_src_lookupFieldWidget_lookupFieldhtml = '<div>\n    <div class="spwidgets-lookup-cntr">\n        <div class="spwidget-lookup">\n            <div class="spwidgets-lookup-selected" style="display:none;">\n            </div>\n            <div class="spwidgets-lookup-input">\n                <label>Add</label>\n                <input type="text" name="spwidgetLookupInput" value="" />\n                <span class="spwidget-lookup-selector-showhide" title="Browse">Browse</span>\n                <div class="spwidget-lookup-selector-cntr ui-widget-content">\n                    <div class="ui-state-default">\n                        <button type="button" name="close" title="Close">Close</button>\n                    </div>\n                    <div class="spwidget-lookup-selector-item-cntr"></div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n\n';
+  text_src_lookupFieldWidget_lookupFieldhtml = '<div>\r\n    <div class="spwidgets-lookup-cntr">\r\n        <div class="spwidget-lookup">\r\n            <div class="spwidgets-lookup-selected" style="display:none;">\r\n            </div>\r\n            <div class="spwidgets-lookup-input">\r\n                <label>Add</label>\r\n                <input type="text" name="spwidgetLookupInput" value="" />\r\n                <span class="spwidget-lookup-selector-showhide" title="Browse">Browse</span>\r\n                <div class="spwidget-lookup-selector-cntr ui-widget-content">\r\n                    <div class="ui-state-default">\r\n                        <button type="button" name="close" title="Close">Close</button>\r\n                    </div>\r\n                    <div class="spwidget-lookup-selector-item-cntr"></div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>\r\n\r\n';
   src_sputils_getCamlLogical = function ($) {
     /**
      * Given an array of CAML matches, this method will wrap them all in a
@@ -4716,48 +4814,26 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_spapi_getList, src_sputils_does
   text_src_peoplePickerWidget_peoplePickerhtml = '<!--\r\n    Html Templates for the PickSPUser plugin.\r\n    \r\n    |\r\n    |   $Author$\r\n    | $Revision$\r\n    |     $Date$\r\n    |       $Id$\r\n    |\r\n-->\r\n<div>\r\n    <div class="pt-pickSPUser">\r\n        <div class="pt-pickSPUser-selected">\r\n            None Selected!\r\n        </div>\r\n        <div style="clear:both"></div>\r\n        <div class="pt-pickSPUser-input" \r\n                title="Type user name above to view search results.">\r\n            <input name="pickSPUserInputField" value="" type="text"/>\r\n        </div>\r\n    </div>\r\n    \r\n    <div class="pt-pickSPUser-person">\r\n        <div class="pt-pickSPUser-person-cntr ui-state-default ui-corner-all">\r\n            <span class="pt-person-name"></span>\r\n            <div class="pt-pickSPUser-person-actions">\r\n                <div class="tt-record-item-action-links">\r\n                    <a class="tt-delete-icon" href="javascript:" onclick="jQuery.pt.pickSPUser.removeUser(this);">\r\n                        <img style="border: medium none; margin-right: 2px;" alt="Delete" src="/_layouts/images/delitem.gif">\r\n                    </a>\r\n                    <div style="clear:both;"></div>\r\n                </div>\r\n                <div style="clear:both;"></div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>\r\n';
   src_spapi_searchPrincipals = function ($, cache, getSiteUrl, doesMsgHaveError) {
     /**
-         * Given a list name, this method will query the SP service and retrieve
-         * the list of forms for it.
-         *
-         * @param {Object} options
-         * @param {Object} options.searchText
-         * @param {Object} [options.maxResults=50]
-         * @param {Object} [options.principalType='All']
-         *      Default is User. Others include: None, DistributionList,
-         *      SecurityGroup, SharePointGroup, All
-         * @param {Object} [options.webUrl='currentSiteUrl']
-         * @param {Object} [options.cacheXML=false]
-         * @param {Object} [options.async=true]
-         * @param {Object} [options.completefunc]
-         *      Options is deprecated. Use .promise that is returned.
-         *
-         * @return {jQuery.Promise}
-         *      Promise is resolved with two input params:
-         *      XMLDocument : Response from Sharepoint
-         *      status : the ajax status string (error or success)
-         *
-         * @example
-         *
-         *  SPAPI.resolvePrincipals({
-         *      principalKeys: "domain\\userid"
-         *  })
-         *  .then(function(xmlDoc, status){
-         *
-         *      var userSiteUID = $(xmlDoc)
-         *              .find("AccountName:contains('domain\\userid')")
-         *              .parent()
-         *              .find("UserInfoID")
-         *              .text();
-         *      alert("User was Resolved. His ID is: " + userSisteID);
-         *  });
-    
-         *
-         * Depends on:
-         *
-         * .getSiteUrl()
-         * .doesMsgHaveError()
-         * .cache()
-         */
+     * Given a list name, this method will query the SP service and retrieve
+     * the list of forms for it.
+     *
+     * @param {Object} options
+     * @param {Object} options.searchText
+     * @param {Object} [options.maxResults=50]
+     * @param {Object} [options.principalType='All']
+     *      Default is User. Others include: None, DistributionList,
+     *      SecurityGroup, SharePointGroup, All
+     * @param {Object} [options.webUrl='currentSiteUrl']
+     * @param {Object} [options.cacheXML=false]
+     * @param {Object} [options.async=true]
+     * @param {Object} [options.completefunc]
+     *      Options is deprecated. Use .promise that is returned.
+     *
+     * @return {jQuery.Promise}
+     *      Promise is resolved with two input params:
+     *      XMLDocument : Response from Sharepoint
+     *      status : the ajax status string (error or success)
+     */
     var searchPrincipals = function () {
       var getData = null, callerFn = function () {
           return getData.apply(this, arguments);
@@ -4874,10 +4950,20 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_spapi_getList, src_sputils_does
      * @return {jQuery.Promise}
      *      The jquery .ajax() Promise is returned.
      *
-     * Depends on:
+     * @example
      *
-     * .getSiteUrl()
+     *  SPAPI.resolvePrincipals({
+     *      principalKeys: "domain\\userid"
+     *  })
+     *  .then(function(xmlDoc, status){
      *
+     *      var userSiteUID = $(xmlDoc)
+     *              .find("AccountName:contains('domain\\userid')")
+     *              .parent()
+     *              .find("UserInfoID")
+     *              .text();
+     *      alert("User was Resolved. His ID is: " + userSisteID);
+     *  });
      */
     var resolvePrincipals = function () {
       var getData = null, callerFn = function () {
@@ -5503,14 +5589,13 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_spapi_getList, src_sputils_does
     peoplePicker.defaults = People.defaults;
     return peoplePicker;
   }(jquery, text_src_peoplePickerWidget_peoplePickerhtml, src_spapi_getSiteUrl, src_spapi_searchPrincipals, src_spapi_resolvePrincipals, src_sputils_parseLookupFieldValue, src_uiutils_addHoverEffect);
-  text_src_filterPanelWidget_filterPanelhtml = '<div id="filter_main_ui">\r\n    <div class="spwidget-filter" style="display: none;">\r\n        <div class="spwidget-filter-column-cntr ui-widget-content"></div>\r\n        <div class="spwidget-filter-button-cntr">\r\n            <button type="button" class="spwidget-button ui-priority-secondary" name=\'reset\'>Reset</button>\r\n            <button type="button" class="spwidget-button" name=\'filter\'>Filter</button>\r\n        </div>\r\n    </div>\r\n</div>\r\n<div id="filter_column">\r\n    <div class="spwidget-column spwidget-type-{{type}}"\r\n            data-spwidget_column_type="{{type}}"\r\n            data-spwidget_list="{{list}}"\r\n            data-spwidget_sp_type="{{sp_type}}"\r\n            data-spwidget_sp_format="{{sp_format}}" >\r\n        <div class="spwidget-filter-value-cntr">\r\n            <label>{{DisplayName}}</label>\r\n            <div class="spwidget-filter-value-input">\r\n                __COLUMN__UI__\r\n            </div>\r\n        </div>\r\n        <div class="spwidget-filter-type-cntr" title="Match Options">\r\n            <select name="{{Name}}_type" class="spwidget-filter-type" tabindex="-1">\r\n                <option value="Contains">Contains</option>\r\n                <option value="Eq" selected="selected">Equal</option>\r\n                <option value="Neq">Not Equal</option>\r\n                <option value="IsNull">Is Blank</option>\r\n                <option value="IsNotNull">Is Not Blank</option>\r\n                __OTHER_FILTER_TYPES__\r\n            </select>\r\n            <select name="{{Name}}_match" class="spwidget-match-type" tabindex="-1">\r\n                <option value="Or" selected="selected">Any</option>\r\n                <option value="And">All</option>\r\n            </select>\r\n            <select name="{{Name}}_order" class="spwidget-sort-order" tabindex="-1">\r\n                <option value="" selected="selected">Sort</option>\r\n                <option value="Asc">&#9650; Ascending</option>\r\n                <option value="Des">&#9660; Descending</option>\r\n            </select>\r\n        </div>\r\n        <div class="spwidget-column-actions">\r\n            <a style="display:none;" href="javascript:" tabindex="-1" data-action="remove" class="spwidget-column-action">\r\n                <span class="ui-icon ui-icon-circle-close">remove</span>\r\n            </a>\r\n            <div class="spwidget-column-sort-actions">\r\n                <a href="javascript:" tabindex="-1" data-action="up" class="spwidget-column-action" title="Move up">\r\n                    <span class="ui-icon ui-icon-circle-arrow-n">Move Up</span>\r\n                </a>\r\n                <a href="javascript:" tabindex="-1" data-action="down" class="spwidget-column-action" title="Move down">\r\n                    <span class="ui-icon ui-icon-circle-arrow-s">Move Down</span>\r\n                </a>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>\r\n<div id="filter_text_field">\r\n    <input name="{{Name}}" title="{{DisplayName}}" type="text" value="" class="spwidget-input spwidget-filter-input" />\r\n    <span class="spwidget-tooltip">{{tooltip}}</span>\r\n</div>\r\n<div id="filter_choice_field">\r\n    <label>\r\n        <input name="{{Name}}" title="{{DisplayName}}" type="checkbox" value="{{value}}" class="spwidget-input spwidget-filter-input" />\r\n        {{value}}\r\n    </label>\r\n</div>';
+  text_src_filterPanelWidget_filterPanelhtml = '<div class="spwidget-filter" style="display: none;">\r\n    <div class="spwidget-filter-column-cntr ui-widget-content"></div>\r\n    <div class="spwidget-filter-button-cntr">\r\n        <button type="button" class="spwidget-button ui-priority-secondary" name=\'reset\'>Reset</button>\r\n        <button type="button" class="spwidget-button" name=\'filter\'>Filter</button>\r\n    </div>\r\n</div>\r\n';
+  text_src_filterPanelWidget_filterPanelColumnhtml = '<div class="spwidget-column spwidget-type-{{type}}"\r\n        data-spwidget_column_type="{{type}}"\r\n        data-spwidget_list="{{list}}"\r\n        data-spwidget_sp_type="{{sp_type}}"\r\n        data-spwidget_sp_format="{{sp_format}}" >\r\n    <div class="spwidget-filter-value-cntr">\r\n        <label>{{DisplayName}}</label>\r\n        <div class="spwidget-filter-value-input">\r\n            __COLUMN__UI__\r\n        </div>\r\n    </div>\r\n    <div class="spwidget-filter-type-cntr" title="Match Options">\r\n        <select name="{{Name}}_type" class="spwidget-filter-type" tabindex="-1">\r\n            <option value="Contains">Contains</option>\r\n            <option value="Eq" selected="selected">Equal</option>\r\n            <option value="Neq">Not Equal</option>\r\n            <option value="IsNull">Is Blank</option>\r\n            <option value="IsNotNull">Is Not Blank</option>\r\n            __OTHER_FILTER_TYPES__\r\n        </select>\r\n        <select name="{{Name}}_match" class="spwidget-match-type" tabindex="-1">\r\n            <option value="Or" selected="selected">Any</option>\r\n            <option value="And">All</option>\r\n        </select>\r\n        <select name="{{Name}}_order" class="spwidget-sort-order" tabindex="-1">\r\n            <option value="" selected="selected">Sort</option>\r\n            <option value="Asc">&#9650; Ascending</option>\r\n            <option value="Des">&#9660; Descending</option>\r\n        </select>\r\n    </div>\r\n    <div class="spwidget-column-actions">\r\n        <a style="display:none;" href="javascript:" tabindex="-1" data-action="remove" class="spwidget-column-action">\r\n            <span class="ui-icon ui-icon-circle-close">remove</span>\r\n        </a>\r\n        <div class="spwidget-column-sort-actions">\r\n            <a href="javascript:" tabindex="-1" data-action="up" class="spwidget-column-action" title="Move up">\r\n                <span class="ui-icon ui-icon-circle-arrow-n">Move Up</span>\r\n            </a>\r\n            <a href="javascript:" tabindex="-1" data-action="down" class="spwidget-column-action" title="Move down">\r\n                <span class="ui-icon ui-icon-circle-arrow-s">Move Down</span>\r\n            </a>\r\n        </div>\r\n    </div>\r\n</div>\r\n';
+  text_src_filterPanelWidget_filterPanelChoiceFieldhtml = '<label>\r\n    <input name="{{Name}}" title="{{DisplayName}}" type="checkbox"\r\n        value="{{value}}" class="spwidget-input spwidget-filter-input" /> {{value}}\r\n</label>\r\n';
+  text_src_filterPanelWidget_filterPanelTextFieldhtml = '<div>\r\n    <input name="{{Name}}" title="{{DisplayName}}" type="text" value="" class="spwidget-input spwidget-filter-input" />\r\n    <span class="spwidget-tooltip">{{tooltip}}</span>\r\n</div>';
   less_src_filterPanelWidget_filterPanel = undefined;
-  src_filterPanelWidget_filterPanel = function ($, filterPanelTemplate, getSiteUrl, getList, parseLookupFieldValue, fillTemplate, getCamlLogical, xmlEscape, lookupFieldWidget, peoplePickerWidget, dateFieldWidget) {
+  src_filterPanelWidget_filterPanel = function ($, filterPanelTemplate, filterPanelColumnTemplate, filterPanelChoiceFieldTemplate, filterPanelTextFieldTemplate, getSiteUrl, getList, parseLookupFieldValue, fillTemplate, getCamlLogical, xmlEscape, lookupFieldWidget, peoplePickerWidget, dateFieldWidget, doesMsgHaveError, getMsgError) {
     var Filter = {}, filterPanel;
-    /** @property {Boolean} Is initialization done */
-    Filter.isInitDone = false;
-    /** @property {jQuery} jQuery object with templates.*/
-    Filter.templates = null;
     /**
      * Default options.
      */
@@ -5572,11 +5657,6 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_spapi_getList, src_sputils_does
      */
     filterPanel = function (containers, options) {
       var arg = Array.prototype.slice.call(arguments, 1), $this = $(containers);
-      // If initialization is not yet done, then do it now
-      if (!Filter.isInitDone) {
-        Filter.isInitDone = true;
-        Filter.templates = $(filterPanelTemplate);
-      }
       // If input was a string, then must be a method.
       if (typeof options === 'string') {
         if (!$this.eq(0).hasClass('hasSPFilterPanel')) {
@@ -5652,7 +5732,7 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_spapi_getList, src_sputils_does
                   ]);
                   return;
                 }
-                if ($msg.SPMsgHasError()) {
+                if (doesMsgHaveError($msg)) {
                   dfd.rejectWith($msg, [
                     xData,
                     status
@@ -5690,10 +5770,10 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_spapi_getList, src_sputils_does
         Inst.buildWidget = function () {
           return $.Deferred(function (dfd) {
             Inst.getListDefinition().then(function () {
-              var $list = this, columns = '', colUI = Filter.templates.filter('#filter_column').html();
+              var $list = this, columns = '', colUI = $.trim(filterPanelColumnTemplate);
               // Insert the UI into the page and set
               // pointer ($ui) to it.
-              Inst.$ui = $(Filter.templates.filter('#filter_main_ui').html()).appendTo(Inst.$ele.empty().addClass('hasSPFilterPanel'));
+              Inst.$ui = $($.trim(filterPanelTemplate)).appendTo(Inst.$ele.empty().addClass('hasSPFilterPanel'));
               Inst.$uiFilterColumnCntr = Inst.$ui.find('div.spwidget-filter-column-cntr');
               Inst.$uiFilterSortCntr = Inst.$ui.find('div.spwidget-filter-sort-cntr');
               // Store list definition
@@ -5729,7 +5809,7 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_spapi_getList, src_sputils_does
                 case 'Choice':
                 case 'MultiChoice':
                   $thisCol.find('CHOICES CHOICE').each(function (i, v) {
-                    inputUI += fillTemplate(Filter.templates.filter('#filter_choice_field').html(), {
+                    inputUI += fillTemplate($.trim(filterPanelChoiceFieldTemplate), {
                       DisplayName: $thisCol.attr('DisplayName'),
                       Name: $thisCol.attr('Name'),
                       value: $(v).text()
@@ -5801,7 +5881,7 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_spapi_getList, src_sputils_does
                   }
                   //end: switch(): set the model.type only
                   // BUILD the input field for this.
-                  inputUI = Filter.templates.filter('#filter_text_field').html();
+                  inputUI = $.trim(filterPanelTextFieldTemplate);
                   thisColUI = thisColUI.replace(/__COLUMN__UI__/, inputUI).replace(/__OTHER_FILTER_TYPES__/, model.otherFilterTypes);
                   thisColUI = fillTemplate(thisColUI, $.extend(model, {
                     DisplayName: $thisCol.attr('DisplayName'),
@@ -5912,7 +5992,7 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_spapi_getList, src_sputils_does
                 // in the widget container element.
 .fail(function () {
               var $msg = this;
-              Inst.$ele.html('<div class="ui-state-error">Unable to retrieve list information. ' + $msg.SPGetMsgError() + '</div>');
+              Inst.$ele.html('<div class="ui-state-error">Unable to retrieve list information. ' + getMsgError($msg) + '</div>');
               dfd.reject();
             });
           }).promise();
@@ -6190,7 +6270,7 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_spapi_getList, src_sputils_does
           // -------------------- DATE FIELDS
           case 'date':
             $input.each(function () {
-              var dtObj = $input.SPDateField('getDate');
+              var dtObj = dateFieldWidget($input, 'getDate');
               if (dtObj.dates.length) {
                 thisColFilter.values = dtObj.dates;
                 thisColFilter.count = thisColFilter.values.length;
@@ -6338,9 +6418,9 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_spapi_getList, src_sputils_does
           case 'date':
             // If dateTime value, then let SPDateField parse values
             if ($colUI.data('spwidget_sp_format') === 'DateTime') {
-              $input.SPDateField('setDate', thisFilter.values);  // Regular dates - Provide format input
+              dateFieldWidget($input, 'setDate', thisFilter.values);  // Regular dates - Provide format input
             } else {
-              $input.SPDateField('setDate', thisFilter.values, 'yy-mm-dd');
+              dateFieldWidget($input, 'setDate', thisFilter.values, 'yy-mm-dd');
             }
             break;
           }  // ELSE: Must have been IsNull or IsNotNull. trigger change
@@ -6448,8 +6528,8 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_spapi_getList, src_sputils_does
     };
     filterPanel.defaults = Filter.defaults;
     return filterPanel;
-  }(jquery, text_src_filterPanelWidget_filterPanelhtml, src_spapi_getSiteUrl, src_spapi_getList, src_sputils_parseLookupFieldValue, src_sputils_fillTemplate, src_sputils_getCamlLogical, src_sputils_xmlEscape, src_lookupFieldWidget_lookupField, src_peoplePickerWidget_peoplePicker, src_dateFieldWidget_dateField);
-  text_src_uploadWidget_uploadhtml = '<div class="SPControlUploadUI spcontrolupload">\n    <div class="mainContainer">\n        <div class="buttonPane ui-state-default">\n            <div class="upload_button">\n                Upload\n            </div>\n        </div>\n        <div class="iFrameWindow ui-state-default">\n            <iframe name="SPControlUploadUI" frameborder="0" scrollbars="yes" scrolling="yes"></iframe>\n        </div>\n        <div class="loadingOverlay ui-widget-content">\n            <div class="loadingOverlayMsg"></div>\n        </div>\n        <div class="spwidget-success-cntr ui-widget-content">\n            <div class="spwidget-msg-cntr">\n                <span class="spwidget-msg">Upload Successful!</span> \n                <span class="spwidget-close">x</span> \n            </div>\n        </div>\n        <div class="spwidget-error-cntr ui-state-error">\n            <div class="spwidget-msg-cntr">\n                <span class="spwidget-msg">Error</span> \n                <span class="spwidget-close">x</span> \n            </div>\n        </div>\n    </div>\n</div>\n\n<div id="SPControlUploadModUI" \n    style="\n        position:   absolute;\n        width:      99.9%;\n        height:     99.9%;\n        left:       0px;\n        top:        0px;\n        padding-left:       .5em;\n        background-color:   white;">\n    <div class="SPControlUploadModUIFileSelected"\n        style="\n        background-position: left center;\n        background-repeat: no-repeat;\n        background-image: url(\'/_layouts/images/urn-content-classes-smartfolder16.gif\');\n        padding: 0.5em 2em;">Select...</div>\n</div>\n';
+  }(jquery, text_src_filterPanelWidget_filterPanelhtml, text_src_filterPanelWidget_filterPanelColumnhtml, text_src_filterPanelWidget_filterPanelChoiceFieldhtml, text_src_filterPanelWidget_filterPanelTextFieldhtml, src_spapi_getSiteUrl, src_spapi_getList, src_sputils_parseLookupFieldValue, src_sputils_fillTemplate, src_sputils_getCamlLogical, src_sputils_xmlEscape, src_lookupFieldWidget_lookupField, src_peoplePickerWidget_peoplePicker, src_dateFieldWidget_dateField, src_sputils_doesMsgHaveError, src_sputils_getMsgError);
+  text_src_uploadWidget_uploadhtml = '<div class="SPControlUploadUI spcontrolupload">\r\n    <div class="mainContainer">\r\n        <div class="buttonPane ui-state-default">\r\n            <div class="upload_button">\r\n                Upload\r\n            </div>\r\n        </div>\r\n        <div class="iFrameWindow ui-state-default">\r\n            <iframe name="SPControlUploadUI" frameborder="0" scrollbars="yes" scrolling="yes"></iframe>\r\n        </div>\r\n        <div class="loadingOverlay ui-widget-content">\r\n            <div class="loadingOverlayMsg"></div>\r\n        </div>\r\n        <div class="spwidget-success-cntr ui-widget-content">\r\n            <div class="spwidget-msg-cntr">\r\n                <span class="spwidget-msg">Upload Successful!</span> \r\n                <span class="spwidget-close">x</span> \r\n            </div>\r\n        </div>\r\n        <div class="spwidget-error-cntr ui-state-error">\r\n            <div class="spwidget-msg-cntr">\r\n                <span class="spwidget-msg">Error</span> \r\n                <span class="spwidget-close">x</span> \r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>\r\n\r\n<div id="SPControlUploadModUI" \r\n    style="\r\n        position:   absolute;\r\n        width:      99.9%;\r\n        height:     99.9%;\r\n        left:       0px;\r\n        top:        0px;\r\n        padding-left:       .5em;\r\n        background-color:   white;">\r\n    <div class="SPControlUploadModUIFileSelected"\r\n        style="\r\n        background-position: left center;\r\n        background-repeat: no-repeat;\r\n        background-image: url(\'/_layouts/images/urn-content-classes-smartfolder16.gif\');\r\n        padding: 0.5em 2em;">Select...</div>\r\n</div>\r\n';
   src_sputils_getSPVersion = function () {
     /* global SP, _spPageContextInfo */
     /**
@@ -7462,38 +7542,6 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_spapi_getList, src_sputils_does
     upload.defaults = Upload.defaults;
     return upload;
   }(jquery, text_src_uploadWidget_uploadhtml, src_spapi_getList, src_spapi_getListItems, src_spapi_getSiteUrl, src_sputils_getSPVersion);
-  src_sputils_getMsgError = function ($) {
-    /**
-     * Given a sharepoint webservices response, this method will
-     * look to see if it contains an error and return that error
-     * formated as a string.
-     *
-     * @param {XMLDocument|jQuery|String} xmlMsg
-     * @return {String} errorMessage
-     *
-     */
-    var getMsgError = function getMsgError(xmlMsg) {
-      var xMsg = $(xmlMsg), error = '', spErr = xMsg.find('ErrorCode'), count = 0;
-      if (!spErr.length) {
-        spErr = xMsg.find('faultcode');
-      }
-      if (!spErr.length) {
-        return '';
-      }
-      // Loop through and get all errors.
-      spErr.each(function () {
-        var thisErr = $(this);
-        if (thisErr.text() !== '0x00000000') {
-          count += 1;
-          error += '(' + count + ') ' + thisErr.text() + ': ' + thisErr.parent().children().not(thisErr).text() + '\n';
-        }
-      });
-      error = count + ' error(s) encountered! \n' + error;
-      return error;
-    };
-    /* SPGetMsgError() */
-    return getMsgError;
-  }(jquery);
   src_spapi_getSiteListCollection = function ($, cache, getSiteUrl, doesMsgHaveError) {
     /**
      * Returns a Deferred that is resolved with an Array of Objects containing
@@ -7767,7 +7815,7 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_spapi_getList, src_sputils_does
   src_SPWidgets = function ($, board, dateField, lookupField, peoplePicker, filterPanel, upload, getMsgError, doesMsgHaveError, xmlEscape, fillTemplate, getCamlLogical, getSPVersion, parseDateString, parseLookupFieldValue, getDateString, getNodesFromXml, makeSameHeight, getList, getListFormCollection, getListItems, getSiteListCollection, getSiteUrl, getUserProfile, resolvePrincipals, searchPrincipals) {
     $.SPWidgets = {
       defaults: {},
-      version: '2.5.0',
+      version: '2.5.1',
       // Utilities
       escapeXML: xmlEscape.escape,
       unEscapeXML: xmlEscape.unescape,

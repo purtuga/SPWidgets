@@ -30,28 +30,6 @@ define([
      *      Promise is resolved with two input params:
      *      XMLDocument : Response from Sharepoint
      *      status : the ajax status string (error or success)
-     *
-     * @example
-     *
-     *  SPAPI.resolvePrincipals({
-     *      principalKeys: "domain\\userid"
-     *  })
-     *  .then(function(xmlDoc, status){
-     *
-     *      var userSiteUID = $(xmlDoc)
-     *              .find("AccountName:contains('domain\\userid')")
-     *              .parent()
-     *              .find("UserInfoID")
-     *              .text();
-     *      alert("User was Resolved. His ID is: " + userSisteID);
-     *  });
-
-     *
-     * Depends on:
-     *
-     * .getSiteUrl()
-     * .doesMsgHaveError()
-     * .cache()
      */
     var searchPrincipals = (function(){
 

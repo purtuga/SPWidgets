@@ -1,65 +1,7 @@
-<div id="filter_main_ui">
-    <div class="spwidget-filter" style="display: none;">
-        <div class="spwidget-filter-column-cntr ui-widget-content"></div>
-        <div class="spwidget-filter-button-cntr">
-            <button type="button" class="spwidget-button ui-priority-secondary" name='reset'>Reset</button>
-            <button type="button" class="spwidget-button" name='filter'>Filter</button>
-        </div>
+<div class="spwidget-filter" style="display: none;">
+    <div class="spwidget-filter-column-cntr ui-widget-content"></div>
+    <div class="spwidget-filter-button-cntr">
+        <button type="button" class="spwidget-button ui-priority-secondary" name='reset'>Reset</button>
+        <button type="button" class="spwidget-button" name='filter'>Filter</button>
     </div>
-</div>
-<div id="filter_column">
-    <div class="spwidget-column spwidget-type-{{type}}"
-            data-spwidget_column_type="{{type}}"
-            data-spwidget_list="{{list}}"
-            data-spwidget_sp_type="{{sp_type}}"
-            data-spwidget_sp_format="{{sp_format}}" >
-        <div class="spwidget-filter-value-cntr">
-            <label>{{DisplayName}}</label>
-            <div class="spwidget-filter-value-input">
-                __COLUMN__UI__
-            </div>
-        </div>
-        <div class="spwidget-filter-type-cntr" title="Match Options">
-            <select name="{{Name}}_type" class="spwidget-filter-type" tabindex="-1">
-                <option value="Contains">Contains</option>
-                <option value="Eq" selected="selected">Equal</option>
-                <option value="Neq">Not Equal</option>
-                <option value="IsNull">Is Blank</option>
-                <option value="IsNotNull">Is Not Blank</option>
-                __OTHER_FILTER_TYPES__
-            </select>
-            <select name="{{Name}}_match" class="spwidget-match-type" tabindex="-1">
-                <option value="Or" selected="selected">Any</option>
-                <option value="And">All</option>
-            </select>
-            <select name="{{Name}}_order" class="spwidget-sort-order" tabindex="-1">
-                <option value="" selected="selected">Sort</option>
-                <option value="Asc">&#9650; Ascending</option>
-                <option value="Des">&#9660; Descending</option>
-            </select>
-        </div>
-        <div class="spwidget-column-actions">
-            <a style="display:none;" href="javascript:" tabindex="-1" data-action="remove" class="spwidget-column-action">
-                <span class="ui-icon ui-icon-circle-close">remove</span>
-            </a>
-            <div class="spwidget-column-sort-actions">
-                <a href="javascript:" tabindex="-1" data-action="up" class="spwidget-column-action" title="Move up">
-                    <span class="ui-icon ui-icon-circle-arrow-n">Move Up</span>
-                </a>
-                <a href="javascript:" tabindex="-1" data-action="down" class="spwidget-column-action" title="Move down">
-                    <span class="ui-icon ui-icon-circle-arrow-s">Move Down</span>
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-<div id="filter_text_field">
-    <input name="{{Name}}" title="{{DisplayName}}" type="text" value="" class="spwidget-input spwidget-filter-input" />
-    <span class="spwidget-tooltip">{{tooltip}}</span>
-</div>
-<div id="filter_choice_field">
-    <label>
-        <input name="{{Name}}" title="{{DisplayName}}" type="checkbox" value="{{value}}" class="spwidget-input spwidget-filter-input" />
-        {{value}}
-    </label>
 </div>

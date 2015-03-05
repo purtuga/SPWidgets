@@ -26,10 +26,20 @@ define([
      * @return {jQuery.Promise}
      *      The jquery .ajax() Promise is returned.
      *
-     * Depends on:
+     * @example
      *
-     * .getSiteUrl()
+     *  SPAPI.resolvePrincipals({
+     *      principalKeys: "domain\\userid"
+     *  })
+     *  .then(function(xmlDoc, status){
      *
+     *      var userSiteUID = $(xmlDoc)
+     *              .find("AccountName:contains('domain\\userid')")
+     *              .parent()
+     *              .find("UserInfoID")
+     *              .text();
+     *      alert("User was Resolved. His ID is: " + userSisteID);
+     *  });
      */
     var resolvePrincipals = (function() {
 
