@@ -553,15 +553,18 @@ define([
                             })
                             .then(function(xmlDoc/*, status*/){
 
-                                // TODO: handle error conditions? (low risk of ocuring)
+                                // TODO: handle error conditions? (low risk of occuring)
 
-                                u.item.accountId = $(xmlDoc)
-                                    .find("AccountName:contains('" + u.item.accountName + "')")
-                                        .parent()
-                                        .find("UserInfoID")
-                                        .text();
+                                var principalInfo = $(xmlDoc).find("PrincipalInfo");
 
-                                addToSelectionList();
+                                // Get and set ID if only one user was returned.
+                                // See issue #42 for why we don't try to match on the value
+                                // that was searched.
+                                // https://github.com/purtuga/SPWidgets/issues/42
+                                if (principalInfo.length === 1) {
+                                    u.item.accountId = principalInfo.find("UserInfoID").text();
+                                    addToSelectionList();
+                                }
 
                             });
 
