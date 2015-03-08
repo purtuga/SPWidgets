@@ -198,7 +198,7 @@ define([
 
         // BUILD the widget on each input element
         // provided by the user's selection
-        return $(containers).each(function(){
+        return containers.each(function(){
 
            /**
             * @class SPDate

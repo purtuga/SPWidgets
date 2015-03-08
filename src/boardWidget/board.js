@@ -373,7 +373,7 @@ define([
             retVal  = containers;
 
         // Attach the board to each element
-        $(containers).each(function(){
+        containers.each(function(){
 
             var ele         = $(this),
                 isMethod    = (typeof options === "string"),

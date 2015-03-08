@@ -153,7 +153,6 @@ define([
      *          listName: "Shared Documents"
      *      });
      *
-     *
      */
     upload = function (containers, options) {
 
@@ -167,7 +166,7 @@ define([
 
         }
 
-        return $(containers).each(function(){
+        return containers.each(function(){
 
             var opt = $.extend({}, Upload.defaults, options),
                 overlayCss;

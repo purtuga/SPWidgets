@@ -250,7 +250,7 @@ define([
         var arg = Array.prototype.slice.call(arguments, 1);
 
         // Initiate each selection as a Lookup element
-        return $(containers).each(function(){
+        return containers.each(function(){
 
             var ele = $(this),
                 o;

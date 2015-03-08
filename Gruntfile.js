@@ -24,7 +24,8 @@ module.exports = function(grunt) {
         buildYear   = grunt.template.today('yyyy'),
         buildId     = (new Date()).getTime(),
         fs          = require('fs'),
-        path        = require('path');
+        path        = require('path'),
+        minifyHtml  = require("./tools/copy.process.minifyHtml.js").minifyHtml;
 
 
     /**
@@ -354,7 +355,10 @@ module.exports = function(grunt) {
                     ],
                     processContent: function(fileContent, filePath){
                         return replaceBuildVariables(
-                                    includeFile(fileContent, filePath),
+                                    includeFile(
+                                        minifyHtml(fileContent, filePath),
+                                        filePath
+                                    ),
                                     filePath
                                 );
                     }

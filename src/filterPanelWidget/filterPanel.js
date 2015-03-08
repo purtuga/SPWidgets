@@ -102,7 +102,7 @@ define([
     filterPanel = function(containers, options){
 
         var arg = Array.prototype.slice.call(arguments, 1),
-            $this = $(containers);
+            $this = containers;
 
         // If input was a string, then must be a method.
         if (typeof options === "string") {

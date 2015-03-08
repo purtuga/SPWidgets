@@ -26,7 +26,7 @@
                 var listName = $list.find("Title").text();
 
                 $lookups
-                    .html(lookupTmplt)
+                    .html($.trim(lookupTmplt))
                     .find("input[name='example1']")
                         .change(function(){
 
