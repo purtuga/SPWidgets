@@ -88,3 +88,9 @@ This project has a `deploy` build target (`grunt deploy`) that copies the built 
 Once deployed, browse to the deployment location on the SharePoint site and click on `demo/src/Dev.SPWidgets.aspx`. This version of the Demo loads all modules using requireJS, which facilitates development and testing.
 
 
+## Contributors
+
+-   [@TerryMooreII](https://github.com/TerryMooreII)
+-   [@donsuhr](https://github.com/donsuhr)
+
+
