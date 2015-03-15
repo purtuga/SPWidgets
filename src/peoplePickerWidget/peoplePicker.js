@@ -392,6 +392,7 @@ define([
                                         accountId:      thisEle.find("UserInfoID").text(),
                                         accountName:    thisEle.find("AccountName").text(),
                                         accountType:    thisEle.find("PrincipalType").text(),
+                                        email:          thisEle.find("Email").text(),
                                         // needed attributes for autocomplete
                                         value:          thisEle.find("DisplayName").text(),
                                         label:          ''
@@ -561,10 +562,17 @@ define([
                                 // See issue #42 for why we don't try to match on the value
                                 // that was searched.
                                 // https://github.com/purtuga/SPWidgets/issues/42
-                                if (principalInfo.length === 1) {
-                                    u.item.accountId = principalInfo.find("UserInfoID").text();
-                                    addToSelectionList();
-                                }
+                                principalInfo.each(function(){
+                                    var $thisPrincipalInfo = $(this);
+                                    if (
+                                        $thisPrincipalInfo.find("Email").text() === u.item.email ||
+                                        $thisPrincipalInfo.find("DisplayName").text() === u.item.displayName
+                                    ) {
+                                        u.item.accountId = principalInfo.find("UserInfoID").text();
+                                        addToSelectionList();
+                                        return false;
+                                    }
+                                });
 
                             });
 
