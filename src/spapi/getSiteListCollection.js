@@ -14,8 +14,6 @@ define([
      * Returns a Deferred that is resolved with an Array of Objects containing
      * the site list collection.
      *
-     * Dependends on getSiteUrl()
-     *
      * @param {Object} options
      *
      * @param {String} [options.webURL=currentSite]
@@ -34,11 +32,7 @@ define([
      *          xData - webservice Response XML Document
      *          status - jQuery async request status
      *
-     *
-     * Depends on:
-     *
-     * .getSiteUrl();
-     * .doesMsgHaveError(0)
+     * @see https://msdn.microsoft.com/en-us/library/ms774864(v=office.12).aspx
      *
      */
     var getSiteListCollection = (function(){

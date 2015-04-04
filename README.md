@@ -88,6 +88,15 @@ This project has a `deploy` build target (`grunt deploy`) that copies the built 
 Once deployed, browse to the deployment location on the SharePoint site and click on `demo/src/Dev.SPWidgets.aspx`. This version of the Demo loads all modules using requireJS, which facilitates development and testing.
 
 
+## Unit Tests
+
+Unit test cases are written under the `test` folder using Jasnime.  Test should be able to run without a real SharePoint Server by taking advantage of fakeServer. To run the test case locally run the following:
+
+    npm run server
+
+This will run an http server on port 8080 and try to open the test `index.html` file in the browser.
+
+
 ## Contributors
 
 -   [@TerryMooreII](https://github.com/TerryMooreII)

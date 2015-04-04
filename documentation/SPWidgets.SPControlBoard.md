@@ -294,11 +294,17 @@ The default options for this widget can be manipulated/set via the following obj
             data.updates.push(["Title", "New title here"]);
 
         *data.updatePromise*<br/>
-        A jQuery.Promise that represents the update that will be made. This can be used to bind on additional functionality. The queued functions will be given:
+        A jQuery.Promise that represents the update that will be made. This can be used to bind on additional functionality. The queued functions will be given the following on a successful update:
 
         -   {Object} The updated List Item object
         -   {Object} The pre-update List Item object
         -   {XMLDocument} The xml response returned from the update (xData).
+
+        If the update fails, the queued function will be given the following:
+
+        -   {String} The error message
+        -   {Object} jqXHR
+        -   {String} Status
 
         The context of object will be the HTML element from where the update was triggered.
 

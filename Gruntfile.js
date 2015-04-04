@@ -462,7 +462,10 @@ module.exports = function(grunt) {
         },
         jshint : {
             options : {
-                jshintrc : true
+                jshintrc : true,
+                ignores: [
+                    "test/setup/jasmine-boot.js"
+                ]
             },
             gruntfile : {
                 src : 'Gruntfile.js'

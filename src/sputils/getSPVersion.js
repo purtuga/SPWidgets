@@ -59,7 +59,10 @@ define([], function(){
         }
 
         // TODO: implement method detailed by Jeremy Thake: http://www.jeremythake.com/2013/08/get-sharepoint-version-number-of-your-platform-quickly/
-        // Queries: /_vti_pvt/service.cnf ... Works in SP2010 / 2013
+        // Queries: /_vti_pvt/service.cnf ... Works in SP2010 / 2013, 2007 as well.
+        // OUTPUT:
+        //      vti_encoding:SR|utf8-nl
+        //      ti_extenderversion:SR|16.0.0.1216
 
         if (returnExternal) {
 

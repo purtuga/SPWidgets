@@ -45,7 +45,7 @@ define([
      */
     Filter.defaults = {
         list:                   '',
-        webURL:                 getSiteUrl(), // FIXME: this needs to be deferred until first call
+        webURL:                 '',
         columns:                ['Title'],
         textFieldTooltip:       'Use a semicolon to delimiter multiple keywords.',
         peopleFieldTooltip:     'Use [me] keyword to represent current user.',
@@ -182,6 +182,10 @@ define([
                     $uiSortButtons:         null,
                     opt:                    opt
                 };
+
+            if (!opt.webURL) {
+                opt.webURL = getSiteUrl();
+            }
 
             /**
              * Retrieves the list definition.

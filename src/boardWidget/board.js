@@ -54,7 +54,7 @@ define([
         fieldFilter:            null,
         optionalLabel:          '(none)',
         template:               null,
-        webURL:                 getSiteUrl(), //FIXME: this call needs to be deferred until first usage.
+        webURL:                 '',
         showColPicker:          false,
         colPickerLabel:         "Columns",
         colPickerVisible:       [],
@@ -2078,6 +2078,10 @@ define([
 
 
             });//end: $.extend() set opt
+
+            if (!opt.webURL) {
+                opt.webURL = getSiteUrl();
+            }
 
             //----------------------------------------------------------
             //----------------[ Initialize this instance ]--------------

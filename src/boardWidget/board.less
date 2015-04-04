@@ -1,6 +1,6 @@
-/** 
+/**
  * Stylesheet for the Board widget
- * 
+ *
  * BUILD: _BUILD_VERSION_DATE_
  */
 div.spwidget-board {
@@ -10,7 +10,7 @@ div.spwidget-board {
 
 div.spwidget-board div.spwidget-board-headers,
 div.spwidget-board div.spwidget-board-headers-cntr,
-div.spwidget-board div.spwidget-board-states-cntr, 
+div.spwidget-board div.spwidget-board-states-cntr,
 div.spwidget-board div.spwidget-board-states {
     width: 100%;
 }
@@ -57,7 +57,8 @@ div.spwidget-board div.spwidget-board-state div.spwidget-board-state-item {
     margin: .5em .2em;
     font-weight: normal;
     cursor: move;
-    overflow: auto;
+    overflow: hidden;
+    word-break: break-word;
 }
 div.spwidget-board div.spwidget-board-state-item div.spwidget-board-item-actions{
     margin-top: .2em;
@@ -109,7 +110,7 @@ div.spwidget-board-settings div.spwidget-board-column-list > a > span.ui-icon {
 }
 
 /* Number of Columns (96 % #columns)
- * Currently support 10 columns. 
+ * Currently support 10 columns.
  */
 div.spwidget-board .spwidget-states-3 div.spwidget-board-state {
     width: 32.4%;
