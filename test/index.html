@@ -17,32 +17,10 @@
 </head>
 <body>
     <script type="text/javascript" src="../vendor/requirejs/require.js"></script>
+    <script type="text/javascript" src="setup/requirejs.config.js"></script>
     <script type="text/javascript">
 
     (function(){
-        var require = requirejs.config({
-                baseUrl: "../",
-                urlArgs: '@BUILD',
-                paths: {
-                    jquery      : 'vendor/jquery/dist/jquery',
-                    'jquery-ui' : 'vendor/jquery-ui/jquery-ui',
-                    less        : 'vendor/require-less/less',
-                    lessc       : 'vendor/require-less/lessc',
-                    normalize   : 'vendor/require-less/normalize',
-                    text        : 'vendor/requirejs-text/text'
-                },
-                shim: {
-                    'jquery-ui': {
-                        deps: ['jquery']
-                    },
-                    'SPWidgets': {
-                        deps: ['jquery', 'jquery-ui']
-                    }
-                },
-                less: {
-                    relativeUrls: true
-                }
-            });
 
         require([
             'require',
@@ -51,13 +29,7 @@
             'jquery-ui',
             "src/SPWidgets"
         ], function(require){
-            require([
-                // List all test case files below
-                "./test/test.SPWidgets"
-
-            ], function(){
-                window.runTests();
-            });
+            require(["./test/suite"], function(){ window.runTests(); });
         });
 
     }());

@@ -1,4 +1,4 @@
-var connect = require('connect');
+var connect = require('../node_modules/grunt-contrib-connect/node_modules/connect');
 var serveStatic = require('serve-static');
 var path = require("path");
 var open = require("open");

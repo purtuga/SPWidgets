@@ -494,7 +494,7 @@ module.exports = function(grunt) {
             },
             test : {
                 files : '<%= jshint.test.src %>',
-                tasks : ['jshint:test']
+                tasks : ['jshint:test', 'test']
             },
         },
 
@@ -578,7 +578,31 @@ module.exports = function(grunt) {
 
             } // end: requirejs:compile
 
-        } //end: requirejs
+        }, //end: requirejs
+
+        connect: {
+            test: {
+                options: {
+                    port: 8182
+                }
+            }
+        },
+        jasmine: {
+            all: {
+                options: {
+                    specs: "test/specs/**/*.js",
+                    host: "http://127.0.0.1:8182/",
+                    template: require('grunt-template-jasmine-requirejs'),
+                    templateOptions: {
+                        requireConfigFile: "test/setup/requirejs.config.js",
+                        requireConfig: {
+                            baseUrl: "./"
+                        }
+                    }
+
+                }
+            }
+        }
 
     }); //end: config()
 
@@ -590,6 +614,8 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-requirejs');
     grunt.loadNpmTasks('grunt-jsdoc');
+    grunt.loadNpmTasks('grunt-contrib-jasmine');
+    grunt.loadNpmTasks('grunt-contrib-connect');
 
     /**
      * Default TASK
@@ -609,6 +635,7 @@ module.exports = function(grunt) {
 
         grunt.task.run([
             "jshint",
+            "test",
             "clean:build",
             "copy:build"
         ]);
@@ -634,5 +661,6 @@ module.exports = function(grunt) {
      */
     grunt.registerTask('deploy', ["copy:deploy"]);
 
+    grunt.registerTask('test', ["connect:test", "jasmine"]);
 
 }; //end: module.exports

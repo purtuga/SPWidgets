@@ -6,7 +6,7 @@ define([
     '../sputils/parseDateString',
     '../uiutils/makeSameHeight',
     //--------------------------------
-    'less!./dateField.less'
+    'less!./dateField'
 ], function(
     $,
     dateFieldTemplate,
