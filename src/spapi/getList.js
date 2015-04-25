@@ -33,7 +33,7 @@ define([
         var getListData = null,
             callerFn    = function getList(){
 
-                    getListData.apply(this, arguments);
+                    return getListData.apply(this, arguments);
 
             };
 

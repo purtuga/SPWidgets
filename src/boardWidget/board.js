@@ -649,9 +649,9 @@ define([
                                                     // Loop thorugh all rows and build the
                                                     // array of states.
                                                     $rows = getNodesFromXml({
-                                                        xDoc: xData.responseXML,
-                                                        node: "z:row",
-                                                        asJQuery: true
+                                                        xDoc:       xData.responseXML,
+                                                        nodeName:   "z:row",
+                                                        asJQuery:   true
                                                     });
 
                                                     $rows.each(function(i/*,v*/){
