@@ -452,7 +452,7 @@ define([
                     listItems:          [], // Array with items from the list.
                     initDone:           false,
                     formUrls:           null, // Object with url's to form. Used by opt.getListFormUrl()
-                    isStateRequired:    true,
+                    isStateRequired:    false, // SP defaults are for fields to be optional
                     maxColumnVisible:   10,
                     showNumberOfColumns: 10,    // number of columns shown on the board
                     /**
@@ -516,9 +516,9 @@ define([
                                     }
 
                                     // store if field is required
-                                    if ( f.attr("Required") === "FALSE" ) {
+                                    if ( f.attr("Required") === "TRUE" ) {
 
-                                        opt.isStateRequired = false;
+                                        opt.isStateRequired = true;
 
                                     }
 
