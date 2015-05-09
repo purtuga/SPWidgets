@@ -53,6 +53,7 @@ define([
         CAMLViewFields:         '',
         fieldFilter:            null,
         optionalLabel:          '(none)',
+        allowFieldBlanks:       null,
         template:               null,
         webURL:                 '',
         showColPicker:          false,
@@ -90,6 +91,19 @@ define([
      *                  The field from the List from where the board should
      *                  be built from. This field should be either of type
      *                  CHOICE or LOOKUP.
+     *
+     * @param {Null|Boolean} [options.allowFieldBlanks=null]
+     *                  Control whether an additional board state is shown that
+     *                  allows user to move a task to blank value (value in the column
+     *                  is blank). Possible values are:
+     *                  `null` - (default) widget will try to
+     *                  figure it out based on the Field definition in the list.
+     *                  `true` - Always show "none" column. Note that if the field is
+     *                  setup as Required, updates to the item may fail.
+     *                  `false` - Always hide the "none" column, regardless of the
+     *                  field definition. Note that if your data has item with blanks
+     *                  for the field, those item will not be shown on the board.
+     *
      *
      * @param {String|Function} [options.CAMLQuery="<Query></Query>"]
      *                  String with CAML query to be used against the list
@@ -517,9 +531,13 @@ define([
 
                                     // store if field is required
                                     if ( f.attr("Required") === "TRUE" ) {
-
                                         opt.isStateRequired = true;
+                                    }
 
+                                    // Override the calculated required state attribute
+                                    // if user set allowFieldBlanks on input
+                                    if (typeof opt.allowFieldBlanks === "boolean") {
+                                        opt.isStateRequired = !opt.allowFieldBlanks;
                                     }
 
                                     switch(f.attr("Type").toLowerCase()) {

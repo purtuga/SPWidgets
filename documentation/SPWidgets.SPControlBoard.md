@@ -30,6 +30,7 @@ This method takes as input an object containing the supported options:
             CAMLViewFields:         '',
             fieldFilter:            null,
             optionalLabel:          '(none)',
+            allowFieldBlanks:       null,
             template:               null,
             webURL:                 $().SPServices.SPGetCurrentSite(),
             showColPicker:          false,
@@ -151,6 +152,13 @@ The default options for this widget can be manipulated/set via the following obj
                     "</OrderBy>" +
                 "</Query>"
 
+
+-   **allowFieldBlanks**     :   *Null|Boolean. Optional. Default=null* <br>
+    Controls whether an additional board state is shown that allows for items to be set to "none", which mean the value store for that Field is blank. By default, the Board widget will attempt to determine the correct behavior based on the Field List definition. Posisble values are:
+
+    -   `null` : (Default). Widget will figure it out.
+    -   `true` : Always show the "(none)" column. Note that if the field is setup as Required, updates to the item may fail.
+    -   `false`: Always hide the "none" column, regardless of the field definition. Note that if your data has item with blanks for the field, those item will not be shown on the board.
 
 -   **optionalLabel**     :   *String. Optional. Default="(none)"* <br>
     The string to be used as the State column header when field from where Board was built is optional in the List.

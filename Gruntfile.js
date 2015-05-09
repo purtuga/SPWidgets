@@ -475,7 +475,7 @@ module.exports = function(grunt) {
             },
             test : {
                 src : ['test/**/*.js']
-            },
+            }
         },
 
         watch : {
@@ -490,7 +490,7 @@ module.exports = function(grunt) {
                     'test/**/*',
                     '*.aspx'
                 ],
-                tasks : ['build', 'deploy']
+                tasks : ['deploy']
             },
             test : {
                 files : '<%= jshint.test.src %>',
@@ -627,7 +627,7 @@ module.exports = function(grunt) {
      * BUILD
      * Builds the appliation.
      */
-    grunt.registerTask('build', "Building Project...", function(){
+    grunt.registerTask('build', "jshint, test, build.", function(){
 
         grunt.log.writeln("BUILD ID: " + buildId);
         grunt.log.writeln("BUILD DIR: " + grunt.config(["copy", "build", "dest"]));
@@ -659,7 +659,7 @@ module.exports = function(grunt) {
      * copy content from the build folder to the deploy destination.
      *
      */
-    grunt.registerTask('deploy', ["copy:deploy"]);
+    grunt.registerTask('deploy', ["build", "copy:deploy"]);
 
     grunt.registerTask('test', ["connect:test", "jasmine"]);
 
