@@ -339,6 +339,25 @@ module.exports = function(grunt) {
                         '<%= buildFolder %>/demo/src/demo.common.js'
                     ]
                 }
+            },
+
+            docs: {
+                options : {
+                    banner : ''
+                },
+                files: {
+                    "<%= buildFolder %>/documentation/combined.md": [
+                        '<%= buildFolder %>/documentation/SPWidgets.md',
+                        '<%= buildFolder %>/documentation/SPWidgetspickSPUser.md',
+                        '<%= buildFolder %>/documentation/SPWidgets.SPControlBoard.md',
+                        '<%= buildFolder %>/documentation/SPWidgets.SPControlLookupField.md',
+                        '<%= buildFolder %>/documentation/SPWidgets.SPControlUpload.md',
+                        '<%= buildFolder %>/documentation/SPWidgets.SPDateField.md',
+                        '<%= buildFolder %>/documentation/SPWidgets.SPFilterPanel.md',
+                        '<%= buildFolder %>/documentation/SPWidgets.Utilities.md'
+
+                    ]
+                }
             }
         },
         copy: {

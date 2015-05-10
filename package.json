@@ -1,6 +1,6 @@
 {
   "name": "SPWidgets",
-  "version": "2.5.1",
+  "version": "2.5.2",
   "description": "SharePoint widgets and tools for custom client side web solutions",
   "main": "dist/jquery.SPWidgets.js",
   "scripts": {

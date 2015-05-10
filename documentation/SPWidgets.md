@@ -3,7 +3,7 @@ About
 
 SPWidgets is a jQuery plugin that provides SharePoint Widgets that can be used for creating customized User Interfaces (UI) on the SharePoint platform using Client Side scripting (javascript).
 
-For the latest information on this plugin, see the [project page on GIT](http://purtuga.github.com/SPWidgets/).
+For the latest information on this plugin, see the [project page on GitHub](http://purtuga.github.com/SPWidgets/).
 
 
 Demo Showcase
@@ -27,9 +27,9 @@ Usage
 The following is an example that loads the required libraries from CDN's, the SPWidgets from the local site and then initiates the People Picker plugin on an input field inside a jQuery UI dialog.
 
 
-    <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/themes/redmond/jquery-ui.css" />
-    <script type="text/javascript" src='https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js'></script>
-    <script type="text/javascript" src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js'></script>
+    <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/redmond/jquery-ui.css" />
+    <script type="text/javascript" src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js'></script>
+    <script type="text/javascript" src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js'></script>
     <script type="text/javascript" src='yoursite/path/to/jquery.SPWidgets.js'></script>
     <script type="text/javascript">
         $(document).ready(function(){
