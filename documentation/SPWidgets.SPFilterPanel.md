@@ -177,6 +177,7 @@ Methods
                 etc...
            },
            count: 2 // number of filters created
+           columns: [] // Array of internal column names defined in the filters
         }
 
 
