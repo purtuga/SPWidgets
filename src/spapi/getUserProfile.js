@@ -15,10 +15,12 @@ define([
      * is returned as an object, alogn with the webservices response.
      * @function
      *
-     * @param {String} accountName
-     * @param {String} [webURL=current site]
-     * @param {Boolean} [async=true]
-     * @param {Boolean} [cacheXML=true]
+     * @param {Object} options
+     * @param {String} options.accountName
+     * @param {Object} [options.otherAttr]
+     * @param {String} [options.webURL=current site]
+     * @param {Boolean} [options.async=true]
+     * @param {Boolean} [options.cacheXML=true]
      *
      * @return {jQuery.Promise}
      *      Promise is resolved with 3 params - Object, xData, status. Object
@@ -61,6 +63,7 @@ define([
         // Define defaults. User can change these on their function attachment.
         callerFn.defaults = {
             accountName:    '',
+            otherAttr:      '',
             webURL:         '',
             async:          true,
             cacheXML:       true,
@@ -162,6 +165,11 @@ define([
                             profile[ $prop.find("Name").text() ] = $prop.find("Value").text() || "";
 
                         });
+
+                        // If user passed in other Attributes, add it to the model
+                        if (options.otherAttr) {
+                            $.extend(profile, options.otherAttr);
+                        }
 
                         dfd.resolveWith($, [profile, xData, status]);
 
