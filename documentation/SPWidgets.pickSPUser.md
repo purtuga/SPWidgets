@@ -96,6 +96,22 @@ This method takes as input an object containing the options below. These can als
 -   **meKeywordLabel** : *String. Optional. Default=Current User* <br />
     The label to be shown on the suggestion box or selected list of user when using the [me] keyword.  (Since v.2.3)
 
+-   **showSelected** : *Boolean. Optional. Default=true* <br />
+    Controls whether the selected list of people should be shown. Default is true.  When wanting to only show the people picker input, set this value to false. See example below.
+
+    Example:
+
+        $("input[name='findUser']").pickSPUser({
+            showSelected: false,
+            onPickUser: function(personObj){
+                // keep the list of selected user empty
+                this.pickSPUser("method", "clear");
+
+                // Now do something with the person the user just selected
+                alert(personObj.displayName + " was selected!");
+            }
+        });
+
 
 Return Value
 ------------

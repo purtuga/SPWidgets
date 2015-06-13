@@ -39,6 +39,7 @@ define([
         inputPlaceholder:   "Type and Pick",
         appendTo:           null,
         minLength:          3,
+        showSelected:       true,
         resolvePrincipals:  true,
         meKeyword:          "[me]",
         meKeywordLabel:     "Current User",
@@ -113,6 +114,10 @@ define([
      *      The text to appear in the HTML5 placeholder attribute
      *      of the input field.
      *
+     * @param {String} [options.showSelected=true]
+     *      If true (default), the selected users by this widget will be shown
+     *      on the screen. Set to this false, if all that is desired to show is the
+     *      search input element.
      * @param {String} [options.resolvePrincipals=true]
      *      If set to true, any user that is suggested but not yet
      *      part of the site collection user info list (their id
@@ -580,6 +585,12 @@ define([
 
                     }
                 });//end:autocomplete
+
+
+            // If showSelected if false, then hide the selected people area.
+            if (!o.showSelected) {
+                cntr.find("div.pt-pickSPUser-selected").css("display", "none");
+            }
 
             // Store the options for this call on the container and include a pointer
             // in the input field to this element
