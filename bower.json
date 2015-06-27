@@ -22,7 +22,8 @@
     "requirejs": "^2.1.15",
     "require-less": "^0.1.5",
     "requirejs-text": "~2.0.12",
-    "jasmine-core": "~2.2.1"
+    "jasmine": "~2.3.4",
+    "jasmine-ajax": "git@github.com:jasmine/jasmine-ajax.git#master"
   },
   "resolutions": {
     "jquery": "1.11.1"

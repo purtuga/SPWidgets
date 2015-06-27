@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<soap:Body>
+		<GetListItemsResponse xmlns="http://schemas.microsoft.com/sharepoint/soap/">
+			<GetListItemsResult>
+				<listitems xmlns:s='uuid:BDC6E3F0-6DA3-11d1-A2A3-00AA00C14882'
+				xmlns:dt='uuid:C2F41010-65B3-11d1-A29F-00AA00C14882'
+				xmlns:rs='urn:schemas-microsoft-com:rowset'
+				xmlns:z='#RowsetSchema'>
+					<rs:data ItemCount="1">
+						<z:row ows_ContentTypeId='0x0108005A408631A7B47B418E1BFE768987DD0C' ows_Title='Add service to my account' ows_Predecessors='' ows_Priority='(2) Normal' ows_Status='Not Started' ows_PercentComplete='0' ows_AssignedTo='' ows_Checkmark='boolean;#0' ows_PreviouslyAssignedTo='' ows_ID='1' ows_ContentType='Task' ows_Modified='2014-09-07 17:20:25' ows_Created='2014-09-07 17:20:25' ows_Author='11;#Paul Tavares' ows_Editor='11;#Paul Tavares' ows_owshiddenversion='1' ows_WorkflowVersion='1' ows__UIVersion='512' ows__UIVersionString='1.0' ows_Attachments='0' ows__ModerationStatus='0' ows_LinkTitleNoMenu='Add service to my account' ows_LinkTitle='Add service to my account' ows_LinkTitle2='Add service to my account' ows_SelectTitle='1' ows_Order='100.000000000000' ows_GUID='{38C9B85B-5334-4019-B856-3CEA2EAFC374}' ows_FileRef='1;#sites/PT2013/Lists/Customer Service Requests/1_.000' ows_FileDirRef='1;#sites/PT2013/Lists/Customer Service Requests' ows_Last_x0020_Modified='1;#2014-09-07 17:20:25' ows_Created_x0020_Date='1;#2014-09-07 17:20:25' ows_FSObjType='1;#0' ows_SortBehavior='1;#0' ows_PermMask='0x7fffffffffffffff' ows_FileLeafRef='1;#1_.000' ows_UniqueId='1;#{32376E8E-E2E9-4C5D-818E-55ACB337DD94}' ows_ProgId='1;#' ows_ScopeId='1;#{1D5001E0-2E0C-483B-8579-F14931151477}' ows__EditMenuTableStart='1_.000' ows__EditMenuTableStart2='1' ows__EditMenuTableEnd='1' ows_LinkFilenameNoMenu='1_.000' ows_LinkFilename='1_.000' ows_LinkFilename2='1_.000' ows_ServerUrl='/sites/PT2013/Lists/Customer Service Requests/1_.000' ows_EncodedAbsUrl='https://wonderlang.sharepoint.com/sites/PT2013/Lists/Customer%20Service%20Requests/1_.000' ows_BaseName='1_' ows_MetaInfo='1;#' ows__Level='1' ows__IsCurrentVersion='1' ows_ItemChildCount='1;#0' ows_FolderChildCount='1;#0' ows_Restricted='1;#' />
+					</rs:data>
+				</listitems>
+			</GetListItemsResult>
+		</GetListItemsResponse>
+	</soap:Body>
+</soap:Envelope>

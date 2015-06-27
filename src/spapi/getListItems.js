@@ -44,14 +44,6 @@ define([
      *      Object = jqXHR
      *      String = status
      *
-     * Dependencies:
-     *
-     *  namespace.getSiteUrl()
-     *  namespace.getNodesFromXml()
-     *  namespace.doesMsgHaveError()
-     *  namespace.cache()
-     *
-     *
      */
     var getListItems = (function(){
 
