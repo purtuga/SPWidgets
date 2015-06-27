@@ -609,9 +609,10 @@ module.exports = function(grunt) {
         jasmine: {
             all: {
                 options: {
-                    specs: "test/specs/**/*.js",
-                    host: "http://127.0.0.1:8182/",
-                    template: require('grunt-template-jasmine-requirejs'),
+                    specs:      "test/specs/**/*.js",
+                    host:       "http://127.0.0.1:8182/",
+                    template:   require('grunt-template-jasmine-requirejs'),
+                    helpers:    ["vendor/jasmine-ajax/lib/mock-ajax.js"],
                     templateOptions: {
                         requireConfigFile: "test/setup/requirejs.config.js",
                         requireConfig: {

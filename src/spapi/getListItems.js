@@ -31,12 +31,6 @@ define([
      * @param {Boolean} [opt.changeToken=""]
      *      Used only when opt.operation is "GetListItemChangesSinceToken"
      * @param {Boolean} [opt.cacheXML=false]
-     * @param {Boolean} [opt.async=true]
-     * @param {Function} [opt.completefunc=null]
-     *      Function given 3 input parameters:
-     *      jqXHR (an Object)
-     *      status (a String)
-     *      rows (Array of Objects)
      *
      * @return {jQuery.Promise}
      *      Promise is resolved with 3 input parameters:
