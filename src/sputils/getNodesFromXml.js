@@ -12,6 +12,10 @@ define(["jquery"], function($){
      * @param {Boolean} [options.cleanAttr=true]
      *      if true, the 'ows_' will be stripped from column names.
      *      Only used when asJQuery=false.
+     * @param {Object} [options.nodeModel=null]
+     *      A factory constructor that will be used to build each node.
+     *      Factory must have a `create` member that will be called with
+     *      the object.
      *
      * @return {Array|jQuery}
      *      Each object that represents an XML node will contain properties
@@ -41,7 +45,8 @@ define(["jquery"], function($){
                         xDoc:       null,
                         nodeName:   '',
                         asJQuery:   false,
-                        cleanAttr:  true
+                        cleanAttr:  true,
+                        nodeModel:  null
                     }, options),
             nodes   = opt.xDoc.getElementsByTagName(opt.nodeName),
             getNodeAsObj, nodeList, i, j;
@@ -99,9 +104,15 @@ define(["jquery"], function($){
             }
 
             // Also store the original xml node
+            // FIXME: remove ___xmlNode from object
             row.___xmlNode = ele;
 
-            return row;
+            if (opt.nodeModel && opt.nodeModel.create) {
+                return opt.nodeModel.create(row);
+
+            } else {
+                return row;
+            }
 
         };
 

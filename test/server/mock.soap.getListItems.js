@@ -12,7 +12,7 @@ define([
 
             jasmine.Ajax.stubRequest(
                 /.*\/_vti_bin\/Lists\.asmx/,    // url
-                /.*\<GetListItems .*auto_respond/          // request Search
+                /.*<GetListItems .*auto_respond/          // request Search
             ).andReturn({
                 status:         200,
                 statusText:     'HTTP/1.1 200 OK',
@@ -22,7 +22,7 @@ define([
 
             jasmine.Ajax.stubRequest(
                 /.*\/_vti_bin\/Lists\.asmx/,    // url
-                /.*\<GetListItemChangesSinceToken .*auto_respond/          // request Search
+                /.*<GetListItemChangesSinceToken .*auto_respond/          // request Search
             ).andReturn({
                 status:         200,
                 statusText:     'HTTP/1.1 200 OK',

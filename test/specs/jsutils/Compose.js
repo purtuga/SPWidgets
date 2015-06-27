@@ -7,7 +7,7 @@ define([
         beforeEach(function(){
             this.newPrototype = {
                 getValue: function(){
-                    return "value1"
+                    return "value1";
                 },
                 init: function(){
                     this.staticValue = "value2";

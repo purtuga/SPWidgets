@@ -10,7 +10,7 @@ define([
                     Name:   "Test item",
                     ID:     "123"
                 };
-                this.listItem = ListItemModel.create({itemData: this.itemObj});
+                this.listItem = ListItemModel.create(this.itemObj);
             });
 
             it("has properties defined on input", function(){

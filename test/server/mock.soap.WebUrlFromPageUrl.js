@@ -13,7 +13,7 @@ function(
 
             jasmine.Ajax.stubRequest(
                 /.*\/_vti_bin\/Webs\.asmx/,    // url
-                /.*\<WebUrlFromPageUrl.*/          // request Search
+                /.*<WebUrlFromPageUrl.*/          // request Search
             ).andReturn({
                 status:         200,
                 statusText:     'HTTP/1.1 200 OK',

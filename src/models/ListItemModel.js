@@ -17,6 +17,8 @@ define([
      * @constructor ListItem
      * @extends Compose
      *
+     * @param {Object} itemData
+     *      An object with the properties for the model
      * @param {Object} [options]
      * @param {Object} [options.itemData]
      * @param {Object|String} [options.list]
@@ -25,16 +27,15 @@ define([
      */
     return Compose.extend(/** @lends ListItem.prototype */{
 
-        init: function(options){
+        init: function(itemData, options){
 
             var opt = objectExtend({}, {
-                itemData:   null,
                 list:       null,
                 webURL:     null
             }, options);
 
-            if (opt.itemData) {
-                objectExtend(this, opt.itemData);
+            if (itemData) {
+                objectExtend(this, itemData);
             }
 
             data.set(this, opt);

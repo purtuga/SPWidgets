@@ -3,13 +3,15 @@ define([
     "../sputils/cache",
     "./getSiteUrl",
     "../sputils/getNodesFromXml",
-    "../sputils/doesMsgHaveError"
+    "../sputils/doesMsgHaveError",
+    "../models/ListItemModel"
 ], function(
     $,
     cache,
     getSiteUrl,
     getNodesFromXml,
-    doesMsgHaveError
+    doesMsgHaveError,
+    ListItemModel
 ){
 
     /**
@@ -61,7 +63,8 @@ define([
             cacheXML:       false,
             async:          true,
             completefunc:   null,
-            changeToken:    '' // GetListChangesSinceToken only
+            changeToken:    '', // GetListChangesSinceToken only
+            listItemModel:  ListItemModel
         };
 
         // Makes the AJax call to SharePoint to get the data. Returns a jQuery.Promise
@@ -179,7 +182,8 @@ define([
 
                         rows = getNodesFromXml({
                                 xDoc:       data.responseXML,
-                                nodeName:   "z:row"
+                                nodeName:   "z:row",
+                                nodeModel:  options.listItemModel
                             });
 
                         dfd.resolveWith($, [ rows, data, status ]);
