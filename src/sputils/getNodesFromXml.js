@@ -16,6 +16,10 @@ define(["jquery"], function($){
      *      A factory constructor that will be used to build each node.
      *      Factory must have a `create` member that will be called with
      *      the object.
+     * @param {Boolean} [options.convertTypes=false]
+     *      When true, this method will attempt to convert certain known
+     *      String values to javascript natives (ex. `"TRUE"` would become `true`)
+     *
      *
      * @return {Array|jQuery}
      *      Each object that represents an XML node will contain properties
@@ -42,11 +46,12 @@ define(["jquery"], function($){
     var getNodesFromXml = function(options) {
 
         var opt     = $.extend({}, {
-                        xDoc:       null,
-                        nodeName:   '',
-                        asJQuery:   false,
-                        cleanAttr:  true,
-                        nodeModel:  null
+                        xDoc:           null,
+                        nodeName:       '',
+                        asJQuery:       false,
+                        cleanAttr:      true,
+                        nodeModel:      null,
+                        convertTypes:   false
                     }, options),
             nodes   = opt.xDoc.getElementsByTagName(opt.nodeName),
             getNodeAsObj, nodeList, i, j;
@@ -82,24 +87,17 @@ define(["jquery"], function($){
                 name = attrs[x].name;
 
                 if (opt.cleanAttr) {
-
                     if (name.indexOf("ows_") > -1) {
-
                         name = name.replace("ows_", "");
-
                     }
-
-                    // Code below commented off because replacing the space does not really
-                    // indicate that it is external name.
-                    // if (name.indexOf("_x0020_") > -1) {
-//
-                        // name = name.replace(/_x0020_/g, " ");
-//
-                    // }
-
                 }
 
-                row[name] = attrs[x].value;
+                if (opt.convertTypes) {
+                    row[name] = getJsNativeFromString(attrs[x].value);
+
+                } else {
+                    row[name] = attrs[x].value;
+                }
 
             }
 
@@ -124,7 +122,34 @@ define(["jquery"], function($){
 
         return nodeList;
 
-    }; //end: API.getNodesFromXml
+    }, //end: API.getNodesFromXml
+
+    /**
+     * Returns a JS native type (if possible) from the given string.
+     * @private
+     * @param {String} str
+     *
+     * @return {String|Object}
+     */
+    getJsNativeFromString = function(str){
+
+        if (!str) {
+            return str;
+        }
+        var response = str;
+        switch (str.toUpperCase()) {
+            case "TRUE":
+                response = true;
+                break;
+
+            case "FALSE":
+                response = false;
+                break;
+        }
+        return response;
+    };
+
+    getNodesFromXml.getJsNativeFromString = getJsNativeFromString;
 
     return getNodesFromXml;
 

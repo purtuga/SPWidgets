@@ -4,6 +4,7 @@ define([
     "./specs/jquery.SPWidgets",
     "./specs/jsutils/Compose",
     "./specs/models/ListItemModel",
+    "./specs/models/ListModel",
     "./specs/spapi/getListItems"
 
 ], function(){});
