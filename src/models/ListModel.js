@@ -14,41 +14,38 @@ define([
     instData = dataStore.stash,
 
     /**
-     * List model. Contains the List definition data. Used by `getList()` api method.
+     * List model. Contains the List definition data.
      *
      * @constructor ListModel
      * @extends Compose
      *
-     * @param {Object} options
-     *      Either `fromXML` or `fromJSON` is required on input
+     * @param {XMLDocument|Object} source
+     *      The list source - either an XML document or an Object
      *
-     * @param {XMLDocument} [fromXML]
-     *      The list XML document as returned by the SOAP services.
-     *
-     * @param {Object} [fromJSON]
-     *      The list JSON string returned by the REST API.
+     * @param {Object} [options]
+     * @param {String} [type="xml"]
+     *      the type data in `source`. Supported values are `xml` and `json`
      *
      */
     ListModel = /** @lends ListModel.prototype */{
 
-        init: function(options){
+        init: function(source, options){
 
             var
             me  = this,
             opt = objectExtend({}, ListModel.defaults, options),
             listObj;
 
+            opt.type = opt.type.toLowerCase();
+            opt.source = source;
+
             instData.set(me, opt);
 
-            if (opt.fromXML) {
-                opt.sourceType  = "xml";
-                opt.source      = opt.fromXML;
-                listObj         = getListDetailsFromXML.call(me, opt.source);
+            if (opt.type === 'xml') {
+                listObj = getListDetailsFromXML.call(me, opt.source);
 
-            } else if (opt.fromJSON){
-                opt.sourceType  = "json";
-                opt.source      = opt.fromJSON;
-                listObj         = getListDetailsFromJSON.call(me, opt.source);
+            } else if (opt.type === "json"){
+                listObj = getListDetailsFromJSON.call(me, opt.source);
             }
 
             objectExtend(me, listObj);
@@ -58,7 +55,7 @@ define([
         /**
          * returns the original list source used to build the model.
          */
-        getRawSource: function(){
+        getSource: function(){
             return instData.get(this).source;
         }
 
@@ -97,8 +94,7 @@ define([
 
     ListModel           = Compose.extend(ListModel);
     ListModel.defaults  = {
-        fromXML:    null,   // soap
-        fromJSON:   null    // REST
+        type: "xml"   // possible values: xml, json
     };
 
     return ListModel;

@@ -1,12 +1,16 @@
 define([
     "jquery",
     "../sputils/cache",
-    "./getSiteUrl"
+    "./getSiteUrl",
+    "../models/ListModel"
 ], function(
     $,
     cache,
-    getSiteUrl
+    getSiteUrl,
+    ListModel
 ){
+
+    var
 
      /**
      * Get a list definition from sharepoint or return its cached version
@@ -21,140 +25,107 @@ define([
      * @param {Boolean} [options.cacheXML=true]
      *      The message response is cached UNTIL the next time the same
      *      request is received with cacheXML set to false.
-     * @param {Function} [options.completefunc=null]
-     *      Deprecated. Use returned promise to process response.
+     * @param {Boolean} [options.ListModel]
+     *      List model constructor factory. Factory must expose a method called
+     *      `create` that accetps two input parameters: the source (XML, JSON) and
+     *      the `options`.
      *
      * @return {jQuery.Promise}
      *          Resolved with 3 input params: data, textStatus, jqXHR
      *
      */
-    var getList = (function() {
+    getList = function(options){
+        return getListDataUsingSoap.call(this, options);
+    },
 
-        var getListData = null,
-            callerFn    = function getList(){
+    getListDataUsingSoap = function(options) {
 
-                    return getListData.apply(this, arguments);
+        var
+        me          = this,
+        opt         = $.extend({}, getList.defaults, options),
+        getCacheKey = function(listName){
+            return opt.webURL + "?List=" + listName;
+        },
+        reqPromise;
 
-            };
+        if (!opt.webURL) {
+            opt.webURL = getSiteUrl();
 
-        // Define defaults. User can change these on their function attachement.
-        callerFn.defaults = {
-            listName:       '',
-            webURL:         '',
-            cacheXML:       true,
-            async:          true,
-            completefunc:   null
-        };
+        } else if (opt.webURL.charAt(opt.webURL.length - 1) !== "/") {
+            opt.webURL += "/";
+        }
 
-        // Makes the ajax call to sharepoint and returns a jQuery.promise
-        getListData = function(opt) {
+        opt.webURL  += "_vti_bin/Lists.asmx";
+        opt.cacheKey = getCacheKey(opt.listName);
+        opt.isCached = cache.isCached(opt.cacheKey);
 
-            var options = $.extend({}, callerFn.defaults, opt),
-                reqPromise;
+        // If cacheXML is true and we have a cached version, return it.
+        if (opt.cacheXML && opt.isCached) {
+            return cache(opt.cacheKey);
+        }
 
+        // If cacheXML is FALSE, and we have a cached version of this key,
+        // then remove the cached version - basically reset
+        if (opt.isCached) {
+            cache.clear(opt.cacheKey);
+        }
 
-            if (!options.webURL) {
+        reqPromise = $.Deferred(function(dfd){
 
-                options.webURL = getSiteUrl();
+            $.ajax({
+                type:           "POST",
+                cache:          false,
+                async:          opt.async,
+                url:            opt.webURL,
+                contentType:    "text/xml;charset=utf-8",
+                dataType:       "xml",
+                data:           '<?xml version="1.0" encoding="utf-8"?>' +
+                    '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
+                    '<soap:Body><GetList xmlns="http://schemas.microsoft.com/sharepoint/soap/"><listName>' +
+                    opt.listName + '</listName></GetList></soap:Body></soap:Envelope>'
+            })
+            .done(function(data, textStatus, jqXHR){
 
-            } else if (options.webURL.charAt(options.webURL.length - 1) !== "/") {
+                listDef = opt.ListModel.create(data);
 
-                options.webURL += "/";
-
-            }
-
-            options.webURL += "_vti_bin/Lists.asmx";
-
-            options.cacheKey = options.webURL + "?List=" + options.listName;
-            options.isCached = cache.isCached(options.cacheKey);
-
-            // If cacheXML is true and we have a cached version, return it.
-            if (options.cacheXML && options.isCached) {
-
-                reqPromise =  cache(options.cacheKey);
-
-                // If a completefunc was defined on this call,
-                // execute it.
-                if ($.isFunction(options.completefunc)) {
-
-                    reqPromise.then(function(data, textStatus, jqXHR){
-
-                        options.completefunc(jqXHR, textStatus);
-
-                    });
-
+                // If cacheXML is true, then also create cache with internal name
+                if (opt.cacheXML && listDef.ID) {
+                    cache(getCacheKey(listDef.ID), reqPromise);
                 }
 
-                return reqPromise;
+                dfd.resolveWith($, [listDef]);
 
-            }
+            })
+            .fail(function(){
 
-            // If cacheXML is FALSE, and we have a cached version of this key,
-            // then remove the cached version - basically reset
-            if (options.isCached) {
+                dfd.rejectWith($, arguments);
 
-                cache.clear(options.cacheKey);
+                // If cacheXML was true, then remove this from cache.
+                // No point in caching failures.
+                if (opt.cacheXML) {
+                    cache.clear(opt.cacheKey);
+                }
 
-            }
+            });
 
-            reqPromise = $.Deferred(function(dfd){
+        }).promise();
 
-                $.ajax({
-                    type:           "POST",
-                    cache:          false,
-                    async:          options.async,
-                    url:            options.webURL,
-                    contentType:    "text/xml;charset=utf-8",
-                    dataType:       "xml",
-                    data:           '<?xml version="1.0" encoding="utf-8"?>' +
-                        '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
-                        '<soap:Body><GetList xmlns="http://schemas.microsoft.com/sharepoint/soap/"><listName>' +
-                        options.listName + '</listName></GetList></soap:Body></soap:Envelope>'
-                })
-                .done(function(data, textStatus, jqXHR){
+        // If cacheXML was true, then cache this promise
+        if (opt.cacheXML) {
+            cache(opt.cacheKey, reqPromise);
+        }
 
-                    dfd.resolveWith($, [data, textStatus, jqXHR]);
+        return reqPromise;
 
-                    if ($.isFunction(options.completefunc)) {
+    };
 
-                        // Call the complete function (same signature as SPServices)
-                        options.completefunc(jqXHR, textStatus);
-
-                    }
-
-                })
-                .fail(function(){
-
-                    dfd.rejectWith($, arguments);
-
-                    // If cacheXML was true, then remove this from cache.
-                    // No point in caching failures.
-                    if (options.cacheXML) {
-
-                        cache.clear(options.cacheKey);
-
-                    }
-
-
-                });
-
-            }).promise();
-
-            // If cacheXML was true, then cache this promise
-            if (options.cacheXML) {
-
-                cache(options.cacheKey, reqPromise);
-
-            }
-
-            return reqPromise;
-
-        }; //end: function()
-
-        return callerFn;
-
-    })(); //end: .getList()
-
+    getList.defaults = {
+        listName:   '',
+        webURL:     '',
+        cacheXML:   true,
+        async:      true,
+        ListModel:  ListModel
+    };
 
     return getList;
 

@@ -9,7 +9,7 @@ define([
     /**
      * Composes new factory methods from a list of given Objects/Classes.
      *
-     * @namespace Compose
+     * @constructor Compose
      *
      * @example
      *
@@ -28,12 +28,30 @@ define([
         }
         return keys;
     },
+
     objectCreate    = Object.create,
-    cache           = dataStore.stash,
-    baseMethods     = {
+
+    instData           = dataStore.stash,
+
+    // Base instance methods for Compose'd object
+    baseMethods     = /** @lends Compose.prototype */{
+
+        /**
+         * Property indicating whether instance has been destroyed
+         */
+        isDestroyed: false,
+
+        /**
+         * instance initializing code
+         */
         init:       function(){},
+
+        /**
+         * Destroys the instance, by removing its private data.
+         */
         destroy:    function(){
-            cache.delete(this);
+            instData.delete(this);
+            this.isDestroyed = true;
         }
     },
 
@@ -78,7 +96,7 @@ define([
 
             // If any prototype key is not in the object prototype, then return false
             return !neededKeys.some(function(protoKey){
-                return !instanceObj[protoKey];
+                return typeof instanceObj[protoKey] === "undefined";
             });
 
         },

@@ -21,18 +21,14 @@ define([
             });
 
             it("instanciates", function(){
-                var list = ListModel.create({
-                    fromXML: xmlDoc
-                });
+                var list = ListModel.create(xmlDoc);
                 expect(ListModel.isInstanceOf(list)).toBe(true);
             });
         });
 
         describe("Create from XML", function(){
             beforeEach(function(){
-                this.list = ListModel.create({
-                    fromXML: xmlDoc
-                });
+                this.list = ListModel.create(xmlDoc);
             });
 
             it("contains list properties", function(){
@@ -45,8 +41,8 @@ define([
                 expect(this.list.ShowUser).toBe(true);
             });
 
-            it("getRawSource() returns original data source", function(){
-                expect(this.list.getRawSource()).toBe(xmlDoc);
+            it("getSource() returns original data source", function(){
+                expect(this.list.getSource()).toBe(xmlDoc);
             });
         });
 
