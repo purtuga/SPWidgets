@@ -5,7 +5,9 @@ define([
     "./specs/jsutils/Compose",
     "./specs/models/ListItemModel",
     "./specs/models/ListModel",
+    "./specs/models/ListColumnModel",
     "./specs/spapi/getList",
+    "./specs/spapi/getListColumns",
     "./specs/spapi/getListItems"
 
 ], function(){});
