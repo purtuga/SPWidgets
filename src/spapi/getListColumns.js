@@ -3,14 +3,19 @@ define([
     './getList',
     '../sputils/cache',
     '../sputils/getNodesFromXml',
-    '../models/ListColumnModel'
+    '../models/ListColumnModel',
+    '../jsutils/dataStore'
 ], function(
     $,
     getList,
     cache,
     getNodesFromXml,
-    ListColumnModel
+    ListColumnModel,
+    dataStore
 ){
+
+    var
+    instData = dataStore.stash,
 
     /**
      * Gets the list of columns names for the given list that are
@@ -62,7 +67,7 @@ define([
      *      getColumnValues: function () {}
      * }
      */
-    var getListColumns = function(options){
+    getListColumns = function(options){
 
         var opt = $.extend({},
             getListColumns.defaults,
@@ -77,7 +82,9 @@ define([
                 webURL:     opt.webURL,
                 async:      opt.async
             })
-            .then(function(list, status){
+            .then(function(list){
+
+                opt.listDef = list;
 
                 var
                 columns = getNodesFromXml({
@@ -139,8 +146,10 @@ define([
 
                 } //end: for()
 
-                // Mixin additional methods into the array object
+                // Mixin additional methods into the array object and
+                // Store this getListItems opt in stash and associated with the result
                 $.extend(cols, listColumnCollectionMixin);
+                instData.set(cols, opt);
 
                 dfd.resolveWith($, [cols]);
                 return;
@@ -168,12 +177,12 @@ define([
     */
    listColumnCollectionMixin = {
 
-       /**
-        * Returns an object with the definition for the given column
-        * @param {String} name
-        * @return {ListColumnModel}
-        */
-       getColumn: function(name){
+        /**
+         * Returns an object with the definition for the given column
+         * @param {String} name
+         * @return {ListColumnModel}
+         */
+        getColumn: function(name){
             var
             list = this,
             col;
@@ -183,7 +192,18 @@ define([
                 }
             });
             return col;
-       }
+        },
+
+        /**
+         * returns the ListModel for the list for which the collection was requested.
+         *
+         * @return {ListModel}
+         */
+        getList: function(){
+            if (instData.has(this)) {
+                return instData.get(this).listDef;
+            }
+        }
 
    }; //end: resultArrayMixins
 

@@ -41,7 +41,6 @@ define([
     getListDataUsingSoap = function(options) {
 
         var
-        me          = this,
         opt         = $.extend({}, getList.defaults, options),
         getCacheKey = function(listName){
             return opt.webURL + "?List=" + listName;
@@ -84,13 +83,20 @@ define([
                     '<soap:Body><GetList xmlns="http://schemas.microsoft.com/sharepoint/soap/"><listName>' +
                     opt.listName + '</listName></GetList></soap:Body></soap:Envelope>'
             })
-            .done(function(data, textStatus, jqXHR){
+            .then(function(data){
 
-                listDef = opt.ListModel.create(data);
+                var listDef = opt.ListModel.create(data);
 
-                // If cacheXML is true, then also create cache with internal name
-                if (opt.cacheXML && listDef.ID) {
-                    cache(getCacheKey(listDef.ID), reqPromise);
+                // If cacheXML is true, then create cache with internal name and external
+                if (opt.cacheXML) {
+                    // Was list name an internal UID? then use list Title
+                    if (opt.listName.indexOf("{") === 0) {
+                        cache(getCacheKey(listDef.Title), reqPromise);
+
+                    // Else, use the ID to cache
+                    } else {
+                        cache(getCacheKey(listDef.ID), reqPromise);
+                    }
                 }
 
                 dfd.resolveWith($, [listDef]);

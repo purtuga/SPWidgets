@@ -91,44 +91,34 @@
                             } //end: onFilterClick()
                         });
 
-
-                    // Get the list definition and build the template for the
-                    // output of what was found.
-                    $.SPWidgets.SPAPI.getList({
+                    // Get the list of columns and build the output template
+                    // with the columns thta are used in the Filter panel.
+                    $.SPWidgets.SPAPI.getListColumns({
                         listName:   listName,
-                        cacheXML:   false,
-                        async:      true,
-                        completefunc: function(xData/*, status*/) {
+                        cacheXML:   false
+                    })
+                    .then(function(colDefList) {
 
-                            var resp = $(xData.responseXML);
+                        $.each(columns, function(i, col){
 
-                            $.each(columns, function(i, col){
-
-                                var $colXml = resp.find("Fields Field[DisplayName='" +
-                                                col + "']");
-
+                            var thisColDef = colDefList.getColumn(col);
+                            if (thisColDef) {
                                 tblHeader   += '<th class="ui-widget-content">' +
                                                 col + '</th>';
-
                                 rowTemplate += '<td class="ui-widget-content">{{' +
-                                                $colXml.attr("StaticName") + '}}</td>';
-
-                                camlFields  += '<FieldRef Name="' +
-                                                $colXml.attr("StaticName") + '" />';
-
+                                                thisColDef.StaticName + '}}</td>';
+                                camlFields  += '<FieldRef Name="' + thisColDef.StaticName + '" />';
                                 if (i === 2) {
-
                                     return false;
-
                                 }
+                            }
 
-                            });
+                        });
 
-                            tblHeader   = '<tr>' + tblHeader + '</tr>';
-                            rowTemplate = '<tr>' + rowTemplate + '</tr>';
-                            camlFields  = '<ViewFields>' + camlFields + '</ViewFields>';
+                        tblHeader   = '<tr>' + tblHeader + '</tr>';
+                        rowTemplate = '<tr>' + rowTemplate + '</tr>';
+                        camlFields  = '<ViewFields>' + camlFields + '</ViewFields>';
 
-                        }//end: completefunc
                     });
 
                 });

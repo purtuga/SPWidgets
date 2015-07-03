@@ -79,6 +79,7 @@ window.SPWIDGET_DEMO = {
 
 </script>
 <div id="spwidgets_demo_cntr" class="ui-widget-content"></div>
+<script type="text/javascript" src="./ext/vkBeautify.js"></script>
 <script type="text/javascript" src="../../vendor/requirejs/require.js"></script>
 <script type="text/javascript">
 

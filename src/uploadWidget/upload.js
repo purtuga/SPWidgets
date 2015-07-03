@@ -1355,13 +1355,15 @@ define([
 
         var id = "";
 
+// FIXME: need to make this async=true
+
         getList({
             listName:   listName,
             async:      false,
-            cacheXML:   true,
-            completefunc: function (xData/*, Status*/) {
-                id = $(xData.responseXML).find("List").attr("ID");
-            }
+            cacheXML:   true
+        })
+        .then(function (list/*, Status*/) {
+            id = list.ID;
         });
 
         return id;

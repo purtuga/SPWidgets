@@ -4,10 +4,11 @@ define(["jquery", "src/SPWidgets"], function($){
 
         describe("Utilities available under $.SPWidgets", function(){
             it("has correct count of utilities", function(){
-                // If this errors, then we added new methods, but forgot to update this file.
+                // If this errors, then we added new methods,
+                // but forgot to update this file to include a test case for it.
                 var countUnderSPWidgtes = Object.keys($.SPWidgets).length;
                 var countUnderSPAPI     = Object.keys($.SPWidgets.SPAPI).length;
-                expect(countUnderSPWidgtes + countUnderSPAPI).toEqual(22);
+                expect(countUnderSPWidgtes + countUnderSPAPI).toEqual(23);
             });
             it("defines SPWidgets namespace in jQuery namespace", function(){
                 expect($.SPWidgets).toBeDefined();
@@ -50,6 +51,9 @@ define(["jquery", "src/SPWidgets"], function($){
             });
             it("includes SPAPI.getList", function(){
                 expect($.SPWidgets.SPAPI.getList).toBeDefined();
+            });
+            it("includes SPAPI.getListColumns", function(){
+                expect($.SPWidgets.SPAPI.getListColumns).toBeDefined();
             });
             it("includes SPAPI.getListFormCollection", function(){
                 expect($.SPWidgets.SPAPI.getListFormCollection).toBeDefined();

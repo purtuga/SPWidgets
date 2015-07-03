@@ -1,10 +1,12 @@
 define([
+    "jquery",
     "../jsutils/Compose",
     "../jsutils/objectExtend",
     "../jsutils/dataStore",
     "../sputils/getNodesFromXml",
     "../spapi/getListItems"
 ], function(
+    $,
     Compose,
     objectExtend,
     dataStore,
@@ -91,7 +93,17 @@ define([
 
             return colValues;
 
-        }//end getColumnvalues()
+        }, //end getColumnvalues()
+
+        /**
+         * returns the ListModel if one was given on input when listColumnModel instance
+         * was created.
+         *
+         * @return {ListModel}
+         */
+        getList: function(){
+            return instData.get(this).list;
+        }
 
     };
 

@@ -490,20 +490,16 @@ define([
                                 listName:   opt.list,
                                 cacheXML:   true,
                                 async:      false,
-                                webURL:     opt.webURL,
-                                completefunc : function(xData, status) {
+                                webURL:     opt.webURL
+                            })
+                            .then(function(list) {
 
-                                    // FIXME: need to handle errors
-                                    // if (resp.hasSPError()) {
-                                        // spAgile.logMsg({
-                                            // type:   "error",
-                                            // msg:    resp.getSPError()
-                                        // });
-                                        // return null;
-                                    // }
+                                // FIXME: need code refactor here - use getListColumns instead
 
-                                    var resp    = $(xData.responseXML),
-                                        f       = resp.find("Fields Field[StaticName='" + opt.field + "']");
+                                    var
+                                    xData   = list.getSource(),
+                                    resp    = $(xData),
+                                    f       = resp.find("Fields Field[StaticName='" + opt.field + "']");
 
                                     // If we did not find the field by internal name, try external.
                                     // If we found it by Display name, then lets change the
@@ -518,7 +514,7 @@ define([
                                             dfd.rejectWith(
                                                 ele,
                                                 [ 'Field (' + opt.field +  ') not found in list definition!',
-                                                xData, status ]);
+                                                xData, "error" ]);
 
                                             return;
 
@@ -599,7 +595,7 @@ define([
 
                                             });
 
-                                            dfd.resolveWith(opt, [xData, status]);
+                                            dfd.resolveWith(opt, [xData, "success"]);
 
                                             break;
 
@@ -722,7 +718,7 @@ define([
                                                     ') Type (' + f.attr("Type") +
                                                     ') is not supported!',
                                                     xData,
-                                                    status ]);
+                                                    "error" ]);
 
                                             break;
 
@@ -730,8 +726,17 @@ define([
 
                                     return;
 
-                                }//end: completefunc()
-                            });//end: getList
+                            }) // end: getList().then
+                            .fail(function(jqXHR, status){
+
+                                dfd.rejectWith($, [
+                                    'Field (' + opt.field +  ') not found in list definition!',
+                                    jqXHR,
+                                    status
+                                ]);
+
+                                return;
+                            });
 
                         })
                         .promise();

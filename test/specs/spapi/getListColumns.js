@@ -1,11 +1,13 @@
 define([
     "src/spapi/getListColumns",
+    "src/models/ListModel",
     "test/server/mock.soap.GetList",
     "test/server/mock.soap.getListItems",
     "test/server/mock.soap.WebUrlFromPageUrl"
 ],
 function(
     getListColumns,
+    ListModel,
     mockSoapGetList,
     mockSoapGetListItems,
     mockSoapWebUrlFromPageUrl
@@ -127,6 +129,22 @@ function(
                         }
                     });
                     expect(col.getColumnValues().length).toBeGreaterThan(0);
+                    done();
+                });
+            });
+
+            it(".getList() returns a ListModel", function(done){
+                this.colPromise.then(function(cols){
+                    expect(cols.getList).toBeDefined();
+                    expect(ListModel.isInstanceOf(cols.getList())).toBe(true);
+                    done();
+                });
+            });
+
+            it("Each column definition .getList() returns a ListModel", function(done){
+                this.colPromise.then(function(cols){
+                    expect(cols[0].getList).toBeDefined();
+                    expect(ListModel.isInstanceOf(cols[0].getList())).toBe(true);
                     done();
                 });
             });

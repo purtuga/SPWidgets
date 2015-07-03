@@ -18,6 +18,7 @@ define([
     './sputils/getNodesFromXml',
     './uiutils/makeSameHeight',
     './spapi/getList',
+    './spapi/getListColumns',
     './spapi/getListFormCollection',
     './spapi/getListItems',
     './spapi/getSiteListCollection',
@@ -45,6 +46,7 @@ define([
     getNodesFromXml,
     makeSameHeight,
     getList,
+    getListColumns,
     getListFormCollection,
     getListItems,
     getSiteListCollection,
@@ -139,6 +141,7 @@ define([
         SPAPI: {
 
             getList:                getList,
+            getListColumns:         getListColumns,
             getListFormCollection:  getListFormCollection,
             getListItems:           getListItems,
             getSiteListCollection:  getSiteListCollection,

@@ -6,6 +6,7 @@ define([
     'text!./filterPanelTextField.html',
     '../spapi/getSiteUrl',
     '../spapi/getList',
+    '../spapi/getListColumns',
     '../sputils/parseLookupFieldValue',
     '../sputils/fillTemplate',
     '../sputils/getCamlLogical',
@@ -25,6 +26,7 @@ define([
     filterPanelTextFieldTemplate,
     getSiteUrl,
     getList,
+    getListColumns,
     parseLookupFieldValue,
     fillTemplate,
     getCamlLogical,
@@ -190,51 +192,6 @@ define([
             }
 
             /**
-             * Retrieves the list definition.
-             *
-             * @return {jQuery.Deferred}
-             *      Deferred is resolved with a scope of the jQuery message
-             *      object and given 2 parameters - xData and status
-             *
-             */
-            Inst.getListDefinition = function() {
-
-                return $.Deferred(function(dfd){
-
-                    // Get List Definition
-                    getList({
-                        listName:       opt.list,
-                        cacheXML:       true,
-                        async:          true,
-                        webURL:         opt.webURL,
-                        completefunc:   function(xData, status) {
-
-                            var $msg    = $(xData.responseXML);
-
-                            if (status === "error") {
-
-                                dfd.rejectWith($msg, [xData, status]);
-                                return;
-
-                            }
-
-                            if (doesMsgHaveError($msg)) {
-
-                                dfd.rejectWith($msg, [xData, status]);
-                                return;
-
-                            }
-
-                            dfd.resolveWith($msg, [xData, status]);
-
-                        } //end: completefunc
-                    });
-
-                }).promise();
-
-            }; //end: getListDefinition
-
-            /**
              * Shows the column sort order UI on the panel.
              */
             Inst.showSortOrder = function() {
@@ -263,11 +220,18 @@ define([
 
                 return $.Deferred(function(dfd){
 
-                    Inst.getListDefinition().then(function(/*xData, status*/){
+                    // Get List Definition
+                    getListColumns({
+                        listName:       opt.list,
+                        cacheXML:       true,
+                        async:          true,
+                        webURL:         opt.webURL
+                    })
+                    .then(function(colsDef) {
 
-                        var $list   = this,
-                            columns = '',
-                            colUI   =$.trim(filterPanelColumnTemplate);
+                        var
+                        columns = '',
+                        colUI   = $.trim(filterPanelColumnTemplate);
 
                         // Insert the UI into the page and set
                         // pointer ($ui) to it.
@@ -276,9 +240,6 @@ define([
 
                         Inst.$uiFilterColumnCntr = Inst.$ui.find("div.spwidget-filter-column-cntr");
                         Inst.$uiFilterSortCntr   = Inst.$ui.find("div.spwidget-filter-sort-cntr");
-
-                        // Store list definition
-                        Inst.$list = $list;
 
                         // set fixed height if set on input
                         if (Inst.opt.height) {
@@ -292,25 +253,18 @@ define([
                         $.each(Inst.opt.columns, function(i,v){
 
                             // find column in the list definition
-                            var $thisCol = $list
-                                            .find(
-                                                "Field[DisplayName='" +
-                                                v + "']" ),
-                                thisColUI = colUI,
-                                inputUI   = '',
-                                model     = null;
+                            var
+                            // $thisCol = $list
+                                        // .find(
+                                            // "Field[DisplayName='" +
+                                            // v + "']" ),
+                            $thisCol    = colsDef.getColumn(v),
+                            thisColUI   = colUI,
+                            inputUI     = '',
+                            model       = null;
 
-                            if (!$thisCol.length) {
-
-                                $thisCol = $list
-                                            .find("Field[Name='" + v + "']");
-
-                            }
-
-                            if (!$thisCol.length){
-
+                            if (!$thisCol) {
                                 return;
-
                             }
 
                             // Now that we are sure we have a COl. definition,
@@ -318,27 +272,27 @@ define([
                             model = {
                                 type:               null,
                                 otherFilterTypes:   '',
-                                sp_type:            $thisCol.attr("Type"),
-                                sp_format:          $thisCol.attr("Format"),
-                                Name:               $thisCol.attr("Name"),
-                                DisplayName:        $thisCol.attr("DisplayName")
+                                sp_type:            $thisCol.Type,
+                                sp_format:          $thisCol.Format,
+                                Name:               $thisCol.Name,
+                                DisplayName:        $thisCol.DisplayName
                             };
 
                             // Build the column ui based on its type
-                            switch ($thisCol.attr("Type")) {
+                            switch ($thisCol.Type) {
 
                                 // CHOICE: Show checkboxes allowing user to select multiple
                                 case "Choice":
                                 case "MultiChoice":
 
-                                    $thisCol.find("CHOICES CHOICE").each(function(i,v){
+                                    $thisCol.getColumnValues().forEach(function(v){
 
                                         inputUI += fillTemplate(
                                             $.trim(filterPanelChoiceFieldTemplate),
                                             {
-                                                DisplayName:    $thisCol.attr("DisplayName"),
-                                                Name:           $thisCol.attr("Name"),
-                                                value:          $(v).text()
+                                                DisplayName:    $thisCol.DisplayName,
+                                                Name:           $thisCol.Name,
+                                                value:          v
                                             }
                                         );
 
@@ -351,9 +305,9 @@ define([
                                     thisColUI = fillTemplate(
                                         thisColUI,
                                         {
-                                            DisplayName: $thisCol.attr("DisplayName"),
+                                            DisplayName: $thisCol.DisplayName,
                                             type:        'choice',
-                                            Name:        $thisCol.attr("Name")
+                                            Name:        $thisCol.Name
                                         }
                                     );
 
@@ -388,7 +342,7 @@ define([
                                 default:
 
                                     // lets set the type on the Column
-                                    switch ($thisCol.attr("Type")) {
+                                    switch ($thisCol.Type) {
 
                                         case "Lookup":
                                         case "LookupMulti":
@@ -396,12 +350,10 @@ define([
                                             if (model.type === null) {
 
                                                 model.type = 'lookup';
-                                                model.list = $thisCol.attr("List");
+                                                model.list = $thisCol.List;
 
                                                 if ( model.list === "Self") {
-
-                                                    model.list = $list.find("List").attr("Title");
-
+                                                    model.list = $thisCol.getList().Title;
                                                 }
 
                                             }
@@ -451,7 +403,7 @@ define([
                                                     '<option value="Lt">Before</option>';
 
                                                model.sp_format = (
-                                                    $thisCol.attr("Format") !== "DateOnly" ?
+                                                    $thisCol.Format !== "DateOnly" ?
                                                         "DateTime" :
                                                         "DateOnly"
                                                );
@@ -473,8 +425,8 @@ define([
                                                 .replace(/__OTHER_FILTER_TYPES__/, model.otherFilterTypes);
                                     thisColUI   = fillTemplate(thisColUI,
                                         $.extend(model, {
-                                            DisplayName:    $thisCol.attr("DisplayName"),
-                                            Name:           $thisCol.attr("Name"),
+                                            DisplayName:    $thisCol.DisplayName,
+                                            Name:           $thisCol.Name,
                                             tooltip:        Inst.opt.textFieldTooltip
                                         })
                                     );
@@ -521,15 +473,11 @@ define([
                             .each(function(){
 
                                 var $field      = $(this),
-                                    colDef      = $list.find(
-                                                    "Field[Name='" +
-                                                    $field.attr("name") + "']"),
+                                    colDef      = colsDef.getColumn($field.attr("name")),
                                     peopleType  = 'User';
 
-                                if (colDef.attr("UserSelectionMode") !== "PeopleOnly") {
-
+                                if (colDef.UserSelectionMode !== "PeopleOnly") {
                                     peopleType = 'All';
-
                                 }
 
                                 peoplePickerWidget($field, {
