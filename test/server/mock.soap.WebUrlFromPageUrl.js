@@ -1,5 +1,5 @@
 define([
-    "text!test/server/soapMsgs/web.webUrlFromPageUrl.response.success.xml"
+    "text!./soapMsgs/web.webUrlFromPageUrl.response.success.xml"
 ],
 function(
     webUrlFromPageUrlXML

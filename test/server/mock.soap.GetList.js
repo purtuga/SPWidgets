@@ -1,5 +1,5 @@
 define([
-    "text!test/server/soapMsgs/list.GetList.response.success.xml"
+    "text!./soapMsgs/list.GetList.response.success.xml"
 ], function(
     getListResponseSuccessXML
 ){

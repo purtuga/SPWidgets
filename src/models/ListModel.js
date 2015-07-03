@@ -80,6 +80,7 @@ define([
         delete listDef.Fields;
         delete listDef.RegionalSettings;
         delete listDef.ServerSettings;
+        delete listDef.___xmlNode;
 
         return listDef;
 

@@ -4,18 +4,30 @@ define(["jquery"], function($){
      * Returns the requested nodes from the given xml document
      *
      * @param {Object} options
+     *
      * @param {XMLDocument} options.xDoc
+     *
      * @param {String} options.nodeName
+     *
      * @param {Boolean} [options.asJQuery=false]
      *      If true, then xmlNodes will be returned as a jQuery
      *      selection object, ready to be traversed and/or filtered.
+     *
      * @param {Boolean} [options.cleanAttr=true]
      *      if true, the 'ows_' will be stripped from column names.
      *      Only used when asJQuery=false.
+     *
      * @param {Object} [options.nodeModel=null]
      *      A factory constructor that will be used to build each node.
      *      Factory must have a `create` member that will be called with
-     *      the object.
+     *      the object. The model constructor method should have a signature
+     *      of the following: `function(modelData, options)`
+     *
+     * @param {Object} [options.nodeModelOptions]
+     *      Any data to be passed to the `nodeModel` constructor as the second
+     *      argument. NOTE that this method will add an attribute to the options
+     *      called 'source' that will contain the XML node used to create the object
+     *
      * @param {Boolean} [options.convertTypes=false]
      *      When true, this method will attempt to convert certain known
      *      String values to javascript natives (ex. `"TRUE"` would become `true`)
@@ -46,12 +58,13 @@ define(["jquery"], function($){
     var getNodesFromXml = function(options) {
 
         var opt     = $.extend({}, {
-                        xDoc:           null,
-                        nodeName:       '',
-                        asJQuery:       false,
-                        cleanAttr:      true,
-                        nodeModel:      null,
-                        convertTypes:   false
+                        xDoc:               null,
+                        nodeName:           '',
+                        asJQuery:           false,
+                        cleanAttr:          true,
+                        nodeModel:          null,
+                        nodeModelOptions:   null,
+                        convertTypes:       false
                     }, options),
             nodes   = opt.xDoc.getElementsByTagName(opt.nodeName),
             getNodeAsObj, nodeList, i, j;
@@ -106,7 +119,7 @@ define(["jquery"], function($){
             row.___xmlNode = ele;
 
             if (opt.nodeModel && opt.nodeModel.create) {
-                return opt.nodeModel.create(row);
+                return opt.nodeModel.create(row, $.extend({}, opt.nodeModelOptions, {source: ele}));
 
             } else {
                 return row;

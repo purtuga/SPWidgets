@@ -73,7 +73,6 @@
                     EnforceDataValidation="False"
                     MaxItemsPerThrottledOperation="5000">
                     <Fields>
-                        <Field ID="{03e45e84-1992-4d42-9116-26f756012634}" RowOrdinal="0" Type="ContentTypeId" Sealed="TRUE" ReadOnly="TRUE" Hidden="TRUE" DisplayName="Content Type ID" Name="ContentTypeId" DisplaceOnUpgrade="TRUE" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="ContentTypeId" ColName="tp_ContentTypeId" FromBaseType="TRUE"/>
                         <Field
                             ID="{fa564e0f-0c70-4ab9-b863-0177e6ddd247}"
                             Type="Text"
@@ -85,6 +84,7 @@
                             FromBaseType="TRUE"
                             Sealed="TRUE"
                             ColName="nvarchar1"/>
+                        <Field ID="{03e45e84-1992-4d42-9116-26f756012634}" RowOrdinal="0" Type="ContentTypeId" Sealed="TRUE" ReadOnly="TRUE" Hidden="TRUE" DisplayName="Content Type ID" Name="ContentTypeId" DisplaceOnUpgrade="TRUE" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="ContentTypeId" ColName="tp_ContentTypeId" FromBaseType="TRUE"/>
                         <Field ID="{34ad21eb-75bd-4544-8c73-0e08330291fe}" ReadOnly="TRUE" Type="Note" Name="_ModerationComments" DisplayName="Approver Comments" Hidden="TRUE" CanToggleHidden="TRUE" Filterable="FALSE" Sortable="FALSE" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="_ModerationComments" FromBaseType="TRUE" ColName="ntext1"/>
                         <Field ID="{39360f11-34cf-4356-9945-25c44e68dade}" ReadOnly="TRUE" Hidden="TRUE" Type="Text" Name="File_x0020_Type" DisplaceOnUpgrade="TRUE" DisplayName="File Type" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="File_x0020_Type" FromBaseType="TRUE" ColName="nvarchar2"/>
                         <Field ID="{c3a92d97-2b77-4a25-9698-3ab54874bc6f}" Name="Predecessors" Type="LookupMulti" Mult="TRUE" Required="FALSE" DisplayName="Predecessors" StaticName="Predecessors" List="Self" ShowField="Title" DisplaceOnUpgrade="TRUE" SourceID="http://schemas.microsoft.com/sharepoint/v3" ColName="int1"/>
@@ -171,7 +171,24 @@
                             </FieldRefs>
                         </Field>
                         <Field ID="{2cdcd5eb-846d-4f4d-9aaf-73e8e73c7312}" Name="LikedBy" StaticName="LikedBy" DisplayName="Liked By" Group="_Hidden" Type="UserMulti" List="UserInfo" Mult="TRUE" Hidden="TRUE" SourceID="http://schemas.microsoft.com/sharepoint/v3" ColName="int8" RowOrdinal="0"/>
-                        <Field Type="LookupMulti" DisplayName="Regions" Required="FALSE" EnforceUniqueValues="FALSE" List="{a9c1690f-e515-4800-b784-c93948a36d6a}" ShowField="Title" Mult="TRUE" Sortable="FALSE" UnlimitedLengthInDocumentLibrary="FALSE" RelationshipDeleteBehavior="None" ID="{12b88e95-715d-4f4f-b220-081aeb4429c5}" SourceID="{7ee477d9-d257-47f5-a25d-a882d882e51f}" StaticName="Regions" Name="Regions" ColName="int9" RowOrdinal="0"/>
+                        <Field
+                            Type="LookupMulti"
+                            DisplayName="Regions"
+                            Required="FALSE"
+                            EnforceUniqueValues="FALSE"
+                            List="{a9c1690f-e515-4800-b784-c93948a36d6a---auto_respond}"
+                            ShowField="Title"
+                            Mult="TRUE"
+                            Sortable="FALSE"
+                            UnlimitedLengthInDocumentLibrary="FALSE"
+                            RelationshipDeleteBehavior="None"
+                            ID="{12b88e95-715d-4f4f-b220-081aeb4429c5}"
+                            SourceID="{7ee477d9-d257-47f5-a25d-a882d882e51f}"
+                            StaticName="Regions"
+                            Name="Regions"
+                            ColName="int9"
+                            RowOrdinal="0"
+                        />
                         <Field Type="URL" DisplayName="ExtURL" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" Format="Hyperlink" ID="{02117431-0b9b-49bc-a16e-605c85802043}" SourceID="{7ee477d9-d257-47f5-a25d-a882d882e51f}" StaticName="ExtURL" Name="ExtURL" ColName="nvarchar5" RowOrdinal="0" ColName2="nvarchar6" RowOrdinal2="0"/>
                         <Field Type="Note"
                             DisplayName="Comment"
@@ -235,7 +252,19 @@
                             </CHOICES>
                             <Default>0</Default>
                         </Field>
-                        <Field ID="{503f1caa-358e-4918-9094-4a2cdc4bc034}" ReadOnly="TRUE" Type="Computed" Name="Edit" Sortable="FALSE" Filterable="FALSE" DisplayName="Edit" ClassInfo="Icon" AuthoringInfo="(link to edit item)" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="Edit" FromBaseType="TRUE">
+                        <Field
+                            ID="{503f1caa-358e-4918-9094-4a2cdc4bc034}"
+                            ReadOnly="TRUE"
+                            Type="Computed"
+                            Name="Edit"
+                            Sortable="FALSE"
+                            Filterable="FALSE"
+                            DisplayName="Edit"
+                            ClassInfo="Icon"
+                            AuthoringInfo="(link to edit item)"
+                            SourceID="http://schemas.microsoft.com/sharepoint/v3"
+                            StaticName="Edit"
+                            FromBaseType="TRUE">
                             <DisplayPattern>
                                 <IfHasRights>
                                     <RightsChoices>
@@ -1204,7 +1233,23 @@
                         <Field ID="{687c7f94-686a-42d3-9b67-2782eac4b4f8}" Name="MetaInfo" DisplaceOnUpgrade="TRUE" Hidden="TRUE" ShowInFileDlg="FALSE" Type="Lookup" DisplayName="Property Bag" List="Docs" FieldRef="ID" ShowField="MetaInfo" JoinColName="DoclibRowId" JoinType="INNER" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="MetaInfo" FromBaseType="TRUE"/>
                         <Field ID="{43bdd51b-3c5b-4e78-90a8-fb2087f71e70}" ColName="tp_Level" RowOrdinal="0" ReadOnly="TRUE" Type="Integer" Name="_Level" DisplaceOnUpgrade="TRUE" DisplayName="Level" Hidden="TRUE" Required="FALSE" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="_Level" FromBaseType="TRUE"/>
                         <Field ID="{c101c3e7-122d-4d4d-bc34-58e94a38c816}" ColName="tp_IsCurrentVersion" DisplaceOnUpgrade="TRUE" RowOrdinal="0" ReadOnly="TRUE" Type="Boolean" Name="_IsCurrentVersion" DisplayName="Is Current Version" Hidden="TRUE" Required="FALSE" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="_IsCurrentVersion" FromBaseType="TRUE"/>
-                        <Field ID="{b824e17e-a1b3-426e-aecf-f0184d900485}" Name="ItemChildCount" DisplaceOnUpgrade="TRUE" ReadOnly="TRUE" ShowInFileDlg="FALSE" Type="Lookup" DisplayName="Item Child Count" List="Docs" FieldRef="ID" ShowField="ItemChildCount" JoinColName="DoclibRowId" JoinRowOrdinal="0" JoinType="INNER" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="ItemChildCount" FromBaseType="TRUE"/>
+                        <Field
+                            ID="{b824e17e-a1b3-426e-aecf-f0184d900485}"
+                            Name="ItemChildCount"
+                            DisplaceOnUpgrade="TRUE"
+                            ReadOnly="TRUE"
+                            ShowInFileDlg="FALSE"
+                            Type="Lookup"
+                            DisplayName="Item Child Count"
+                            List="Docs"
+                            FieldRef="ID"
+                            ShowField="ItemChildCount"
+                            JoinColName="DoclibRowId"
+                            JoinRowOrdinal="0"
+                            JoinType="INNER"
+                            SourceID="http://schemas.microsoft.com/sharepoint/v3"
+                            StaticName="ItemChildCount"
+                            FromBaseType="TRUE"/>
                         <Field ID="{960ff01f-2b6d-4f1b-9c3f-e19ad8927341}" Name="FolderChildCount" DisplaceOnUpgrade="TRUE" ReadOnly="TRUE" ShowInFileDlg="FALSE" Type="Lookup" DisplayName="Folder Child Count" List="Docs" FieldRef="ID" ShowField="FolderChildCount" JoinColName="DoclibRowId" JoinRowOrdinal="0" JoinType="INNER" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="FolderChildCount" FromBaseType="TRUE"/>
                         <Field ID="{786099e5-d20a-4232-86e5-cfc3d6face96}" Name="Restricted" DisplaceOnUpgrade="TRUE" Hidden="TRUE" ReadOnly="TRUE" ShowInFileDlg="FALSE" Type="Lookup" DisplayName="Restricted" List="Docs" FieldRef="ID" ShowField="Restricted" JoinColName="DoclibRowId" JoinRowOrdinal="0" JoinType="INNER" SchemaVersion="16.0.64.0" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="Restricted" FromBaseType="TRUE"/>
                         <Field ID="{6bfaba20-36bf-44b5-a1b2-eb6346d49716}" ColName="tp_AppAuthor" RowOrdinal="0" ReadOnly="TRUE" Hidden="FALSE" Type="Lookup" List="AppPrincipals" Name="AppAuthor" DisplayName="App Created By" ShowField="Title" JoinColName="Id" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="AppAuthor" FromBaseType="TRUE"/>

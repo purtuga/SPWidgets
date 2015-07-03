@@ -1,6 +1,6 @@
 define([
-    "text!test/server/soapMsgs/list.GetListItems.response.success.xml",
-    "text!test/server/soapMsgs/list.GetListItemsChangesSinceTokenResponse.response.success.xml"
+    "text!./soapMsgs/list.GetListItems.response.success.xml",
+    "text!./soapMsgs/list.GetListItemsChangesSinceTokenResponse.response.success.xml"
 ], function(
     getListItemsResponseSuccessXML,
     getListItemsChangesSinceTokenResponseSuccessXML
