@@ -32,7 +32,7 @@ function(
             });
 
             it("returns a promise", function(){
-                expect(getListColumns({}).then).toBeDefined();
+                expect(getListColumns({listName: "auto_respond"}).then).toBeDefined();
             });
         });
 

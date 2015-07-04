@@ -290,31 +290,40 @@
 
             return $.Deferred(function(dfd){
 
-                $('<div style="display:none;"/>')
-                    .load(
-                        String(
-                                $.SPWidgets.SPAPI.getSiteUrl() +
-                                "Lists/" + listName + "/NewForm.aspx"
-                            )
-                            .replace(/ /, "%20") +
-                            " .ms-formtable",
-                        function(){
+                $.SPWidgets.SPAPI.getListColumns({listName: listName}).then(function(listCols){
 
-                            var $ele = $(this),
-                                cols = ['ID'];
+                    var cols = listCols.map(function(col){
+                        return col.DisplayName;
+                    });
+                    dfd.resolveWith($, [cols]);
 
-                            $ele.find(".ms-standardheader").each(function(){
+                });
 
-                                cols.push( $.trim( $(this).text().replace(/ \*/, "") ) );
-
-                            });
-
-                            dfd.resolveWith($, [cols]);
-
-                            $ele.remove();
-
-                        }
-                    );
+                // $('<div style="display:none;"/>')
+                    // .load(
+                        // String(
+                                // $.SPWidgets.SPAPI.getSiteUrl() +
+                                // "Lists/" + listName + "/NewForm.aspx"
+                            // )
+                            // .replace(/ /, "%20") +
+                            // " .ms-formtable",
+                        // function(){
+//
+                            // var $ele = $(this),
+                                // cols = ['ID'];
+//
+                            // $ele.find(".ms-standardheader").each(function(){
+//
+                                // cols.push( $.trim( $(this).text().replace(/ \*/, "") ) );
+//
+                            // });
+//
+                            // dfd.resolveWith($, [cols]);
+//
+                            // $ele.remove();
+//
+                        // }
+                    // );
 
             })
             .promise();

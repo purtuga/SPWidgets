@@ -21,8 +21,9 @@
         '/ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/redmond/jquery-ui.css?_@BUILD">');
 </script>
 
-<!--[if lt IE 9]>
+<!--[if lt IE 10]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/es5-shim/4.1.3/es5-shim.min.js"></script>
 <![endif]-->
 
 <style type="text/css">

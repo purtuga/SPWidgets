@@ -142,6 +142,9 @@ define([
                             i += j;
                         }
 
+                    // ELSE: column must be internal... destroy model
+                    } else if (opt.ListModel) {
+                        columns[i].destroy();
                     }
 
                 } //end: for()
@@ -156,7 +159,7 @@ define([
 
             })
             .fail(function(){
-                dfd.resolveWith($, arguments);
+                dfd.rejectWith($, Array.prototype.slice.call(arguments, 0));
             });
 
         })
