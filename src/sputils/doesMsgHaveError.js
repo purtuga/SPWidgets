@@ -10,6 +10,8 @@ define(["jquery"], function($){
      */
     var doesMsgHaveError = function(xmlMsg) {
 
+// TODO: need to check if message is XML format. See http://stackoverflow.com/questions/8672597/how-should-i-test-if-an-object-is-a-xml-document-in-a-cross-browser-way
+
         var $msg        = $(xmlMsg),
             spErrCode   = $msg.find("ErrorCode"),
             response    = false;
@@ -27,7 +29,7 @@ define(["jquery"], function($){
         }
 
         spErrCode.each(function(){
-			            
+
             if ( $(this).text() !== "0x00000000" && $(this).text() !== "NoError" ) {
 
                 response = true;

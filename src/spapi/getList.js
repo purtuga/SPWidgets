@@ -2,12 +2,14 @@ define([
     "jquery",
     "../sputils/cache",
     "./getSiteUrl",
-    "../models/ListModel"
+    "../models/ListModel",
+    "../sputils/doesMsgHaveError"
 ], function(
     $,
     cache,
     getSiteUrl,
-    ListModel
+    ListModel,
+    doesMsgHaveError
 ){
 
     var
@@ -60,9 +62,7 @@ define([
 
         // If cacheXML is true and we have a cached version, return it.
         if (opt.cacheXML && opt.isCached) {
-            return $.Deferred(function(dfd){
-                dfd.resolveWith($, [cache(opt.cacheKey)]);
-            }).promise();
+            return cache(opt.cacheKey);
         }
 
         // If cacheXML is FALSE, and we have a cached version of this key,
@@ -85,14 +85,26 @@ define([
                     '<soap:Body><GetList xmlns="http://schemas.microsoft.com/sharepoint/soap/"><listName>' +
                     opt.listName + '</listName></GetList></soap:Body></soap:Envelope>'
             })
-            .then(function(data){
+            .then(function(xmlDoc){
 
-                var listDef = opt.ListModel.create(data);
+                // Any errors? if so, fail the deferred.
+                if (doesMsgHaveError(xmlDoc)) {
+                    dfd.rejectWith($, arguments);
+                    return;
+                }
+
+                var listDef = opt.ListModel.create(xmlDoc);
 
                 // If cacheXML is true, then create cache with internal name and external
                 if (opt.cacheXML) {
-                    cache(opt.cacheKey, listDef);
-                    cache(getCacheKey(listDef.ID), listDef);
+                    // Was list name an internal UID? then use list Title
+                    if (opt.listName.indexOf("{") === 0) {
+                        cache(getCacheKey(listDef.Title), reqPromise);
+
+                    // Else, use the ID to cache
+                    } else {
+                        cache(getCacheKey(listDef.ID), reqPromise);
+                    }
                 }
 
                 dfd.resolveWith($, [listDef]);
@@ -111,6 +123,11 @@ define([
             });
 
         }).promise();
+
+        // If cacheXML was true, then cache this promise
+        if (opt.cacheXML) {
+            cache(opt.cacheKey, reqPromise);
+        }
 
         return reqPromise;
 
