@@ -1,7 +1,7 @@
 define([
     'jquery',
     '../spapi/getSiteUrl',
-    '../spapi/getList',
+    '../spapi/getListColumns',
     '../spapi/getListFormCollection',
     '../spapi/getListItems',
     '../spapi/updateListItems',
@@ -17,7 +17,7 @@ define([
 ], function(
     $,
     getSiteUrl,
-    getList,
+    getListColumns,
     getListFormCollection,
     getListItems,
     updateListItems,
@@ -35,8 +35,10 @@ define([
      * that list.  Column (at this point) is assume to be a CHOICE type of field.
      * @namespace board
      */
-    var Board   = {},
-        showBoard;
+    var
+    Board   = {},
+    showBoard,
+    getBoardStates;
 
     /** @property {Integer} The max number of columns that can be built (not displayed) */
     Board.maxColumns = 20;
@@ -480,268 +482,7 @@ define([
                      *          received a string with the error, xData and Status.
                      *
                      */
-                    getBoardStates:     function(){
-
-                        return $.Deferred(function(dfd){
-
-                            // Get List information (use cached if already done in prior calls)
-                            // and get list of States to build
-                            getList({
-                                listName:   opt.list,
-                                cacheXML:   true,
-                                async:      false,
-                                webURL:     opt.webURL
-                            })
-                            .then(function(list) {
-
-                                // FIXME: need code refactor here - use getListColumns instead
-
-                                    var
-                                    xData   = list.getSource(),
-                                    resp    = $(xData),
-                                    f       = resp.find("Fields Field[StaticName='" + opt.field + "']");
-
-                                    // If we did not find the field by internal name, try external.
-                                    // If we found it by Display name, then lets change the
-                                    // field value... We need internal name for referencing
-                                    // item column values.
-                                    if (!f.length) {
-
-                                        f = resp.find("Fields Field[DisplayName='" + opt.field + "']");
-
-                                        if (!f.length) {
-
-                                            dfd.rejectWith(
-                                                ele,
-                                                [ 'Field (' + opt.field +  ') not found in list definition!',
-                                                xData, "error" ]);
-
-                                            return;
-
-                                        }
-
-                                        opt._origField  = opt.field;
-                                        opt.field       = f.attr("StaticName");
-
-                                    }
-
-                                    // store if field is required
-                                    if ( f.attr("Required") === "TRUE" ) {
-                                        opt.isStateRequired = true;
-                                    }
-
-                                    // Override the calculated required state attribute
-                                    // if user set allowFieldBlanks on input
-                                    if (typeof opt.allowFieldBlanks === "boolean") {
-                                        opt.isStateRequired = !opt.allowFieldBlanks;
-                                    }
-
-                                    switch(f.attr("Type").toLowerCase()) {
-                                        // CHOICE COLUMNS
-                                        case "choice":
-
-                                            // Should there be a blank column?
-                                            if ( !opt.isStateRequired ) {
-
-                                                opt.states.push({
-                                                    type:   'choice',
-                                                    title:  opt.optionalLabel,
-                                                    name:   opt.optionalLabel
-                                                });
-
-                                                opt.statesMap[""] = opt.states[opt.states.length - 1];
-
-                                            }
-
-                                            if (opt.fieldFilter) {
-
-                                                opt.fieldFilter = opt.fieldFilter.split(/\,/);
-
-                                            }
-
-                                            f.find("CHOICES CHOICE").each(function(i/*,v*/){
-
-                                                var thisChoice = $(this).text();
-
-                                                // if there i sa filter and this column
-                                                // is not part of it, exit now
-                                                if (opt.fieldFilter) {
-                                                    if (!$.grep(opt.fieldFilter, function(e){ return (e === thisChoice); }).length) {
-                                                        return;
-                                                    }
-                                                }
-
-                                                // If we reached a max column number, exit here.
-                                                if (i >= Board.maxColumns){
-
-                                                    try { console.log(
-                                                            "SPWIDGETS:BOARD:Warning: Can only build a max of " +
-                                                            Board.maxColumns + " columns!");
-
-                                                    } catch(e){ }
-
-                                                    return false;
-
-                                                }
-
-                                                opt.states.push({
-                                                    type:   'choice',
-                                                    title:  thisChoice, // extenal visible
-                                                    name:   thisChoice  // internal name
-                                                });
-
-                                                // Store State value in mapper (use internal name)
-                                                opt.statesMap[thisChoice] = opt.states[opt.states.length - 1];
-
-                                            });
-
-                                            dfd.resolveWith(opt, [xData, "success"]);
-
-                                            break;
-
-                                        // LOOKUP COLUMNS
-                                        case "lookup":
-
-                                            if ( !opt.fieldFilter ) {
-
-                                                opt.fieldFilter = "<Query></Query>";
-
-                                            }
-
-                                            // Query the lookup table and get the rows that
-                                            // should be used to build the states
-                                            getListItems({
-                                                listName:       f.attr("List"),
-                                                async:          true,
-                                                cacheXML:       true,
-                                                CAMLQuery:      opt.fieldFilter,
-                                                webURL:         opt.webURL,
-                                                CAMLRowLimit:   Board.maxColumns,
-                                                CAMLViewFields:
-                                                    '<ViewFields><FieldRef Name="' +
-                                                    f.attr("ShowField") +
-                                                    '" /></ViewFields>',
-                                                completefunc:   function(xData, status){
-
-                                                    // Process Errors
-                                                    if (status === "error") {
-
-                                                        dfd.rejectWith(
-                                                                ele,
-                                                                [ 'Communications Error!', xData, status ]);
-
-                                                        return;
-
-                                                    }
-
-                                                    var resp = $(xData.responseXML),
-                                                        $rows;
-
-                                                    if ( doesMsgHaveError(resp) ) {
-
-                                                         dfd.rejectWith(
-                                                                ele,
-                                                                [ getMsgError(resp), xData, status ]);
-
-                                                        return;
-
-                                                    }
-
-                                                    // Should there be a blank column?
-                                                    if ( !opt.isStateRequired ) {
-
-                                                        opt.states.push({
-                                                            type:   'lookup',
-                                                            title:  opt.optionalLabel,  // extenal visible
-                                                            name:   ""                  // internal name
-                                                        });
-
-                                                        opt.statesMap[""] = opt.states[opt.states.length - 1];
-
-                                                    }
-
-                                                    // Loop thorugh all rows and build the
-                                                    // array of states.
-                                                    $rows = getNodesFromXml({
-                                                        xDoc:       xData.responseXML,
-                                                        nodeName:   "z:row",
-                                                        asJQuery:   true
-                                                    });
-
-                                                    $rows.each(function(i/*,v*/){
-
-                                                        // If we reached a max column number, exit here.
-                                                        if (i >= Board.maxColumns){
-
-                                                            try { console.log(
-                                                                    "SPWIDGETS:BOARD:Warning: Can only build a max of " +
-                                                                    Board.maxColumns + " columns!");
-
-                                                            } catch(e){ }
-
-                                                            return false;
-
-                                                        }
-
-                                                        var thisRow     = $(this),
-                                                            thisId      = thisRow.attr("ows_ID"),
-                                                            thisTitle   = thisRow.attr( "ows_" + f.attr("ShowField") ),
-                                                            thisName    = thisId + ";#" + thisTitle;
-
-
-                                                        opt.states.push({
-                                                            type:   'lookup',
-                                                            title:  thisTitle,  // Extenal visible
-                                                            name:   thisName    // internal name
-                                                        });
-
-                                                        // Store State value in mapper (use internal name)
-                                                        opt.statesMap[thisName] = opt.states[opt.states.length - 1];
-
-                                                    });
-
-                                                    dfd.resolveWith(opt, [xData, status]);
-
-                                                    return;
-
-                                                } //end: completefunc
-                                            });
-
-                                            break;
-
-                                        // DEFAULT: Type on the column is not supported.
-                                        default:
-
-                                            dfd.rejectWith(
-                                                ele,
-                                                [   'Field (' + opt.field +
-                                                    ') Type (' + f.attr("Type") +
-                                                    ') is not supported!',
-                                                    xData,
-                                                    "error" ]);
-
-                                            break;
-
-                                    }
-
-                                    return;
-
-                            }) // end: getList().then
-                            .fail(function(jqXHR, status){
-
-                                dfd.rejectWith($, [
-                                    'Field (' + opt.field +  ') not found in list definition!',
-                                    jqXHR,
-                                    status
-                                ]);
-
-                                return;
-                            });
-
-                        })
-                        .promise();
-
-                    }, //end: getBoardStates()
+                    getBoardStates: getBoardStates,
 
                     /**
                      * Retrieves the items from the list for display on the board.
@@ -798,7 +539,8 @@ define([
                                         }
 
                                     },
-                                    options );
+                                    options
+                                );
 
                             // ELSE, opt.CAMLQuery is not a function...
                             // call GetListItems operation.
@@ -810,39 +552,19 @@ define([
                                     CAMLQuery:      opt.CAMLQuery,
                                     CAMLRowLimit:   0, // FIXME: SP data should be paged??
                                     CAMLViewFields: opt.CAMLViewFields,
-                                    webURL:         opt.webURL,
-                                    completefunc:   function(xData, status, rows){
+                                    webURL:         opt.webURL
+                                })
+                                .then(function(rows){
 
-                                        // Process Errors
-                                        if (status === "error") {
+                                    opt.listItems   = rows;
+                                    resolveDeferred(rows);
 
-                                            dfd.rejectWith(
-                                                    ele,
-                                                    [ 'Communications Error!', xData, status ]);
+                                })//end: completefunc()
+                                .fail(function(rows, data, status){
 
-                                            return;
+                                     dfd.rejectWith($, [ rows, data, status ]);
 
-                                        }
-
-                                        var resp = $(xData.responseXML);
-
-                                        if ( doesMsgHaveError(resp) ) {
-
-                                             dfd.rejectWith(
-                                                    ele,
-                                                    [ getMsgError(resp), xData, status ]);
-
-                                            return;
-
-                                        }
-
-                                        // Store the list of items
-                                        opt.listItems   = rows;
-
-                                        resolveDeferred( resp );
-
-                                    }//end: completefunc()
-                                });//end: getListItems
+                                });
 
                             } //end: else: get list items
 
@@ -2457,7 +2179,224 @@ define([
         // a method might have generated if one was called.
         return retVal;
 
-    };//end: $.fn.SPShowBoard()
+    }; //end: showBoard()
+
+    /**
+     * Returns the board states (columns).
+     * @private
+     * @this board
+     */
+    getBoardStates = function(){
+
+        var opt = this;
+
+        return $.Deferred(function(dfd){
+
+            var
+            rejectDeferred = function(jqXHR, msg){
+
+                dfd.rejectWith($, [
+                    (msg || 'Field (' + opt.field +  ') not found in list definition!'),
+                    jqXHR,
+                    "error"
+                ]);
+
+            };
+
+            // Get list columns from SP
+            getListColumns({
+                listName:   opt.list,
+                cacheXML:   true,
+                webURL:     opt.webURL
+            })
+            .then(function(listCols){
+
+                var f = listCols.getColumn(opt.field);
+
+                if (!f) {
+                    rejectDeferred(null);
+                    return;
+                }
+
+                // Lets make sure that when we deal with the server, we always
+                // use the Field's internal name
+                opt._origField  = opt.field;
+                opt.field       = f.StaticName;
+
+                // store if field is required
+                if (f.Required === "TRUE" ) {
+                    opt.isStateRequired = true;
+                }
+
+                // Override the calculated required state attribute
+                // if user set allowFieldBlanks on input
+                if (typeof opt.allowFieldBlanks === "boolean") {
+                    opt.isStateRequired = !opt.allowFieldBlanks;
+                }
+
+                // Process the column type (choice or Lookup)
+                switch(f.Type.toLowerCase()) {
+                    // CHOICE COLUMNS
+                    case "choice":
+
+                        // Should there be a blank column?
+                        if ( !opt.isStateRequired ) {
+                            opt.states.push({
+                                type:   'choice',
+                                title:  opt.optionalLabel,
+                                name:   opt.optionalLabel
+                            });
+                            opt.statesMap[""] = opt.states[opt.states.length - 1];
+                        }
+
+                        if (opt.fieldFilter) {
+                            opt.fieldFilter = opt.fieldFilter.split(/\,/);
+                        }
+
+                        // Loop through the Columns allowed values
+                        f.getColumnValues().some(function(colValue, i){
+
+                            // if there is a filter and this column
+                            // is not part of it, exit loopnow
+                            if (opt.fieldFilter) {
+
+                                if (!$.grep(opt.fieldFilter, function(e){ return (e === colValue); }).length) {
+                                    return;
+                                }
+
+                            }
+
+                            // If we reached a max column number, exit here.
+                            if (i >= Board.maxColumns){
+
+                                try { console.log(
+                                        "SPWIDGETS:BOARD:Warning: Can only build a max of " +
+                                        Board.maxColumns + " columns!");
+                                } catch(e){ }
+
+                                return true; // break the loop
+
+                            }
+
+                            opt.states.push({
+                                type:   'choice',
+                                title:  colValue, // external visible value
+                                name:   colValue  // internal name
+                            });
+
+                            // Store State value in mapper (use internal name)
+                            opt.statesMap[colValue] = opt.states[opt.states.length - 1];
+
+                        });
+
+                        dfd.resolveWith($, [opt.states]);
+
+                        break;
+
+                    // LOOKUP COLUMNS
+                    case "lookup":
+
+                        if ( !opt.fieldFilter ) {
+                            opt.fieldFilter = "<Query></Query>";
+                        }
+
+                        // Query the lookup table and get the rows that
+                        // should be used to build the states
+                        getListItems({
+                            listName:       f.List,
+                            async:          true,
+                            cacheXML:       true,
+                            CAMLQuery:      opt.fieldFilter,
+                            webURL:         opt.webURL,
+                            CAMLRowLimit:   Board.maxColumns,
+                            CAMLViewFields: '<ViewFields><FieldRef Name="' +
+                                            f.ShowField + '" /></ViewFields>'
+                        })
+                        .then(function(rows){
+
+                            // Process Errors
+                            if (status === "error") {
+                                rejectDeferred(null, 'Communications Error!');
+                                return;
+                            }
+
+                            // Should there be a blank column?
+                            if ( !opt.isStateRequired ) {
+
+                                opt.states.push({
+                                    type:   'lookup',
+                                    title:  opt.optionalLabel,  // extenal visible
+                                    name:   ""                  // internal name
+                                });
+                                opt.statesMap[""] = opt.states[opt.states.length - 1];
+
+                            }
+
+                            // Loop through the rows and build the State... break
+                            // loop if we go over the max about of columns allowed.
+                            rows.some(function(thisRow, i){
+
+                                // If we reached a max column number, exit here.
+                                if (i >= Board.maxColumns){
+
+                                    try { console.log(
+                                            "SPWIDGETS:BOARD:Warning: Can only build a max of " +
+                                            Board.maxColumns + " columns!");
+                                    } catch(e){ }
+                                    return true;
+
+                                }
+
+                                var
+                                thisId      = thisRow.ID,
+                                thisTitle   = thisRow[f.ShowField],
+                                thisName    = thisId + ";#" + thisTitle;
+
+                                opt.states.push({
+                                    type:   'lookup',
+                                    title:  thisTitle,  // Extenal visible
+                                    name:   thisName    // internal name
+                                });
+
+                                // Store State value in mapper (use internal name)
+                                opt.statesMap[thisName] = opt.states[opt.states.length - 1];
+
+                            });
+
+                            dfd.resolveWith(opt, [opt.states]);
+
+                            return;
+
+                        })
+                        .fail(function(jqXHR){
+                            rejectDeferred(jqXHR, 'Unable to get rows from Lookup column list');
+                        });
+
+                        break;
+
+                    // DEFAULT: Type on the column is not supported.
+                    default:
+                        rejectDeferred(
+                            null,
+                            'Field (' + opt.field + ') Type (' + f.Type +') is not supported!'
+                        );
+
+                        break;
+
+                } // end: switch()
+
+                return;
+
+            })
+            // getListColumns failed
+            .fail(function(jqXHR){
+                 rejectDeferred(jqXHR);
+            });
+
+        })
+        .promise();
+
+    }; //end: getBoardStates()
 
     showBoard.defaults = Board.defaults;
     return showBoard;
