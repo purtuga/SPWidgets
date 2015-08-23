@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <soap:Body>
+        <SearchPrincipalsResponse xmlns="http://schemas.microsoft.com/sharepoint/soap/">
+            <SearchPrincipalsResult>
+                <PrincipalInfo>
+                    <AccountName>i:0#.f|membership|joe.doe@test.com</AccountName>
+                    <UserInfoID>11</UserInfoID>
+                    <DisplayName>Joe Doe</DisplayName>
+                    <Email>joe.doe@test.com</Email>
+                    <IsResolved>true</IsResolved>
+                    <PrincipalType>User</PrincipalType>
+                </PrincipalInfo>
+                <PrincipalInfo>
+                    <AccountName>i:0#.f|membership|amy.smith@test.com</AccountName>
+                    <UserInfoID>12</UserInfoID>
+                    <DisplayName>Amy Smith</DisplayName>
+                    <Email>amy.smith@test.com</Email>
+                    <IsResolved>true</IsResolved>
+                    <PrincipalType>User</PrincipalType>
+                </PrincipalInfo>
+            </SearchPrincipalsResult>
+        </SearchPrincipalsResponse>
+    </soap:Body>
+</soap:Envelope>

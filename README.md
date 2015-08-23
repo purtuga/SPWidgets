@@ -10,6 +10,10 @@ Documentation
 detail on the usage of each available plugins.**
 
 
+>   **NOTE: SPWidgets is undergoing a major change in the MASTER branch. Please**
+>   **use one of the existing tagged releases instead of the code from MASTER.**
+
+
 Downloads
 ---------
 
