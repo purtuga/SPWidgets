@@ -120,9 +120,10 @@ define([
                             columns[i].DisplayName &&
                             columns[i].AuthoringInfo === undefined &&
                             (
-                                !opt.columnName ||
-                                columns[i].StaticName === opt.columnName ||
-                                columns[i].DisplayName === opt.columnName
+                                !opt.columnName                             ||
+                                columns[i].Name         === opt.columnName  ||
+                                columns[i].StaticName   === opt.columnName  ||
+                                columns[i].DisplayName  === opt.columnName
                             )
                         //&&  String(columns[i].ColName).indexOf("tp_") !== 0 // this removes ID, CreatedBy,Modified,ModifiedBy,ContentType, etc...
                     ) {
@@ -190,7 +191,7 @@ define([
             list = this,
             col;
             list.some(function(thisCol){
-                if (thisCol.StaticName === name || thisCol.DisplayName === name){
+                if (thisCol.Name === name || thisCol.DisplayName === name || thisCol.StaticName === name){
                     col = thisCol;
                 }
             });

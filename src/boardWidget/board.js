@@ -2221,7 +2221,7 @@ define([
                 // Lets make sure that when we deal with the server, we always
                 // use the Field's internal name
                 opt._origField  = opt.field;
-                opt.field       = f.StaticName;
+                opt.field       = f.Name;
 
                 // store if field is required
                 if (f.Required === "TRUE" ) {
