@@ -82,8 +82,36 @@ This method takes as input an object containing the options below. These can als
 
 
 -   **filterSuggestions**    :   *Function. Optional. Default=null* <br />
-    A callback function to be used to filter the list of suggestions retrieved from the server. Method, if defined, must return an array (either empty or of Objects). (Since 2.4);
+    A callback function to be used to filter the list of suggestions retrieved from the server. Method, if defined, __must__ return an array (either empty or of Objects). (Since 2.4).
+    Function is given an `Array` of `Objects` as input. Each object represents the suggestion that will be displayed to the user. Each object will have the following structure:
 
+        {
+            accountId:      "999999"
+            accountName:    "i:0#.f|membership|john.doe@spwidgets.com"
+            accountType:    "User"
+            displayName:    "John Doe"
+            email:          "John.Doe@spwidgets.com"
+            label:          "John Doe"
+            value:          "John Doe"
+        }
+
+    The callback must return this same structure for each object when processing is complete. The `label` will be the visible value to the user when suggestions are displayed on the autocomplete widget and thus can be manipulated to show custom data.
+
+    Example:
+
+        options.filterSuggestions = function(suggestions){
+            var newSuggestions = [];
+
+            $.each(suggestions, function(i, userInfo){
+                // If the user's ID is not -1, then add them return it.
+                if (userInfo.accountId !== "-1") {
+                    // Change the visible label to include email
+                    userInfo.label = userInfo.label + " (" + userInfo.email + ")";
+                }
+            });
+
+            return newSuggestions;
+        }
 
 -   **inputPlaceholder**    :   *String. Optional. Default=Type and Pick.* <br />
     The text to appear in the HTML5 placeholder attribute of the input field.  Since v2.1.
