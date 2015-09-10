@@ -107,6 +107,7 @@ This method takes as input an object containing the options below. These can als
                 if (userInfo.accountId !== "-1") {
                     // Change the visible label to include email
                     userInfo.label = userInfo.label + " (" + userInfo.email + ")";
+                    newSuggestions.push(userInfo);
                 }
             });
 
