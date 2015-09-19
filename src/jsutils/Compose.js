@@ -50,18 +50,24 @@ define([
          * Destroys the instance, by removing its private data.
          */
         destroy:    function(){
-            var onDestroyCallbacks = instData.get(this.onDestroy);
+            var
+            hasCallbacks = this.__onDestroy,
+            onDestroyCallbacks;
 
-            if (Array.isArray(onDestroyCallbacks)) {
-                onDestroyCallbacks.forEach(function(callback, i){
-                    if ("function" === typeof callback) {
-                        callback();
-                    }
-                    onDestroyCallbacks[i] = null;
-                });
+            if (hasCallbacks) {
+                onDestroyCallbacks = instData.get(hasCallbacks);
+
+                if (Array.isArray(onDestroyCallbacks)) {
+                    onDestroyCallbacks.forEach(function(callback, i){
+                        if ("function" === typeof callback) {
+                            callback();
+                        }
+                        onDestroyCallbacks[i] = null;
+                    });
+                }
+                instData["delete"](hasCallbacks);
             }
 
-            instData["delete"](this.onDestroy);
             instData["delete"](this);
             this.isDestroyed = true;
         },
@@ -73,9 +79,12 @@ define([
          * @param {Function} callback
          */
         onDestroy: function(callback){
+            if (!this.__onDestroy) {
+                this.__onDestroy = function(){};
+            }
             if ("function" === typeof callback) {
                 var
-                key                 = this.onDestroy,
+                key                 = this.__onDestroy,
                 onDestroyCallbacks  = instData.get(key);
 
                 if (!onDestroyCallbacks) {
