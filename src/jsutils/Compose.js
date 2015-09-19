@@ -31,10 +31,10 @@ define([
 
     objectCreate    = Object.create,
 
-    instData           = dataStore.stash,
+    instData        = dataStore.stash,
 
     // Base instance methods for Compose'd object
-    baseMethods     = /** @lends Compose.prototype */{
+    baseMethods = /** @lends Compose.prototype */{
 
         /**
          * Property indicating whether instance has been destroyed
@@ -44,14 +44,46 @@ define([
         /**
          * instance initializing code
          */
-        init:       function(){},
+        init: function(){},
 
         /**
          * Destroys the instance, by removing its private data.
          */
         destroy:    function(){
-            instData.delete(this);
+            var onDestroyCallbacks = instData.get(this.onDestroy);
+
+            if (Array.isArray(onDestroyCallbacks)) {
+                onDestroyCallbacks.forEach(function(callback, i){
+                    if ("function" === typeof callback) {
+                        callback();
+                    }
+                    onDestroyCallbacks[i] = null;
+                });
+            }
+
+            instData["delete"](this.onDestroy);
+            instData["delete"](this);
             this.isDestroyed = true;
+        },
+
+        /**
+         * Adds a callback to the queue to be called when this object's `.destroy()`
+         * is called.
+         *
+         * @param {Function} callback
+         */
+        onDestroy: function(callback){
+            if ("function" === typeof callback) {
+                var
+                key                 = this.onDestroy,
+                onDestroyCallbacks  = instData.get(key);
+
+                if (!onDestroyCallbacks) {
+                    onDestroyCallbacks = [];
+                    instData.set(key, onDestroyCallbacks);
+                }
+                onDestroyCallbacks.push(callback);
+            }
         }
     },
 

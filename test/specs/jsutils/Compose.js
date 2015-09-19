@@ -36,6 +36,10 @@ define([
             it("has .destroy prototype method", function(){
                 expect(Compose.prototype.destroy).toBeDefined();
             });
+
+            it("has .onDestroy prototype method", function(){
+                expect(Compose.prototype.onDestroy).toBeDefined();
+            });
         });
 
         describe("Intances get prototype with methods", function(){
@@ -141,6 +145,25 @@ define([
             });
             it("returns false if object is not instance of Factory", function(){
                 expect(this.Factory.isInstanceOf(this.inst)).toBe(false);
+            });
+
+        });
+
+        describe(".destroy() calls callbacks", function(){
+
+            beforeEach(function(){
+                this.inst   = Compose.create();
+                this.spy1   = jasmine.createSpy("spy1");
+                this.spy2   = jasmine.createSpy("spy2)");
+            });
+
+            it("allows settings multiple destroy callbacks", function(){
+                this.inst.onDestroy(this.spy1);
+                this.inst.onDestroy(this.spy2);
+                this.inst.destroy();
+                expect(this.spy1).toHaveBeenCalled();
+                expect(this.spy2).toHaveBeenCalled();
+                expect(this.inst.isDestroyed).toBe(true);
             });
 
         });

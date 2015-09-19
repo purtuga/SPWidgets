@@ -1,6 +1,7 @@
 define(function(){
 
     // POLYFILL FOR WEAKMAP
+    //  [pt] changed how "delete" is defined so that it can work in IE8
 
     /* jshint ignore:start */
     /**
@@ -35,7 +36,8 @@ define(function(){
             return (entry = key[this.name]) && entry[0] === key ?
                 entry[1] : undefined;
           },
-          delete: function(key) {
+          // [pt] Quotes around the delete property needed for IE8
+          "delete": function(key) {
             var entry = key[this.name];
             if (!entry || entry[0] !== key) return false;
             entry[0] = entry[1] = undefined;
