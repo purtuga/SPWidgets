@@ -17,33 +17,41 @@ define(['jquery'], function($){
             count = 0;
 
         if (!spErr.length) {
-
             spErr = xMsg.find("faultcode");
+        }
 
+        // See if any Elements with ErrorMssage attribute
+        if (!spErr.length) {
+            spErr = xMsg.find("CopyResult[ErrorMessage]");
+
+            if (spErr.length) {
+                spErr.each(function(){
+                    var thisErr = $(this);
+                    count += 1;
+                    error += "(" + count + ") " +
+                        (thisErr.attr("ErrorCode") || "unknown") +
+                        ": " +
+                        thisErr.attr("ErrorMessage") + "\n";
+                });
+                return count + " error(s) encountered! \n" + error;
+            }
         }
 
         if (!spErr.length) {
-
             return "";
-
         }
 
         // Loop through and get all errors.
         spErr.each(function(){
-
             var thisErr = $(this);
             if ( thisErr.text() !== "0x00000000" ) {
-
                 count += 1;
                 error += "(" + count + ") " + thisErr.text() + ": " +
                     thisErr.parent().children().not(thisErr).text() + "\n";
-
             }
-
         });
 
         error = count + " error(s) encountered! \n" + error;
-
         return error;
 
     }; /* SPGetMsgError() */

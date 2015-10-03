@@ -20,11 +20,16 @@ define([
      * @extends Compose
      *
      * @param {XMLDocument|Object} source
-     *      The list source - either an XML document or an Object
+     *  The list source - either an XML document or an Object
      *
      * @param {Object} [options]
-     * @param {String} [type="xml"]
-     *      the type data in `source`. Supported values are `xml` and `json`
+     *
+     * @param {String} [options.type="xml"]
+     *  the type data in `source`. Supported values are `xml` and `json`
+     *
+     * @param {String} [options.webURL=""]
+     *  The Full webURL of the Site for the list (ex. `https://.../sites/web1`).
+     *  Option enables some of the value added methods of this model
      *
      */
     ListModel = /** @lends ListModel.prototype */{
@@ -57,6 +62,32 @@ define([
          */
         getSource: function(){
             return instData.get(this).source;
+        },
+
+        /**
+         * Returns the url to the list. The absolute URL (ex. `https://.../sites/web1`)
+         * will be returned _if_ the model was initialized with the `options.webURL`
+         * defined on input.. Else, the absolute path from the root of the domain will
+         * be returned (ex. `/sites/web1`).
+         *
+         * @return {String}
+         */
+        getListUrl: function(){
+            var
+            opt = instData.get(this),
+            rootUrl;
+
+            if (!opt.webURL) {
+                return this.RootFolder || "";
+            }
+
+            rootUrl = opt.webURL.substr(0, opt.webURL.indexOf(this.WebFullUrl));
+
+            if (!rootUrl){
+                return this.RootFolder || "";
+            }
+
+            return rootUrl + this.RootFolder;
         }
 
     },

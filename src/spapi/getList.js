@@ -93,7 +93,9 @@ define([
                     return;
                 }
 
-                var listDef = opt.ListModel.create(xmlDoc);
+                var listDef = opt.ListModel.create(xmlDoc, {
+                    webURL: opt.webURL
+                });
 
                 // If cacheXML is true, then create cache with internal name and external
                 if (opt.cacheXML) {
@@ -110,7 +112,7 @@ define([
                 dfd.resolveWith($, [listDef]);
 
             })
-            .fail(function(){
+            .fail(function(/*jqXHR, textStatus, errorThrown*/){
 
                 dfd.rejectWith($, arguments);
 

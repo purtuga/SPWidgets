@@ -28,7 +28,13 @@ define([
 
         describe("Create from XML", function(){
             beforeEach(function(){
-                this.list = ListModel.create(xmlDoc);
+                this.list = ListModel.create(xmlDoc, {
+                    webURL: "https://test.com/sites/test"
+                });
+            });
+
+            it("responds to getListUrl()", function(){
+                expect("function" === typeof this.list.getListUrl).toBe(true);
             });
 
             it("contains list properties", function(){
@@ -46,6 +52,24 @@ define([
             });
         });
 
+        describe("Method", function(){
+            beforeEach(function(){
+                this.list = ListModel.create(xmlDoc, {
+                    webURL: "https://test.com/sites/test"
+                });
+            });
+
+            describe("getListUrl()", function(){
+                it("returns full URL of list when webURL is known", function(){
+                    expect(this.list.getListUrl()).toBe("https://test.com/sites/test/Lists/Tasks");
+                });
+                it("returns list root URL when webURL is NOT known", function(){
+                    this.list = ListModel.create(xmlDoc);
+                    expect(this.list.getListUrl()).toBe("/sites/test/Lists/Tasks");
+                });
+            });
+
+        });
     });
 
 });
