@@ -172,7 +172,7 @@ define([
      *          bubbled to, as well as the following input parametes:
      *          1. jQuery Event Object
      *          2. Input element (as jQuery object)
-     *          3. Object with information on the user that was added.
+     *          3. Object with information on the user that was removed.
      *
      *
      */
@@ -254,7 +254,7 @@ define([
 
                 if (name) {
 
-                    selector += "[data-pickspusername='" + name + "']";
+                    selector += "[data-pickspusername='" + name.replace(/'/g, "\\\'") + "']";
 
                 }
 
@@ -842,7 +842,7 @@ define([
                             rmEle = o.eleSelected
                                 .find(
                                     "div[data-pickspusername='" +
-                                    options + "']" );
+                                    options.replace(/'/g, "\\\'") + "']" );
 
                         }
 
