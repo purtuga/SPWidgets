@@ -1,6 +1,6 @@
-/*! SPWidgets v2.5.2 2015-10-17 | MIT | Copyright (c) 2015 Paul Tavares | http://purtuga.github.io/SPWidgets */
+/*! SPWidgets v2.5.1 2015-10-31 | MIT | Copyright (c) 2015 Paul Tavares | http://purtuga.github.io/SPWidgets */
 ;(function() {
-var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsutils_dataStore, src_jsutils_Compose, src_sputils_getNodesFromXml, src_models_ListModel, src_sputils_doesMsgHaveError, src_spapi_getList, src_models_ListItemModel, src_spapi_getListItems, src_models_ListColumnModel, src_spapi_getListColumns, src_spapi_getListFormCollection, src_sputils_getMsgError, src_spapi_updateListItems, src_sputils_fillTemplate, src_uiutils_makeSameHeight, src_uiutils_addHoverEffect, text_src_boardWidget_boardhtml, less_src_boardWidget_board, src_boardWidget_board, text_src_dateFieldWidget_dateFieldhtml, src_sputils_getDateString, src_sputils_parseDateString, less_src_dateFieldWidget_dateField, src_dateFieldWidget_dateField, text_src_lookupFieldWidget_lookupFieldhtml, src_sputils_getCamlLogical, src_sputils_parseLookupFieldValue, src_sputils_xmlEscape, less_src_lookupFieldWidget_lookupField, src_lookupFieldWidget_lookupField, text_src_peoplePickerWidget_peoplePickerhtml, src_spapi_searchPrincipals, src_spapi_resolvePrincipals, less_src_peoplePickerWidget_peoplePicker, src_peoplePickerWidget_peoplePicker, text_src_filterPanelWidget_filterPanelhtml, text_src_filterPanelWidget_filterPanelColumnhtml, text_src_filterPanelWidget_filterPanelChoiceFieldhtml, text_src_filterPanelWidget_filterPanelTextFieldhtml, less_src_filterPanelWidget_filterPanel, src_filterPanelWidget_filterPanel, text_src_uploadWidget_uploadhtml, src_sputils_getSPVersion, less_src_uploadWidget_upload, src_uploadWidget_upload, src_spapi_getSiteListCollection, src_spapi_getUserProfile, src_SPWidgets;
+var src_spapi_getSiteUrl, src_sputils_cache, src_spapi_getList, src_sputils_doesMsgHaveError, src_spapi_getListFormCollection, src_sputils_getNodesFromXml, src_spapi_getListItems, src_sputils_getMsgError, src_spapi_updateListItems, src_sputils_fillTemplate, src_uiutils_makeSameHeight, src_uiutils_addHoverEffect, text_src_boardWidget_boardhtml, less_src_boardWidget_board, src_boardWidget_board, text_src_dateFieldWidget_dateFieldhtml, src_sputils_getDateString, src_sputils_parseDateString, less_src_dateFieldWidget_dateField, src_dateFieldWidget_dateField, text_src_lookupFieldWidget_lookupFieldhtml, src_sputils_getCamlLogical, src_sputils_parseLookupFieldValue, src_sputils_xmlEscape, less_src_lookupFieldWidget_lookupField, src_lookupFieldWidget_lookupField, text_src_peoplePickerWidget_peoplePickerhtml, src_spapi_searchPrincipals, src_spapi_resolvePrincipals, less_src_peoplePickerWidget_peoplePicker, src_peoplePickerWidget_peoplePicker, text_src_filterPanelWidget_filterPanelhtml, text_src_filterPanelWidget_filterPanelColumnhtml, text_src_filterPanelWidget_filterPanelChoiceFieldhtml, text_src_filterPanelWidget_filterPanelTextFieldhtml, less_src_filterPanelWidget_filterPanel, src_filterPanelWidget_filterPanel, text_src_uploadWidget_uploadhtml, src_sputils_getSPVersion, less_src_uploadWidget_upload, src_uploadWidget_upload, src_spapi_getSiteListCollection, src_spapi_getUserProfile, src_SPWidgets;
 (function (factory) {
   if (typeof define === 'function' && define.amd) {
     define(['jquery'], factory);
@@ -200,678 +200,41 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
     //end: cache method.
     return cache;
   }();
-  src_jsutils_objectExtend = function () {
+  src_spapi_getList = function ($, cache, getSiteUrl) {
     /**
-     * Extends an object with the properties of another.
-     *
-     * @name objectExtend
-     *
-     * @param {Object} mergeIntoObj
-     * @param {...Object} copyObj1
-     *
-     * @return {Object}
-     */
-    var objectExtend = function (mergeIntoObj) {
-      var response = mergeIntoObj || {}, copyObjs = Array.prototype.slice.call(arguments, 1), total = copyObjs.length, i, key;
-      for (i = 0; i < total; i++) {
-        if (!copyObjs[i]) {
-          continue;
-        }
-        for (key in copyObjs[i]) {
-          if (copyObjs[i].hasOwnProperty(key)) {
-            response[key] = copyObjs[i][key];
-          }
-        }
-      }
-      return response;
-    };
-    return objectExtend;
-  }();
-  src_jsutils_dataStore = function () {
-    // POLYFILL FOR WEAKMAP
-    //  [pt] changed how "delete" is defined so that it can work in IE8
-    /* jshint ignore:start */
-    /**
-     * @license
-     * Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
-     * This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-     * The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-     * The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-     * Code distributed by Google as part of the polymer project is also
-     * subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-     */
-    if (typeof WeakMap === 'undefined') {
-      (function () {
-        var defineProperty = Object.defineProperty;
-        var counter = Date.now() % 1000000000;
-        var WeakMap = function () {
-          this.name = '__st' + (Math.random() * 1000000000 >>> 0) + (counter++ + '__');
-        };
-        WeakMap.prototype = {
-          set: function (key, value) {
-            var entry = key[this.name];
-            if (entry && entry[0] === key)
-              entry[1] = value;
-            else
-              defineProperty(key, this.name, {
-                value: [
-                  key,
-                  value
-                ],
-                writable: true
-              });
-            return this;
-          },
-          get: function (key) {
-            var entry;
-            return (entry = key[this.name]) && entry[0] === key ? entry[1] : undefined;
-          },
-          // [pt] Quotes around the delete property needed for IE8
-          'delete': function (key) {
-            var entry = key[this.name];
-            if (!entry || entry[0] !== key)
-              return false;
-            entry[0] = entry[1] = undefined;
-            return true;
-          },
-          has: function (key) {
-            var entry = key[this.name];
-            if (!entry)
-              return false;
-            return entry[0] === key;
-          }
-        };
-        window.WeakMap = WeakMap;
-      }());
-    }
-    /* jshint ignore:end */
-    /**
-     * Returns an object that contains an initialized WeakMap (`stash` property)
-     * where data can be stored.
-     *
-     * @namespace dataStore
-     *
-     */
-    var dataStore = /** @lends dataStore */
-    {
-      /**
-       * Stash data here.
-       * @type WeakMap
-       */
-      stash: new WeakMap(),
-      /**
-       * Create a private data store and return it.
-       * @return {WeakMap}
-       */
-      create: function () {
-        return new WeakMap();
-      }
-    };
-    return dataStore;
-  }();
-  src_jsutils_Compose = function (objectExtend, dataStore) {
-    /**
-     * Composes new factory methods from a list of given Objects/Classes.
-     *
-     * @constructor Compose
-     *
-     * @example
-     *
-     * var Widget = Compose.create(Model, Events);
-     *
-     * myWidget = Widget.create();
-     *
-     */
-    var
-      // return all KEYs of an object, even those that are not iterable
-      objectKeys = function (prototype) {
-        var k, keys = [];
-        for (k in prototype) {
-          keys.push(k);
-        }
-        return keys;
-      }, objectCreate = Object.create, instData = dataStore.stash,
-      // Base instance methods for Compose'd object
-      baseMethods = /** @lends Compose.prototype */
-      {
-        /**
-         * Property indicating whether instance has been destroyed
-         */
-        isDestroyed: false,
-        /**
-         * instance initializing code
-         */
-        init: function () {
-        },
-        /**
-         * Destroys the instance, by removing its private data.
-         */
-        destroy: function () {
-          var hasCallbacks = this.__onDestroy, onDestroyCallbacks;
-          if (hasCallbacks) {
-            onDestroyCallbacks = instData.get(hasCallbacks);
-            if (Array.isArray(onDestroyCallbacks)) {
-              onDestroyCallbacks.forEach(function (callback, i) {
-                if ('function' === typeof callback) {
-                  callback();
-                }
-                onDestroyCallbacks[i] = null;
-              });
-            }
-            instData['delete'](hasCallbacks);
-          }
-          instData['delete'](this);
-          this.isDestroyed = true;
-        },
-        /**
-         * Adds a callback to the queue to be called when this object's `.destroy()`
-         * is called.
-         *
-         * @param {Function} callback
-         */
-        onDestroy: function (callback) {
-          if (!this.__onDestroy) {
-            this.__onDestroy = function () {
-            };
-          }
-          if ('function' === typeof callback) {
-            var key = this.__onDestroy, onDestroyCallbacks = instData.get(key);
-            if (!onDestroyCallbacks) {
-              onDestroyCallbacks = [];
-              instData.set(key, onDestroyCallbacks);
-            }
-            onDestroyCallbacks.push(callback);
-          }
-        }
-      }, staticMethods = /** @lends Compose */
-      {
-        /**
-         * Creates an new factory based on the prototye of the current Factory
-         * and any other Factory given on input.
-         *
-         * @return {Compose}
-         */
-        extend: function () {
-          var args = Array.prototype.slice.call(arguments), Factory = function () {
-            };
-          Factory.prototype = args.reduce(function (newProto, obj) {
-            if (obj) {
-              var thisObjProto = obj.prototype || obj;
-              objectKeys(thisObjProto).forEach(function (objKey) {
-                newProto[objKey] = thisObjProto[objKey];
-              });
-            }
-            return newProto;
-          }, objectCreate(this.prototype));
-          return objectExtend(Factory, this);
-        },
-        /**
-         * Checks if the Object given on input looks like an instance of this Factory.
-         *
-         * @return {Boolean}
-         */
-        isInstanceOf: function (instanceObj) {
-          if (!instanceObj) {
-            return false;
-          }
-          var neededKeys = objectKeys(this.prototype);
-          // If any prototype key is not in the object prototype, then return false
-          return !neededKeys.some(function (protoKey) {
-            return typeof instanceObj[protoKey] === 'undefined';
-          });
-        },
-        /**
-         * Creates an instance object based on this factory.
-         *
-         * @return {Object}
-         */
-        create: function () {
-          var instance = objectCreate(this.prototype);
-          if (instance.init) {
-            instance.init.apply(instance, arguments);
-          }
-          return instance;
-        }
-      }, Compose = function () {
-      };
-    Compose.prototype = objectCreate(baseMethods);
-    objectExtend(Compose, staticMethods);
-    return Compose;
-  }(src_jsutils_objectExtend, src_jsutils_dataStore);
-  src_sputils_getNodesFromXml = function ($) {
-    /**
-     * Returns the requested nodes from the given xml document
+     * Get a list definition from sharepoint or return its cached version
+     * if one exists.
+     * @function
      *
      * @param {Object} options
      *
-     * @param {XMLDocument} options.xDoc
-     *
-     * @param {String} options.nodeName
-     *
-     * @param {Boolean} [options.asJQuery=false]
-     *      If true, then xmlNodes will be returned as a jQuery
-     *      selection object, ready to be traversed and/or filtered.
-     *
-     * @param {Boolean} [options.cleanAttr=true]
-     *      if true, the 'ows_' will be stripped from column names.
-     *      Only used when asJQuery=false.
-     *
-     * @param {Object} [options.nodeModel=null]
-     *      A factory constructor that will be used to build each node.
-     *      Factory must have a `create` member that will be called with
-     *      the object. The model constructor method should have a signature
-     *      of the following: `function(modelData, options)`
-     *
-     * @param {Object} [options.nodeModelOptions]
-     *      Any data to be passed to the `nodeModel` constructor as the second
-     *      argument. NOTE that this method will add an attribute to the options
-     *      called 'source' that will contain the XML node used to create the object
-     *
-     * @param {Boolean} [options.convertTypes=false]
-     *      When true, this method will attempt to convert certain known
-     *      String values to javascript natives (ex. `"TRUE"` would become `true`)
-     *
-     *
-     * @return {Array|jQuery}
-     *      Each object that represents an XML node will contain properties
-     *      for each attribute found on that node. Also, the Object will
-     *      contain a special attribute - ___xmlNode - that is the actual
-     *      xml node.
-     *
-     * @example
-     *
-     *  API.getNodesFromXml({
-     *      xDoc: jgXHR.responseXML,
-     *      nodeName: "z:row"
-     *  });
-     *
-     * // returns something similar to the following:
-     *  {
-     *      ID: "123",
-     *      Title: "item title",
-     *      ___xmlNode: XMLElement
-     *  }
-     *
-     *
-     */
-    var getNodesFromXml = function (options) {
-        var opt = $.extend({}, {
-            xDoc: null,
-            nodeName: '',
-            asJQuery: false,
-            cleanAttr: true,
-            nodeModel: null,
-            nodeModelOptions: null,
-            convertTypes: false
-          }, options), nodes = opt.xDoc.getElementsByTagName(opt.nodeName), getNodeAsObj, nodeList, i, j;
-        if (nodes.length === 0 && opt.nodeName === 'z:row') {
-          nodes = opt.xDoc.getElementsByTagName('row');
-        }
-        if (nodes.length === 0 && opt.nodeName === 'rs:data') {
-          nodes = opt.xDoc.getElementsByTagName('data');
-        }
-        if (opt.asJQuery === true) {
-          return $(nodes);
-        }
-        nodeList = [];
-        getNodeAsObj = function (ele) {
-          var attrs = ele.attributes, row = {}, name, x, y;
-          for (x = 0, y = attrs.length; x < y; x++) {
-            name = attrs[x].name;
-            if (opt.cleanAttr) {
-              if (name.indexOf('ows_') > -1) {
-                name = name.replace('ows_', '');
-              }
-            }
-            if (opt.convertTypes) {
-              row[name] = getJsNativeFromString(attrs[x].value);
-            } else {
-              row[name] = attrs[x].value;
-            }
-          }
-          // Also store the original xml node
-          // FIXME: remove ___xmlNode from object
-          row.___xmlNode = ele;
-          if (opt.nodeModel && opt.nodeModel.create) {
-            return opt.nodeModel.create(row, $.extend({}, opt.nodeModelOptions, { source: ele }));
-          } else {
-            return row;
-          }
-        };
-        for (i = 0, j = nodes.length; i < j; i++) {
-          nodeList.push(getNodeAsObj(nodes[i]));
-        }
-        return nodeList;
-      },
-      //end: API.getNodesFromXml
-      /**
-       * Returns a JS native type (if possible) from the given string.
-       * @private
-       * @param {String} str
-       *
-       * @return {String|Object}
-       */
-      getJsNativeFromString = function (str) {
-        if (!str) {
-          return str;
-        }
-        var response = str;
-        switch (str.toUpperCase()) {
-        case 'TRUE':
-          response = true;
-          break;
-        case 'FALSE':
-          response = false;
-          break;
-        }
-        return response;
-      };
-    getNodesFromXml.getJsNativeFromString = getJsNativeFromString;
-    return getNodesFromXml;
-  }(jquery);
-  src_models_ListModel = function (Compose, objectExtend, dataStore, getNodesFromXml) {
-    var instData = dataStore.stash,
-      /**
-       * List model. Contains the List definition data.
-       *
-       * @constructor ListModel
-       * @extends Compose
-       *
-       * @param {XMLDocument|Object} source
-       *  The list source - either an XML document or an Object
-       *
-       * @param {Object} [options]
-       *
-       * @param {String} [options.type="xml"]
-       *  the type data in `source`. Supported values are `xml` and `json`
-       *
-       * @param {String} [options.webURL=""]
-       *  The Full webURL of the Site for the list (ex. `https://.../sites/web1`).
-       *  Option enables some of the value added methods of this model
-       *
-       */
-      ListModel = /** @lends ListModel.prototype */
-      {
-        init: function (source, options) {
-          var me = this, opt = objectExtend({}, ListModel.defaults, options), listObj;
-          opt.type = opt.type.toLowerCase();
-          opt.source = source;
-          instData.set(me, opt);
-          if (opt.type === 'xml') {
-            listObj = getListDetailsFromXML.call(me, opt.source);
-          } else if (opt.type === 'json') {
-            listObj = getListDetailsFromJSON.call(me, opt.source);
-          }
-          objectExtend(me, listObj);
-        },
-        /**
-         * returns the original list source used to build the model.
-         */
-        getSource: function () {
-          return instData.get(this).source;
-        },
-        /**
-         * Returns the url to the list. The absolute URL (ex. `https://.../sites/web1`)
-         * will be returned _if_ the model was initialized with the `options.webURL`
-         * defined on input.. Else, the absolute path from the root of the domain will
-         * be returned (ex. `/sites/web1`).
-         *
-         * @return {String}
-         */
-        getListUrl: function () {
-          var opt = instData.get(this), rootUrl;
-          if (!opt.webURL) {
-            return this.RootFolder || '';
-          }
-          rootUrl = opt.webURL.substr(0, opt.webURL.indexOf(this.WebFullUrl));
-          if (!rootUrl) {
-            return this.RootFolder || '';
-          }
-          return rootUrl + this.RootFolder;
-        }
-      },
-      /**
-       * Returns an object with the list definition from an XML document
-       * @private
-       * @return {Object}
-       */
-      getListDetailsFromXML = function (xmlDoc) {
-        var listDef = getNodesFromXml({
-          xDoc: xmlDoc,
-          nodeName: 'List',
-          convertTypes: true
-        }).shift();
-        delete listDef.Fields;
-        delete listDef.RegionalSettings;
-        delete listDef.ServerSettings;
-        delete listDef.___xmlNode;
-        return listDef;
-      },
-      /**
-       * returns an object with the list definition from a JSON response object.
-       */
-      getListDetailsFromJSON = function () {
-      };
-    ListModel = Compose.extend(ListModel);
-    ListModel.defaults = {
-      type: 'xml'  // possible values: xml, json
-    };
-    return ListModel;
-  }(src_jsutils_Compose, src_jsutils_objectExtend, src_jsutils_dataStore, src_sputils_getNodesFromXml);
-  src_sputils_doesMsgHaveError = function ($) {
-    /**
-     * Checks if an xml message has an error. Taken from
-     * SPWidgets.
-     *
-     * @param {jQuery|XMLDocument} xmlMsg
-     *
-     * @return {Boolean}
-     */
-    var doesMsgHaveError = function (xmlMsg) {
-      // TODO: need to check if message is XML format. See http://stackoverflow.com/questions/8672597/how-should-i-test-if-an-object-is-a-xml-document-in-a-cross-browser-way
-      var $msg = $(xmlMsg), spErrCode = $msg.find('ErrorCode'), response = false;
-      if (!spErrCode.length) {
-        // Any "fauldcode" nodes?
-        if ($msg.find('faultcode').length) {
-          return true;
-        }
-        // Any CopyResult nodes with ErrorMessage
-        if ($msg.find('CopyResult[ErrorMessage]').length) {
-          return true;
-        }
-        return false;
-      }
-      spErrCode.each(function () {
-        if ($(this).text() !== '0x00000000' && $(this).text() !== 'NoError') {
-          response = true;
-          return false;
-        }
-      });
-      return response;
-    };
-    /* doesMsgHaveError() */
-    return doesMsgHaveError;
-  }(jquery);
-  src_spapi_getList = function ($, cache, getSiteUrl, ListModel, doesMsgHaveError) {
-    var
-      /**
-       * Get a list definition from sharepoint or return its cached version
-       * if one exists.
-       * @function
-       *
-       * @param {Object} options
-       *
-       * @param {String} options.listName
-       * @param {String} [options.webURL='']
-       * @param {Boolean} [options.async=true]
-       * @param {Boolean} [options.cacheXML=true]
-       *      The message response is cached UNTIL the next time the same
-       *      request is received with cacheXML set to false.
-       * @param {Boolean} [options.ListModel]
-       *      List model constructor factory. Factory must expose a method called
-       *      `create` that accetps two input parameters: the source (XML, JSON) and
-       *      the `options`.
-       *
-       * @return {jQuery.Promise}
-       *          Resolved with 3 input params: data, textStatus, jqXHR
-       *
-       */
-      getList = function (options) {
-        return getListDataUsingSoap.call(this, options);
-      }, getListDataUsingSoap = function (options) {
-        var opt = $.extend({}, getList.defaults, options), getCacheKey = function (listName) {
-            return opt.webURL + '?List=' + listName;
-          }, reqPromise;
-        if (!opt.webURL) {
-          opt.webURL = getSiteUrl();
-        } else if (opt.webURL.charAt(opt.webURL.length - 1) !== '/') {
-          opt.webURL += '/';
-        }
-        opt.webURL += '_vti_bin/Lists.asmx';
-        opt.cacheKey = getCacheKey(opt.listName);
-        opt.isCached = cache.isCached(opt.cacheKey);
-        // If cacheXML is true and we have a cached version, return it.
-        if (opt.cacheXML && opt.isCached) {
-          return cache(opt.cacheKey);
-        }
-        // If cacheXML is FALSE, and we have a cached version of this key,
-        // then remove the cached version - basically reset
-        if (opt.isCached) {
-          cache.clear(opt.cacheKey);
-        }
-        reqPromise = $.Deferred(function (dfd) {
-          $.ajax({
-            type: 'POST',
-            cache: false,
-            async: opt.async,
-            url: opt.webURL,
-            contentType: 'text/xml;charset=utf-8',
-            dataType: 'xml',
-            data: '<?xml version="1.0" encoding="utf-8"?>' + '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + '<soap:Body><GetList xmlns="http://schemas.microsoft.com/sharepoint/soap/"><listName>' + opt.listName + '</listName></GetList></soap:Body></soap:Envelope>'
-          }).then(function (xmlDoc) {
-            // Any errors? if so, fail the deferred.
-            if (doesMsgHaveError(xmlDoc)) {
-              dfd.rejectWith($, arguments);
-              return;
-            }
-            var listDef = opt.ListModel.create(xmlDoc, { webURL: opt.webURL });
-            // If cacheXML is true, then create cache with internal name and external
-            if (opt.cacheXML) {
-              // Was list name an internal UID? then use list Title
-              if (opt.listName.indexOf('{') === 0) {
-                cache(getCacheKey(listDef.Title), reqPromise);  // Else, use the ID to cache
-              } else {
-                cache(getCacheKey(listDef.ID), reqPromise);
-              }
-            }
-            dfd.resolveWith($, [listDef]);
-          }).fail(function () {
-            dfd.rejectWith($, arguments);
-            // If cacheXML was true, then remove this from cache.
-            // No point in caching failures.
-            if (opt.cacheXML) {
-              cache.clear(opt.cacheKey);
-            }
-          });
-        }).promise();
-        // If cacheXML was true, then cache this promise
-        if (opt.cacheXML) {
-          cache(opt.cacheKey, reqPromise);
-        }
-        return reqPromise;
-      };
-    getList.defaults = {
-      listName: '',
-      webURL: '',
-      cacheXML: true,
-      async: true,
-      ListModel: ListModel
-    };
-    return getList;
-  }(jquery, src_sputils_cache, src_spapi_getSiteUrl, src_models_ListModel, src_sputils_doesMsgHaveError);
-  src_models_ListItemModel = function (Compose, objectExtend, dataStore) {
-    var data = dataStore.stash;
-    /**
-     * Model for SharePoint List Items (rows). Object return will include all of
-     * the properties that were given on input.
-     *
-     * @constructor ListItem
-     * @extends Compose
-     *
-     * @param {Object} itemData
-     *      An object with the properties for the model
-     * @param {Object} [options]
-     * @param {Object} [options.itemData]
-     * @param {Object|String} [options.list]
-     * @param {String} [options.webURL]
-     *
-     */
-    return Compose.extend(/** @lends ListItem.prototype */
-    {
-      init: function (itemData, options) {
-        var opt = objectExtend({}, {
-          list: null,
-          webURL: null
-        }, options);
-        if (itemData) {
-          objectExtend(this, itemData);
-        }
-        data.set(this, opt);
-      }
-    });
-  }(src_jsutils_Compose, src_jsutils_objectExtend, src_jsutils_dataStore);
-  src_spapi_getListItems = function ($, cache, getSiteUrl, getNodesFromXml, doesMsgHaveError, ListItemModel) {
-    /**
-     * Method to retrieve data from a SharePoint list using GetListItems or
-     * GetListItemChangesSinceToken operations of the List.axps webservice.
-     * @function
-     *
-     * @param {Object} opt
-     *      Supports same input options as SPServices
-     * @param {Object} opt.listName
-     * @param {String} [opt.webURL="currentSiteWeb"]
-     * @param {String} [opt.viewName=""]
-     * @param {String} [opt.CAMLViewFields=""]
-     * @param {String} [opt.CAMLQuery=""]
-     * @param {String} [opt.CAMLQueryOptions=""]
-     * @param {String|Number} [opt.CAMLRowLimit=""]
-     * @param {String} [opt.operation="GetListItems"]
-     *      Value Could also be set to "GetListItemChangesSinceToken".
-     * @param {Boolean} [opt.changeToken=""]
-     *      Used only when opt.operation is "GetListItemChangesSinceToken"
-     * @param {Boolean} [opt.cacheXML=false]
+     * @param {String} options.listName
+     * @param {String} [options.webURL='']
+     * @param {Boolean} [options.async=true]
+     * @param {Boolean} [options.cacheXML=true]
+     *      The message response is cached UNTIL the next time the same
+     *      request is received with cacheXML set to false.
+     * @param {Function} [options.completefunc=null]
+     *      Deprecated. Use returned promise to process response.
      *
      * @return {jQuery.Promise}
-     *      Promise is resolved with 3 input parameters:
-     *      Array = rows (could be empty if error)
-     *      Object = jqXHR
-     *      String = status
+     *          Resolved with 3 input params: data, textStatus, jqXHR
      *
      */
-    var getListItems = function () {
-      var getRows = null, callerFn = function getListItems() {
-          return getRows.apply(this, arguments);
+    var getList = function () {
+      var getListData = null, callerFn = function getList() {
+          return getListData.apply(this, arguments);
         };
-      // Define defaults. User can change these on their function attachment.
+      // Define defaults. User can change these on their function attachement.
       callerFn.defaults = {
         listName: '',
         webURL: '',
-        viewName: '',
-        CAMLViewFields: '',
-        CAMLQuery: '',
-        CAMLRowLimit: '',
-        CAMLQueryOptions: '',
-        operation: 'GetListItems',
-        // Optionally: set it to = GetListItemChangesSinceToken
-        cacheXML: false,
+        cacheXML: true,
         async: true,
-        completefunc: null,
-        changeToken: '',
-        // GetListChangesSinceToken only
-        listItemModel: ListItemModel
+        completefunc: null
       };
-      // Makes the AJax call to SharePoint to get the data. Returns a jQuery.Promise
-      getRows = function (opt) {
+      // Makes the ajax call to sharepoint and returns a jQuery.promise
+      getListData = function (opt) {
         var options = $.extend({}, callerFn.defaults, opt), reqPromise;
         if (!options.webURL) {
           options.webURL = getSiteUrl();
@@ -879,16 +242,7 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
           options.webURL += '/';
         }
         options.webURL += '_vti_bin/Lists.asmx';
-        options.cacheKey = options.webURL + '?' + [
-          options.listName,
-          options.viewName,
-          options.CAMLViewFields,
-          options.CAMLQuery,
-          options.CAMLRowLimit,
-          options.CAMLQueryOptions,
-          options.operation,
-          options.changeToken
-        ].join('|');
+        options.cacheKey = options.webURL + '?List=' + options.listName;
         options.isCached = cache.isCached(options.cacheKey);
         // If cacheXML is true and we have a cached version, return it.
         if (options.cacheXML && options.isCached) {
@@ -896,8 +250,8 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
           // If a completefunc was defined on this call,
           // execute it.
           if ($.isFunction(options.completefunc)) {
-            reqPromise.then(function (rows, data, status) {
-              options.completefunc(data, status, rows);
+            reqPromise.then(function (data, textStatus, jqXHR) {
+              options.completefunc(jqXHR, textStatus);
             });
           }
           return reqPromise;
@@ -915,39 +269,24 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
             url: options.webURL,
             contentType: 'text/xml;charset=utf-8',
             dataType: 'xml',
-            data: '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + '<soap:Body>' + '<' + options.operation + ' xmlns="http://schemas.microsoft.com/sharepoint/soap/"><listName>' + options.listName + '</listName><viewName>' + (options.viewName || '') + '</viewName><query>' + (options.CAMLQuery || '<Query></Query>') + '</query><viewFields>' + (options.CAMLViewFields || '<ViewFields></ViewFields>') + '</viewFields><rowLimit>' + (options.CAMLRowLimit || 0) + '</rowLimit><queryOptions>' + (options.CAMLQueryOptions || '<QueryOptions></QueryOptions>') + '</queryOptions>' + (options.operation === 'GetListItemChangesSinceToken' ? '<changeToken>' + options.changeToken + '</changeToken>' : '') + '</' + options.operation + '></soap:Body></soap:Envelope>',
-            complete: function (data, status) {
-              var rows = [];
-              if (status === 'error' || doesMsgHaveError(data)) {
-                // If cacheXML was true, then remove this from cache.
-                // No point in caching failures.
-                if (options.cacheXML) {
-                  cache.clear(options.cacheKey);
-                }
-                dfd.rejectWith($, [
-                  rows,
-                  data,
-                  status
-                ]);
-                if ($.isFunction(options.completefunc)) {
-                  options.completefunc(data, status, rows);
-                }
-                return;
-              }
-              rows = getNodesFromXml({
-                xDoc: data.responseXML,
-                nodeName: 'z:row',
-                nodeModel: options.listItemModel
-              });
-              dfd.resolveWith($, [
-                rows,
-                data,
-                status
-              ]);
-              if ($.isFunction(options.completefunc)) {
-                options.completefunc(data, status, rows);
-              }
-            }  //end: $.ajax().success()
+            data: '<?xml version="1.0" encoding="utf-8"?>' + '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + '<soap:Body><GetList xmlns="http://schemas.microsoft.com/sharepoint/soap/"><listName>' + options.listName + '</listName></GetList></soap:Body></soap:Envelope>'
+          }).done(function (data, textStatus, jqXHR) {
+            dfd.resolveWith($, [
+              data,
+              textStatus,
+              jqXHR
+            ]);
+            if ($.isFunction(options.completefunc)) {
+              // Call the complete function (same signature as SPServices)
+              options.completefunc(jqXHR, textStatus);
+            }
+          }).fail(function () {
+            dfd.rejectWith($, arguments);
+            // If cacheXML was true, then remove this from cache.
+            // No point in caching failures.
+            if (options.cacheXML) {
+              cache.clear(options.cacheKey);
+            }
           });
         }).promise();
         // If cacheXML was true, then cache this promise
@@ -956,248 +295,40 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
         }
         return reqPromise;
       };
-      //end: getRows()
+      //end: function()
       return callerFn;
     }();
-    //end: getListItems()
-    return getListItems;
-  }(jquery, src_sputils_cache, src_spapi_getSiteUrl, src_sputils_getNodesFromXml, src_sputils_doesMsgHaveError, src_models_ListItemModel);
-  src_models_ListColumnModel = function ($, Compose, objectExtend, dataStore, getNodesFromXml, getListItems) {
-    var instData = dataStore.stash,
-      /**
-       * list Column Model.
-       *
-       * @constructor ListColumnModel
-       * @extends Compose
-       *
-       * @param {Object} columnData
-       *      A javascript Object with the column
-       * @param {Object} [options]
-       * @param {ListModel|String} [options.list=null]
-       *      A reference to the [ListModel]{ListModel} of the column
-       * @param {String} [options.type="xml"]
-       *      A static string of either `xml` or `json`
-       *      (json not yet supported, 2015-07-03)
-       * @param {Object} [options.source=null]
-       *      The source originally used to create the model. (ex. the XML node or the
-       *     JSON response object)
-       *
-       */
-      ListColumnModel = /** @lends ListColumn.prototype */
-      {
-        init: function (columnData, options) {
-          var opt = objectExtend({}, ListColumnModel.defaults, options);
-          if (columnData) {
-            objectExtend(this, columnData);
-          }
-          instData.set(this, opt);
-        },
-        /**
-         * Returns the values for the column. Useful for column of type Choice or Lookup.
-         *
-         * @return {Array}
-         */
-        getColumnValues: function () {
-          var me = this, $colXml = $(instData.get(this).source), colType = me.Type, colValues = [];
-          switch (colType) {
-          case 'Choice':
-          case 'MultiChoice':
-            $colXml.find('CHOICE').each(function () {
-              colValues.push($(this).text() || '');
-            });
-            break;
-          case 'Lookup':
-          case 'LookupMulti':
-            // FIXME: need to make this async and return a promise
-            getListItems({
-              listName: me.List,
-              cacheXML: true,
-              async: false,
-              CAMLQuery: '<Query><OrderBy><FieldRef Name="' + me.ShowField + '"/></OrderBy></Query>',
-              CAMLViewFields: '<ViewFields><FieldRef Name="' + me.ShowField + '"/></ViewFields>'
-            }).then(function (rows) {
-              colValues = rows;
-            });
-            break;
-          }
-          return colValues;
-        },
-        //end getColumnvalues()
-        /**
-         * returns the ListModel if one was given on input when listColumnModel instance
-         * was created.
-         *
-         * @return {ListModel}
-         */
-        getList: function () {
-          return instData.get(this).list;
-        }
-      };
-    ListColumnModel = Compose.extend(ListColumnModel);
-    ListColumnModel.defaults = {
-      list: null,
-      type: 'xml',
-      source: null
-    };
-    return ListColumnModel;
-  }(jquery, src_jsutils_Compose, src_jsutils_objectExtend, src_jsutils_dataStore, src_sputils_getNodesFromXml, src_spapi_getListItems);
-  src_spapi_getListColumns = function ($, getList, cache, getNodesFromXml, ListColumnModel, dataStore) {
-    var instData = dataStore.stash,
-      /**
-       * Gets the list of columns names for the given list that are
-       * visible on edit/new/disp forms. This method attempts to NOT return any
-       * column that is internal.
-       *
-       * @param {Object|String} options
-       *      An object with the options below, or a string with the listName.
-       *
-       * @param {String} options.listName
-       *      The list name.
-       *
-       * @param {String} [options.columnName]
-       *      Internal or External name of column. When set, only that one column will
-       *      be returned.
-       *
-       * @param {String} [options.webURL]
-       *
-       * @param {Boolean} [options.cacheXML=true]
-       *      If true (default), request will be cached.
-       *
-       * @param {Boolean} [options.async=true]
-       *      If true (default) request will be async.
-       *
-       * @param {Object} [options.ListItemModel=ListColumnModel]
-       *      The List Column Model factory to be used. Factory must expose a `create` method
-       *      that accepts two input parameters: column definition (object) and options.
-       *      See [ListColumnModel]{@link ListColumnModel} for more details.
-       *
-       * @return {jQuery.Promise}
-       *      Deferred is resolved with an ListColumnCollection {@link ListColumnCollection}
-       *      containing [ListColumnModels]{@link ListColumnModels}
-       *
-       * @example
-       *
-       * // Example of column definition object:
-       *
-       * {
-       *      ColName: "nvarchar1",
-       *      DisplayName: "Task Name",
-       *      Name: "Title",
-       *      StaticName: "Title",
-       *      Type: "Text",
-       *      FromBaseType: "TRUE",
-       *      ID: "{fa564e0f-0c70-4ab9-b863-0177e6ddd247}",
-       *      Required: "TRUE",
-       *      Sealed: "TRUE",
-       *      SourceID: "http://schemas.microsoft.com/sharepoint/v3",
-       *      getColumnValues: function () {}
-       * }
-       */
-      getListColumns = function (options) {
-        var opt = $.extend({}, getListColumns.defaults, typeof options === 'string' ? { listName: options } : options);
-        return $.Deferred(function (dfd) {
-          getList({
-            listName: opt.listName,
-            cacheXML: opt.cacheXML,
-            webURL: opt.webURL,
-            async: opt.async
-          }).then(function (list) {
-            opt.listDef = list;
-            var columns = getNodesFromXml({
-                xDoc: list.getSource(),
-                nodeName: 'Field',
-                nodeModel: opt.ListColumnModel,
-                nodeModelOptions: { list: list }  // FIXME: need to set the convertTypes to true
-              }), cols = [], i, j;
-            for (i = 0, j = columns.length; i < j; i++) {
-              // Include only (all must match):
-              //      -   Hidden attribute not set to is not true (no internal SP fields)
-              //      -   Has to have a Display attribute
-              //      -   No AuthoringInfo attribute (these are used on the edit buttons)
-              if ((columns[i].Hidden === undefined || columns[i].Hidden === 'FALSE') && (columns[i].List === undefined || columns[i].List !== 'Docs' && columns[i].List !== 'AppPrincipals') && columns[i].DisplayName && columns[i].AuthoringInfo === undefined && (!opt.columnName || columns[i].Name === opt.columnName || columns[i].StaticName === opt.columnName || columns[i].DisplayName === opt.columnName)  //&&  String(columns[i].ColName).indexOf("tp_") !== 0 // this removes ID, CreatedBy,Modified,ModifiedBy,ContentType, etc...
-) {
-                // FIXME: remove this once all is converted to models
-                // If XML property is present, remove it
-                if (columns[i].___xmlNode) {
-                  delete columns[i].___xmlNode;
-                }
-                cols.push(columns[i]);
-                // If there was a column name defined on input, then
-                // break the loop... this was it.
-                // FIXME: remove this option from this method
-                if (opt.columnName) {
-                  i += j;
-                }  // ELSE: column must be internal... destroy model
-              } else if (opt.ListModel) {
-                columns[i].destroy();
-              }
-            }
-            //end: for()
-            // Mixin additional methods into the array object and
-            // Store this getListItems opt in stash and associated with the result
-            $.extend(cols, listColumnCollectionMixin);
-            instData.set(cols, opt);
-            dfd.resolveWith($, [cols]);
-            return;
-          }).fail(function () {
-            dfd.rejectWith($, Array.prototype.slice.call(arguments, 0));
-          });
-        }).promise();
-      },
-      //end: getlistColumns
-      /**
-      * An Array of List Columns. Each object in the array is a
-      * [ListColumn]{@link ListColumnModel} model.
-      * This collection extends the Array instance created and provides additional
-      * methods for interacting with the collection.
-      *
-      * @typedef ListColumnCollection
-      * @property {Function} getColumn
-      *       Returns a column by searching the array by its name (internal or external)
-      */
-      listColumnCollectionMixin = {
-        /**
-         * Returns an object with the definition for the given column
-         * @param {String} name
-         * @return {ListColumnModel}
-         */
-        getColumn: function (name) {
-          var list = this, col;
-          list.some(function (thisCol) {
-            if (thisCol.Name === name || thisCol.DisplayName === name || thisCol.StaticName === name) {
-              col = thisCol;
-            }
-          });
-          return col;
-        },
-        /**
-         * returns the ListModel for the list for which the collection was requested.
-         *
-         * @return {ListModel}
-         */
-        getList: function () {
-          if (instData.has(this)) {
-            return instData.get(this).listDef;
-          }
-        }
-      };
-    //end: resultArrayMixins
+    //end: .getList()
+    return getList;
+  }(jquery, src_sputils_cache, src_spapi_getSiteUrl);
+  src_sputils_doesMsgHaveError = function ($) {
     /**
-     * Default input params
-     * @static
-     * @name getListColumns.defaults
-     * @type {Object}
+     * Checks if an xml message has an error. Taken from
+     * SPWidgets.
+     *
+     * @param {jQuery|XMLDocument} xmlMsg
+     *
+     * @return {Boolean}
      */
-    getListColumns.defaults = {
-      listName: '',
-      columnName: '',
-      cacheXML: true,
-      async: true,
-      webURL: null,
-      ListColumnModel: ListColumnModel
+    var doesMsgHaveError = function (xmlMsg) {
+      var $msg = $(xmlMsg), spErrCode = $msg.find('ErrorCode'), response = false;
+      if (!spErrCode.length) {
+        if ($msg.find('faultcode').length) {
+          return true;
+        }
+        return false;
+      }
+      spErrCode.each(function () {
+        if ($(this).text() !== '0x00000000' && $(this).text() !== 'NoError') {
+          response = true;
+          return false;
+        }
+      });
+      return response;
     };
-    return getListColumns;
-  }(jquery, src_spapi_getList, src_sputils_cache, src_sputils_getNodesFromXml, src_models_ListColumnModel, src_jsutils_dataStore);
+    /* doesMsgHaveError() */
+    return doesMsgHaveError;
+  }(jquery);
   src_spapi_getListFormCollection = function ($, cache, getSiteUrl, doesMsgHaveError) {
     /**
      * Given a list name, this method will query the SP service and retrieve
@@ -1306,6 +437,241 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
     //end: API.getListFormCollection()
     return getListFormCollection;
   }(jquery, src_sputils_cache, src_spapi_getSiteUrl, src_sputils_doesMsgHaveError);
+  src_sputils_getNodesFromXml = function ($) {
+    /**
+     * Returns the requested nodes from the given xml document
+     *
+     * @param {Object} options
+     * @param {XMLDocument} options.xDoc
+     * @param {String} options.nodeName
+     * @param {Boolean} [options.asJQuery=false]
+     *      If true, then xmlNodes will be returned as a jQuery
+     *      selection object, ready to be traversed and/or filtered.
+     * @param {Boolean} [options.cleanAttr=true]
+     *      if true, the 'ows_' will be stripped from column names.
+     *      Only used when asJQuery=false.
+     *
+     * @return {Array|jQuery}
+     *      Each object that represents an XML node will contain properties
+     *      for each attribute found on that node. Also, the Object will
+     *      contain a special attribute - ___xmlNode - that is the actual
+     *      xml node.
+     *
+     * @example
+     *
+     *  API.getNodesFromXml({
+     *      xDoc: jgXHR.responseXML,
+     *      nodeName: "z:row"
+     *  });
+     *
+     * // returns something similar to the following:
+     *  {
+     *      ID: "123",
+     *      Title: "item title",
+     *      ___xmlNode: XMLElement
+     *  }
+     *
+     *
+     */
+    var getNodesFromXml = function (options) {
+      var opt = $.extend({}, {
+          xDoc: null,
+          nodeName: '',
+          asJQuery: false,
+          cleanAttr: true
+        }, options), nodes = opt.xDoc.getElementsByTagName(opt.nodeName), getNodeAsObj, nodeList, i, j;
+      if (nodes.length === 0 && opt.nodeName === 'z:row') {
+        nodes = opt.xDoc.getElementsByTagName('row');
+      }
+      if (nodes.length === 0 && opt.nodeName === 'rs:data') {
+        nodes = opt.xDoc.getElementsByTagName('data');
+      }
+      if (opt.asJQuery === true) {
+        return $(nodes);
+      }
+      nodeList = [];
+      getNodeAsObj = function (ele) {
+        var attrs = ele.attributes, row = {}, name, x, y;
+        for (x = 0, y = attrs.length; x < y; x++) {
+          name = attrs[x].name;
+          if (opt.cleanAttr) {
+            if (name.indexOf('ows_') > -1) {
+              name = name.replace('ows_', '');
+            }  // Code below commented off because replacing the space does not really
+               // indicate that it is external name.
+               // if (name.indexOf("_x0020_") > -1) {
+               //
+               // name = name.replace(/_x0020_/g, " ");
+               //
+               // }
+          }
+          row[name] = attrs[x].value;
+        }
+        // Also store the original xml node
+        row.___xmlNode = ele;
+        return row;
+      };
+      for (i = 0, j = nodes.length; i < j; i++) {
+        nodeList.push(getNodeAsObj(nodes[i]));
+      }
+      return nodeList;
+    };
+    //end: API.getNodesFromXml
+    return getNodesFromXml;
+  }(jquery);
+  src_spapi_getListItems = function ($, cache, getSiteUrl, getNodesFromXml, doesMsgHaveError) {
+    /**
+     * Method to retrieve data from a SharePoint list using GetListItems or
+     * GetListItemChangesSinceToken operations of the List.axps webservice.
+     * @function
+     *
+     * @param {Object} opt
+     *      Supports same input options as SPServices
+     * @param {Object} opt.listName
+     * @param {String} [opt.webURL="currentSiteWeb"]
+     * @param {String} [opt.viewName=""]
+     * @param {String} [opt.CAMLViewFields=""]
+     * @param {String} [opt.CAMLQuery=""]
+     * @param {String} [opt.CAMLQueryOptions=""]
+     * @param {String|Number} [opt.CAMLRowLimit=""]
+     * @param {String} [opt.operation="GetListItems"]
+     *      Value Could also be set to "GetListItemChangesSinceToken".
+     * @param {Boolean} [opt.changeToken=""]
+     *      Used only when opt.operation is "GetListItemChangesSinceToken"
+     * @param {Boolean} [opt.cacheXML=false]
+     * @param {Boolean} [opt.async=true]
+     * @param {Function} [opt.completefunc=null]
+     *      Function given 3 input parameters:
+     *      jqXHR (an Object)
+     *      status (a String)
+     *      rows (Array of Objects)
+     *
+     * @return {jQuery.Promise}
+     *      Promise is resolved with 3 input parameters:
+     *      Array = rows (could be empty if error)
+     *      Object = jqXHR
+     *      String = status
+     *
+     * Dependencies:
+     *
+     *  namespace.getSiteUrl()
+     *  namespace.getNodesFromXml()
+     *  namespace.doesMsgHaveError()
+     *  namespace.cache()
+     *
+     *
+     */
+    var getListItems = function () {
+      var getRows = null, callerFn = function getListItems() {
+          return getRows.apply(this, arguments);
+        };
+      // Define defaults. User can change these on their function attachment.
+      callerFn.defaults = {
+        listName: '',
+        webURL: '',
+        viewName: '',
+        CAMLViewFields: '',
+        CAMLQuery: '',
+        CAMLRowLimit: '',
+        CAMLQueryOptions: '',
+        operation: 'GetListItems',
+        // Optionally: set it to = GetListItemChangesSinceToken
+        cacheXML: false,
+        async: true,
+        completefunc: null,
+        changeToken: ''  // GetListChangesSinceToken only
+      };
+      // Makes the AJax call to SharePoint to get the data. Returns a jQuery.Promise
+      getRows = function (opt) {
+        var options = $.extend({}, callerFn.defaults, opt), reqPromise;
+        if (!options.webURL) {
+          options.webURL = getSiteUrl();
+        } else if (options.webURL.charAt(options.webURL.length - 1) !== '/') {
+          options.webURL += '/';
+        }
+        options.webURL += '_vti_bin/Lists.asmx';
+        options.cacheKey = options.webURL + '?' + [
+          options.listName,
+          options.viewName,
+          options.CAMLViewFields,
+          options.CAMLQuery,
+          options.CAMLRowLimit,
+          options.CAMLQueryOptions,
+          options.operation,
+          options.changeToken
+        ].join('|');
+        options.isCached = cache.isCached(options.cacheKey);
+        // If cacheXML is true and we have a cached version, return it.
+        if (options.cacheXML && options.isCached) {
+          reqPromise = cache(options.cacheKey);
+          // If a completefunc was defined on this call,
+          // execute it.
+          if ($.isFunction(options.completefunc)) {
+            reqPromise.then(function (rows, data, status) {
+              options.completefunc(data, status, rows);
+            });
+          }
+          return reqPromise;
+        }
+        // If cacheXML is FALSE, and we have a cached version of this key,
+        // then remove the cached version - basically reset
+        if (options.isCached) {
+          cache.clear(options.cacheKey);
+        }
+        reqPromise = $.Deferred(function (dfd) {
+          $.ajax({
+            type: 'POST',
+            cache: false,
+            async: options.async,
+            url: options.webURL,
+            contentType: 'text/xml;charset=utf-8',
+            dataType: 'xml',
+            data: '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + '<soap:Body>' + '<' + options.operation + ' xmlns="http://schemas.microsoft.com/sharepoint/soap/"><listName>' + options.listName + '</listName><viewName>' + (options.viewName || '') + '</viewName><query>' + (options.CAMLQuery || '<Query></Query>') + '</query><viewFields>' + (options.CAMLViewFields || '<ViewFields></ViewFields>') + '</viewFields><rowLimit>' + (options.CAMLRowLimit || 0) + '</rowLimit><queryOptions>' + (options.CAMLQueryOptions || '<QueryOptions></QueryOptions>') + '</queryOptions>' + (options.operation === 'GetListItemChangesSinceToken' ? '<changeToken>' + options.changeToken + '</changeToken>' : '') + '</' + options.operation + '></soap:Body></soap:Envelope>',
+            complete: function (data, status) {
+              var rows = [];
+              if (status === 'error' || doesMsgHaveError(data)) {
+                // If cacheXML was true, then remove this from cache.
+                // No point in caching failures.
+                if (options.cacheXML) {
+                  cache.clear(options.cacheKey);
+                }
+                dfd.rejectWith($, [
+                  rows,
+                  data,
+                  status
+                ]);
+                if ($.isFunction(options.completefunc)) {
+                  options.completefunc(data, status, rows);
+                }
+                return;
+              }
+              rows = getNodesFromXml({
+                xDoc: data.responseXML,
+                nodeName: 'z:row'
+              });
+              dfd.resolveWith($, [
+                rows,
+                data,
+                status
+              ]);
+              if ($.isFunction(options.completefunc)) {
+                options.completefunc(data, status, rows);
+              }
+            }  //end: $.ajax().success()
+          });
+        }).promise();
+        // If cacheXML was true, then cache this promise
+        if (options.cacheXML) {
+          cache(options.cacheKey, reqPromise);
+        }
+        return reqPromise;
+      };
+      //end: getRows()
+      return callerFn;
+    }();
+    //end: getListItems()
+    return getListItems;
+  }(jquery, src_sputils_cache, src_spapi_getSiteUrl, src_sputils_getNodesFromXml, src_sputils_doesMsgHaveError);
   src_sputils_getMsgError = function ($) {
     /**
      * Given a sharepoint webservices response, this method will
@@ -1320,18 +686,6 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
       var xMsg = $(xmlMsg), error = '', spErr = xMsg.find('ErrorCode'), count = 0;
       if (!spErr.length) {
         spErr = xMsg.find('faultcode');
-      }
-      // See if any Elements with ErrorMssage attribute
-      if (!spErr.length) {
-        spErr = xMsg.find('CopyResult[ErrorMessage]');
-        if (spErr.length) {
-          spErr.each(function () {
-            var thisErr = $(this);
-            count += 1;
-            error += '(' + count + ') ' + (thisErr.attr('ErrorCode') || 'unknown') + ': ' + thisErr.attr('ErrorMessage') + '\n';
-          });
-          return count + ' error(s) encountered! \n' + error;
-        }
       }
       if (!spErr.length) {
         return '';
@@ -1696,13 +1050,13 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
   }(jquery);
   text_src_boardWidget_boardhtml = '<div class="spwidget-board"> <div class="spwidget-board-settings" style="display:none"> <div class="spwidget-board-settings-columns">Columns</div> <div class="spwidget-board-column-list-cntr ui-widget-content ui-corner-all" style="display: none"> <div class="ui-state-default"> <span> <span class="spwidget-board-column-total"></span> <span class="spwidget-board-column-total-label">Selected.</span> </span> <button type="button" name="check" title="Check-Uncheck All">Check</button> <button type="button" name="close" title="Close">Close</button> </div> <div class="spwidget-board-column-list"> </div> <div class="ui-state-default"> <button type="button" name="apply">Apply</button> </div> </div> </div> <div class="spwidget-board-headers"> <div class="spwidget-board-headers-cntr"> <div class="spwidget-board-state ui-widget-content ui-corner-top"> <span class="spwidget-board-header-title"></span> <span class="spwidget-state-item-stat-cntr"> <span class="spwidget-item-stat ui-widget-content ui-corner-all spwidget-state-item-total">0</span> </span> </div> <div style="clear:both"></div> </div> </div> <div style="clear:both"></div> <div class="spwidget-board-states"> <div class="spwidget-board-states-cntr"> <div class="spwidget-board-state ui-widget-content ui-corner-bottom"></div> <div style="clear:both"></div> </div> </div> <div style="clear:both"></div> </div> <div class="spwidget-item-template"> <div> <div>#{{ID}}: {{Title}}</div> <div class="ui-state-active ui-corner-all spwidget-board-item-actions"> <a class="spwidgets-board-action" href="javascript:" title="View Item" data-spwidgets_id="{{ID}}" data-spwidgets_board_action="view-item"><img src="/_layouts/images/icgen.gif" border="0"></a> <a class="spwidgets-board-action" href="javascript:" title="Edit Item" data-spwidgets_id="{{ID}}" data-spwidgets_board_action="edit-item"><img src="/_layouts/images/CMSEditSourceDoc.GIF" border="0"></a> </div> </div> </div>';
   less_src_boardWidget_board = undefined;
-  src_boardWidget_board = function ($, getSiteUrl, getListColumns, getListFormCollection, getListItems, updateListItems, getNodesFromXml, fillTemplate, makeSameHeight, addHoverEffect, doesMsgHaveError, getMsgError, boardTemplate) {
+  src_boardWidget_board = function ($, getSiteUrl, getList, getListFormCollection, getListItems, updateListItems, getNodesFromXml, fillTemplate, makeSameHeight, addHoverEffect, doesMsgHaveError, getMsgError, boardTemplate) {
     /**
      * Displays data from a list in Kan-Ban board using a specific column from
      * that list.  Column (at this point) is assume to be a CHOICE type of field.
      * @namespace board
      */
-    var Board = {}, showBoard, getBoardStates;
+    var Board = {}, showBoard;
     /** @property {Integer} The max number of columns that can be built (not displayed) */
     Board.maxColumns = 20;
     /**
@@ -2114,7 +1468,192 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
            *          received a string with the error, xData and Status.
            *
            */
-          getBoardStates: getBoardStates,
+          getBoardStates: function () {
+            return $.Deferred(function (dfd) {
+              // Get List information (use cached if already done in prior calls)
+              // and get list of States to build
+              getList({
+                listName: opt.list,
+                cacheXML: true,
+                async: false,
+                webURL: opt.webURL,
+                completefunc: function (xData, status) {
+                  // FIXME: need to handle errors
+                  // if (resp.hasSPError()) {
+                  // spAgile.logMsg({
+                  // type:   "error",
+                  // msg:    resp.getSPError()
+                  // });
+                  // return null;
+                  // }
+                  var resp = $(xData.responseXML), f = resp.find('Fields Field[StaticName=\'' + opt.field + '\']');
+                  // If we did not find the field by internal name, try external.
+                  // If we found it by Display name, then lets change the
+                  // field value... We need internal name for referencing
+                  // item column values.
+                  if (!f.length) {
+                    f = resp.find('Fields Field[DisplayName=\'' + opt.field + '\']');
+                    if (!f.length) {
+                      dfd.rejectWith(ele, [
+                        'Field (' + opt.field + ') not found in list definition!',
+                        xData,
+                        status
+                      ]);
+                      return;
+                    }
+                    opt._origField = opt.field;
+                    opt.field = f.attr('StaticName');
+                  }
+                  // store if field is required
+                  if (f.attr('Required') === 'TRUE') {
+                    opt.isStateRequired = true;
+                  }
+                  // Override the calculated required state attribute
+                  // if user set allowFieldBlanks on input
+                  if (typeof opt.allowFieldBlanks === 'boolean') {
+                    opt.isStateRequired = !opt.allowFieldBlanks;
+                  }
+                  switch (f.attr('Type').toLowerCase()) {
+                  // CHOICE COLUMNS
+                  case 'choice':
+                    // Should there be a blank column?
+                    if (!opt.isStateRequired) {
+                      opt.states.push({
+                        type: 'choice',
+                        title: opt.optionalLabel,
+                        name: opt.optionalLabel
+                      });
+                      opt.statesMap[''] = opt.states[opt.states.length - 1];
+                    }
+                    if (opt.fieldFilter) {
+                      opt.fieldFilter = opt.fieldFilter.split(/\,/);
+                    }
+                    f.find('CHOICES CHOICE').each(function (i) {
+                      var thisChoice = $(this).text();
+                      // if there i sa filter and this column
+                      // is not part of it, exit now
+                      if (opt.fieldFilter) {
+                        if (!$.grep(opt.fieldFilter, function (e) {
+                            return e === thisChoice;
+                          }).length) {
+                          return;
+                        }
+                      }
+                      // If we reached a max column number, exit here.
+                      if (i >= Board.maxColumns) {
+                        try {
+                          console.log('SPWIDGETS:BOARD:Warning: Can only build a max of ' + Board.maxColumns + ' columns!');
+                        } catch (e) {
+                        }
+                        return false;
+                      }
+                      opt.states.push({
+                        type: 'choice',
+                        title: thisChoice,
+                        // extenal visible
+                        name: thisChoice  // internal name
+                      });
+                      // Store State value in mapper (use internal name)
+                      opt.statesMap[thisChoice] = opt.states[opt.states.length - 1];
+                    });
+                    dfd.resolveWith(opt, [
+                      xData,
+                      status
+                    ]);
+                    break;
+                  // LOOKUP COLUMNS
+                  case 'lookup':
+                    if (!opt.fieldFilter) {
+                      opt.fieldFilter = '<Query></Query>';
+                    }
+                    // Query the lookup table and get the rows that
+                    // should be used to build the states
+                    getListItems({
+                      listName: f.attr('List'),
+                      async: true,
+                      cacheXML: true,
+                      CAMLQuery: opt.fieldFilter,
+                      webURL: opt.webURL,
+                      CAMLRowLimit: Board.maxColumns,
+                      CAMLViewFields: '<ViewFields><FieldRef Name="' + f.attr('ShowField') + '" /></ViewFields>',
+                      completefunc: function (xData, status) {
+                        // Process Errors
+                        if (status === 'error') {
+                          dfd.rejectWith(ele, [
+                            'Communications Error!',
+                            xData,
+                            status
+                          ]);
+                          return;
+                        }
+                        var resp = $(xData.responseXML), $rows;
+                        if (doesMsgHaveError(resp)) {
+                          dfd.rejectWith(ele, [
+                            getMsgError(resp),
+                            xData,
+                            status
+                          ]);
+                          return;
+                        }
+                        // Should there be a blank column?
+                        if (!opt.isStateRequired) {
+                          opt.states.push({
+                            type: 'lookup',
+                            title: opt.optionalLabel,
+                            // extenal visible
+                            name: ''  // internal name
+                          });
+                          opt.statesMap[''] = opt.states[opt.states.length - 1];
+                        }
+                        // Loop thorugh all rows and build the
+                        // array of states.
+                        $rows = getNodesFromXml({
+                          xDoc: xData.responseXML,
+                          nodeName: 'z:row',
+                          asJQuery: true
+                        });
+                        $rows.each(function (i) {
+                          // If we reached a max column number, exit here.
+                          if (i >= Board.maxColumns) {
+                            try {
+                              console.log('SPWIDGETS:BOARD:Warning: Can only build a max of ' + Board.maxColumns + ' columns!');
+                            } catch (e) {
+                            }
+                            return false;
+                          }
+                          var thisRow = $(this), thisId = thisRow.attr('ows_ID'), thisTitle = thisRow.attr('ows_' + f.attr('ShowField')), thisName = thisId + ';#' + thisTitle;
+                          opt.states.push({
+                            type: 'lookup',
+                            title: thisTitle,
+                            // Extenal visible
+                            name: thisName  // internal name
+                          });
+                          // Store State value in mapper (use internal name)
+                          opt.statesMap[thisName] = opt.states[opt.states.length - 1];
+                        });
+                        dfd.resolveWith(opt, [
+                          xData,
+                          status
+                        ]);
+                        return;
+                      }  //end: completefunc
+                    });
+                    break;
+                  // DEFAULT: Type on the column is not supported.
+                  default:
+                    dfd.rejectWith(ele, [
+                      'Field (' + opt.field + ') Type (' + f.attr('Type') + ') is not supported!',
+                      xData,
+                      status
+                    ]);
+                    break;
+                  }
+                  return;
+                }  //end: completefunc()
+              });  //end: getList
+            }).promise();
+          },
+          //end: getBoardStates()
           /**
            * Retrieves the items from the list for display on the board.
            * Method return a promise whose input param is an array of
@@ -2162,18 +1701,31 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
                   CAMLRowLimit: 0,
                   // FIXME: SP data should be paged??
                   CAMLViewFields: opt.CAMLViewFields,
-                  webURL: opt.webURL
-                }).then(function (rows) {
-                  opt.listItems = rows;
-                  resolveDeferred(rows);
-                })  //end: completefunc()
-.fail(function (rows, data, status) {
-                  dfd.rejectWith($, [
-                    rows,
-                    data,
-                    status
-                  ]);
-                });
+                  webURL: opt.webURL,
+                  completefunc: function (xData, status, rows) {
+                    // Process Errors
+                    if (status === 'error') {
+                      dfd.rejectWith(ele, [
+                        'Communications Error!',
+                        xData,
+                        status
+                      ]);
+                      return;
+                    }
+                    var resp = $(xData.responseXML);
+                    if (doesMsgHaveError(resp)) {
+                      dfd.rejectWith(ele, [
+                        getMsgError(resp),
+                        xData,
+                        status
+                      ]);
+                      return;
+                    }
+                    // Store the list of items
+                    opt.listItems = rows;
+                    resolveDeferred(resp);
+                  }  //end: completefunc()
+                });  //end: getListItems
               }  //end: else: get list items
             }).promise();
           },
@@ -3155,167 +2707,10 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
       // a method might have generated if one was called.
       return retVal;
     };
-    //end: showBoard()
-    /**
-     * Returns the board states (columns).
-     * @private
-     * @this board
-     */
-    getBoardStates = function () {
-      var opt = this;
-      return $.Deferred(function (dfd) {
-        var rejectDeferred = function (jqXHR, msg) {
-          dfd.rejectWith($, [
-            msg || 'Field (' + opt.field + ') not found in list definition!',
-            jqXHR,
-            'error'
-          ]);
-        };
-        // Get list columns from SP
-        getListColumns({
-          listName: opt.list,
-          cacheXML: true,
-          webURL: opt.webURL
-        }).then(function (listCols) {
-          var f = listCols.getColumn(opt.field);
-          if (!f) {
-            rejectDeferred(null);
-            return;
-          }
-          // Lets make sure that when we deal with the server, we always
-          // use the Field's internal name
-          opt._origField = opt.field;
-          opt.field = f.Name;
-          // store if field is required
-          if (f.Required === 'TRUE') {
-            opt.isStateRequired = true;
-          }
-          // Override the calculated required state attribute
-          // if user set allowFieldBlanks on input
-          if (typeof opt.allowFieldBlanks === 'boolean') {
-            opt.isStateRequired = !opt.allowFieldBlanks;
-          }
-          // Process the column type (choice or Lookup)
-          switch (f.Type.toLowerCase()) {
-          // CHOICE COLUMNS
-          case 'choice':
-            // Should there be a blank column?
-            if (!opt.isStateRequired) {
-              opt.states.push({
-                type: 'choice',
-                title: opt.optionalLabel,
-                name: opt.optionalLabel
-              });
-              opt.statesMap[''] = opt.states[opt.states.length - 1];
-            }
-            if (opt.fieldFilter) {
-              opt.fieldFilter = opt.fieldFilter.split(/\,/);
-            }
-            // Loop through the Columns allowed values
-            f.getColumnValues().some(function (colValue, i) {
-              // if there is a filter and this column
-              // is not part of it, exit loopnow
-              if (opt.fieldFilter) {
-                if (!$.grep(opt.fieldFilter, function (e) {
-                    return e === colValue;
-                  }).length) {
-                  return;
-                }
-              }
-              // If we reached a max column number, exit here.
-              if (i >= Board.maxColumns) {
-                try {
-                  console.log('SPWIDGETS:BOARD:Warning: Can only build a max of ' + Board.maxColumns + ' columns!');
-                } catch (e) {
-                }
-                return true;  // break the loop
-              }
-              opt.states.push({
-                type: 'choice',
-                title: colValue,
-                // external visible value
-                name: colValue  // internal name
-              });
-              // Store State value in mapper (use internal name)
-              opt.statesMap[colValue] = opt.states[opt.states.length - 1];
-            });
-            dfd.resolveWith($, [opt.states]);
-            break;
-          // LOOKUP COLUMNS
-          case 'lookup':
-            if (!opt.fieldFilter) {
-              opt.fieldFilter = '<Query></Query>';
-            }
-            // Query the lookup table and get the rows that
-            // should be used to build the states
-            getListItems({
-              listName: f.List,
-              async: true,
-              cacheXML: true,
-              CAMLQuery: opt.fieldFilter,
-              webURL: opt.webURL,
-              CAMLRowLimit: Board.maxColumns,
-              CAMLViewFields: '<ViewFields><FieldRef Name="' + f.ShowField + '" /></ViewFields>'
-            }).then(function (rows) {
-              // Process Errors
-              if (status === 'error') {
-                rejectDeferred(null, 'Communications Error!');
-                return;
-              }
-              // Should there be a blank column?
-              if (!opt.isStateRequired) {
-                opt.states.push({
-                  type: 'lookup',
-                  title: opt.optionalLabel,
-                  // extenal visible
-                  name: ''  // internal name
-                });
-                opt.statesMap[''] = opt.states[opt.states.length - 1];
-              }
-              // Loop through the rows and build the State... break
-              // loop if we go over the max about of columns allowed.
-              rows.some(function (thisRow, i) {
-                // If we reached a max column number, exit here.
-                if (i >= Board.maxColumns) {
-                  try {
-                    console.log('SPWIDGETS:BOARD:Warning: Can only build a max of ' + Board.maxColumns + ' columns!');
-                  } catch (e) {
-                  }
-                  return true;
-                }
-                var thisId = thisRow.ID, thisTitle = thisRow[f.ShowField], thisName = thisId + ';#' + thisTitle;
-                opt.states.push({
-                  type: 'lookup',
-                  title: thisTitle,
-                  // Extenal visible
-                  name: thisName  // internal name
-                });
-                // Store State value in mapper (use internal name)
-                opt.statesMap[thisName] = opt.states[opt.states.length - 1];
-              });
-              dfd.resolveWith(opt, [opt.states]);
-              return;
-            }).fail(function (jqXHR) {
-              rejectDeferred(jqXHR, 'Unable to get rows from Lookup column list');
-            });
-            break;
-          // DEFAULT: Type on the column is not supported.
-          default:
-            rejectDeferred(null, 'Field (' + opt.field + ') Type (' + f.Type + ') is not supported!');
-            break;
-          }
-          // end: switch()
-          return;
-        })  // getListColumns failed
-.fail(function (jqXHR) {
-          rejectDeferred(jqXHR);
-        });
-      }).promise();
-    };
-    //end: getBoardStates()
+    //end: $.fn.SPShowBoard()
     showBoard.defaults = Board.defaults;
     return showBoard;
-  }(jquery, src_spapi_getSiteUrl, src_spapi_getListColumns, src_spapi_getListFormCollection, src_spapi_getListItems, src_spapi_updateListItems, src_sputils_getNodesFromXml, src_sputils_fillTemplate, src_uiutils_makeSameHeight, src_uiutils_addHoverEffect, src_sputils_doesMsgHaveError, src_sputils_getMsgError, text_src_boardWidget_boardhtml);
+  }(jquery, src_spapi_getSiteUrl, src_spapi_getList, src_spapi_getListFormCollection, src_spapi_getListItems, src_spapi_updateListItems, src_sputils_getNodesFromXml, src_sputils_fillTemplate, src_uiutils_makeSameHeight, src_uiutils_addHoverEffect, src_sputils_doesMsgHaveError, src_sputils_getMsgError, text_src_boardWidget_boardhtml);
   text_src_dateFieldWidget_dateFieldhtml = '<div class="spwidget-date-cntr"> <div class="spwidget-date-selected-cntr" style="display:none"></div> <div class="spwidget-date-input-cntr"> <input class="spwidget-date-datepicker" name="SPDateFieldInput"> </div> </div> <div class="spwidget-datetime-selector ui-widget-content ui-corner-all"> <div class="spwidget-selectors"> <div class="spwidget-date-selector"></div> <div class="spwidget-time-selector ui-widget-content ui-corner-all"> <div class="spwidget-time-selector-cntr"> <div class="ui-widget-header ui-helper-clearfix ui-corner-all"> Time </div> <div class="spwidget-time-hour"> <label>Hour</label> <select name="spwidget_hour" class="spwidget-hour"> <option value="1"> 1</option> <option value="2"> 2</option> <option value="3"> 3</option> <option value="4"> 4</option> <option value="5"> 5</option> <option value="6"> 6</option> <option value="7"> 7</option> <option value="8"> 8</option> <option value="9"> 9</option> <option value="10">10</option> <option value="11">11</option> <option value="12">12</option> </select> </div> <div class="spwidget-time-min"> <label>Minutes</label> <select name="spwidget_min" class="spwidget-min"> <option value="00">00</option> <option value="05">05</option> <option value="10">10</option> <option value="15">15</option> <option value="20">20</option> <option value="25">25</option> <option value="30">30</option> <option value="35">35</option> <option value="40">40</option> <option value="45">45</option> <option value="50">50</option> <option value="55">55</option> </select> </div> <div class="spwidget-time-ampm"> <label>AM|PM</label> <select name="spwidget_ampm" class="spwidget-ampm"> <option value="AM">AM</option> <option value="PM">PM</option> </select> </div> </div> </div> </div> <div class="spwidget-btn-set"> <div class="spwidget-btn"> Set </div> </div> </div>';
   src_sputils_getDateString = function () {
     /**
@@ -5665,7 +5060,6 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
       inputPlaceholder: 'Type and Pick',
       appendTo: null,
       minLength: 3,
-      showSelected: true,
       resolvePrincipals: true,
       meKeyword: '[me]',
       meKeywordLabel: 'Current User',
@@ -5739,10 +5133,6 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
      *      The text to appear in the HTML5 placeholder attribute
      *      of the input field.
      *
-     * @param {String} [options.showSelected=true]
-     *      If true (default), the selected users by this widget will be shown
-     *      on the screen. Set to this false, if all that is desired to show is the
-     *      search input element.
      * @param {String} [options.resolvePrincipals=true]
      *      If set to true, any user that is suggested but not yet
      *      part of the site collection user info list (their id
@@ -6060,10 +5450,6 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
           }
         });
         //end:autocomplete
-        // If showSelected if false, then hide the selected people area.
-        if (!o.showSelected) {
-          cntr.find('div.pt-pickSPUser-selected').css('display', 'none');
-        }
         // Store the options for this call on the container and include a pointer
         // in the input field to this element
         cntr.data('pickSPUserContainerOpt', o);
@@ -6242,7 +5628,7 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
   text_src_filterPanelWidget_filterPanelChoiceFieldhtml = '<label> <input name="{{Name}}" title="{{DisplayName}}" type="checkbox" value="{{value}}" class="spwidget-input spwidget-filter-input"> {{value}} </label>';
   text_src_filterPanelWidget_filterPanelTextFieldhtml = '<div> <input name="{{Name}}" title="{{DisplayName}}" type="text" class="spwidget-input spwidget-filter-input"> <span class="spwidget-tooltip">{{tooltip}}</span> </div>';
   less_src_filterPanelWidget_filterPanel = undefined;
-  src_filterPanelWidget_filterPanel = function ($, filterPanelTemplate, filterPanelColumnTemplate, filterPanelChoiceFieldTemplate, filterPanelTextFieldTemplate, getSiteUrl, getList, getListColumns, parseLookupFieldValue, fillTemplate, getCamlLogical, xmlEscape, lookupFieldWidget, peoplePickerWidget, dateFieldWidget, doesMsgHaveError, getMsgError) {
+  src_filterPanelWidget_filterPanel = function ($, filterPanelTemplate, filterPanelColumnTemplate, filterPanelChoiceFieldTemplate, filterPanelTextFieldTemplate, getSiteUrl, getList, parseLookupFieldValue, fillTemplate, getCamlLogical, xmlEscape, lookupFieldWidget, peoplePickerWidget, dateFieldWidget, doesMsgHaveError, getMsgError) {
     var Filter = {}, filterPanel;
     /**
      * Default options.
@@ -6267,8 +5653,6 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
     /**
      * Given a container, this jQuery plugin will attach a user interface
      * that allows the user to define filter criteria for a list.
-     *
-     * @method filterPanel
      *
      * @param {Object}  options
      * @param {String}  options.list
@@ -6360,6 +5744,47 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
           opt.webURL = getSiteUrl();
         }
         /**
+         * Retrieves the list definition.
+         *
+         * @return {jQuery.Deferred}
+         *      Deferred is resolved with a scope of the jQuery message
+         *      object and given 2 parameters - xData and status
+         *
+         */
+        Inst.getListDefinition = function () {
+          return $.Deferred(function (dfd) {
+            // Get List Definition
+            getList({
+              listName: opt.list,
+              cacheXML: true,
+              async: true,
+              webURL: opt.webURL,
+              completefunc: function (xData, status) {
+                var $msg = $(xData.responseXML);
+                if (status === 'error') {
+                  dfd.rejectWith($msg, [
+                    xData,
+                    status
+                  ]);
+                  return;
+                }
+                if (doesMsgHaveError($msg)) {
+                  dfd.rejectWith($msg, [
+                    xData,
+                    status
+                  ]);
+                  return;
+                }
+                dfd.resolveWith($msg, [
+                  xData,
+                  status
+                ]);
+              }  //end: completefunc
+            });
+          }).promise();
+        };
+        //end: getListDefinition
+        /**
          * Shows the column sort order UI on the panel.
          */
         Inst.showSortOrder = function () {
@@ -6380,19 +5805,15 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
          */
         Inst.buildWidget = function () {
           return $.Deferred(function (dfd) {
-            // Get List Definition
-            getListColumns({
-              listName: opt.list,
-              cacheXML: true,
-              async: true,
-              webURL: opt.webURL
-            }).then(function (colsDef) {
-              var columns = '', colUI = $.trim(filterPanelColumnTemplate);
+            Inst.getListDefinition().then(function () {
+              var $list = this, columns = '', colUI = $.trim(filterPanelColumnTemplate);
               // Insert the UI into the page and set
               // pointer ($ui) to it.
               Inst.$ui = $($.trim(filterPanelTemplate)).appendTo(Inst.$ele.empty().addClass('hasSPFilterPanel'));
               Inst.$uiFilterColumnCntr = Inst.$ui.find('div.spwidget-filter-column-cntr');
               Inst.$uiFilterSortCntr = Inst.$ui.find('div.spwidget-filter-sort-cntr');
+              // Store list definition
+              Inst.$list = $list;
               // set fixed height if set on input
               if (Inst.opt.height) {
                 Inst.$uiFilterColumnCntr.css('height', Inst.opt.height);
@@ -6401,13 +5822,11 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
               // build the UI for them.
               $.each(Inst.opt.columns, function (i, v) {
                 // find column in the list definition
-                var
-                  // $thisCol = $list
-                  // .find(
-                  // "Field[DisplayName='" +
-                  // v + "']" ),
-                  $thisCol = colsDef.getColumn(v), thisColUI = colUI, inputUI = '', model = null;
-                if (!$thisCol) {
+                var $thisCol = $list.find('Field[DisplayName=\'' + v + '\']'), thisColUI = colUI, inputUI = '', model = null;
+                if (!$thisCol.length) {
+                  $thisCol = $list.find('Field[Name=\'' + v + '\']');
+                }
+                if (!$thisCol.length) {
                   return;
                 }
                 // Now that we are sure we have a COl. definition,
@@ -6415,28 +5834,28 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
                 model = {
                   type: null,
                   otherFilterTypes: '',
-                  sp_type: $thisCol.Type,
-                  sp_format: $thisCol.Format,
-                  Name: $thisCol.Name,
-                  DisplayName: $thisCol.DisplayName
+                  sp_type: $thisCol.attr('Type'),
+                  sp_format: $thisCol.attr('Format'),
+                  Name: $thisCol.attr('Name'),
+                  DisplayName: $thisCol.attr('DisplayName')
                 };
                 // Build the column ui based on its type
-                switch ($thisCol.Type) {
+                switch ($thisCol.attr('Type')) {
                 // CHOICE: Show checkboxes allowing user to select multiple
                 case 'Choice':
                 case 'MultiChoice':
-                  $thisCol.getColumnValues().forEach(function (v) {
+                  $thisCol.find('CHOICES CHOICE').each(function (i, v) {
                     inputUI += fillTemplate($.trim(filterPanelChoiceFieldTemplate), {
-                      DisplayName: $thisCol.DisplayName,
-                      Name: $thisCol.Name,
-                      value: v
+                      DisplayName: $thisCol.attr('DisplayName'),
+                      Name: $thisCol.attr('Name'),
+                      value: $(v).text()
                     });
                   });
                   thisColUI = thisColUI.replace(/__COLUMN__UI__/, inputUI).replace(/__OTHER_FILTER_TYPES__/, '');
                   thisColUI = fillTemplate(thisColUI, {
-                    DisplayName: $thisCol.DisplayName,
+                    DisplayName: $thisCol.attr('DisplayName'),
                     type: 'choice',
-                    Name: $thisCol.Name
+                    Name: $thisCol.attr('Name')
                   });
                   break;
                 // Attachments
@@ -6452,14 +5871,14 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
                 // DEFAULT: Show as a text field
                 default:
                   // lets set the type on the Column
-                  switch ($thisCol.Type) {
+                  switch ($thisCol.attr('Type')) {
                   case 'Lookup':
                   case 'LookupMulti':
                     if (model.type === null) {
                       model.type = 'lookup';
-                      model.list = $thisCol.List;
+                      model.list = $thisCol.attr('List');
                       if (model.list === 'Self') {
-                        model.list = $thisCol.getList().Title;
+                        model.list = $list.find('List').attr('Title');
                       }
                     }
                     break;
@@ -6489,7 +5908,7 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
                     if (model.type === null) {
                       model.type = 'date';
                       model.otherFilterTypes = '<option value="Gt">After</option>' + '<option value="Lt">Before</option>';
-                      model.sp_format = $thisCol.Format !== 'DateOnly' ? 'DateTime' : 'DateOnly';
+                      model.sp_format = $thisCol.attr('Format') !== 'DateOnly' ? 'DateTime' : 'DateOnly';
                     }
                     break;
                   default:
@@ -6501,8 +5920,8 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
                   inputUI = $.trim(filterPanelTextFieldTemplate);
                   thisColUI = thisColUI.replace(/__COLUMN__UI__/, inputUI).replace(/__OTHER_FILTER_TYPES__/, model.otherFilterTypes);
                   thisColUI = fillTemplate(thisColUI, $.extend(model, {
-                    DisplayName: $thisCol.DisplayName,
-                    Name: $thisCol.Name,
+                    DisplayName: $thisCol.attr('DisplayName'),
+                    Name: $thisCol.attr('Name'),
                     tooltip: Inst.opt.textFieldTooltip
                   }));
                   break;
@@ -6530,8 +5949,8 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
               });
               // Setup PEOPLE fields
               Inst.$ele.find('div.spwidget-type-people input').each(function () {
-                var $field = $(this), colDef = colsDef.getColumn($field.attr('name')), peopleType = 'User';
-                if (colDef.UserSelectionMode !== 'PeopleOnly') {
+                var $field = $(this), colDef = $list.find('Field[Name=\'' + $field.attr('name') + '\']'), peopleType = 'User';
+                if (colDef.attr('UserSelectionMode') !== 'PeopleOnly') {
                   peopleType = 'All';
                 }
                 peoplePickerWidget($field, {
@@ -6765,7 +6184,7 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
      * @param {SPFilterPanel.Instance} Inst
      *      The Instance object generated by the $().SPFilterPanel()
      *
-     * @return {filterPanel~filter}
+     * @return {Object}
      *      An object with the filter information. See below for the
      *      structured of the object
      *
@@ -6786,8 +6205,7 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
      *                  ],
      *                  CAMLQuery: 'string with query wrapped in an <Or> aggregate',
      *                  URLParams: 'string with query in URL param style',
-     *                  count: 0,
-     *                  columns: []
+     *                  count: 0
      *              }
      *          },
      *          count: 2 // number of filters created
@@ -6796,27 +6214,12 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
      *
      */
     Filter.getFilterValues = function (Inst) {
-      var
-        /**
-         * Filter panel user defined criteria
-         *
-         * @typedef {Object} filterPanel~filter
-         *
-         * @property {String} CAMLQuery
-         * @property {String} CAMLOrderBy
-         * @property {String} URLParams
-         * @property {Object} filters
-         * @property {Number} count
-         * @property {Array<String>} columns
-         *
-         */
-        filters = {
+      var filters = {
           CAMLQuery: '',
           CAMLOrderBy: '',
           URLParams: '',
           filters: {},
-          count: 0,
-          columns: []
+          count: 0
         }, $cols = Inst.$ui.find('div.spwidget-column'), colFilters = [], orderByValues = '';
       /**
        * Returns a CAMLQuery for the set of individual column filters.
@@ -6960,11 +6363,6 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
             thisColUrlParam[colName].matchType = thisColFilter.matchType;
             thisColUrlParam[colName].logicalType = thisColFilter.logicalType;
             thisColUrlParam[colName].values = thisColFilter.values;
-          }
-          // If this column has either a Filter or was set as a sort field, then
-          // add it to the list of columns
-          if (thisColFilter.CAMLOrderBy || thisColFilter.count > 0) {
-            filters.columns.push(thisColFilter.columnName);
           }
           thisColFilter.URLParams = $.param(thisColUrlParam, false);
           // Add this column's URL params to the overall filter value
@@ -7166,7 +6564,7 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
     };
     filterPanel.defaults = Filter.defaults;
     return filterPanel;
-  }(jquery, text_src_filterPanelWidget_filterPanelhtml, text_src_filterPanelWidget_filterPanelColumnhtml, text_src_filterPanelWidget_filterPanelChoiceFieldhtml, text_src_filterPanelWidget_filterPanelTextFieldhtml, src_spapi_getSiteUrl, src_spapi_getList, src_spapi_getListColumns, src_sputils_parseLookupFieldValue, src_sputils_fillTemplate, src_sputils_getCamlLogical, src_sputils_xmlEscape, src_lookupFieldWidget_lookupField, src_peoplePickerWidget_peoplePicker, src_dateFieldWidget_dateField, src_sputils_doesMsgHaveError, src_sputils_getMsgError);
+  }(jquery, text_src_filterPanelWidget_filterPanelhtml, text_src_filterPanelWidget_filterPanelColumnhtml, text_src_filterPanelWidget_filterPanelChoiceFieldhtml, text_src_filterPanelWidget_filterPanelTextFieldhtml, src_spapi_getSiteUrl, src_spapi_getList, src_sputils_parseLookupFieldValue, src_sputils_fillTemplate, src_sputils_getCamlLogical, src_sputils_xmlEscape, src_lookupFieldWidget_lookupField, src_peoplePickerWidget_peoplePicker, src_dateFieldWidget_dateField, src_sputils_doesMsgHaveError, src_sputils_getMsgError);
   text_src_uploadWidget_uploadhtml = '<div class="SPControlUploadUI spcontrolupload"> <div class="mainContainer"> <div class="buttonPane ui-state-default"> <div class="upload_button"> Upload </div> </div> <div class="iFrameWindow ui-state-default"> <iframe name="SPControlUploadUI" frameborder="0" scrollbars="yes" scrolling="yes"></iframe> </div> <div class="loadingOverlay ui-widget-content"> <div class="loadingOverlayMsg"></div> </div> <div class="spwidget-success-cntr ui-widget-content"> <div class="spwidget-msg-cntr"> <span class="spwidget-msg">Upload Successful!</span> <span class="spwidget-close">x</span> </div> </div> <div class="spwidget-error-cntr ui-state-error"> <div class="spwidget-msg-cntr"> <span class="spwidget-msg">Error</span> <span class="spwidget-close">x</span> </div> </div> </div> </div> <div id="SPControlUploadModUI" style="position:   absolute;\r\n        width:      99.9%;\r\n        height:     99.9%;\r\n        left:       0px;\r\n        top:        0px;\r\n        padding-left:       .5em;\r\n        background-color:   white"> <div class="SPControlUploadModUIFileSelected" style="background-position: left center;\r\n        background-repeat: no-repeat;\r\n        background-image: url(\'/_layouts/images/urn-content-classes-smartfolder16.gif\');\r\n        padding: 0.5em 2em">Select...</div> </div>';
   src_sputils_getSPVersion = function () {
     /* global SP, _spPageContextInfo */
@@ -8115,13 +7513,13 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
         return '';
       }
       var id = '';
-      // FIXME: need to make this async=true
       getList({
         listName: listName,
         async: false,
-        cacheXML: true
-      }).then(function (list) {
-        id = list.ID;
+        cacheXML: true,
+        completefunc: function (xData) {
+          id = $(xData.responseXML).find('List').attr('ID');
+        }
       });
       return id;
     };
@@ -8324,12 +7722,10 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
      * is returned as an object, alogn with the webservices response.
      * @function
      *
-     * @param {Object} options
-     * @param {String} options.accountName
-     * @param {Object} [options.otherAttr]
-     * @param {String} [options.webURL=current site]
-     * @param {Boolean} [options.async=true]
-     * @param {Boolean} [options.cacheXML=true]
+     * @param {String} accountName
+     * @param {String} [webURL=current site]
+     * @param {Boolean} [async=true]
+     * @param {Boolean} [cacheXML=true]
      *
      * @return {jQuery.Promise}
      *      Promise is resolved with 3 params - Object, xData, status. Object
@@ -8363,7 +7759,6 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
       // Define defaults. User can change these on their function attachment.
       callerFn.defaults = {
         accountName: '',
-        otherAttr: '',
         webURL: '',
         async: true,
         cacheXML: true,
@@ -8426,10 +7821,6 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
                 var $prop = $(this);
                 profile[$prop.find('Name').text()] = $prop.find('Value').text() || '';
               });
-              // If user passed in other Attributes, add it to the model
-              if (options.otherAttr) {
-                $.extend(profile, options.otherAttr);
-              }
               dfd.resolveWith($, [
                 profile,
                 xData,
@@ -8453,10 +7844,10 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
     //end: .getUserProfile()
     return getUserProfile;
   }(jquery, src_sputils_cache, src_spapi_getSiteUrl, src_sputils_doesMsgHaveError);
-  src_SPWidgets = function ($, board, dateField, lookupField, peoplePicker, filterPanel, upload, getMsgError, doesMsgHaveError, xmlEscape, fillTemplate, getCamlLogical, getSPVersion, parseDateString, parseLookupFieldValue, getDateString, getNodesFromXml, makeSameHeight, getList, getListColumns, getListFormCollection, getListItems, getSiteListCollection, getSiteUrl, getUserProfile, resolvePrincipals, searchPrincipals) {
+  src_SPWidgets = function ($, board, dateField, lookupField, peoplePicker, filterPanel, upload, getMsgError, doesMsgHaveError, xmlEscape, fillTemplate, getCamlLogical, getSPVersion, parseDateString, parseLookupFieldValue, getDateString, getNodesFromXml, makeSameHeight, getList, getListFormCollection, getListItems, getSiteListCollection, getSiteUrl, getUserProfile, resolvePrincipals, searchPrincipals) {
     $.SPWidgets = {
       defaults: {},
-      version: '2.5.2',
+      version: '2.5.1',
       // Utilities
       escapeXML: xmlEscape.escape,
       unEscapeXML: xmlEscape.unescape,
@@ -8510,7 +7901,6 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
       // SP API methods
       SPAPI: {
         getList: getList,
-        getListColumns: getListColumns,
         getListFormCollection: getListFormCollection,
         getListItems: getListItems,
         getSiteListCollection: getSiteListCollection,
@@ -8544,7 +7934,7 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_jsutils_objectExtend, src_jsuti
         $.SPWidgets.defaults[pluginName] = pluginContructor.defaults;
       }
     });
-  }(jquery, src_boardWidget_board, src_dateFieldWidget_dateField, src_lookupFieldWidget_lookupField, src_peoplePickerWidget_peoplePicker, src_filterPanelWidget_filterPanel, src_uploadWidget_upload, src_sputils_getMsgError, src_sputils_doesMsgHaveError, src_sputils_xmlEscape, src_sputils_fillTemplate, src_sputils_getCamlLogical, src_sputils_getSPVersion, src_sputils_parseDateString, src_sputils_parseLookupFieldValue, src_sputils_getDateString, src_sputils_getNodesFromXml, src_uiutils_makeSameHeight, src_spapi_getList, src_spapi_getListColumns, src_spapi_getListFormCollection, src_spapi_getListItems, src_spapi_getSiteListCollection, src_spapi_getSiteUrl, src_spapi_getUserProfile, src_spapi_resolvePrincipals, src_spapi_searchPrincipals);
+  }(jquery, src_boardWidget_board, src_dateFieldWidget_dateField, src_lookupFieldWidget_lookupField, src_peoplePickerWidget_peoplePicker, src_filterPanelWidget_filterPanel, src_uploadWidget_upload, src_sputils_getMsgError, src_sputils_doesMsgHaveError, src_sputils_xmlEscape, src_sputils_fillTemplate, src_sputils_getCamlLogical, src_sputils_getSPVersion, src_sputils_parseDateString, src_sputils_parseLookupFieldValue, src_sputils_getDateString, src_sputils_getNodesFromXml, src_uiutils_makeSameHeight, src_spapi_getList, src_spapi_getListFormCollection, src_spapi_getListItems, src_spapi_getSiteListCollection, src_spapi_getSiteUrl, src_spapi_getUserProfile, src_spapi_resolvePrincipals, src_spapi_searchPrincipals);
   (function (c) {
     var d = document, a = 'appendChild', i = 'styleSheet', s = d.createElement('style');
     s.type = 'text/css';
