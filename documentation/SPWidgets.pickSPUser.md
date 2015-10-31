@@ -147,51 +147,6 @@ Return Value
 
 This plugin will return a jQuery object that contains the initially selected set of node, thus maintaining chainability.
 
-
-<hr>
-
-Utilities
----------
-
-### **$().pickSPUser.resolvePrincipals(options)**
-
-A utility to resolve user accounts that may not be part of the site collection list info table. This is normally needed when a user's ID is -1: meaning the user is valid, but not part of the site collection (yet). By calling this method and setting the _addToUserInfoList_ input option to true, that user will be added and receive a valid (positive) ID.  (Since v.2.3)
-
-#### Input parameters
-
--   **options**</br>
-    An object with the input options. See below for list of options
-
-### Options
-
--   **principalKeys** :   *String|Array. REQUIRED* <br />
-    The account name, or email address of the principal to be resolved. Example: DOMAIN\userloginname.
-
--   **principalType**:   *String. Optional. Default=All* <br />
-    The type of principal to be resolved. Valid values are: _User_, _DistributionList_, _SecurityGroup_, _SharePointGroup_, _All_, _None_. Default is All.
-
--   **addToUserInfoList**:   *Boolean. Optional. Default=true* <br />
-    If true, then user will be added to site's List Info list.
-
--   **aysnc**: *Boolean. Optional. Default=true* <br />
-    If true, request to the server will be done async.
-
-### Return
-
-Method returns a jQuery Promise (the one from $.ajax()). The promise (if successful) will provide its callback 3 input parameters: data (the xml response document), textStatus and the jQuery XHR request.
-
-Example:<br/>
-
-    $().pickSPUser.resolvePrincipals({
-        principalKey: "DOMAIN\PAUL"
-    })
-    .done(function(xmlDoc, textstatus, jqXHR){
-        var $doc = $(xmlDoc);
-        alert($doc.find("DisplayName").eq(0).text());
-    });
-
-
-
 <hr>
 
 Methods
@@ -334,5 +289,50 @@ When user makes a selection, show alert with person's info.
                 person.accountType);
         }
     });
+
+
+
+<hr>
+
+Utilities
+---------
+
+### **$().pickSPUser.resolvePrincipals(options)**
+
+A utility to resolve user accounts that may not be part of the site collection list info table. This is normally needed when a user's ID is -1: meaning the user is valid, but not part of the site collection (yet). By calling this method and setting the _addToUserInfoList_ input option to true, that user will be added and receive a valid (positive) ID.  (Since v.2.3)
+
+#### Input parameters
+
+-   **options**</br>
+    An object with the input options. See below for list of options
+
+### Options
+
+-   **principalKeys** :   *String|Array. REQUIRED* <br />
+    The account name, or email address of the principal to be resolved. Example: DOMAIN\userloginname.
+
+-   **principalType**:   *String. Optional. Default=All* <br />
+    The type of principal to be resolved. Valid values are: _User_, _DistributionList_, _SecurityGroup_, _SharePointGroup_, _All_, _None_. Default is All.
+
+-   **addToUserInfoList**:   *Boolean. Optional. Default=true* <br />
+    If true, then user will be added to site's List Info list.
+
+-   **aysnc**: *Boolean. Optional. Default=true* <br />
+    If true, request to the server will be done async.
+
+### Return
+
+Method returns a jQuery Promise (the one from $.ajax()). The promise (if successful) will provide its callback 3 input parameters: data (the xml response document), textStatus and the jQuery XHR request.
+
+Example:<br/>
+
+    $().pickSPUser.resolvePrincipals({
+        principalKey: "DOMAIN\PAUL"
+    })
+    .done(function(xmlDoc, textstatus, jqXHR){
+        var $doc = $(xmlDoc);
+        alert($doc.find("DisplayName").eq(0).text());
+    });
+
 
 
