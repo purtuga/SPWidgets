@@ -308,7 +308,8 @@ module.exports = function(grunt) {
                 '<%= buildFolder %>'
             ],
             build: [
-                '<%= buildFolder %>/demo/src/*.aspx'
+                '<%= buildFolder %>/demo/src/*.aspx',
+                '<%= buildFolder %>/documentation/ALL.md'
             ]
         },
         concat : {
@@ -346,15 +347,9 @@ module.exports = function(grunt) {
                     banner : ''
                 },
                 files: {
-                    "<%= buildFolder %>/documentation/combined.md": [
+                    "<%= buildFolder %>/documentation/ALL.md": [
                         '<%= buildFolder %>/documentation/SPWidgets.md',
-                        '<%= buildFolder %>/documentation/SPWidgetspickSPUser.md',
-                        '<%= buildFolder %>/documentation/SPWidgets.SPControlBoard.md',
-                        '<%= buildFolder %>/documentation/SPWidgets.SPControlLookupField.md',
-                        '<%= buildFolder %>/documentation/SPWidgets.SPControlUpload.md',
-                        '<%= buildFolder %>/documentation/SPWidgets.SPDateField.md',
-                        '<%= buildFolder %>/documentation/SPWidgets.SPFilterPanel.md',
-                        '<%= buildFolder %>/documentation/SPWidgets.Utilities.md'
+                        '<%= buildFolder %>/documentation/SPWidgets.*.md'
 
                     ]
                 }
@@ -670,7 +665,8 @@ module.exports = function(grunt) {
         "copy:prodFixScriptTags",
         "copy:prod",
         "concat:demo",
-        "copy:demo"
+        "copy:demo",
+        "concat:docs"
     ]);
 
     /**
