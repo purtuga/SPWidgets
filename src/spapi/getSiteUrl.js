@@ -45,7 +45,7 @@ define(["jquery"], function($){
                 document.location.hostname +
                 (   Number(document.location.port) !== 80 &&
                     Number(document.location.port) > 0 ?
-                        document.location.port :
+                        ":" + document.location.port :
                         ""
                 ) +
                 pageAddress;
