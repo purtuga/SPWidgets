@@ -22,16 +22,25 @@ define([
      * @param {Object} opt
      *      Supports same input options as SPServices
      * @param {Object} opt.listName
+     *
      * @param {String} [opt.webURL="currentSiteWeb"]
+     *
      * @param {String} [opt.viewName=""]
+     *
      * @param {String} [opt.CAMLViewFields=""]
+     *
      * @param {String} [opt.CAMLQuery=""]
+     *
      * @param {String} [opt.CAMLQueryOptions=""]
+     *
      * @param {String|Number} [opt.CAMLRowLimit=""]
+     *
      * @param {String} [opt.operation="GetListItems"]
      *      Value Could also be set to "GetListItemChangesSinceToken".
+     *
      * @param {Boolean} [opt.changeToken=""]
      *      Used only when opt.operation is "GetListItemChangesSinceToken"
+     *
      * @param {Boolean} [opt.cacheXML=false]
      *
      * @return {jQuery.Promise}
@@ -40,6 +49,7 @@ define([
      *      Object = jqXHR
      *      String = status
      *
+     * @see https://msdn.microsoft.com/en-us/library/websvclists.lists.getlistitems(v=office.14).aspx
      */
     var getListItems = (function(){
 

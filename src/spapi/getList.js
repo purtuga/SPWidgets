@@ -33,7 +33,7 @@ define([
      *      the `options`.
      *
      * @return {jQuery.Promise}
-     *          Resolved with 3 input params: data, textStatus, jqXHR
+     *  Resolved one object - ListModel object.
      *
      */
     getList = function(options){
