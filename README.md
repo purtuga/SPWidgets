@@ -28,7 +28,7 @@ Dual License support
 -   MIT http://www.opensource.org/licenses/mit-license.php
 -   GPL http://www.opensource.org/licenses/gpl-license.php
 
-User can pick whichever one applies best for their project and doesn’t not have to contact me.
+User can pick whichever one applies best for their project and doesnâ€™t have to contact me.
 
 
 Contributions
