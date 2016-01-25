@@ -458,7 +458,7 @@ module.exports = function(grunt) {
                 expand: true,
                 cwd: "<%= buildFolder %>/demo/src/",
                 src: 'Demo.SPWidgets.aspx',
-                dest: '<%= buildFolder %>/demo/'
+                dest: 'demo/'
             }
         },
         uglify : {
