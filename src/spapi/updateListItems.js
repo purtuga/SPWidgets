@@ -177,7 +177,7 @@ define([
                     if ($.isFunction(opt.completefunc)) {
                         try {
                             console.warn("updateListItems(): completefunc options is deprecated!");
-                        } catch(e){};
+                        } catch(e){}
                         opt.completefunc(xdata, status, jqXHR);
                     }
                 },

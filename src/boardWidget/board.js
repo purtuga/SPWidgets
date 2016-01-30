@@ -963,7 +963,7 @@ define([
                      * items under each state column
                      *
                      * @param {options} [options]
-                     * @param {String|} [options.state=null] The state to be updated
+                     * @param {String} [options.state=null] The state to be updated
                      *
                      */
                     updBoardHeaders: function(options) {

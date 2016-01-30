@@ -22,7 +22,7 @@
     "requirejs": "^2.1.15",
     "require-less": "^0.1.5",
     "requirejs-text": "~2.0.12",
-    "jasmine": "~2.3.4",
+    "jasmine": "^2.4.1",
     "jasmine-ajax": "git@github.com:jasmine/jasmine-ajax.git#master"
   },
   "resolutions": {

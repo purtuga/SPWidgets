@@ -661,7 +661,7 @@ define([
 
             if (
                 Inst.opt.ignoreKeywords &&
-                !Inst.opt.ignoreKeywords instanceof RegExp
+                !(Inst.opt.ignoreKeywords instanceof RegExp)
             ) {
 
                 Inst.opt.ignoreKeywords = /Inst.opt.ignoreKeywords/i;

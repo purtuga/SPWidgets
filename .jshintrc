@@ -2,7 +2,7 @@
   "curly": true,
   "eqeqeq": true,
   "immed": true,
-  "latedef": true,
+  "latedef": false,
   "newcap": true,
   "noarg": true,
   "sub": true,
@@ -28,6 +28,7 @@
     "jQuery": true,
     "describe": true,
     "it": true,
-    "expect": true
+    "expect": true,
+    "WeakMap": true
   }
 }
