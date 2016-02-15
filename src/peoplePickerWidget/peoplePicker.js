@@ -181,7 +181,7 @@ define([
         // Store the arguments given to this function. Used later if the
         // user is trying to execute a method of this plugin.
         var arg     = Array.prototype.slice.call(arguments, 1),
-            $this   = containers;
+            $this   = $(containers);
 
         // If input is a string, then it must be an action (method).
         // Process only the first element in the selection.
