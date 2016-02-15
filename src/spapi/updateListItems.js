@@ -178,7 +178,7 @@ define([
                         try {
                             console.warn("updateListItems(): completefunc options is deprecated!");
                         } catch(e){}
-                        opt.completefunc(xdata, status, jqXHR);
+                        opt.completefunc(jqXHR, status);
                     }
                 },
                 processAjaxResponses = function(reqArgs, isHttpError){

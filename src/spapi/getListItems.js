@@ -43,6 +43,10 @@ define([
      *
      * @param {Boolean} [opt.cacheXML=false]
      *
+     * @param {Boolean} [opt.listItemModel=ListItemModel]
+     *  The model to be used for each row retrieved. Model constructor must
+     *  support a .create() method.
+     *
      * @return {jQuery.Promise}
      *      Promise is resolved with 3 input parameters:
      *      Array = rows (could be empty if error)
