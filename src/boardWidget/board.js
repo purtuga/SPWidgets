@@ -38,7 +38,8 @@ define([
     var
     Board   = {},
     showBoard,
-    getBoardStates;
+    getBoardStates,
+    CSS_HIDDEN_CLASS_NAME = "spwidget-board-state-hidden";
 
     /** @property {Integer} The max number of columns that can be built (not displayed) */
     Board.maxColumns = 20;
@@ -1200,16 +1201,22 @@ define([
                                 if (colDef.isVisible === false) {
 
                                     colDef.isVisible = true;
-                                    colDef.dataEle.css("display", "");
-                                    colDef.headerEle.css("display", "");
+                                    colDef.dataEle.removeClass(CSS_HIDDEN_CLASS_NAME);
+                                    colDef.headerEle.removeClass(CSS_HIDDEN_CLASS_NAME);
+
+                                    //colDef.dataEle.css("display", "");
+                                    //colDef.headerEle.css("display", "");
 
                                 }
 
                             } else {
 
                                 colDef.isVisible = false;
-                                colDef.dataEle.css("display", "none");
-                                colDef.headerEle.css("display", "none");
+                                colDef.dataEle.addClass(CSS_HIDDEN_CLASS_NAME);
+                                colDef.headerEle.addClass(CSS_HIDDEN_CLASS_NAME);
+
+                                //colDef.dataEle.css("display", "none");
+                                //colDef.headerEle.css("display", "none");
 
                             }
 
@@ -1477,16 +1484,22 @@ define([
                                     if (colDef.isVisible === false) {
 
                                         colDef.isVisible = true;
-                                        colDef.dataEle.css("display", "");
-                                        colDef.headerEle.css("display", "");
+                                        colDef.dataEle.removeClass(CSS_HIDDEN_CLASS_NAME);
+                                        colDef.headerEle.removeClass(CSS_HIDDEN_CLASS_NAME);
+
+                                        //colDef.dataEle.css("display", "");
+                                        //colDef.headerEle.css("display", "");
 
                                     }
 
                                 } else {
 
                                     colDef.isVisible = false;
-                                    colDef.dataEle.css("display", "none");
-                                    colDef.headerEle.css("display", "none");
+                                    colDef.dataEle.addClass(CSS_HIDDEN_CLASS_NAME);
+                                    colDef.headerEle.addClass(CSS_HIDDEN_CLASS_NAME);
+
+                                    //colDef.dataEle.css("display", "none");
+                                    //colDef.headerEle.css("display", "none");
 
                                 }
 
@@ -1934,8 +1947,12 @@ define([
                     // must be hidden - only support 10 columns.
                     if (i > (opt.maxColumnVisible - 1) ) {
 
-                        v.headerEle.css("display", "none");
-                        v.dataEle.css("display", "none");
+                        v.dataEle.addClass(CSS_HIDDEN_CLASS_NAME);
+                        v.headerEle.addClass(CSS_HIDDEN_CLASS_NAME);
+
+                        //v.headerEle.css("display", "none");
+                        //v.dataEle.css("display", "none");
+
                         v.isVisible = false;
 
                     }
