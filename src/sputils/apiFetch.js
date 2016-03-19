@@ -32,9 +32,9 @@ define([
      */
     var apiFetch = function(input, init){
         return fetch(input, init)
-            .then(checkForHttpErrors)
             .then(parseApiResponse)
-            .then(checkForSharePointErrors);
+            .then(checkForSharePointErrors)
+            .then(checkForHttpErrors);
     },
 
     /**
