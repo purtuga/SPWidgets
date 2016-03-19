@@ -94,7 +94,9 @@ window.SPWIDGET_DEMO = {
                 less:                   'vendor/require-less/less',
                 lessc:                  'vendor/require-less/lessc',
                 normalize:              'vendor/require-less/normalize',
-                text:                   'vendor/requirejs-text/text'
+                text:                   'vendor/requirejs-text/text',
+                'vendor/jsutils':       'vendor/common-micro-libs/src/jsutils',
+                'vendor/domutils':      'vendor/common-micro-libs/src/domutils'
             },
             shim: {
                 'jquery-ui': {

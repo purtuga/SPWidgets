@@ -8,6 +8,7 @@ define([
     "./specs/models/ListColumnModel",
     "./specs/spapi/getList",
     "./specs/spapi/getListColumns",
+    "./specs/spapi/getListFormCollection",
     "./specs/spapi/getListItems",
     "./specs/spapi/searchPrincipals"
 

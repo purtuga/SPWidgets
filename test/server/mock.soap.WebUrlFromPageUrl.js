@@ -18,7 +18,8 @@ function(
                 status:         200,
                 statusText:     'HTTP/1.1 200 OK',
                 contentType:    'text/xml;charset=UTF-8',
-                responseText:   webUrlFromPageUrlXML
+                responseText:   webUrlFromPageUrlXML,
+                response:       webUrlFromPageUrlXML
             });
 
         }
