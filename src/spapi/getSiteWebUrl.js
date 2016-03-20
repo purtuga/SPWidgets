@@ -123,12 +123,12 @@ define([
             .then(function(response){
                 siteUrl = response.content.querySelector("WebUrlFromPageUrlResult").textContent;
                 resolve(getFullUrl(siteUrl));
-            })
-            .catch(function(error){
+
+            })["catch"](function(error){
                 reject(error);
             });
-        })
-        .catch(function(error){
+
+        })["catch"](function(error){
             cache.clear(cacheKey);
             return Promise.reject(error);
         });

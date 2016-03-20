@@ -2,12 +2,14 @@ define([
     "../sputils/apiFetch",
     "../sputils/cache",
     "./getSiteWebUrl",
-    "vendor/jsutils/objectExtend"
+    "vendor/jsutils/objectExtend",
+    "vendor/domutils/domFind"
 ], function(
     apiFetch,
     cache,
     getSiteWebUrl,
-    objectExtend
+    objectExtend,
+    domFind
 ){
 
     /**
@@ -92,19 +94,16 @@ define([
                  *      }
                  *  ]
                  */
-                var formCollection = Array.prototype.slice.call(response.content.querySelectorAll("Form"), 0)
-                    .map(function(formEle){
-                        return {
-                            url:    webURL + formEle.getAttribute("Url"),
-                            type:   formEle.getAttribute("Type")
-                        };
-                    });
-
-                return formCollection;
+                return domFind(response.content, "Form").map(function(formEle){
+                    return {
+                        url:    webURL + formEle.getAttribute("Url"),
+                        type:   formEle.getAttribute("Type")
+                    };
+                });
             });
 
             // On failure, ensure cached values are cleared.
-            responsePromise.catch(function(){
+            responsePromise["catch"](function(){
                 cache.clear(opt.cacheKey);
             });
 

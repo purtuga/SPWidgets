@@ -95,7 +95,7 @@ define([
              });
 
              // If there is a failure, remove from cache
-             reqPromise.catch(function () {
+             reqPromise["catch"](function () {
                  cache.clear(opt.cacheKey);
              });
 

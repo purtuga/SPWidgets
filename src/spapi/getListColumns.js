@@ -158,8 +158,7 @@ define([
                 dfd.resolveWith($, [cols]);
                 return;
 
-            })
-            .catch(function(){
+            })["catch"](function(){
                 dfd.rejectWith($, Array.prototype.slice.call(arguments, 0));
             });
 
