@@ -17,7 +17,8 @@ define([
                 status:         200,
                 statusText:     'HTTP/1.1 200 OK',
                 contentType:    'text/xml;charset=UTF-8',
-                responseText:   getListItemsResponseSuccessXML
+                responseText:   getListItemsResponseSuccessXML,
+                response:       getListItemsResponseSuccessXML
             });
 
             jasmine.Ajax.stubRequest(
@@ -27,7 +28,8 @@ define([
                 status:         200,
                 statusText:     'HTTP/1.1 200 OK',
                 contentType:    'text/xml;charset=UTF-8',
-                responseText:   getListItemsChangesSinceTokenResponseSuccessXML
+                responseText:   getListItemsChangesSinceTokenResponseSuccessXML,
+                response:       getListItemsChangesSinceTokenResponseSuccessXML
             });
 
         }

@@ -159,7 +159,7 @@ define([
                 return;
 
             })
-            .fail(function(){
+            .catch(function(){
                 dfd.rejectWith($, Array.prototype.slice.call(arguments, 0));
             });
 

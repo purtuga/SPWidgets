@@ -43,15 +43,18 @@ define([
      * @private
      *
      * @param response
+     *
      * @returns {*}
      */
     checkForHttpErrors = function(response) {
+        var res = response.status ? response : response.response ? response.response : {};
+
         // If server returned an error code, then reject promise
-        if (response.status >= 200 && response.status < 300) {
+        if (res.status >= 200 && res.status < 300) {
             return response;
 
         } else {
-            var error = new Error(response.statusText);
+            var error = new Error(res.statusText);
             error.response = response;
             throw error;
         }
