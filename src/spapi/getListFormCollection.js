@@ -52,7 +52,7 @@ define([
 
         return getSiteWebUrl(opt.webURL).then(function(webURL){
 
-            var endPoint = webURL += "_vti_bin/Forms.asmx";
+            var endPoint = webURL + "_vti_bin/Forms.asmx";
 
             opt.cacheKey = endPoint + "?Operation=GetFormCollection&List=" + opt.listName;
 
