@@ -173,7 +173,7 @@ define([
 
                         var rows = [];
 
-                        if (status === "error" || doesMsgHaveError(data)) {
+                        if (status === "error" || doesMsgHaveError(data.responseXML)) {
 
                             // If cacheXML was true, then remove this from cache.
                             // No point in caching failures.

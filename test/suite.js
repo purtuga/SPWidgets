@@ -10,6 +10,8 @@ define([
     "./specs/spapi/getListColumns",
     "./specs/spapi/getListFormCollection",
     "./specs/spapi/getListItems",
-    "./specs/spapi/searchPrincipals"
+    "./specs/spapi/searchPrincipals",
+    "./specs/sputils/doesMsgHaveError",
+    "./specs/sputils/getMsgError"
 
 ], function(){});

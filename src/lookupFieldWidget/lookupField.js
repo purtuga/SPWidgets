@@ -1295,15 +1295,14 @@ define([
                             })(),
                     completefunc:   function(xData, status, rows){
 
-                        var $rsData     = getNodesFromXml({
+                        var rsData     = getNodesFromXml({
                                             xDoc: xData.responseXML,
-                                            nodeName: "rs:data",
-                                            asJQuery: true
-                                        }).eq(0),
+                                            nodeName: "rs:data"
+                                        })[0],
                             rowsHtml    = '';
 
                         // Store the NextPage Token
-                        opt.nextPageToken = $rsData.attr("ListItemCollectionPositionNext") || '';
+                        opt.nextPageToken = rsData.ListItemCollectionPositionNext || '';
 
                         if (opt.nextPageToken === "") {
 

@@ -1,37 +1,56 @@
-define(['jquery'], function($){
+define([
+    "vendor/domutils/domFind",
+    "vendor/jsutils/parseXML"
+], function(
+    domFind,
+    parseXML
+){
 
     /**
      * Given a sharepoint webservices response, this method will
      * look to see if it contains an error and return that error
      * formated as a string.
      *
-     * @param {XMLDocument|jQuery|String} xmlMsg
+     * @param {XMLDocument|String} xmlMsg
+     *
      * @return {String} errorMessage
      *
      */
-    var getMsgError = function getMsgError(xmlMsg){
+    return function getMsgError(xmlMsg){
 
-        var xMsg  = $(xmlMsg),
-            error = "",
-            spErr = xMsg.find("ErrorCode"),
+        if (typeof xmlMsg === "string") {
+            xmlMsg = parseXML(xmlMsg);
+
+        // Backwards compatible
+        // if xmlMsg is a jquery object, get the native ele
+        } else if (xmlMsg && xmlMsg.jquery) {
+            xmlMsg = xmlMsg[0];
+        }
+
+        // if xmlDocument does not support querySelector, throw error
+        if (!xmlMsg.querySelector) {
+            throw new Error("input is not an XML Document!");
+        }
+
+        var error = "",
+            spErr = domFind(xmlMsg, "ErrorCode"),
             count = 0;
 
         if (!spErr.length) {
-            spErr = xMsg.find("faultcode");
+            spErr = domFind(xmlMsg, "faultcode");
         }
 
-        // See if any Elements with ErrorMssage attribute
+        // See if any Elements with ErrorMessage attribute
         if (!spErr.length) {
-            spErr = xMsg.find("CopyResult[ErrorMessage]");
+            spErr = domFind(xmlMsg, "CopyResult[ErrorMessage]");
 
             if (spErr.length) {
-                spErr.each(function(){
-                    var thisErr = $(this);
+                spErr.forEach(function(thisErr){
                     count += 1;
                     error += "(" + count + ") " +
-                        (thisErr.attr("ErrorCode") || "unknown") +
+                        (thisErr.getAttribute("ErrorCode") || "unknown") +
                         ": " +
-                        thisErr.attr("ErrorMessage") + "\n";
+                        thisErr.getAttribute("ErrorMessage") + "\n";
                 });
                 return count + " error(s) encountered! \n" + error;
             }
@@ -42,20 +61,23 @@ define(['jquery'], function($){
         }
 
         // Loop through and get all errors.
-        spErr.each(function(){
-            var thisErr = $(this);
-            if ( thisErr.text() !== "0x00000000" ) {
+        spErr.forEach(function(thisErr){
+            var textContent = thisErr.textContent;
+            if ( textContent !== "0x00000000" ) {
                 count += 1;
-                error += "(" + count + ") " + thisErr.text() + ": " +
-                    thisErr.parent().children().not(thisErr).text() + "\n";
+                error += "(" + count + ") " + textContent + ": " +
+                    domFind(thisErr.parentNode, "*")
+                        .filter(function(ele){
+                            return ele !== thisErr;
+                        })
+                        .reduce(function(text, ele){
+                            return text + " " + ele.textContent;
+                        }, "") +
+                    "\n";
             }
         });
 
         error = count + " error(s) encountered! \n" + error;
         return error;
-
-    }; /* SPGetMsgError() */
-
-    return getMsgError;
-
+    };
 });

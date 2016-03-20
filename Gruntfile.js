@@ -389,7 +389,8 @@ module.exports = function(grunt) {
                     "vendor/jquery-ui/jquery-ui.js",
                     "vendor/require-less/*.js",
                     "vendor/requirejs/require.js",
-                    "vendor/requirejs-text/text.js"
+                    "vendor/requirejs-text/text.js",
+                    "vendor/common-micro-libs/src/**/*"
                 ]
             },
             deploy: {

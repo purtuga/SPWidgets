@@ -50,7 +50,7 @@ define([
                 });
             });
 
-            it("Array objects contains type or url attributes", function(done){
+            it("Array objects contains type and url attributes", function(done){
                 getListFormCollection({listName: "auto_respond"}).then(function(forms){
                     expect(forms[0].url).toBeDefined();
                     expect(forms[0].type).toBeDefined();
@@ -58,12 +58,13 @@ define([
                 });
             });
 
-            it("Form url attribute value starts with http", function(done){
+            it("Form url attribute starts with http", function(done){
                 getListFormCollection({listName: "auto_respond"}).then(function(forms){
-                    expect(forms[0].url.startsWith("http")).toBe(true);
+                    expect(forms[0].url.toLowerCase().indexOf('http') === 0).toBe(true);
                     done();
                 });
             });
+
         });
     });
 });

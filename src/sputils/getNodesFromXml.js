@@ -1,4 +1,8 @@
-define(["jquery"], function($){
+define([
+    "vendor/jsutils/objectExtend"
+], function(
+    objectExtend
+){
 
     /**
      * Returns the requested nodes from the given xml document
@@ -57,10 +61,9 @@ define(["jquery"], function($){
      */
     var getNodesFromXml = function(options) {
 
-        var opt     = $.extend({}, {
+        var opt     = objectExtend({}, {
                         xDoc:               null,
                         nodeName:           '',
-                        asJQuery:           false,
                         cleanAttr:          true,
                         nodeModel:          null,
                         nodeModelOptions:   null,
@@ -70,21 +73,11 @@ define(["jquery"], function($){
             getNodeAsObj, nodeList, i, j;
 
         if (nodes.length === 0 && opt.nodeName === "z:row") {
-
             nodes = opt.xDoc.getElementsByTagName('row');
-
         }
 
         if (nodes.length === 0 && opt.nodeName === "rs:data") {
-
             nodes = opt.xDoc.getElementsByTagName('data');
-
-        }
-
-        if (opt.asJQuery === true) {
-
-            return $(nodes);
-
         }
 
         nodeList = [];
@@ -119,7 +112,7 @@ define(["jquery"], function($){
             row.___xmlNode = ele;
 
             if (opt.nodeModel && opt.nodeModel.create) {
-                return opt.nodeModel.create(row, $.extend({}, opt.nodeModelOptions, {source: ele}));
+                return opt.nodeModel.create(row, objectExtend({}, opt.nodeModelOptions, {source: ele}));
 
             } else {
                 return row;
@@ -128,12 +121,90 @@ define(["jquery"], function($){
         };
 
         for (i=0,j=nodes.length; i<j; i++){
-
             nodeList.push(getNodeAsObj(nodes[i]));
-
         }
 
         return nodeList;
+
+
+
+        //var opt     = $.extend({}, {
+        //                xDoc:               null,
+        //                nodeName:           '',
+        //                asJQuery:           false,
+        //                cleanAttr:          true,
+        //                nodeModel:          null,
+        //                nodeModelOptions:   null,
+        //                convertTypes:       false
+        //            }, options),
+        //    nodes   = opt.xDoc.getElementsByTagName(opt.nodeName),
+        //    getNodeAsObj, nodeList, i, j;
+        //
+        //if (nodes.length === 0 && opt.nodeName === "z:row") {
+        //
+        //    nodes = opt.xDoc.getElementsByTagName('row');
+        //
+        //}
+        //
+        //if (nodes.length === 0 && opt.nodeName === "rs:data") {
+        //
+        //    nodes = opt.xDoc.getElementsByTagName('data');
+        //
+        //}
+        //
+        //if (opt.asJQuery === true) {
+        //
+        //    return $(nodes);
+        //
+        //}
+        //
+        //nodeList = [];
+        //
+        //getNodeAsObj = function(ele) {
+        //
+        //    var attrs   = ele.attributes,
+        //        row     = {},
+        //        name,x,y;
+        //
+        //    for(x=0,y=attrs.length; x<y; x++){
+        //
+        //        name = attrs[x].name;
+        //
+        //        if (opt.cleanAttr) {
+        //            if (name.indexOf("ows_") > -1) {
+        //                name = name.replace("ows_", "");
+        //            }
+        //        }
+        //
+        //        if (opt.convertTypes) {
+        //            row[name] = getJsNativeFromString(attrs[x].value);
+        //
+        //        } else {
+        //            row[name] = attrs[x].value;
+        //        }
+        //
+        //    }
+        //
+        //    // Also store the original xml node
+        //    // FIXME: remove ___xmlNode from object
+        //    row.___xmlNode = ele;
+        //
+        //    if (opt.nodeModel && opt.nodeModel.create) {
+        //        return opt.nodeModel.create(row, $.extend({}, opt.nodeModelOptions, {source: ele}));
+        //
+        //    } else {
+        //        return row;
+        //    }
+        //
+        //};
+        //
+        //for (i=0,j=nodes.length; i<j; i++){
+        //
+        //    nodeList.push(getNodeAsObj(nodes[i]));
+        //
+        //}
+        //
+        //return nodeList;
 
     }, //end: API.getNodesFromXml
 

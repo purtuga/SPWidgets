@@ -126,7 +126,7 @@ define([
                     complete:       function(xdata, status) {
 
                         // Process Error from status
-                        if (status === "error" || doesMsgHaveError(xdata)) {
+                        if (status === "error" || doesMsgHaveError(xdata.responseXML)) {
 
                             // If cacheXML was true, then remove this from cache.
                             // No point in caching failures.
