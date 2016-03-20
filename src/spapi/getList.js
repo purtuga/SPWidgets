@@ -30,7 +30,7 @@ define([
      *      `create` that accetps two input parameters: the source (XML, JSON) and
      *      the `options`.
      *
-     * @return {Promise<ListModel>}
+     * @return {Promise<ListModel, Error>}
      *  Resolved one object - ListModel object.
      */
      var getList = function (options) {

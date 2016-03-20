@@ -22,6 +22,24 @@ define([
      *  Promise is resolved with an object containing the forms.
      *  If rejected, then an `Error` object is returned. The object
      *  will have an additional property called `response` with the api response.
+     *
+     * @example
+     *
+     * // Sample response
+     *  [
+     *      {
+     *          url: "http:/.../Lists/Tasks/DispForm.aspx",
+     *          type: "DisplayForm"
+     *      },
+     *      {
+     *          url: "http:/.../Lists/Tasks/EditForm.aspx",
+     *          type: "EditForm"
+     *      },
+     *      {
+     *          url: "http:/.../Lists/Tasks/NewForm.aspx",
+     *          type: "NewForm"
+     *      }
+     *  ]
      */
     var getListFormCollection = function(options){
 
