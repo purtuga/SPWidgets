@@ -13,9 +13,10 @@ define([
     var fetch = fetchPolyfill.fetch;
 
     /**
-     * Handles API calls to SharePoint using the low level ES7 fetch() api, thus is has the same
-     * input signature. Response will be processed for Status errors and then data parsed, returning
-     * instead an object.
+     * Handles API calls to SharePoint using the low level ES7 fetch() api,
+     * thus is has the same input signature. Response will be processed for
+     * Sharepoint Status errors and then data parsed, returning instead an
+     * object.
      *
      * @param {String|Request} input
      * @param {Object} init

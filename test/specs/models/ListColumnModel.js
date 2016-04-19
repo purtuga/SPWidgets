@@ -65,8 +65,15 @@ function(
             expect(this.col.getColumnValues).toBeDefined();
         });
 
-        it(".getColumnValues() returns array of values for CHOICE column", function(){
-            expect(this.col.getColumnValues().length).toBe(3);
+        it(".getColumnValues() returns Promise", function(){
+            expect(this.col.getColumnValues().then).toBeDefined();
+        });
+
+        it(".getColumnValues() Promise resolves to array of values for CHOICE column", function(done){
+            this.col.getColumnValues().then(function (values) {
+                expect(values.length).toBe(3);
+                done();
+            });
         });
 
         // FYI: the actual checking that this method returns values is done in getListColumn()

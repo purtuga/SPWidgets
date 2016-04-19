@@ -39,11 +39,6 @@ define([
                 expect(rows).toBeDefined();
                 expect(Array.isArray(rows)).toBe(true);
                 expect(rows.length).toBe(1);
-
-                expect(jqXHR).toBeDefined();
-                expect(jqXHR.responseText).toBeDefined();
-
-                expect(status).toBe("success");
                 done();
             });
 

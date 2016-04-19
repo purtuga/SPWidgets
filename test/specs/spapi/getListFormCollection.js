@@ -40,6 +40,9 @@ define([
                 getListFormCollection({listName: "auto_respond"}).then(function(forms){
                     expect(Array.isArray(forms)).toBe(true);
                     done();
+                }).catch(function (err) {
+                    console.log(err);
+                    console.log(err.stack);
                 });
             });
 

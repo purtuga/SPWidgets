@@ -109,7 +109,11 @@ define([
 
             // Also store the original xml node
             // FIXME: remove ___xmlNode from object
-            row.___xmlNode = ele;
+            // row.___xmlNode = ele;
+            Object.defineProperty(row, '___xmlNode', {
+                value:          ele,
+                configurable:   true
+            });
 
             if (opt.nodeModel && opt.nodeModel.create) {
                 return opt.nodeModel.create(row, objectExtend({}, opt.nodeModelOptions, {source: ele}));

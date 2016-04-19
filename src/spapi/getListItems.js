@@ -1,17 +1,21 @@
 define([
-    "jquery",
     "../sputils/cache",
-    "./getSiteUrl",
     "../sputils/getNodesFromXml",
-    "../sputils/doesMsgHaveError",
-    "../models/ListItemModel"
+    "../models/ListItemModel",
+
+    "../sputils/apiFetch",
+    "../spapi/getSiteWebUrl",
+
+    "vendor/jsutils/objectExtend"
 ], function(
-    $,
     cache,
-    getSiteUrl,
     getNodesFromXml,
-    doesMsgHaveError,
-    ListItemModel
+    ListItemModel,
+
+    apiFetch,
+    getSiteWebUrl,
+
+    objectExtend
 ){
 
     /**
@@ -19,215 +23,124 @@ define([
      * GetListItemChangesSinceToken operations of the List.axps webservice.
      * @function
      *
-     * @param {Object} opt
+     * @param {Object} options
      *      Supports same input options as SPServices
-     * @param {Object} opt.listName
      *
-     * @param {String} [opt.webURL="currentSiteWeb"]
+     * @param {Object} options.listName
      *
-     * @param {String} [opt.viewName=""]
+     * @param {String} [options.webURL="currentSiteWeb"]
      *
-     * @param {String} [opt.CAMLViewFields=""]
+     * @param {String} [options.viewName=""]
      *
-     * @param {String} [opt.CAMLQuery=""]
+     * @param {String} [options.CAMLViewFields=""]
      *
-     * @param {String} [opt.CAMLQueryOptions=""]
+     * @param {String} [options.CAMLQuery=""]
      *
-     * @param {String|Number} [opt.CAMLRowLimit=""]
+     * @param {String} [options.CAMLQueryOptions=""]
      *
-     * @param {String} [opt.operation="GetListItems"]
+     * @param {String|Number} [options.CAMLRowLimit=""]
+     *
+     * @param {String} [options.operation="GetListItems"]
      *      Value Could also be set to "GetListItemChangesSinceToken".
      *
-     * @param {Boolean} [opt.changeToken=""]
-     *      Used only when opt.operation is "GetListItemChangesSinceToken"
+     * @param {Boolean} [options.changeToken=""]
+     *      Used only when options.operation is "GetListItemChangesSinceToken"
      *
-     * @param {Boolean} [opt.cacheXML=false]
+     * @param {Boolean} [options.cacheXML=false]
      *
-     * @param {Boolean} [opt.listItemModel=ListItemModel]
+     * @param {Boolean} [options.listItemModel=ListItemModel]
      *  The model to be used for each row retrieved. Model constructor must
      *  support a .create() method.
      *
-     * @return {jQuery.Promise}
-     *      Promise is resolved with 3 input parameters:
-     *      Array = rows (could be empty if error)
-     *      Object = jqXHR
-     *      String = status
+     * @return {Promise<Array>|Promise<Error>}
+     *   Promise is resolved with a Collection, or rejected with an Error object
      *
      * @see https://msdn.microsoft.com/en-us/library/websvclists.lists.getlistitems(v=office.14).aspx
      */
-    var getListItems = (function(){
+    var getListItems = function(options){
 
-        var getRows     = null,
-            callerFn    = function getListItems(){
+        var opt = objectExtend({}, getListItems.defaults, options),
+            reqPromise;
 
-                            return getRows.apply(this, arguments);
-
-                        };
-
-        // Define defaults. User can change these on their function attachment.
-        callerFn.defaults = {
-            listName:       '',
-            webURL:         '',
-            viewName:       '',
-            CAMLViewFields: '',
-            CAMLQuery:      '',
-            CAMLRowLimit:   '',
-            CAMLQueryOptions:   '',
-            operation:      'GetListItems', // Optionally: set it to = GetListItemChangesSinceToken
-            cacheXML:       false,
-            async:          true,
-            completefunc:   null,
-            changeToken:    '', // GetListChangesSinceToken only
-            listItemModel:  ListItemModel
-        };
-
-        // Makes the AJax call to SharePoint to get the data. Returns a jQuery.Promise
-        getRows = function (opt) {
-
-            var options = $.extend({}, callerFn.defaults, opt),
-                reqPromise;
-
-            if (!options.webURL) {
-
-                options.webURL = getSiteUrl();
-
-            } else if (options.webURL.charAt(options.webURL.length - 1) !== "/") {
-
-                options.webURL += "/";
-
-            }
-
-            options.webURL += "_vti_bin/Lists.asmx";
-
-            options.cacheKey = options.webURL + "?" +
-                [
-                    options.listName,
-                    options.viewName,
-                    options.CAMLViewFields,
-                    options.CAMLQuery,
-                    options.CAMLRowLimit,
-                    options.CAMLQueryOptions,
-                    options.operation,
-                    options.changeToken
-                ].join("|");
-            options.isCached = cache.isCached(options.cacheKey);
+        return getSiteWebUrl(opt.webURL).then(function(webURL){
+            opt.webURL      = webURL + "_vti_bin/Lists.asmx";
+            opt.cacheKey    = opt.webURL + "?" +
+                            [
+                                opt.listName,
+                                opt.viewName,
+                                opt.CAMLViewFields,
+                                opt.CAMLQuery,
+                                opt.CAMLRowLimit,
+                                opt.CAMLQueryOptions,
+                                opt.operation,
+                                opt.changeToken
+                            ].join("|");
+            opt.isCached    = cache.isCached(opt.cacheKey);
 
             // If cacheXML is true and we have a cached version, return it.
-            if (options.cacheXML && options.isCached) {
-
-                reqPromise =  cache(options.cacheKey);
-
-                // If a completefunc was defined on this call,
-                // execute it.
-                if ($.isFunction(options.completefunc)) {
-
-                    reqPromise.then(function(rows, data, status){
-
-                        options.completefunc(data, status, rows);
-
-                    });
-
-                }
-
-                return reqPromise;
-
+            if (opt.cacheXML && opt.isCached) {
+                return cache(opt.cacheKey);
             }
 
             // If cacheXML is FALSE, and we have a cached version of this key,
             // then remove the cached version - basically reset
-            if (options.isCached) {
-
-                cache.clear(options.cacheKey);
-
+            if (opt.isCached) {
+                cache.clear(opt.cacheKey);
             }
 
-            reqPromise = $.Deferred(function(dfd){
-
-                $.ajax({
-                    type:           "POST",
-                    cache:          false,
-                    async:          options.async,
-                    url:            options.webURL,
-                    contentType:    "text/xml;charset=utf-8",
-                    dataType:       "xml",
-                    data:           "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
-                        "<soap:Body>" +"<" + options.operation + " xmlns=\"http://schemas.microsoft.com/sharepoint/soap/\"><listName>" +
-                        options.listName + "</listName><viewName>" +
-                        (options.viewName || "") +
-                        "</viewName><query>" +
-                        (options.CAMLQuery || "<Query></Query>") +
-                        "</query><viewFields>" +
-                        (options.CAMLViewFields || "<ViewFields></ViewFields>") +
-                        "</viewFields><rowLimit>" +
-                        (options.CAMLRowLimit || 0) +
-                        "</rowLimit><queryOptions>" +
-                        (options.CAMLQueryOptions || "<QueryOptions></QueryOptions>") +
-                        "</queryOptions>" +
-                        (
-                            options.operation === "GetListItemChangesSinceToken" ?
-                                "<changeToken>" + options.changeToken + "</changeToken>" :
-                                ""
-                        ) +
-                        "</" + options.operation +"></soap:Body></soap:Envelope>",
-                    complete:       function(data, status) {
-
-                        var rows = [];
-
-                        if (status === "error" || doesMsgHaveError(data.responseXML)) {
-
-                            // If cacheXML was true, then remove this from cache.
-                            // No point in caching failures.
-                            if (options.cacheXML) {
-
-                                cache.clear(options.cacheKey);
-
-                            }
-
-                            dfd.rejectWith($, [ rows, data, status ]);
-
-                            if ($.isFunction(options.completefunc)) {
-
-                                options.completefunc(data, status, rows);
-
-                            }
-                            return;
-
-                        }
-
-                        rows = getNodesFromXml({
-                                xDoc:       data.responseXML,
-                                nodeName:   "z:row",
-                                nodeModel:  options.listItemModel
-                            });
-
-                        dfd.resolveWith($, [ rows, data, status ]);
-
-                        if ($.isFunction(options.completefunc)) {
-
-                            options.completefunc(data, status, rows);
-
-                        }
-
-                    }//end: $.ajax().success()
+            reqPromise = apiFetch(opt.webURL, {
+                method:     "POST",
+                headers:    { 'Content-Type': 'text/xml;charset=UTF-8' },
+                body:       "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+                            "<soap:Body>" +"<" + opt.operation + " xmlns=\"http://schemas.microsoft.com/sharepoint/soap/\"><listName>" +
+                            opt.listName + "</listName><viewName>" +
+                            (opt.viewName || "") +
+                            "</viewName><query>" +
+                            (opt.CAMLQuery || "<Query></Query>") +
+                            "</query><viewFields>" +
+                            (opt.CAMLViewFields || "<ViewFields></ViewFields>") +
+                            "</viewFields><rowLimit>" +
+                            (opt.CAMLRowLimit || 0) +
+                            "</rowLimit><queryOptions>" +
+                            (opt.CAMLQueryOptions || "<QueryOptions></QueryOptions>") +
+                            "</queryOptions>" +
+                            (
+                                opt.operation === "GetListItemChangesSinceToken" ?
+                                "<changeToken>" + opt.changeToken + "</changeToken>" :
+                                    ""
+                            ) +
+                            "</" + opt.operation +"></soap:Body></soap:Envelope>"
+            }).then(function(response){
+                return getNodesFromXml({
+                    xDoc:       response.content,
+                    nodeName:   "z:row",
+                    nodeModel:  opt.listItemModel
                 });
-
-            }).promise();
+            });
 
             // If cacheXML was true, then cache this promise
-            if (options.cacheXML) {
-
-                cache(options.cacheKey, reqPromise);
-
+            if (opt.cacheXML) {
+                cache(opt.cacheKey, reqPromise);
             }
 
             return reqPromise;
+        });
+    };
 
-        }; //end: getRows()
-
-        return callerFn;
-
-    })(); //end: getListItems()
+    getListItems.defaults = {
+        listName:       '',
+        webURL:         '',
+        viewName:       '',
+        CAMLViewFields: '',
+        CAMLQuery:      '',
+        CAMLRowLimit:   '',
+        CAMLQueryOptions:   '',
+        operation:      'GetListItems', // Optionally: set it to = GetListItemChangesSinceToken
+        cacheXML:       false,
+        async:          true,
+        changeToken:    '', // GetListChangesSinceToken only
+        listItemModel:  ListItemModel
+    };
 
     return getListItems;
-
 });

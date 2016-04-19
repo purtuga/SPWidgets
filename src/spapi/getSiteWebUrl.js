@@ -91,42 +91,22 @@ define([
                 }
             }
 
-            // If we still don't have a current site for this page, then
-            // Lets call the web serivce
-            //if (!siteUrl) {
-            //
-            //    $.ajax({
-            //        type:   "POST",
-            //        cache:  false,
-            //        async:  false,
-            //        url:    docLocation.protocol + "//" + docLocation.host + "/_vti_bin/Webs.asmx",
-            //        data:   "<soap:Envelope xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'><soap:Body><WebUrlFromPageUrl xmlns='http://schemas.microsoft.com/sharepoint/soap/' >" +
-            //        "<pageUrl>" + page + "</pageUrl></WebUrlFromPageUrl></soap:Body></soap:Envelope>",
-            //        contentType:    "text/xml; charset=utf-8",
-            //        dataType:       "xml",
-            //        success:        function(xDoc) {
-            //
-            //            siteUrl = $(xDoc).find("WebUrlFromPageUrlResult").text() || '';
-            //
-            //
-            //        } //end: success
-            //    });
-            //
-            //} //end: if()
-
             apiFetch(getFullUrl("/_vti_bin/Webs.asmx", true), {
                 method:     "POST",
                 headers:    { 'Content-Type': 'text/xml;charset=UTF-8' },
                 body:       "<soap:Envelope xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'><soap:Body><WebUrlFromPageUrl xmlns='http://schemas.microsoft.com/sharepoint/soap/' >" +
                             "<pageUrl>" + page + "</pageUrl></WebUrlFromPageUrl></soap:Body></soap:Envelope>"
             })
-            .then(function(response){
-                siteUrl = response.content.querySelector("WebUrlFromPageUrlResult").textContent;
-                resolve(getFullUrl(siteUrl));
+            .then(
+                function(response){
+                    siteUrl = response.content.querySelector("WebUrlFromPageUrlResult").textContent;
+                    resolve(getFullUrl(siteUrl));
 
-            })["catch"](function(error){
-                reject(error);
-            });
+                },
+                function(error){
+                    reject(error);
+                }
+            );
 
         })["catch"](function(error){
             cache.clear(cacheKey);

@@ -4,14 +4,18 @@ define([
     "../jsutils/objectExtend",
     "../jsutils/dataStore",
     "../sputils/getNodesFromXml",
-    "../spapi/getListItems"
+    "../spapi/getListItems",
+
+    "vendor/jsutils/es6-promise"
 ], function(
     $,
     Compose,
     objectExtend,
     dataStore,
     getNodesFromXml,
-    getListItems
+    getListItems,
+
+    Promise
 ){
 
     var
@@ -54,45 +58,46 @@ define([
          * @return {Array}
          */
         getColumnValues: function() {
+            var me          = this,
+                $colXml     = $(instData.get(me).source),
+                colType     = me.Type,
+                colValues   = [];
 
-            var
-            me          = this,
-            $colXml     = $(instData.get(this).source),
-            colType     = me.Type,
-            colValues   = [];
+            return new Promise(function(resolve/*, reject*/){
+                switch (colType) {
+                    case "Choice":
+                    case "MultiChoice":
+                        $colXml.find("CHOICE").each(function(){
+                            colValues.push($(this).text() || "");
+                        });
 
-            switch (colType) {
-                case "Choice":
-                case "MultiChoice":
+                        resolve(colValues);
+                        break;
 
-                    $colXml.find("CHOICE").each(function(){
-                        colValues.push($(this).text() || "");
-                    });
+                    case "Lookup":
+                    case "LookupMulti":
+                        getListItems({
+                            listName:   me.List,
+                            // FIXME: missing webURL here.
+                            CAMLQuery:  '<Query><OrderBy><FieldRef Name="' +
+                                me.ShowField + '"/></OrderBy></Query>',
+                            CAMLViewFields: '<ViewFields><FieldRef Name="' +
+                                me.ShowField + '"/></ViewFields>'
+                        }).then(
+                            function(rows){
+                                resolve(rows);
+                            },
+                            function(err){
+                                reject(err);
+                            }
+                        );
+                        break;
 
-                    break;
-
-                case "Lookup":
-                case "LookupMulti":
-
-                    // FIXME: need to make this async and return a promise
-                    getListItems({
-                        listName:   me.List,
-                        cacheXML:   true,
-                        async:      false,
-                        CAMLQuery:  '<Query><OrderBy><FieldRef Name="' +
-                            me.ShowField + '"/></OrderBy></Query>',
-                        CAMLViewFields: '<ViewFields><FieldRef Name="' +
-                            me.ShowField + '"/></ViewFields>'
-                    })
-                    .then(function(rows){
-                        colValues = rows;
-                    });
-
-                    break;
-            }
-
-            return colValues;
-
+                    default:
+                        resolve(colValues);
+                        break
+                }
+            });
         }, //end getColumnvalues()
 
         /**

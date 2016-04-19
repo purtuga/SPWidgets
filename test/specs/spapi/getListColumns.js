@@ -105,6 +105,21 @@ function(
                 });
             });
 
+            it("Choice Column: getColumnValues() returns Promise", function(done){
+                this.colPromise.then(function(cols){
+                    var col;
+                    cols.some(function(c){
+                        if (c.Name === "Status") {
+                            col = c;
+                            return true;
+                        }
+                    });
+                    var colValuesPromise = col.getColumnValues();
+                    expect(colValuesPromise.then).toBeDefined();
+                    done();
+                });
+            });
+
             it("Choice Column: getColumnValues() returns allowed values", function(done){
                 this.colPromise.then(function(cols){
                     var col;
@@ -114,10 +129,13 @@ function(
                             return true;
                         }
                     });
-                    expect(col.getColumnValues().length).toEqual(5);
-                    done();
+                    col.getColumnValues().then(function(values) {
+                        expect(values.length).toEqual(5);
+                        done();
+                    });
                 });
             });
+
 
             it("Lookup Column: getColumnValues() returns allowed values", function(done){
                 this.colPromise.then(function(cols){
@@ -128,8 +146,10 @@ function(
                             return true;
                         }
                     });
-                    expect(col.getColumnValues().length).toBeGreaterThan(0);
-                    done();
+                    col.getColumnValues().then(function(values){
+                        expect(values.length).toBeGreaterThan(0);
+                        done();
+                    });
                 });
             });
 

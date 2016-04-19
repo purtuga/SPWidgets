@@ -470,7 +470,7 @@ module.exports = function(grunt) {
             prod : {
                 src : '<%= requirejs.compile.options.out %>',
                 dest : '<%= buildFolder %>/dist/jquery.<%= pkg.name %>.min.js'
-            },
+            }
         },
         qunit : {
             files : ['test/**/*.html']
@@ -510,7 +510,7 @@ module.exports = function(grunt) {
             test : {
                 files : '<%= jshint.test.src %>',
                 tasks : ['jshint:test', 'test']
-            },
+            }
         },
 
         requirejs: {
