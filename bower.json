@@ -1,6 +1,6 @@
 {
   "name": "SPWidgets",
-  "version": "2.5.2",
+  "version": "3.0.0",
   "authors": [
     "Paul T."
   ],
@@ -14,10 +14,7 @@
     "test",
     "tests"
   ],
-  "dependencies": {
-    "jquery": "^1.11.1",
-    "jquery-ui": "^1.11.2"
-  },
+  "dependencies": {},
   "devDependencies": {
     "requirejs": "^2.1.15",
     "require-less": "^0.1.5",
@@ -26,7 +23,5 @@
     "jasmine-ajax": "git@github.com:jasmine/jasmine-ajax.git#master",
     "common-micro-libs": "git@github.com:purtuga/common-micro-libs.git#master"
   },
-  "resolutions": {
-    "jquery": "1.11.1"
-  }
+  "resolutions": {}
 }
