@@ -25,7 +25,8 @@ define([
     './spapi/getSiteUrl',
     './spapi/getUserProfile',
     './spapi/resolvePrincipals',
-    './spapi/searchPrincipals'
+    './spapi/searchPrincipals',
+    './spapi/updateListItems'
 ], function(
     $,
     board,
@@ -53,7 +54,8 @@ define([
     getSiteUrl,
     getUserProfile,
     resolvePrincipals,
-    searchPrincipals
+    searchPrincipals,
+    updateListItems
 ){
 
     $.SPWidgets = {
@@ -149,7 +151,8 @@ define([
             getUserProfile:         getUserProfile,
             resolvePrincipals:      resolvePrincipals,
             searchPrincipals:       searchPrincipals,
-            getNodesFromXml:        getNodesFromXml
+            getNodesFromXml:        getNodesFromXml,
+            updateListItems:        updateListItems
 
         }
 

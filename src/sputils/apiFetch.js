@@ -1,11 +1,14 @@
 define([
     "vendor/jsutils/es7-fetch",
     "vendor/jsutils/parseXML",
+    "vendor/jsutils/es6-promise",
     "./doesMsgHaveError",
     "./getMsgError"
 ], function(
     fetchPolyfill,
     parseXML,
+    Promise,
+
     doesMsgHaveError,
     getMsgError
 ){
@@ -21,7 +24,7 @@ define([
      * @param {String|Request} input
      * @param {Object} init
      *
-     * @return {Promise}
+     * @return {Promise<ApiFetchResponse, Error>}
      *  Promise is resolved with an object containing the following:
      *
      *      {
@@ -57,7 +60,7 @@ define([
         } else {
             var error = new Error(res.statusText);
             error.response = response;
-            throw error;
+            return Promise.reject(error);
         }
     },
 
@@ -75,6 +78,17 @@ define([
 
             // TODO: start handing JSON responses from SP2013
 
+            /**
+             * A sharepoint API response
+             *
+             * @typedef {Object} ApiFetchResponse
+             *
+             * @property {Document} content
+             * @property {String} msgType
+             *  Valid value: `xml`
+             * @property {Object} response
+             *  API fetch resonse
+             */
             return {
                 content:    parseXML(responseString),
                 msgType:    'xml',
@@ -97,7 +111,7 @@ define([
             if (doesMsgHaveError(response.content)) {
                 var error = new Error(getMsgError(response.content));
                 error.response = response;
-                throw error;
+                return Promise.reject(error);
             }
         }
 

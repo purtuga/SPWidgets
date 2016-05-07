@@ -63,7 +63,7 @@ define([
                 colType     = me.Type,
                 colValues   = [];
 
-            return new Promise(function(resolve/*, reject*/){
+            return new Promise(function(resolve, reject){
                 switch (colType) {
                     case "Choice":
                     case "MultiChoice":
@@ -95,7 +95,6 @@ define([
 
                     default:
                         resolve(colValues);
-                        break
                 }
             });
         }, //end getColumnvalues()

@@ -42,7 +42,7 @@ define([
     CSS_HIDDEN_CLASS_NAME = "spwidget-board-state-hidden";
 
     /** @property {Integer} The max number of columns that can be built (not displayed) */
-    Board.maxColumns = 20;
+    Board.maxColumns = 50;
 
     /**
      * Board widget default options.
