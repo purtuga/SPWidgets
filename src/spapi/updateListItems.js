@@ -36,8 +36,9 @@ define([
      *
      * @param {String} [options.updateType='Update']
      *  Used when the updates parameter is a non-string. The value will be used
-     *  to set the Cmd on the update. Valid values are 'Update' (default),
-     *  'New' and 'Delete'. Note that when using 'Udpate' and 'Delete' your
+     *  to set the Cmd on the update. Valid values are:
+     *  `Update` (default), `New` and `Delete`.
+     *  Note that when using 'Udpate' and 'Delete' your
      *  updates must include the ID property so that SharePoint knows on what
      *  item it needs to act on.
      *  {@link https://msdn.microsoft.com/en-us/library/ms459050(v=office.12).aspx}

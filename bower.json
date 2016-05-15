@@ -22,6 +22,5 @@
     "jasmine": "^2.4.1",
     "jasmine-ajax": "git@github.com:jasmine/jasmine-ajax.git#master",
     "common-micro-libs": "git@github.com:purtuga/common-micro-libs.git#master"
-  },
-  "resolutions": {}
+  }
 }

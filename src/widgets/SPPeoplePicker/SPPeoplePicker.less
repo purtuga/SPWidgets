@@ -1,0 +1,50 @@
+.spwidgets-SPPeoplePicker {
+
+    // Overrides needed due to sharepoint styles (in 2013)
+    button {
+        min-width:      auto;
+        padding:        initial;
+        margin-left:    auto;
+        font-size:      initial;
+    }
+
+    input {
+        padding-left:   8px;
+        border:         none;
+    }
+
+    &-suggestions {
+        min-width: 300px
+    }
+
+    &-searchInfo {
+        border-top: 1px solid #eaeaea;
+        padding:    1em;
+
+        &-iconHolder {
+            position: absolute;
+        }
+
+        > p {
+            padding-left:   2em;
+            margin:         0;
+        }
+    }
+
+    // Hide the "remove" button if suggestion is user has not
+    // yet selected that person
+    &-resultGroup &-result-remove {
+        display: none;
+    }
+
+    // No presence
+    .ms-Persona-presence {
+        visibility: hidden;
+    }
+
+    .ms-PeoplePicker-result--focus {
+        background-color:   #eaeaea;
+        outline:            1px solid transparent;
+    }
+
+}

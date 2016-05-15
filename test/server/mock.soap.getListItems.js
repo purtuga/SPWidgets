@@ -29,7 +29,7 @@ define([
                 statusText:     'HTTP/1.1 200 OK',
                 contentType:    'text/xml;charset=UTF-8',
                 responseText:   getListItemsChangesSinceTokenResponseSuccessXML,
-                response:       getListItemsChangesSinceTokenResponseSuccessXML
+                response:        getListItemsChangesSinceTokenResponseSuccessXML
             });
 
         }

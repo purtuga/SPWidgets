@@ -14,7 +14,7 @@ define([
      * Model for SharePoint List Items (rows). Object return will include all of
      * the properties that were given on input.
      *
-     * @constructor ListItem
+     * @class ListItemModel
      * @extends Compose
      *
      * @param {Object} itemData

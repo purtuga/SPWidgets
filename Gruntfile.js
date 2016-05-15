@@ -309,6 +309,7 @@ module.exports = function(grunt) {
             ],
             build: [
                 '<%= buildFolder %>/demo/src/*.aspx',
+                '<%= buildFolder %>/dev/**/*.aspx',
                 '<%= buildFolder %>/documentation/ALL.md'
             ]
         },
@@ -384,6 +385,7 @@ module.exports = function(grunt) {
                     "demo/**/*",
                     "src/**/*",
                     "test/**/*",
+                    "dev/**/*",
                     "documentation/**/*",
                     "vendor/jquery/dist/jquery.js",
                     "vendor/jquery-ui/jquery-ui.js",
@@ -402,6 +404,7 @@ module.exports = function(grunt) {
                     "src/**/*",
                     "vendor/**/*",
                     "demo/**/*",
+                    "dev/**/*",
                     "test/**/*",
                     'dist/jquery.<%= pkg.name %>.js',
                     'dist/jquery.<%= pkg.name %>.min.js'

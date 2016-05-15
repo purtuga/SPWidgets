@@ -102,14 +102,17 @@ define([
                 });
             });
 
+            if (opt.cache) {
+                cache(opt.cacheKey, responsePromise);
+
+            } else {
+                cache.clear(opt.cacheKey);
+            }
+
             // On failure, ensure cached values are cleared.
             responsePromise["catch"](function(){
                 cache.clear(opt.cacheKey);
             });
-
-            if (opt.cache) {
-                cache(opt.cacheKey, responsePromise);
-            }
 
             return responsePromise;
         });

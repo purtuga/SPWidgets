@@ -1,11 +1,11 @@
 define([
-    "src/spapi/getListFormCollection",
     "../../server/mock.soap.GetListFormCollection",
-    "../../server/mock.soap.WebUrlFromPageUrl"
+    "../../server/mock.soap.WebUrlFromPageUrl",
+    "src/spapi/getListFormCollection"
 ], function(
-    getListFormCollection,
     mockSoapGetListFormCollection,
-    mockSoapWebUrlFromPageUrl
+    mockSoapWebUrlFromPageUrl,
+    getListFormCollection
 ){
 
     describe("getListFormCollection SP API", function(){
@@ -21,29 +21,38 @@ define([
         });
 
         describe("Interface", function() {
-
-            it("return a promise", function(){
-                var req = getListFormCollection({listName: "auto_respond"});
-                expect(req).toBeDefined();
-                expect(req.then).toBeDefined();
-            });
-
             it("exposes defaults", function(){
                 expect(getListFormCollection.defaults).toBeDefined();
             });
 
+            it("return a promise", function(done){
+                var req = getListFormCollection({listName: "auto_respond"});
+                expect(req).toBeDefined();
+                expect(req.then).toBeDefined();
+
+                req
+                    .then(function(){
+                        done();
+                    })
+                    .catch(function(e){
+                        console.log("Request failed: " + e);
+                    });
+
+            });
         });
 
         describe("Data retrieval", function(){
 
             it("resolves to an array", function(done){
-                getListFormCollection({listName: "auto_respond"}).then(function(forms){
-                    expect(Array.isArray(forms)).toBe(true);
-                    done();
-                }).catch(function (err) {
-                    console.log(err);
-                    console.log(err.stack);
-                });
+                getListFormCollection({listName: "auto_respond"})
+                    .then(function(forms){
+                        expect(Array.isArray(forms)).toBe(true);
+                        done();
+                    })
+                    .catch(function (err) {
+                        console.log("----: ERROR :-----");
+                        console.log(err);
+                    });
             });
 
             it("Array contains objects with forms", function(done){
