@@ -81,17 +81,18 @@ define([
 
             PRIVATE.set(this, inst);
 
-            var $ui = this.$ui = parseHTML(
-                    fillTemplate(SPPeoplePickerTemplate, inst.opt)
-                ).firstChild,
-                uiFind  = $ui.querySelector.bind($ui),
-                $input  = inst.$input = uiFind("input[name='search']"),
+            var $ui         = this.$ui = parseHTML(
+                                fillTemplate(SPPeoplePickerTemplate, inst.opt)
+                            ).firstChild,
+                uiFind      = $ui.querySelector.bind($ui),
+                $input      = inst.$input = uiFind("input[name='search']"),
+                $searchBox  = inst.$searchBox = uiFind("." + CSS_CLASS_MS_PICKER_SEARCHBOX),
                 requestSuggestions,
                 bodyClickEv;
 
-            inst.$selectedCntr  = uiFind(SELECTOR_BASE + "-selector");
             inst.$suggestions   = uiFind(SELECTOR_BASE + "-suggestions");
             inst.$groups        = uiFind(SELECTOR_BASE + "-suggestions-groups");
+            inst.$inputCntr     = uiFind(SELECTOR_BASE + "-searchFieldCntr");
 
             // Focusing on the Input field, show the suggestions
             // and sets up the event to close it clicking outside of it.
@@ -120,7 +121,12 @@ define([
             // When user types, get suggestions
             domAddEventListener($input, "keyup", function(ev){
                 var key         = ev.which || ev.keyCode,
-                    resultGroup = inst.resultGroup;
+                    resultGroup = inst.resultGroup,
+                    stopEvent   = function() {
+                        ev.preventDefault();
+                        ev.stopPropagation();
+                        ev.stopImmediatePropagation();
+                    };
 
                 if (!String($input.value).trim()) {
                     requestSuggestions = undefined;
@@ -138,9 +144,7 @@ define([
                     if (resultGroup) {
                         resultGroup.focusNext();
                     }
-                    ev.preventDefault();
-                    ev.stopPropagation();
-                    ev.stopImmediatePropagation();
+                    stopEvent();
                     return;
                 }
 
@@ -149,9 +153,7 @@ define([
                     if (resultGroup) {
                         resultGroup.focusPrevious();
                     }
-                    ev.preventDefault();
-                    ev.stopPropagation();
-                    ev.stopImmediatePropagation();
+                    stopEvent();
                     return;
                 }
 
@@ -161,9 +163,7 @@ define([
                     setTimeout(function(){
                         domTriggerEvent($input, "keyup");
                     }, 50);
-                    ev.preventDefault();
-                    ev.stopPropagation();
-                    ev.stopImmediatePropagation();
+                    stopEvent();
                     return;
                 }
 
@@ -172,8 +172,7 @@ define([
                     if (resultGroup) {
                         resultGroup.selectCurrent();
                     }
-                    ev.preventDefault();
-                    ev.stopPropagation();
+                    stopEvent();
                     return;
                 }
 
@@ -194,7 +193,7 @@ define([
             }.bind(this));
 
             // Clicking the remove button on selected users, removes them from the list
-            domAddEventListener(uiFind("." + CSS_CLASS_MS_PICKER_SEARCHBOX), "click", function(ev){
+            domAddEventListener($searchBox, "click", function(ev){
                 var removeButtonEle = domClosest(ev.target, SELECTOR_BASE + "-result-remove");
 
                 if (removeButtonEle) {
@@ -229,6 +228,14 @@ define([
                     this.emit("remove", personModel);
                 }
             }.bind(this));
+
+            // Clicking inside of this widget, but no on a selected element or
+            // the input element, places focus on the input
+            domAddEventListener($ui, "click", function(ev){
+                if (ev.target === $searchBox) {
+                    $input.focus();
+                }
+            });
         },
 
         clear: function(){},
@@ -284,8 +291,8 @@ define([
      * @private
      */
     function showSuggestions(peopleList) {
-        var inst    = PRIVATE.get(this),
-            $input  = inst.$input;
+        var inst        = PRIVATE.get(this),
+            $inputCntr  = inst.$inputCntr;
 
         clearSuggestions.call(this);
 
@@ -306,7 +313,7 @@ define([
             // Remove the result Element from the suggestion list and
             // add the personal Element to the list of selected people
             resultEle.parentNode.removeChild(resultEle);
-            $input.parentNode.insertBefore(selectedWrapEle, $input);
+            $inputCntr.parentNode.insertBefore(selectedWrapEle, $inputCntr);
 
             inst.selected.push(result.resultModel);
         });

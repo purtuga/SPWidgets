@@ -8,13 +8,21 @@
         font-size:      initial;
     }
 
-    input {
-        padding-left:   8px;
-        border:         none;
+    &-searchFieldCntr {
+        display:    inline-block;
+        position:   relative;
+        float:      left;
+
+        input {
+            padding-left:   8px;
+            border:         none;
+        }
     }
 
+
     &-suggestions {
-        min-width: 300px
+        min-width:  250px;
+        top:        100%;
     }
 
     &-searchInfo {
@@ -42,6 +50,16 @@
         visibility: hidden;
     }
 
+    // Override UI Fabric so that each persona card has
+    // a max-width of 190px instead of fixed width
+    .ms-Persona-details > * {
+        width:      auto;
+        max-width:  190px;
+    }
+
+    //------------------------
+    // MODIFIERS
+    //------------------------
     .ms-PeoplePicker-result--focus {
         background-color:   #eaeaea;
         outline:            1px solid transparent;
