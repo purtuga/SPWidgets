@@ -19,6 +19,7 @@ define([
             this.$ui = parseHTML(template).firstChild;
 
             initDemo1.call(this);
+            initDemo2.call(this);
 
         }
     });
@@ -26,7 +27,14 @@ define([
     function initDemo1() {
         var picker = SPPeoplePicker.create();
         picker.appendTo(domFind(this.$ui, "#SPPeoplePickerDemo1")[0]);
+    }
 
+    function initDemo2() {
+        var picker = SPPeoplePicker.create({
+            allowMultiples: false,
+            minLength:      0
+        });
+        picker.appendTo(domFind(this.$ui, "#SPPeoplePickerDemo2")[0]);
     }
 
 });

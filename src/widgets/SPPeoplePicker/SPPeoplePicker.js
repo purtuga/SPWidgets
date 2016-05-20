@@ -12,8 +12,10 @@ define([
     "vendor/domutils/domClosest",
     "vendor/domutils/domFind",
     "vendor/domutils/domTriggerEvent",
+    "vendor/domutils/domChildren",
 
     "../../spapi/searchPrincipals",
+    "../../spapi/resolvePrincipals",
     "./ResultGroup/ResultGroup",
 
     "text!./SPPeoplePicker.html",
@@ -35,8 +37,10 @@ define([
     domClosest,
     domFind,
     domTriggerEvent,
+    domChildren,
 
     searchPrincipals,
+    resolvePrincipals,
     ResultGroup,
 
     SPPeoplePickerTemplate,
@@ -67,6 +71,14 @@ define([
      * @extends EventEmitter
      * @extends Widget
      *
+     * @param {Object} [options]
+     *
+     * @param {Function} [options.filterSuggestions]
+     *  A function to filter the Array of results. Function is used in `Array.filter`,
+     *  and thus received as input the array item (a `UserProfileModel`) and the index
+     *  of the item in the array. Function should return a `Boolean`: keep item == `true`,
+     *  while `false` will not keep the item.
+     *
      * @fires SPPeoplePicker#create
      * @fires SPPeoplePicker#add
      * @fires SPPeoplePicker#remove
@@ -79,6 +91,7 @@ define([
                 selected:       [] // array of UserProfileModel's
             };
 
+            inst.opt.UserProfileModel = inst.opt.UserProfileModel.extend({webURL: inst.opt.webURL});
             PRIVATE.set(this, inst);
 
             var $ui         = this.$ui = parseHTML(
@@ -126,12 +139,14 @@ define([
                         ev.preventDefault();
                         ev.stopPropagation();
                         ev.stopImmediatePropagation();
-                    };
+                    },
+                    searchInput = String($input.value).trim();
 
-                if (!String($input.value).trim()) {
+                if (!searchInput) {
                     requestSuggestions = undefined;
                     clearSuggestions.call(this);
 
+                    // ESC key + no value: close suggestions panel
                     if (key === 27 && !$input.value) {
                         domTriggerEvent(BODY, "click");
                         $input.blur();
@@ -173,6 +188,12 @@ define([
                         resultGroup.selectCurrent();
                     }
                     stopEvent();
+                    return;
+                }
+
+                // If not min length, exit
+                if (searchInput.length < inst.opt.minLength) {
+                    clearSuggestions.call(this);
                     return;
                 }
 
@@ -227,25 +248,105 @@ define([
                      */
                     this.emit("remove", personModel);
                 }
-            }.bind(this));
 
-            // Clicking inside of this widget, but no on a selected element or
-            // the input element, places focus on the input
-            domAddEventListener($ui, "click", function(ev){
+                // Clicking inside of this widget, but no on a selected element or
+                // the input element, places focus on the input
                 if (ev.target === $searchBox) {
                     $input.focus();
                 }
-            });
+            }.bind(this));
         },
 
-        clear: function(){},
+        /**
+         * Clears all selected users.
+         */
+        clear: function(){
+            var inst = PRIVATE.get(this);
+            domChildren(inst.$searchBox, "." + CSS_CLASS_MS_PICKER_PERSONA).forEach(function(selectedPersona){
+                inst.$searchBox.removeChild(selectedPersona);
+            });
+            inst.selected.slice(0);
+        },
 
         add: function(){},
 
         remove: function(){},
 
-        getSelected: function(){}
-    };
+        /**
+         * Returns an array of `UserProfileModels` for those that are currently
+         * selected.
+         *
+         * @returns {Array.<UserProfileModel>}
+         */
+        getSelected: function(){
+            return PRIVATE.get(this).selected.slice(0);
+        }
+    },
+
+    /**
+     * People picker user profile model used to model each user profile
+     *
+     * @class PeoplePickerUserProfileModel
+     * @extends UserProfileModel
+     */
+    PeoplePickerUserProfileModel = searchPrincipals.defaults.UserProfileModel.extend(/** @lends PeoplePickerProfileModel.prototype */{
+        /**
+         * The web URL from where this user was retrieved. Used in resolved principal
+         * @type {String}
+         */
+        webURL: "",
+
+        /**
+         * Returns the AccountName url encoded.
+         *
+         * @returns {string}
+         */
+        getAccountNameUrlEncoded: function(){
+            return encodeURIComponent(this.AccountName);
+        },
+
+        /**
+         * Resolves the User in the current site by calling the `ResolvePrincipal` API
+         *
+         * @returns {Promise}
+         */
+        resolvePrincipal: function(){
+            resolvePrincipals({
+                webURL:         this.webURL,
+                principalKeys:  this.AccountName
+            }).then(function(userList){
+                // See Issue #42 for the possibility of the results returning
+                // multiples, even when only one principalKey was provided on
+                // input to the API.
+                // https://github.com/purtuga/SPWidgets/issues/42
+                userList.some(function(resolvedUser){
+                    if (
+                        resolvedUser.ID &&
+                        String(resolvedUser.ID) !== "-1" &&
+                        (
+                            (
+                                resolvedUser.AccountName &&
+                                resolvedUser.AccountName === this.AccountName
+                            ) ||
+                            (
+                                resolvedUser.Email &&
+                                resolvedUser.Email === this.Email
+                            ) ||
+                            (
+                                resolvedUser.DisplayName &&
+                                resolvedUser.DisplayName  === this.DisplayName
+                            )
+
+                        )
+                    ) {
+                        this.UserInfoID = this.ID = resolvedUser.ID;
+                        return true;
+                    }
+
+                }.bind(this));
+            }.bind(this));
+        }
+    });
 
     /**
      * Fetches the suggestion for the text entered by the user
@@ -259,17 +360,15 @@ define([
             selected    = inst.selected;
 
         return searchPrincipals({
-                webURL:     opt.webURL,
-                searchText: inst.$input.value,
-                UserProfileModel: searchPrincipals.defaults.UserProfileModel.extend({
-                    getAccountNameUrlEncoded: function(){
-                        return encodeURIComponent(this.AccountName);
-                    }
-                })
+                webURL:             opt.webURL,
+                searchText:         inst.$input.value,
+                maxResults:         opt.maxSearchResults,
+                principalType:      opt.type,
+                UserProfileModel:   opt.UserProfileModel
             })
             // filter out those already selected
             .then(function(results){
-                return results.filter(function(personModel){
+                var filteredResults = results.filter(function(personModel){
                     if (
                         !selected.length ||
                         !selected.some(function(selectedModel){
@@ -279,6 +378,12 @@ define([
                         return true;
                     }
                 });
+
+                if (opt.filterSuggestions) {
+                    filteredResults = filteredResults.filter(opt.filterSuggestions);
+                }
+
+                return filteredResults;
             })
             .then(showSuggestions.bind(this));
     }
@@ -294,6 +399,8 @@ define([
         var inst        = PRIVATE.get(this),
             $inputCntr  = inst.$inputCntr;
 
+        // FIXME: need to ensure that this set of results matches the last request made for data. Else, don't show it
+
         clearSuggestions.call(this);
 
         inst.resultGroup = ResultGroup.create({
@@ -307,6 +414,10 @@ define([
                 personaEle      = result.personaEle,
                 selectedWrapEle = parseHTML(selectedPersonaWrapperTemplate).firstChild;
 
+            if (!inst.opt.allowMultiples) {
+                this.clear();
+            }
+
             selectedWrapEle.insertBefore(personaEle, selectedWrapEle.firstChild);
             domAddClass(personaEle, CSS_CLASS_MS_PERSONA_XS);
 
@@ -316,7 +427,7 @@ define([
             $inputCntr.parentNode.insertBefore(selectedWrapEle, $inputCntr);
 
             inst.selected.push(result.resultModel);
-        });
+        }.bind(this));
     }
 
     /**
@@ -337,21 +448,21 @@ define([
     SPPeoplePicker = EventEmitter.extend(Widget, SPPeoplePicker);
 
     SPPeoplePicker.defaults = {
-        allowMultiples:     true,
-        maxSearchResults:   50,
-        webURL:             null,
-        type:               'User',
+        allowMultiples:     true,                           // done
+        maxSearchResults:   50,                             // done
+        webURL:             null,                           // done
+        type:               'User',                         // done
         onPickUser:         null,
         onCreate:           null,
         onRemoveUser:       null,
-        inputPlaceholder:   "Type and Pick",
-        appendTo:           null,
-        minLength:          3,
+        inputPlaceholder:   "Type and Pick",                // done
+        minLength:          2,                              // done
         showSelected:       true,
-        resolvePrincipals:  true,
+        resolvePrincipals:  true,                           // done
         meKeyword:          "[me]",
         meKeywordLabel:     "Current User",
-        filterSuggestions:  null
+        filterSuggestions:  null,                           // done
+        UserProfileModel:   PeoplePickerUserProfileModel    // done
     };
 
     return SPPeoplePicker;
