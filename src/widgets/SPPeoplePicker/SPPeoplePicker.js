@@ -17,6 +17,7 @@ define([
     "../../spapi/searchPrincipals",
     "../../spapi/resolvePrincipals",
     "./ResultGroup/ResultGroup",
+    "./PeoplePickerPersona/PeoplePickerPersona",
 
     "text!./SPPeoplePicker.html",
     "text!./selectedPersonaWrapper.html",
@@ -42,9 +43,9 @@ define([
     searchPrincipals,
     resolvePrincipals,
     ResultGroup,
+    PeoplePickerPersona,
 
-    SPPeoplePickerTemplate,
-    selectedPersonaWrapperTemplate
+    SPPeoplePickerTemplate
 ){
 
     var
@@ -54,13 +55,9 @@ define([
 
     CSS_CLASS_BASE          = "spwidgets-SPPeoplePicker",
     CSS_CLASS_IS_ACTIVE     = "is-active",
-        
-    CSS_CLASS_MS_PERSONA    = 'ms-Persona',
-    CSS_CLASS_MS_PERSONA_XS = CSS_CLASS_MS_PERSONA + '--xs',
 
     CSS_CLASS_MS_PICKER_BASE        = "ms-PeoplePicker",
     CSS_CLASS_MS_PICKER_SEARCHBOX   = CSS_CLASS_MS_PICKER_BASE + '-searchBox',
-    CSS_CLASS_MS_PICKER_PERSONA     = CSS_CLASS_MS_PICKER_BASE + '-persona',
 
     SELECTOR_BASE = "." + CSS_CLASS_BASE,
 
@@ -79,8 +76,7 @@ define([
      *  of the item in the array. Function should return a `Boolean`: keep item == `true`,
      *  while `false` will not keep the item.
      *
-     * @fires SPPeoplePicker#create
-     * @fires SPPeoplePicker#add
+     * @fires SPPeoplePicker#select
      * @fires SPPeoplePicker#remove
      */
     SPPeoplePicker = {
@@ -88,7 +84,7 @@ define([
             var inst = {
                 opt:            objectExtend({}, SPPeoplePicker.defaults, options),
                 resultGroup:    null,
-                selected:       [] // array of UserProfileModel's
+                selected:       [] // array of Persona widgets
             };
 
             inst.opt.UserProfileModel = inst.opt.UserProfileModel.extend({webURL: inst.opt.webURL});
@@ -103,7 +99,6 @@ define([
                 requestSuggestions,
                 bodyClickEv;
 
-            inst.$suggestions   = uiFind(SELECTOR_BASE + "-suggestions");
             inst.$groups        = uiFind(SELECTOR_BASE + "-suggestions-groups");
             inst.$inputCntr     = uiFind(SELECTOR_BASE + "-searchFieldCntr");
 
@@ -213,47 +208,52 @@ define([
                 }, 250);
             }.bind(this));
 
-            // Clicking the remove button on selected users, removes them from the list
+            // Clicking inside of this widget, but no on a selected element or
+            // the input element, places focus on the input
             domAddEventListener($searchBox, "click", function(ev){
-                var removeButtonEle = domClosest(ev.target, SELECTOR_BASE + "-result-remove");
-
-                if (removeButtonEle) {
-                    var selectedPersona = domClosest(removeButtonEle, '.' + CSS_CLASS_MS_PICKER_PERSONA),
-                        personaEle      = domFind(selectedPersona, "." + CSS_CLASS_MS_PERSONA)[0],
-                        personID        = personaEle.getAttribute("data-sp_id"),
-                        personModel, selectedIndex;
-
-                    selectedPersona.parentNode.removeChild(selectedPersona);
-
-                    inst.selected.some(function(selectedPerson, index){
-                        if (selectedPerson.ID === personID) {
-                            selectedIndex = index;
-                            personModel = selectedPerson;
-                            return true;
-                        }
-                    });
-
-                    if (typeof selectedIndex !== "undefined") {
-                        inst.selected.splice(selectedIndex, 1);
-                    }
-
-                    domTriggerEvent($input, "keyup");
-
-                    /**
-                     * A selection was removed
-                     *
-                     * @event SPPeoplePicker#remove
-                     *
-                     * @type {UserProfileModel}
-                     */
-                    this.emit("remove", personModel);
-                }
-
-                // Clicking inside of this widget, but no on a selected element or
-                // the input element, places focus on the input
                 if (ev.target === $searchBox) {
                     $input.focus();
                 }
+            }.bind(this));
+
+            // List for when selected users are removed
+            this.on("selected-remove", function(userWdg){
+                var personModel = userWdg.getUserProfile(),
+                    selectedIndex;
+
+                userWdg.destroy();
+
+                inst.selected.some(function(selectedWdg, index){
+                    if (selectedWdg === userWdg) {
+                        selectedIndex = index;
+                        return true;
+                    }
+                });
+
+                if (typeof selectedIndex !== "undefined") {
+                    inst.selected.splice(selectedIndex, 1);
+                }
+
+                domTriggerEvent($input, "keyup");
+
+                /**
+                 * A selection was removed
+                 *
+                 * @event SPPeoplePicker#remove
+                 *
+                 * @type {UserProfileModel}
+                 */
+                this.emit("remove", personModel);
+            }.bind(this));
+
+            this.onDestroy(function(){
+                inst.selected.forEach(function(wdg){
+                    if (wdg) {
+                        wdg.destroy();
+                    }
+                });
+                inst.selected.splice(0);
+                PRIVATE['delete'](this);
             }.bind(this));
         },
 
@@ -261,11 +261,11 @@ define([
          * Clears all selected users.
          */
         clear: function(){
-            var inst = PRIVATE.get(this);
-            domChildren(inst.$searchBox, "." + CSS_CLASS_MS_PICKER_PERSONA).forEach(function(selectedPersona){
-                inst.$searchBox.removeChild(selectedPersona);
+            var selected = PRIVATE.get(this).selected;
+            selected.forEach(function(userWdg){
+                userWdg.destroy();
             });
-            inst.selected.slice(0);
+            selected.slice(0);
         },
 
         add: function(){},
@@ -279,7 +279,10 @@ define([
          * @returns {Array.<UserProfileModel>}
          */
         getSelected: function(){
-            return PRIVATE.get(this).selected.slice(0);
+            // FIXME: add methods to returned array to provide easy methods to get array values for update to SP - use Collection
+            return PRIVATE.get(this).selected.map(function(userWdg){
+                return userWdg.getUserProfile();
+            });
         }
     },
 
@@ -371,8 +374,8 @@ define([
                 var filteredResults = results.filter(function(personModel){
                     if (
                         !selected.length ||
-                        !selected.some(function(selectedModel){
-                            return selectedModel.ID === personModel.ID;
+                        !selected.some(function(selectedWdg){
+                            return selectedWdg.getUserProfile().ID === personModel.ID;
                         })
                     ) {
                         return true;
@@ -397,7 +400,8 @@ define([
      */
     function showSuggestions(peopleList) {
         var inst        = PRIVATE.get(this),
-            $inputCntr  = inst.$inputCntr;
+            $inputCntr  = inst.$inputCntr,
+            selected    = inst.selected;
 
         // FIXME: need to ensure that this set of results matches the last request made for data. Else, don't show it
 
@@ -410,23 +414,31 @@ define([
         inst.resultGroup.appendTo(inst.$groups);
 
         inst.resultGroup.on("result-click", function(result){
-            var resultEle       = result.resultEle,
-                personaEle      = result.personaEle,
-                selectedWrapEle = parseHTML(selectedPersonaWrapperTemplate).firstChild;
+            var resultModel = result.getUserProfile(),
+                newSelectedPerson;
 
-            if (!inst.opt.allowMultiples) {
-                this.clear();
+            if (String(resultModel.ID) === "-1") {
+                resultModel.resolvePrincipal();
             }
 
-            selectedWrapEle.insertBefore(personaEle, selectedWrapEle.firstChild);
-            domAddClass(personaEle, CSS_CLASS_MS_PERSONA_XS);
+            if (inst.opt.showSelected) {
+                result.destroy();
 
-            // Remove the result Element from the suggestion list and
-            // add the personal Element to the list of selected people
-            resultEle.parentNode.removeChild(resultEle);
-            $inputCntr.parentNode.insertBefore(selectedWrapEle, $inputCntr);
+                newSelectedPerson = PeoplePickerPersona.create({userProfile: resultModel});
+                newSelectedPerson.setSize("xs");
+                newSelectedPerson.pipe(this, "selected-");
 
-            inst.selected.push(result.resultModel);
+                $inputCntr.parentNode.insertBefore(newSelectedPerson.getEle(), $inputCntr);
+                selected.push(newSelectedPerson);
+            }
+
+            /**
+             * A suggestion was selected.
+             *
+             * @event SPPeoplePicker#select
+             * @type {PeoplePickerUserProfileModel}
+             */
+            this.emit("select", resultModel);
         }.bind(this));
     }
 
@@ -452,12 +464,12 @@ define([
         maxSearchResults:   50,                             // done
         webURL:             null,                           // done
         type:               'User',                         // done
-        onPickUser:         null,
-        onCreate:           null,
-        onRemoveUser:       null,
+        onPickUser:         null,                           // done (event: select)
+        //onCreate:           null,                           // NA - no needed
+        onRemoveUser:       null,                           // done (event: remove
         inputPlaceholder:   "Type and Pick",                // done
         minLength:          2,                              // done
-        showSelected:       true,
+        showSelected:       true,                           // done
         resolvePrincipals:  true,                           // done
         meKeyword:          "[me]",
         meKeywordLabel:     "Current User",

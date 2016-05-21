@@ -14,8 +14,9 @@ define([
     "vendor/domutils/domRemoveClass",
     "vendor/domutils/domTriggerEvent",
 
-    "text!./ResultGroup.html",
-    "text!./Result.html"
+    "../Result/Result",
+
+    "text!./ResultGroup.html"
 ], function (
     Widget,
     EventEmitter,
@@ -32,19 +33,16 @@ define([
     domRemoveClass,
     domTriggerEvent,
 
-    ResultGroupTemplate,
-    ResultTemplate
+    Result,
+
+    ResultGroupTemplate
 ) {
 
     var
     PRIVATE = dataStore.create(),
 
-    CSS_CLASS_PERSONA       = "ms-Persona",
-        
-    CSS_CLASS_PICKER_BASE           = "ms-PeoplePicker",
-    CSS_CLASS_PICKER_RESULT_LIST    = CSS_CLASS_PICKER_BASE + "-resultList",
-    CSS_CLASS_PICKER_RESULT         = CSS_CLASS_PICKER_BASE + "-result",
-    CSS_CLASS_PICKER_RESULT_FOCUS   = CSS_CLASS_PICKER_RESULT + "--focus",
+    CSS_CLASS_MS_PICKER_BASE           = "ms-PeoplePicker",
+    CSS_CLASS_MS_PICKER_RESULT_LIST    = CSS_CLASS_MS_PICKER_BASE + "-resultList",
 
     /**
      * Widget description
@@ -54,7 +52,7 @@ define([
      * @extends EventEmitter
      *
      * @params {Object} options
-     * @params {Array<Object>} options.results
+     * @params {Array<PeoplePickerUserProfileModel>} options.results
      * @params {String} [options.groupTitle="Search Results"]
      *
      * @fires ResultGroup#result-click
@@ -62,31 +60,30 @@ define([
     ResultGroup = {
         init: function (options) {
             var inst = {
-                opt: objectExtend({}, ResultGroup.defaults, options),
-                uiFind: null,
-                $resultList: null
+                opt:            objectExtend({}, ResultGroup.defaults, options),
+                uiFind:         null,
+                $resultList:    null,
+                resultItems:    []
             };
 
             PRIVATE.set(this, inst);
 
             var $ui = this.$ui = parseHTML(
-                fillTemplate(ResultGroupTemplate, {
-                    groupTitle: inst.opt.groupTitle,
-                    results:    inst.opt.results.map(function(result){
-                        return fillTemplate(ResultTemplate, result);
-                    }).join("")
-                })
+                fillTemplate(ResultGroupTemplate, {groupTitle: inst.opt.groupTitle})
             ).firstChild;
 
             inst.uiFind         = $ui.querySelector.bind($ui);
-            inst.$resultList    = inst.uiFind("." + CSS_CLASS_PICKER_RESULT_LIST);
+            inst.$resultList    = inst.uiFind("." + CSS_CLASS_MS_PICKER_RESULT_LIST);
 
-            domAddEventListener($ui, "click", function(ev){
-                var resultEle = domClosest(ev.target, "." + CSS_CLASS_PICKER_RESULT);
+            setResultsToGroup.call(this);
 
-                if (resultEle) {
-                    notifyResultClicked.call(this, resultEle);
-                }
+            this.onDestroy(function(){
+                inst.resultItems.forEach(function(wdg){
+                    wdg.destroy();
+                });
+                inst.uiFind         = undefined;
+                inst.$resultList    = undefined;
+                PRIVATE['delete'](this);
             }.bind(this));
         },
 
@@ -95,35 +92,33 @@ define([
          */
         focusNext: function(){
             var inst            = PRIVATE.get(this),
-                $resultList     = inst.$resultList,
-                resultElements  = domFind($resultList, "." + CSS_CLASS_PICKER_RESULT),
-                setFocusClassOnEle  = function(ele){
-                    domAddClass(ele, CSS_CLASS_PICKER_RESULT_FOCUS);
-                },
-                selectedEle;
+                resultItems     = inst.resultItems,
+                selectedWdg, selectedWdgIndex;
 
-            if (!resultElements.length) {
+            if (!resultItems.length) {
                 return;
             }
 
-            selectedEle = resultElements.find(function(resultEle){
-                return domHasClass(resultEle, CSS_CLASS_PICKER_RESULT_FOCUS);
+            selectedWdg = resultItems.find(function(resultWdg, index){
+                selectedWdgIndex = index;
+                return resultWdg.hasFocus();
             });
 
             // Nothing selected? - set first item
-            if (!selectedEle) {
-                setFocusClassOnEle(resultElements[0]);
+            if (!selectedWdg) {
+                resultItems[0].setFocus();
                 return;
             }
 
-            domRemoveClass(selectedEle, CSS_CLASS_PICKER_RESULT_FOCUS);
+            selectedWdg.removeFocus();
 
-            if (!selectedEle.nextSibling) {
-                setFocusClassOnEle(resultElements[0]);
+            // If currently in the last item, select the first one again
+            if (selectedWdgIndex === (resultItems.length - 1)) {
+                resultItems[0].setFocus();
                 return;
             }
 
-            setFocusClassOnEle(selectedEle.nextSibling);
+            resultItems[selectedWdgIndex + 1].setFocus();
         },
 
         /**
@@ -131,36 +126,34 @@ define([
          */
         focusPrevious: function(){
             var inst            = PRIVATE.get(this),
-                $resultList     = inst.$resultList,
-                resultElements  = domFind($resultList, "." + CSS_CLASS_PICKER_RESULT),
-                lastIndex       = resultElements.length - 1,
-                setFocusClassOnEle  = function(ele){
-                    domAddClass(ele, CSS_CLASS_PICKER_RESULT_FOCUS);
-                },
-                selectedEle;
+                resultItems     = inst.resultItems,
+                lastIndex       = resultItems.length - 1,
+                selectedWdg, selectedWdgIndex;
 
-            if (!resultElements.length) {
+            if (!resultItems.length) {
                 return;
             }
 
-            selectedEle = resultElements.find(function(resultEle){
-                return domHasClass(resultEle, CSS_CLASS_PICKER_RESULT_FOCUS);
+            selectedWdg = resultItems.find(function(resultWdg, index){
+                selectedWdgIndex = index;
+                return resultWdg.hasFocus();
             });
 
-            // Nothing selected? - set first item
-            if (!selectedEle) {
-                setFocusClassOnEle(resultElements[lastIndex]);
+            // Nothing selected? - set last item
+            if (!selectedWdg) {
+                resultItems[lastIndex].setFocus();
                 return;
             }
 
-            domRemoveClass(selectedEle, CSS_CLASS_PICKER_RESULT_FOCUS);
+            selectedWdg.removeFocus();
 
-            if (!selectedEle.previousSibling) {
-                setFocusClassOnEle(resultElements[lastIndex]);
+            // If currently in the first item, select the last one again
+            if (selectedWdgIndex === 0) {
+                resultItems[lastIndex].setFocus();
                 return;
             }
 
-            setFocusClassOnEle(selectedEle.previousSibling);
+            resultItems[selectedWdgIndex - 1].setFocus();
         },
 
         /**
@@ -169,56 +162,66 @@ define([
          */
         selectCurrent: function(){
             var inst            = PRIVATE.get(this),
-                $resultList     = inst.$resultList,
-                selectedEle     = domFind($resultList, "." + CSS_CLASS_PICKER_RESULT_FOCUS)[0];
+                resultItems     = inst.resultItems,
+                selectedWdg     = resultItems.find(function(resultWdg){
+                    return resultWdg.hasFocus();
+                });
 
-            if (selectedEle) {
-                notifyResultClicked.call(this, selectedEle);
+            if (selectedWdg) {
+                selectedWdg.emit("click");
             }
         }
     };
 
     /**
-     * Emits an event on the widget indicating that a search result was clicked.
-     *
+     * Builds the widgets for each result and adds them to the list
      * @private
-     *
-     * @param resultEle
      */
-    function notifyResultClicked(resultEle) {
-        var inst        = PRIVATE.get(this),
-            personaEle  = domFind(resultEle, "." + CSS_CLASS_PERSONA)[0],
-            personID    = personaEle.getAttribute("data-sp_id"),
-            personModel;
+    function setResultsToGroup(){
+        var inst            = PRIVATE.get(this),
+            resultItems     = inst.resultItems,
+            listHolderEle   = inst.$resultList,
+            removeFromResults = function(resultInst){
+                var index;
+                resultItems.some(function(wdg, i){
+                    if (wdg === resultInst) {
+                        index  = i;
+                        return true;
+                    }
+                });
 
-        inst.opt.results.some(function(person){
-            if (person.ID === personID) {
-                personModel = person;
-                return true;
-            }
-        });
+                if (typeof index !== "undefined") {
+                    resultItems.splice(index, 1);
+                }
+            };
 
-        /**
-         * One of the suggestions in the people picker was
-         * clicked
-         *
-         * @event ResultGroup#result-click
-         *
-         * @type {Object}
-         *
-         * @property {HTMLElement} resultEle
-         * @property {{UserProfileModel}} resultModel
-         */
-        this.emit("result-click", {
-            resultEle:      resultEle,
-            personaEle:     personaEle,
-            resultModel:    personModel
+        // Destroy existing - if any
+        resultItems.forEach(function(resultWdg){
+            resultWdg.destroy();
         });
+        resultItems.splice(0);
+
+        resultItems.push.apply(resultItems,
+            inst.opt.results.map(function(userProfile){
+                var resultInst = Result.create({ userProfile: userProfile });
+
+                resultInst.appendTo(listHolderEle);
+                resultInst.pipe(this, "result-");
+
+                resultInst.onDestroy(function(){
+                    removeFromResults(resultInst);
+                });
+
+                return resultInst;
+            }.bind(this))
+        );
     }
+
 
     ResultGroup = EventEmitter.extend(Widget, ResultGroup);
     ResultGroup.defaults = {
-        groupTitle: "Search Results"
+        groupTitle: "Search Results",
+        results:    []
     };
 
     return ResultGroup;
