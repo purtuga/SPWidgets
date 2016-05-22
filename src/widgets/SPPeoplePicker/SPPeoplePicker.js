@@ -554,7 +554,19 @@ define([
             })
             // filter out those already selected
             .then(function(results){
-                var filteredResults = results.filter(function(personModel){
+                var filteredResults = results.slice(0);
+
+                // Insert the "ME" entry if that was the text the user entered
+                if (opt.meKeyword && searchString === opt.meKeyword) {
+                    filteredResults.unshift(
+                        opt.UserProfileModel.create({
+                            UserInfoID:     '<userid/>',
+                            DisplayName:    opt.meKeywordLabel
+                        })
+                    );
+                }
+
+                filteredResults = filteredResults.filter(function(personModel){
                     if (
                         !selected.length ||
                         !selected.some(function(selectedWdg){
@@ -567,16 +579,6 @@ define([
 
                 if (opt.filterSuggestions) {
                     filteredResults = filteredResults.filter(opt.filterSuggestions);
-                }
-
-                // Insert the "ME" entry if that was the text the user entered
-                if (opt.meKeyword && searchString === opt.meKeyword) {
-                    filteredResults.unshift(
-                        opt.UserProfileModel.create({
-                            UserInfoID:     '<userid/>',
-                            DisplayName:    opt.meKeywordLabel
-                        })
-                    );
                 }
 
                 return filteredResults;
@@ -679,7 +681,7 @@ define([
         meKeywordLabel:     "Current User",                 // done
         filterSuggestions:  null,                           // done
         UserProfileModel:   PeoplePickerUserProfileModel,   // done
-        searchInfoMsg:      "Type a value to see list of candidates.",
+        searchInfoMsg:      "Type a value to see list of candidates. Use '[me]' for current user.",
         searchingMsg:       "Searching directory..."
     };
 
