@@ -37,8 +37,31 @@
             padding-left:   2em;
             margin:         0;
         }
+
+        &-searchingMsg {
+            display: none;
+        }
     }
 
+    &-busy {
+        display: none;
+    }
+
+    &.is-searching .ms-Icon--search {
+        display: none;
+    }
+    &.is-searching &-searchInfo-msg {
+        display: none;
+    }
+
+    &.is-searching &-searchInfo-searchingMsg {
+        display: block;
+    }
+    &.is-searching &-busy {
+        display:            inline-block;
+        -webkit-animation:  spwidgets-SPPeoplePicker-rotate 0.5s linear infinite;
+        animation:          spwidgets-SPPeoplePicker-rotate 0.5s linear infinite;
+    }
 
 
     // No presence
@@ -52,5 +75,39 @@
         width:      auto;
         max-width:  190px;
     }
+
+    @-webkit-keyframes spwidgets-SPPeoplePicker-rotate {
+        from {
+            -ms-transform: rotate(0deg);
+            -moz-transform: rotate(0deg);
+            -webkit-transform: rotate(0deg);
+            -o-transform: rotate(0deg);
+            transform: rotate(0deg);
+        }
+        to {
+            -ms-transform: rotate(360deg);
+            -moz-transform: rotate(360deg);
+            -webkit-transform: rotate(360deg);
+            -o-transform: rotate(360deg);
+            transform: rotate(360deg);
+        }
+    }
+    @keyframes spwidgets-SPPeoplePicker-rotate {
+        from {
+            -ms-transform: rotate(0deg);
+            -moz-transform: rotate(0deg);
+            -webkit-transform: rotate(0deg);
+            -o-transform: rotate(0deg);
+            transform: rotate(0deg);
+        }
+        to {
+            -ms-transform: rotate(360deg);
+            -moz-transform: rotate(360deg);
+            -webkit-transform: rotate(360deg);
+            -o-transform: rotate(360deg);
+            transform: rotate(360deg);
+        }
+    }
+
 
 }

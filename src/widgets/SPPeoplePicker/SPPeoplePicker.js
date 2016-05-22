@@ -57,6 +57,7 @@ define([
 
     CSS_CLASS_BASE          = "spwidgets-SPPeoplePicker",
     CSS_CLASS_IS_ACTIVE     = "is-active",
+    CSS_CLASS_IS_SEARCHING  = "is-searching",
 
     CSS_CLASS_MS_PICKER_BASE        = "ms-PeoplePicker",
     CSS_CLASS_MS_PICKER_SEARCHBOX   = CSS_CLASS_MS_PICKER_BASE + '-searchBox',
@@ -126,6 +127,9 @@ define([
      * @param {String} [options.meKeywordLabel="Current User"]
      *  The label that will be shown when the user selects the special entry from the
      *  suggestions.
+     *
+     * @param {String} [options.searchInfoMsg="Type a value to see list of candidates."]
+     * @param {String} [options.searchingMsg="Searching directory..."]
      *
      * @fires SPPeoplePicker#select
      * @fires SPPeoplePicker#remove
@@ -245,10 +249,13 @@ define([
 
                 var exec = function(){
                     if (exec === requestSuggestions) {
+                        domAddClass($ui, CSS_CLASS_IS_SEARCHING);
+
                         getSuggestions.call(this)
-                            .then(
-                               showSuggestions.bind(this)
-                            )["catch"](function(e){
+                            .then(function(peopleList){
+                                showSuggestions.call(this, peopleList);
+                                domRemoveClass($ui, CSS_CLASS_IS_SEARCHING);
+                            }.bind(this))["catch"](function(e){
                                 console.log(e); // jshint ignore:line
                             });
                     }
@@ -671,7 +678,9 @@ define([
         meKeyword:          "[me]",                         // done
         meKeywordLabel:     "Current User",                 // done
         filterSuggestions:  null,                           // done
-        UserProfileModel:   PeoplePickerUserProfileModel    // done
+        UserProfileModel:   PeoplePickerUserProfileModel,   // done
+        searchInfoMsg:      "Type a value to see list of candidates.",
+        searchingMsg:       "Searching directory..."
     };
 
     return SPPeoplePicker;
