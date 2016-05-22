@@ -99,9 +99,12 @@ define([
                 return;
             }
 
-            selectedWdg = resultItems.find(function(resultWdg, index){
-                selectedWdgIndex = index;
-                return resultWdg.hasFocus();
+            resultItems.some(function(resultWdg, index){
+                if (resultWdg.hasFocus()) {
+                    selectedWdgIndex    = index;
+                    selectedWdg         = resultWdg;
+                    return true;
+                }
             });
 
             // Nothing selected? - set first item
@@ -134,9 +137,12 @@ define([
                 return;
             }
 
-            selectedWdg = resultItems.find(function(resultWdg, index){
-                selectedWdgIndex = index;
-                return resultWdg.hasFocus();
+            resultItems.some(function(resultWdg, index){
+                if (resultWdg.hasFocus()) {
+                    selectedWdgIndex    = index;
+                    selectedWdg         = resultWdg;
+                    return true;
+                }
             });
 
             // Nothing selected? - set last item
@@ -162,14 +168,14 @@ define([
          */
         selectCurrent: function(){
             var inst            = PRIVATE.get(this),
-                resultItems     = inst.resultItems,
-                selectedWdg     = resultItems.find(function(resultWdg){
-                    return resultWdg.hasFocus();
-                });
+                resultItems     = inst.resultItems;
 
-            if (selectedWdg) {
-                selectedWdg.emit("click");
-            }
+            resultItems.some(function(resultWdg){
+                if (resultWdg.hasFocus()) {
+                    resultWdg.emit("click");
+                    return true;
+                }
+            });
         }
     };
 

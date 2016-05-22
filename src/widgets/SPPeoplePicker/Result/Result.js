@@ -37,6 +37,12 @@ define([
      * @param {Object} options.userProfile
      */
     Result = {
+        init: function(){
+            Persona.prototype.init.apply(this, arguments);
+            if (this.getUserProfile().ID === "<userid/>") {
+                this.setAsCurrentUser();
+            }
+        },
         // Returns the People Picker Result wrapper with the persona template inside.
         getTemplate: function(){
             return fillTemplate(
@@ -64,6 +70,14 @@ define([
          */
         hasFocus: function(){
             return domHasClass(this.getEle(), CSS_CLASS_MS_PICKER_RESULT_FOCUS);
+        },
+
+        /**
+         * Used to highlight the persona that it is not a specific user, but
+         * rather the pseudo entry that point to the currently logged in user.
+         */
+        setAsCurrentUser: function(){
+            domAddClass(this.getEle(), "is-currentUserEntry");
         }
     };
 

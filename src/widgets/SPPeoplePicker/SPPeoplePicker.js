@@ -5,6 +5,7 @@ define([
     "vendor/jsutils/objectExtend",
     "vendor/jsutils/parseHTML",
     "vendor/jsutils/fillTemplate",
+    "vendor/jsutils/es6-promise",
 
     "vendor/domutils/domAddEventListener",
     "vendor/domutils/domAddClass",
@@ -31,6 +32,7 @@ define([
     objectExtend,
     parseHTML,
     fillTemplate,
+    Promise,
 
     domAddEventListener,
     domAddClass,
@@ -65,16 +67,65 @@ define([
      * SharePoint People Picker widget.
      *
      * @class SPPeoplePicker
+     *
      * @extends EventEmitter
      * @extends Widget
      *
      * @param {Object} [options]
      *
+     * @param {Boolean} [options.allowMultiples=true]
+     *  Determine whether multiple users can be selected.
+     *
+     * @param {String} [options.webURL=currentSiteUrl]
+     *  The URL of the site. Defaults to the site from where the widget is running.
+     *
+     * @param {String} [options.type='User']
+     *  The type of search to conduct. Default is `User`. Others
+     *  include: `None`, `DistributionList`, `SecurityGroup`,
+     *  `SharePointGroup`, `All`
+     *
+     * @param {Number} [options.maxSearchResults=50]
+     *  The max number of results to be returned from the server.
+     *
+     * @param {Number} [options.minLength=2]
+     *  The minimum number of characters the user must type before
+     *  suggestions are retrieved.
+     *
+     * @param {String} [options.inputPlaceholder="Type and Pick"]
+     *  The text to appear in the HTML5 placeholder attribute
+     *  of the input field.
+     *
+     * @param {String} [options.showSelected=true]
+     *  If `true` (default), the selected users by this widget will be shown
+     *  on the screen and remembered by the widget.
+     *  Set to this `false`, if all that is desired to show is the
+     *  search input element. Note that when set to `false`, `getSelected` method
+     *  will always return an empty array and the
+     *  [remove]{@link SPPeoplePicker#select} event should be used to capture
+     *  the selection made by the user.
+     *
+     * @param {String} [options.resolvePrincipals=true]
+     *  If set to true, any user that is suggested but not yet  part of the
+     *  site collection user info list (their id is `-1`) will be automatically
+     *  added.
+     *
      * @param {Function} [options.filterSuggestions]
      *  A function to filter the Array of results. Function is used in `Array.filter`,
-     *  and thus received as input the array item (a `UserProfileModel`) and the index
-     *  of the item in the array. Function should return a `Boolean`: keep item == `true`,
-     *  while `false` will not keep the item.
+     *  and thus receives as input the array item
+     *  (a [PeoplePickerUserProfileModel]{@link PeoplePickerUserProfileModel}) and the index
+     *  of the item in the array. Function should return a `Boolean` indicating whether the
+     *  item should be kept in the list or no (`true` == keep, `false` don't keep). See
+     *  `Array.filter` for more information.
+     *
+     * @param {String} [options.meKeyword="[me]"]
+     *  The keyword that will trigger the special entry that represents the currently
+     *  logged in user into the list of suggestions. From an API standpoint, this
+     *  special entry translates into `<userid/>`. To turn this feature off, just
+     *  set this value to an empty string.
+     *
+     * @param {String} [options.meKeywordLabel="Current User"]
+     *  The label that will be shown when the user selects the special entry from the
+     *  suggestions.
      *
      * @fires SPPeoplePicker#select
      * @fires SPPeoplePicker#remove
@@ -99,8 +150,8 @@ define([
                 requestSuggestions,
                 bodyClickEv;
 
-            inst.$groups        = uiFind(SELECTOR_BASE + "-suggestions-groups");
-            inst.$inputCntr     = uiFind(SELECTOR_BASE + "-searchFieldCntr");
+            inst.$groups    = uiFind(SELECTOR_BASE + "-suggestions-groups");
+            inst.$inputCntr = uiFind(SELECTOR_BASE + "-searchFieldCntr");
 
             // Focusing on the Input field, show the suggestions
             // and sets up the event to close it clicking outside of it.
@@ -155,7 +206,7 @@ define([
                         resultGroup.focusNext();
                     }
                     stopEvent();
-                    return;
+                    return false;
                 }
 
                 // UP key
@@ -164,7 +215,7 @@ define([
                         resultGroup.focusPrevious();
                     }
                     stopEvent();
-                    return;
+                    return false;
                 }
 
                 // ESC key
@@ -174,7 +225,7 @@ define([
                         domTriggerEvent($input, "keyup");
                     }, 50);
                     stopEvent();
-                    return;
+                    return false;
                 }
 
                 // ENTER key
@@ -183,7 +234,7 @@ define([
                         resultGroup.selectCurrent();
                     }
                     stopEvent();
-                    return;
+                    return false;
                 }
 
                 // If not min length, exit
@@ -194,9 +245,12 @@ define([
 
                 var exec = function(){
                     if (exec === requestSuggestions) {
-                        getSuggestions.call(this)["catch"](function(e){
-                            console.log(e); // jshint ignore:line
-                        });
+                        getSuggestions.call(this)
+                            .then(
+                               showSuggestions.bind(this)
+                            )["catch"](function(e){
+                                console.log(e); // jshint ignore:line
+                            });
                     }
                 }.bind(this);
 
@@ -268,9 +322,126 @@ define([
             selected.slice(0);
         },
 
-        add: function(){},
+        /**
+         * Adds a User to the list of selected items.
+         *
+         * @param {Object|Array<Object>} people
+         *  The object defined with the person to be added should have
+         *  at least two attributes: `ID` and `AccountName`. If no `ID`
+         *  is defined, however, but `AccountName` or DisplayName is, an
+         *  API call will be made attempting to identify the person's ID
+         *  on the site.
+         *  Example of person definition:
+         *
+         *      {
+         *          ID: "123",
+         *          AccountName: "John Doe"
+         *      }
+         *
+         * @returns {Promise<Array<PeoplePickerUserProfileModel>, Error>}
+         */
+        add: function(people){
+            if (!Array.isArray(people)) {
+                people = [people];
+            }
 
-        remove: function(){},
+            return Promise.all(
+                people.map(function(person){
+                    // If we already have ID and Account Name on input, then
+                    // just make sure we have as a PeoplePickerUserProfileModel instance
+                    if (person.ID && person.AccountName) {
+                        if (!person.Name) {
+                            person.Name = person.DisplayName || person.AccountName;
+                        }
+
+                        if (PeoplePickerUserProfileModel.isInstanceOf(person)) {
+                            return person;
+                        }
+
+                        return PeoplePickerUserProfileModel.create(person);
+                    }
+
+                    if (person.AccountName || person.DisplayName || person.Name) {
+                        return getSuggestions.call(this, person.AccountName || person.DisplayName || person.Name)
+                            .then(function(peopleList){
+                                // If Account Name was used and we have 1 match, then that is it
+                                if (person.AccountName && peopleList.length === 1) {
+                                    return peopleList[0];
+                                }
+
+                                // Multiple matches.. lets try to match the user
+                                // up if possible.
+                                var userProfile;
+                                peopleList.some(function(personProfile){
+                                    if (
+                                        (person.AccountName && personProfile.AccountName === person.AccountName) ||
+                                        (person.DisplayName && personProfile.DisplayName === person.DisplayName) ||
+                                        (person.Name && personProfile.Name === person.Name)
+                                    ) {
+                                        userProfile = personProfile;
+                                        return true;
+                                    }
+                                });
+                                return userProfile;
+                            });
+                    }
+
+                    return undefined;
+                }.bind(this))
+            ).then(function(peopleList){
+                peopleList.forEach(function(personModel){
+                    addPersonToSelectedList.call(this, personModel);
+                }.bind(this));
+
+                return peopleList;
+
+            }.bind(this))["catch"](function(e){
+                console.error(e); // jshint ignore:line
+                return Promise.reject(e);
+            });
+        },
+
+        /**
+         * Removes a selected user (or a list of users) from the list.
+         *
+         * @param {String|Array<String>} people
+         *  The user or list of users to be removed. Anyone of the following
+         *  values can be defined on input: `ID`, `AccountName`, `DisplayName`.
+         */
+        remove: function(people){
+            var inst            = PRIVATE.get(this),
+                selectedList    = inst.selected;
+
+            if (!selectedList.length) {
+                return;
+            }
+
+            if (!Array.isArray(people)) {
+                people = [people];
+            }
+
+            people.forEach(function(id){
+                var wdgToRemove;
+
+                selectedList.some(function(selectedWdg){
+                    var userProfile = selectedWdg.getUserProfile();
+
+                    if (
+                        userProfile.ID          === id ||
+                        userProfile.UserInfoID  === id ||
+                        userProfile.AccountName === id ||
+                        userProfile.Name        === id ||
+                        userProfile.DisplayName === id
+                    ) {
+                        wdgToRemove = selectedWdg;
+                    }
+                });
+
+                if (wdgToRemove) {
+                    wdgToRemove.emit('remove');
+                }
+            });
+        },
 
         /**
          * Returns an array of `UserProfileModels` for those that are currently
@@ -355,16 +526,21 @@ define([
      * Fetches the suggestion for the text entered by the user
      *
      * @private
+     *
+     * @param {String} [searchString]
+     *
      * @return {Promise}
      */
-    function getSuggestions() {
+    function getSuggestions(searchString) {
         var inst        = PRIVATE.get(this),
             opt         = inst.opt,
             selected    = inst.selected;
 
+        searchString = searchString || inst.$input.value;
+
         return searchPrincipals({
                 webURL:             opt.webURL,
-                searchText:         inst.$input.value,
+                searchText:         searchString,
                 maxResults:         opt.maxSearchResults,
                 principalType:      opt.type,
                 UserProfileModel:   opt.UserProfileModel
@@ -386,9 +562,18 @@ define([
                     filteredResults = filteredResults.filter(opt.filterSuggestions);
                 }
 
+                // Insert the "ME" entry if that was the text the user entered
+                if (opt.meKeyword && searchString === opt.meKeyword) {
+                    filteredResults.unshift(
+                        opt.UserProfileModel.create({
+                            UserInfoID:     '<userid/>',
+                            DisplayName:    opt.meKeywordLabel
+                        })
+                    );
+                }
+
                 return filteredResults;
-            })
-            .then(showSuggestions.bind(this));
+            });
     }
 
     /**
@@ -399,9 +584,7 @@ define([
      * @private
      */
     function showSuggestions(peopleList) {
-        var inst        = PRIVATE.get(this),
-            $inputCntr  = inst.$inputCntr,
-            selected    = inst.selected;
+        var inst        = PRIVATE.get(this);
 
         // FIXME: need to ensure that this set of results matches the last request made for data. Else, don't show it
 
@@ -414,8 +597,7 @@ define([
         inst.resultGroup.appendTo(inst.$groups);
 
         inst.resultGroup.on("result-click", function(result){
-            var resultModel = result.getUserProfile(),
-                newSelectedPerson;
+            var resultModel = result.getUserProfile();
 
             if (String(resultModel.ID) === "-1") {
                 resultModel.resolvePrincipal();
@@ -423,13 +605,7 @@ define([
 
             if (inst.opt.showSelected) {
                 result.destroy();
-
-                newSelectedPerson = PeoplePickerPersona.create({userProfile: resultModel});
-                newSelectedPerson.setSize("xs");
-                newSelectedPerson.pipe(this, "selected-");
-
-                $inputCntr.parentNode.insertBefore(newSelectedPerson.getEle(), $inputCntr);
-                selected.push(newSelectedPerson);
+                addPersonToSelectedList.call(this, resultModel);
             }
 
             /**
@@ -440,6 +616,27 @@ define([
              */
             this.emit("select", resultModel);
         }.bind(this));
+    }
+
+    /**
+     * Adds a `PeoplePickerUserProfileModel` person to the list
+     * of selected users.
+     *
+     * @private
+     *
+     * @param {PeoplePickerUserProfileModel} personModel
+     */
+    function addPersonToSelectedList(personModel){
+        var inst        = PRIVATE.get(this),
+            $inputCntr  = inst.$inputCntr,
+            newSelectedPerson;
+
+        newSelectedPerson = PeoplePickerPersona.create({userProfile: personModel});
+        newSelectedPerson.setSize("xs");
+        newSelectedPerson.pipe(this, "selected-");
+
+        $inputCntr.parentNode.insertBefore(newSelectedPerson.getEle(), $inputCntr);
+        inst.selected.push(newSelectedPerson);
     }
 
     /**
@@ -465,14 +662,14 @@ define([
         webURL:             null,                           // done
         type:               'User',                         // done
         onPickUser:         null,                           // done (event: select)
-        //onCreate:           null,                           // NA - no needed
+        //onCreate:           null,                         // NA - no needed
         onRemoveUser:       null,                           // done (event: remove
         inputPlaceholder:   "Type and Pick",                // done
         minLength:          2,                              // done
         showSelected:       true,                           // done
         resolvePrincipals:  true,                           // done
-        meKeyword:          "[me]",
-        meKeywordLabel:     "Current User",
+        meKeyword:          "[me]",                         // done
+        meKeywordLabel:     "Current User",                 // done
         filterSuggestions:  null,                           // done
         UserProfileModel:   PeoplePickerUserProfileModel    // done
     };
