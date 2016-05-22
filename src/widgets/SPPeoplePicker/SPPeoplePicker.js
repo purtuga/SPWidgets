@@ -21,7 +21,6 @@ define([
     "./PeoplePickerPersona/PeoplePickerPersona",
 
     "text!./SPPeoplePicker.html",
-    "text!./selectedPersonaWrapper.html",
 
     //=================================
     "less!./SPPeoplePicker"
