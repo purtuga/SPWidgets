@@ -8,6 +8,8 @@ define([
     dataStore
 ){
 
+    // FIXME: add method for getting rows removed from tracked data set (use of GetListItemChangesSinceToken)
+
     var
     PRIVATE = dataStore.create(),
     findEle = document.querySelector,

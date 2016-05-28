@@ -1,22 +1,20 @@
 define([
-    'jquery',
+    "vendor/jsutils/objectExtend",
     './getList',
     '../sputils/cache',
     '../sputils/getNodesFromXml',
     '../models/ListColumnModel',
-    '../jsutils/dataStore'
+    '../collections/ListColumnsCollection'
 ], function(
-    $,
+    objectExtend,
     getList,
     cache,
     getNodesFromXml,
     ListColumnModel,
-    dataStore
+    ListColumnsCollection
 ){
 
     var
-    instData = dataStore.stash,
-
     /**
      * Gets the list of columns names for the given list that are
      * visible on edit/new/disp forms. This method attempts to NOT return any
@@ -45,9 +43,11 @@ define([
      *      that accepts two input parameters: column definition (object) and options.
      *      See [ListColumnModel]{@link ListColumnModel} for more details.
      *
-     * @return {jQuery.Promise}
-     *      Deferred is resolved with an ListColumnCollection {@link ListColumnCollection}
-     *      containing [ListColumnModels]{@link ListColumnModels}
+     * @param {Object} [options.ListColumnsCollection=ListColumnsCollection]
+     *
+     * @return {Promise<ListColumnCollection, Error>}
+     *  Promise is resolved with an ListColumnCollection {@link ListColumnCollection}
+     *  containing [ListColumnModels]{@link ListColumnModel}
      *
      * @example
      *
@@ -69,14 +69,13 @@ define([
      */
     getListColumns = function(options){
 
-        var opt = $.extend({},
+        var opt = objectExtend(
+            {},
             getListColumns.defaults,
             (typeof options === "string" ? {listName: options} : options)
         );
 
-        return $.Deferred(function(dfd){
-
-            getList({
+        return getList({
                 listName:   opt.listName,
                 cacheXML:   opt.cacheXML,
                 webURL:     opt.webURL,
@@ -143,72 +142,15 @@ define([
                             i += j;
                         }
 
-                    // ELSE: column must be internal... destroy model
+                    // ELSE: column must be a SharePoint internal one... destroy model
                     } else if (opt.ListModel) {
                         columns[i].destroy();
                     }
-
-                } //end: for()
-
-                // Mixin additional methods into the array object and
-                // Store this getListItems opt in stash and associated with the result
-                $.extend(cols, listColumnCollectionMixin);
-                instData.set(cols, opt);
-
-                dfd.resolveWith($, [cols]);
-                return;
-
-            })["catch"](function(){
-                dfd.rejectWith($, Array.prototype.slice.call(arguments, 0));
-            });
-
-        })
-        .promise();
-
-    }, //end: getlistColumns
-
-
-   /**
-    * An Array of List Columns. Each object in the array is a
-    * [ListColumn]{@link ListColumnModel} model.
-    * This collection extends the Array instance created and provides additional
-    * methods for interacting with the collection.
-    *
-    * @typedef ListColumnCollection
-    * @property {Function} getColumn
-    *       Returns a column by searching the array by its name (internal or external)
-    */
-   listColumnCollectionMixin = {
-
-        /**
-         * Returns an object with the definition for the given column
-         * @param {String} name
-         * @return {ListColumnModel}
-         */
-        getColumn: function(name){
-            var
-            list = this,
-            col;
-            list.some(function(thisCol){
-                if (thisCol.Name === name || thisCol.DisplayName === name || thisCol.StaticName === name){
-                    col = thisCol;
                 }
+
+                return opt.ListColumnsCollection.create(cols, {listDef: list});
             });
-            return col;
-        },
-
-        /**
-         * returns the ListModel for the list for which the collection was requested.
-         *
-         * @return {ListModel}
-         */
-        getList: function(){
-            if (instData.has(this)) {
-                return instData.get(this).listDef;
-            }
-        }
-
-   }; //end: resultArrayMixins
+    };
 
     /**
      * Default input params
@@ -217,14 +159,14 @@ define([
      * @type {Object}
      */
     getListColumns.defaults = {
-        listName:           '',
-        columnName:         '',
-        cacheXML:           true,
-        async:              true,
-        webURL:             null,
-        ListColumnModel:    ListColumnModel
+        listName:               '',
+        columnName:             '',
+        cacheXML:               true,
+        async:                  true,
+        webURL:                 null,
+        ListColumnModel:        ListColumnModel,
+        ListColumnsCollection:  ListColumnsCollection
     };
 
     return getListColumns;
-
 });

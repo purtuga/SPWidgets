@@ -2129,65 +2129,64 @@ define([
 
                 // Retrieve the items from the List and then
                 // Display items retrieved on the board
-                opt._getListItems()
-                    .then(function(){
+                opt._getListItems().then(function(){
 
-                        opt.showItemsOnBoard();
+                    opt.showItemsOnBoard();
 
-                        // Make the columns "sortable"
-                        opt.statesCntr.find("div.spwidget-board-state").each(function(){
-                            var thisState = $(this);
-                            thisState.sortable({
-                                connectWith:    thisState.siblings(),
-                                containment:    ele,
-                                cursor:         "move",
-                                tolerance:      "pointer",
-                                opacity:        ".80",
-                                placeholder:    "ui-state-highlight spwidget-board-placeholder",
-                                forcePlaceholderSize: true,
-                                remove:         function(/*ev, ui*/){
+                    // Make the columns "sortable"
+                    opt.statesCntr.find("div.spwidget-board-state").each(function(){
+                        var thisState = $(this);
+                        thisState.sortable({
+                            connectWith:    thisState.siblings(),
+                            containment:    ele,
+                            cursor:         "move",
+                            tolerance:      "pointer",
+                            opacity:        ".80",
+                            placeholder:    "ui-state-highlight spwidget-board-placeholder",
+                            forcePlaceholderSize: true,
+                            remove:         function(/*ev, ui*/){
 
-                                    opt.setBoardColumnHeight();
+                                opt.setBoardColumnHeight();
 
-                                }//end: remove()
-                            });
-
+                            }//end: remove()
                         });
-
-
-                        // Make text inside the states container un-selectable.
-                        opt.statesCntr.disableSelection();
-
-                        opt.initDone = true;
-
-                        opt.setBoardColumnHeight();
-
-                        // remove temp class and add the hasSPShowBoard to it.
-                        ele.addClass("hasSPShowBoard").removeClass("loadingSPShowBoard");
-
-                        // Call any user defined callback and trigger create event
-                        if ($.isFunction(opt.onBoardCreate)) {
-
-                            opt.onBoardCreate.call(ele, opt.getEventObject());
-
-                        }
-
-                        $(ele).trigger(
-                            "spwidget:boardcreate",
-                            [ ele, opt.getEventObject() ] );
 
                     });
 
+
+                    // Make text inside the states container un-selectable.
+                    opt.statesCntr.disableSelection();
+
+                    opt.initDone = true;
+
+                    opt.setBoardColumnHeight();
+
+                    // remove temp class and add the hasSPShowBoard to it.
+                    ele.addClass("hasSPShowBoard").removeClass("loadingSPShowBoard");
+
+                    // Call any user defined callback and trigger create event
+                    if ($.isFunction(opt.onBoardCreate)) {
+
+                        opt.onBoardCreate.call(ele, opt.getEventObject());
+
+                    }
+
+                    $(ele).trigger(
+                        "spwidget:boardcreate",
+                        [ ele, opt.getEventObject() ] );
+
+                }).fail(function(err){
+                    console.log('board: fail:', err);
+                });
+
             }) //end: .then() (get board states)
             .fail(function(failureMsg/*, xData, status*/){
-
                 ele.append('<div class="ui-state-error"><p>' + failureMsg + '</p></div>');
-
-            }); //end: .fail() (get board states)
+            });
 
             return this;
 
-        });//end: return .each()
+        });
 
         // return the original jQuery selection OR whatever
         // a method might have generated if one was called.
