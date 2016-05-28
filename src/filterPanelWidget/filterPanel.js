@@ -285,17 +285,17 @@ define([
                                 case "Choice":
                                 case "MultiChoice":
 
-                                    $thisCol.getColumnValues().forEach(function(v){
-
-                                        inputUI += fillTemplate(
-                                            $.trim(filterPanelChoiceFieldTemplate),
-                                            {
-                                                DisplayName:    $thisCol.DisplayName,
-                                                Name:           $thisCol.Name,
-                                                value:          v
-                                            }
-                                        );
-
+                                    $thisCol.getColumnValues().then(function(thisColValues){
+                                        thisColValues.forEach(function(v){
+                                            inputUI += fillTemplate(
+                                                $.trim(filterPanelChoiceFieldTemplate),
+                                                {
+                                                    DisplayName:    $thisCol.DisplayName,
+                                                    Name:           $thisCol.Name,
+                                                    value:          v
+                                                }
+                                            );
+                                        });
                                     });
 
                                     thisColUI = thisColUI

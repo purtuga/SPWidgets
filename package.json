@@ -5,7 +5,7 @@
   "main": "dist/jquery.SPWidgets.js",
   "scripts": {
     "test": "grunt test",
-    "start": "node tools/server.js"
+    "server": "node tools/server.js"
   },
   "repository": {
     "type": "git",

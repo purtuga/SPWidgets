@@ -24,7 +24,7 @@ define([
      *  The site/sub-site for which the list collection
      *  is to be retrieved.
      *
-     * @param {Boolean} [options.cache=false]
+     * @param {Boolean} [options.cache=true]
      *  If true, the request will be cached.
      *
      * @return {Promise}
@@ -147,7 +147,7 @@ define([
 
     getSiteListCollection.defaults = {
         webURL: '',
-        cache:  false
+        cache:  true
     };
 
     return getSiteListCollection;

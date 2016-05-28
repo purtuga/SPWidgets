@@ -3,6 +3,8 @@ define([
     "../sputils/getNodesFromXml",
     "../models/ListItemModel",
 
+    "../collections/ListItemsCollection",
+
     "../sputils/apiFetch",
     "../spapi/getSiteWebUrl",
 
@@ -11,6 +13,8 @@ define([
     cache,
     getNodesFromXml,
     ListItemModel,
+
+    ListItemsCollection,
 
     apiFetch,
     getSiteWebUrl,
@@ -52,7 +56,7 @@ define([
      *  The model to be used for each row retrieved. Model constructor must
      *  support a .create() method.
      *
-     * @return {Promise<Array>|Promise<Error>}
+     * @return {Promise<ListItemsCollection>|Promise<Error>}
      *   Promise is resolved with a Collection, or rejected with an Error object
      *
      * @see https://msdn.microsoft.com/en-us/library/websvclists.lists.getlistitems(v=office.14).aspx
@@ -111,11 +115,17 @@ define([
                             ) +
                             "</" + opt.operation +"></soap:Body></soap:Envelope>"
             }).then(function(response){
-                return getNodesFromXml({
-                    xDoc:       response.content,
-                    nodeName:   "z:row",
-                    nodeModel:  opt.listItemModel
-                });
+                return ListItemsCollection.create(
+                    getNodesFromXml({
+                        xDoc:       response.content,
+                        nodeName:   "z:row",
+                        nodeModel:  opt.listItemModel
+                    }),
+                    {
+                        apiResponse:    response,
+                        queryOptions:   opt
+                    }
+                );
             });
 
             // If cacheXML was true, then cache this promise
@@ -139,7 +149,8 @@ define([
         cacheXML:       false,
         async:          true,
         changeToken:    '', // GetListChangesSinceToken only
-        listItemModel:  ListItemModel
+        listItemModel:  ListItemModel,
+        ListItemCollection: ListItemsCollection
     };
 
     return getListItems;

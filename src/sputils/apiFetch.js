@@ -87,7 +87,7 @@ define([
              * @property {String} msgType
              *  Valid value: `xml`
              * @property {Object} response
-             *  API fetch resonse
+             *  API fetch response
              */
             return {
                 content:    parseXML(responseString),

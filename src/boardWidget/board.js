@@ -560,11 +560,8 @@ define([
                                     opt.listItems   = rows;
                                     resolveDeferred(rows);
 
-                                })//end: completefunc()
-                                .fail(function(rows, data, status){
-
+                                })["catch"](function(rows, data, status){
                                      dfd.rejectWith($, [ rows, data, status ]);
-
                                 });
 
                             } //end: else: get list items
@@ -2271,42 +2268,47 @@ define([
                         }
 
                         // Loop through the Columns allowed values
-                        f.getColumnValues().some(function(colValue, i){
+                        f.getColumnValues().then(function(colValues){
+                            colValues.some(function(colValue, i){
 
-                            // if there is a filter and this column
-                            // is not part of it, exit loopnow
-                            if (opt.fieldFilter) {
+                                // if there is a filter and this column
+                                // is not part of it, exit loopnow
+                                if (opt.fieldFilter) {
 
-                                if (!$.grep(opt.fieldFilter, function(e){ return (e === colValue); }).length) {
-                                    return;
+                                    if (!$.grep(opt.fieldFilter, function(e){ return (e === colValue); }).length) {
+                                        return;
+                                    }
+
                                 }
 
-                            }
+                                // If we reached a max column number, exit here.
+                                if (i >= Board.maxColumns){
 
-                            // If we reached a max column number, exit here.
-                            if (i >= Board.maxColumns){
+                                    try { console.log(
+                                            "SPWIDGETS:BOARD:Warning: Can only build a max of " +
+                                            Board.maxColumns + " columns!");
+                                    } catch(e){ }
 
-                                try { console.log(
-                                        "SPWIDGETS:BOARD:Warning: Can only build a max of " +
-                                        Board.maxColumns + " columns!");
-                                } catch(e){ }
+                                    return true; // break the loop
 
-                                return true; // break the loop
+                                }
 
-                            }
+                                opt.states.push({
+                                    type:   'choice',
+                                    title:  colValue, // external visible value
+                                    name:   colValue  // internal name
+                                });
 
-                            opt.states.push({
-                                type:   'choice',
-                                title:  colValue, // external visible value
-                                name:   colValue  // internal name
+                                // Store State value in mapper (use internal name)
+                                opt.statesMap[colValue] = opt.states[opt.states.length - 1];
+
                             });
 
-                            // Store State value in mapper (use internal name)
-                            opt.statesMap[colValue] = opt.states[opt.states.length - 1];
+                            dfd.resolveWith($, [opt.states]);
 
+                        })["catch"](function(err){
+                            dfd.rejectWith($, err);
                         });
-
-                        dfd.resolveWith($, [opt.states]);
 
                         break;
 
@@ -2384,8 +2386,7 @@ define([
 
                             return;
 
-                        })
-                        .fail(function(jqXHR){
+                        })["catch"](function(jqXHR){
                             rejectDeferred(jqXHR, 'Unable to get rows from Lookup column list');
                         });
 

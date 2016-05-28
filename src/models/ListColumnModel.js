@@ -55,7 +55,7 @@ define([
         /**
          * Returns the values for the column. Useful for column of type Choice or Lookup.
          *
-         * @return {Array}
+         * @return {Promise<Array<Object|String>, Error>}
          */
         getColumnValues: function() {
             var me          = this,
