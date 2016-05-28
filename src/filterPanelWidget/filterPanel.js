@@ -223,8 +223,7 @@ define([
                     // Get List Definition
                     getListColumns({
                         listName:       opt.list,
-                        cacheXML:       true,
-                        async:          true,
+                        cache:          true,
                         webURL:         opt.webURL
                     })
                     .then(function(colsDef) {
@@ -636,10 +635,9 @@ define([
 
                             });
 
-                    }) //end: .then()
                     // IF getting the List definition fails, then display error
                     // in the widget container element.
-                    .fail(function(/*xData, status*/){
+                    })["catch"](function(/*xData, status*/){
 
                         var $msg = this;
 

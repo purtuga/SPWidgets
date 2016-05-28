@@ -2219,7 +2219,7 @@ define([
             // Get list columns from SP
             getListColumns({
                 listName:   opt.list,
-                cacheXML:   true,
+                cache:      true,
                 webURL:     opt.webURL
             })
             .then(function(listCols){
@@ -2402,11 +2402,8 @@ define([
 
                 } // end: switch()
 
-                return;
-
-            })
             // getListColumns failed
-            .fail(function(jqXHR){
+            })["catch"](function(jqXHR){
                  rejectDeferred(jqXHR);
             });
 
