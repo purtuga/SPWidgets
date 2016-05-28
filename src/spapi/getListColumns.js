@@ -32,11 +32,8 @@ define([
      *
      * @param {String} [options.webURL]
      *
-     * @param {Boolean} [options.cacheXML=true]
+     * @param {Boolean} [options.cache=true]
      *      If true (default), request will be cached.
-     *
-     * @param {Boolean} [options.async=true]
-     *      If true (default) request will be async.
      *
      * @param {Object} [options.ListItemModel=ListColumnModel]
      *      The List Column Model factory to be used. Factory must expose a `create` method
@@ -75,9 +72,13 @@ define([
             (typeof options === "string" ? {listName: options} : options)
         );
 
+        if (typeof opt.cacheXML !== "undefined") {
+            opt.cache = opt.cacheXML;
+        }
+
         return getList({
                 listName:   opt.listName,
-                cacheXML:   opt.cacheXML,
+                cache:      opt.cache,
                 webURL:     opt.webURL,
                 async:      opt.async
             })
@@ -161,8 +162,7 @@ define([
     getListColumns.defaults = {
         listName:               '',
         columnName:             '',
-        cacheXML:               true,
-        async:                  true,
+        cache:                  true,
         webURL:                 null,
         ListColumnModel:        ListColumnModel,
         ListColumnsCollection:  ListColumnsCollection
