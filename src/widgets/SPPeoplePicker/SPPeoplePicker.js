@@ -54,9 +54,10 @@ define([
 
     BODY = document.body,
 
-    CSS_CLASS_BASE          = "spwidgets-SPPeoplePicker",
-    CSS_CLASS_IS_ACTIVE     = "is-active",
-    CSS_CLASS_IS_SEARCHING  = "is-searching",
+    CSS_CLASS_BASE                      = "spwidgets-SPPeoplePicker",
+    CSS_CLASS_SUGGESTIONS_RIGHT_ALIGN   = CSS_CLASS_BASE + "--suggestionsRight",
+    CSS_CLASS_IS_ACTIVE                 = "is-active",
+    CSS_CLASS_IS_SEARCHING              = "is-searching",
 
     CSS_CLASS_MS_PICKER_BASE        = "ms-PeoplePicker",
     CSS_CLASS_MS_PICKER_SEARCHBOX   = CSS_CLASS_MS_PICKER_BASE + '-searchBox',
@@ -117,6 +118,10 @@ define([
      *  item should be kept in the list or no (`true` == keep, `false` don't keep). See
      *  `Array.filter` for more information.
      *
+     * @param {String} [options.suggestionsRightAlign=false"]
+     *  If true, the search suggestion element is right aligned with the search input
+     *  box. good for when widget is close to the right edge of the viewport
+     * 
      * @param {String} [options.meKeyword="[me]"]
      *  The keyword that will trigger the special entry that represents the currently
      *  logged in user into the list of suggestions. From an API standpoint, this
@@ -276,7 +281,7 @@ define([
                 }
             }.bind(this));
 
-            // List for when selected users are removed
+            // Listen for when selected users are removed
             this.on("selected-remove", function(userWdg){
                 var personModel = userWdg.getUserProfile(),
                     selectedIndex;
@@ -305,6 +310,11 @@ define([
                  */
                 this.emit("remove", personModel);
             }.bind(this));
+
+            // If user Set 'suggestionsRightAlign' then align suggestions to the right
+            if (inst.opt.suggestionsRightAlign){
+                domAddClass($ui, CSS_CLASS_SUGGESTIONS_RIGHT_ALIGN);
+            }
 
             this.onDestroy(function(){
                 inst.selected.forEach(function(wdg){
@@ -460,6 +470,13 @@ define([
             return PRIVATE.get(this).selected.map(function(userWdg){
                 return userWdg.getUserProfile();
             });
+        },
+
+        /**
+         * Sets focus on the input search element
+         */
+        setFocus: function(){
+            PRIVATE.get(this).$input.focus();
         }
     },
 
@@ -665,23 +682,32 @@ define([
     SPPeoplePicker = EventEmitter.extend(Widget, SPPeoplePicker);
 
     SPPeoplePicker.defaults = {
-        allowMultiples:     true,                           // done
-        maxSearchResults:   50,                             // done
-        webURL:             null,                           // done
-        type:               'User',                         // done
-        onPickUser:         null,                           // done (event: select)
-        //onCreate:           null,                         // NA - no needed
-        onRemoveUser:       null,                           // done (event: remove
-        inputPlaceholder:   "Type and Pick",                // done
-        minLength:          2,                              // done
-        showSelected:       true,                           // done
-        resolvePrincipals:  true,                           // done
-        meKeyword:          "[me]",                         // done
-        meKeywordLabel:     "Current User",                 // done
-        filterSuggestions:  null,                           // done
-        UserProfileModel:   PeoplePickerUserProfileModel,   // done
-        searchInfoMsg:      "Type a value to see list of candidates. Use '[me]' for current user.",
-        searchingMsg:       "Searching directory..."
+        allowMultiples:         true,                           // done
+        maxSearchResults:       50,                             // done
+        webURL:                 null,                           // done
+        type:                   'User',                         // done
+        inputPlaceholder:       "Type and Pick",                // done
+        minLength:              2,                              // done
+        showSelected:           true,                           // done
+        resolvePrincipals:      true,                           // done
+        meKeyword:              "[me]",                         // done
+        meKeywordLabel:         "Current User",                 // done
+        filterSuggestions:      null,                           // done
+        UserProfileModel:       PeoplePickerUserProfileModel,   // done
+        suggestionsRightAlign:  false,
+        searchInfoMsg:          "Type a value to see list of candidates. Use '[me]' for current user.",
+        searchingMsg:           "Searching directory...",
+
+// FIXME: complete structure for i18n
+        i18n: {
+            "en-us": {
+                inputPlaceholder:   "Type and Pick",
+                meKeyword:          "[me]",
+                meKeywordLabel:     "Current User",
+                searchInfoMsg:      "Type a value to see list of candidates. Use '[me]' for current user.",
+                searchingMsg:       "Searching directory..."
+            }
+        }
     };
 
     return SPPeoplePicker;

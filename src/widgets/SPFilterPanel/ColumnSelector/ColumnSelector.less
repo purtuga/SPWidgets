@@ -1,0 +1,53 @@
+.spwidgets-SPFilterPanel-ColumnSelector {
+
+    box-sizing: border-box;
+    position:   absolute;
+    top:        0;
+    left:       0;
+    width:      100%;
+    height:     100%;
+    border:     1px solid;
+
+    &-header {
+        padding:    0.5em;
+        border:     1px solid;
+    }
+
+    &-body {
+        box-sizing: border-box;
+        position:   absolute;
+        height:     100%;
+        width:      100%;
+        top:        0;
+        left:       0;
+        padding:    3em 0.5em 3.5em;
+
+        &-content {
+            box-sizing: border-box;
+            height:     100%;
+            overflow:   auto;
+        }
+    }
+
+    &-footer {
+        box-sizing: border-box;
+        position:   absolute;
+        bottom:     0;
+        left:       0;
+        width:      100%;
+        padding:    0.5em;
+        text-align: right;
+    }
+
+    &-col {
+        box-sizing:     border-box;
+        display:        inline-block;
+        width:          24%;
+        text-overflow:  ellipsis;
+        overflow:       hidden;
+        white-space:    nowrap;
+        cursor:         pointer;
+        padding:        0.5em;
+    }
+
+}

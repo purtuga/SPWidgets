@@ -504,6 +504,7 @@ module.exports = function(grunt) {
             src : {
                 files : [
                     'src/**/*',
+                    'dev/**/*',
                     'demo/**/*',
                     'test/**/*',
                     '*.aspx'

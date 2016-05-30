@@ -60,9 +60,10 @@
 <asp:Content ContentPlaceHolderId="PlaceHolderMain" runat="server">
 <div id="spwidgets_dev">
     <div>
-        <select id="demo_selector">
+        <select id="demo_selector"  style="display:none">
             <option value="">Select...</option>
             <option value="SPPeoplePicker">SPPeoplePicker</option>
+            <option value="SPFilterPanel">SPFilterPanel</option>
         </select>
     </div>
     <div id="spwidgets_dev_demo"></div>
@@ -88,9 +89,11 @@
         });
 
     require([
-        'dev/src/SPPeoplePickerDemo/SPPeoplePickerDemo'
+        'dev/src/SPPeoplePickerDemo/SPPeoplePickerDemo',
+        'dev/src/SPFilterPanelDemo/SPFilterPanelDemo'
     ], function(
-        SPPeoplePickerDemo
+        SPPeoplePickerDemo,
+        SPFilterPanelDemo
     ){
         var demoCntr = document.querySelector("#spwidgets_dev_demo"),
             demoSelector = document.querySelector("#demo_selector"),
@@ -99,16 +102,26 @@
         demoSelector.addEventListener("change", function(){
             if (currentDemo) {
                 currentDemo.destroy();
+                currentDemo = null;
             }
 
             switch (demoSelector.value) {
                 case "SPPeoplePicker":
                     currentDemo = SPPeoplePickerDemo.create();
-                    currentDemo.appendTo(demoCntr);
+                    break;
+
+                case "SPFilterPanel":
+                    currentDemo = SPFilterPanelDemo.create();
                     break;
             }
 
+            if (currentDemo) {
+                currentDemo.appendTo(demoCntr);
+            }
+
         });
+
+        demoSelector.style.display = "";
     });
 
 }());

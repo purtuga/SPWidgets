@@ -1,0 +1,89 @@
+.spwidgets-SPFilterPanel {
+
+    position: relative;
+    box-sizing: border-box;
+
+    button {
+        min-width: 0;
+    }
+
+    &-header {
+        padding: 0.5em;
+        position: relative;
+
+        &-title {
+            display: block;
+            padding-right: 4em;
+        }
+
+        &-close {
+            display:    block;
+            position:   absolute;
+            top:        0;
+            right:      0;
+            height:     100%;
+            border:     none;
+
+            .ms-Button-icon {
+                display: inline-block;
+            }
+        }
+
+
+    }
+
+    &-main {
+        box-sizing: border-box;
+        position:   relative;
+    }
+
+    &-body {
+        box-sizing:     border-box;
+        min-height:     15em;
+        overflow-y:     auto;
+        border:         1px solid;
+        border-top:     none;
+        border-bottom:  none;
+    }
+
+    &-footer {
+        box-sizing:     border-box;
+        position:       relative;
+        border:         1px solid;
+        border-top:     none;
+        padding-top:    20px;
+
+        &-actions {
+            padding:    0.5em;
+            text-align: right;
+            border-top: 1px solid;
+        }
+
+        &-action-add {
+            position:       absolute;
+            display:        block;
+            top:            0;
+            left:           2em;
+            border:         10px solid white;
+            border-radius:  50%;
+            opacity:        0.6;
+            cursor:         pointer;
+
+            &:hover {
+                transition: all .2s ease-in-out;
+                transform:  scale(1.5);
+                opacity:    1;
+            }
+
+            &-iconHolder {
+                display: block;
+                border: 1px solid;
+                border-radius: 50%;
+                width: 20px;
+                height: 20px;
+                text-align: center;
+                background: white;
+            }
+        }
+    }
+}

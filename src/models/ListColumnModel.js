@@ -1,5 +1,4 @@
 define([
-    "jquery",
     "../jsutils/Compose",
     "../jsutils/objectExtend",
     "../jsutils/dataStore",
@@ -8,7 +7,6 @@ define([
 
     "vendor/jsutils/es6-promise"
 ], function(
-    $,
     Compose,
     objectExtend,
     dataStore,
@@ -59,7 +57,7 @@ define([
          */
         getColumnValues: function() {
             var me          = this,
-                $colXml     = $(instData.get(me).source),
+                $colXml     = instData.get(me).source,
                 colType     = me.Type,
                 colValues   = [];
 
@@ -67,8 +65,8 @@ define([
                 switch (colType) {
                     case "Choice":
                     case "MultiChoice":
-                        $colXml.find("CHOICE").each(function(){
-                            colValues.push($(this).text() || "");
+                        Array.prototype.slice.call($colXml.querySelectorAll("CHOICE"), 0).forEach(function(choiceEle){
+                            colValues.push(choiceEle.textContent || "");
                         });
 
                         resolve(colValues);
@@ -97,7 +95,7 @@ define([
                         resolve(colValues);
                 }
             });
-        }, //end getColumnvalues()
+        },
 
         /**
          * returns the ListModel if one was given on input when listColumnModel instance
