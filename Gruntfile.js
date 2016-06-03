@@ -680,7 +680,19 @@ module.exports = function(grunt) {
      * copy content from the build folder to the deploy destination.
      *
      */
-    grunt.registerTask('deploy', ["build", "copy:deploy"]);
+    grunt.registerTask('deploy', function(){
+        grunt.task.registerTask("deploy-DONE", function(){
+            grunt.log.writeln("------------------------------------------------");
+            grunt.log.writeln("   BUILD ID: " + buildId);
+            grunt.log.writeln("------------------------------------------------");
+        });
+
+        grunt.task.run([
+            "build",
+            "copy:deploy",
+            "deploy-DONE"
+        ]);
+    });
 
     grunt.registerTask('test', ["connect:test", "jasmine"]);
 

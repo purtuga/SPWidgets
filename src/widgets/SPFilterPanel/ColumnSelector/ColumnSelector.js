@@ -7,6 +7,11 @@ define([
     "vendor/jsutils/parseHTML",
 
     "vendor/domutils/domAddEventListener",
+    "vendor/domutils/domFind",
+    "vendor/domutils/domClosest",
+    "vendor/domutils/domAddClass",
+    "vendor/domutils/domRemoveClass",
+    "vendor/domutils/domHasClass",
 
     "../../../spapi/getListColumns",
 
@@ -23,6 +28,11 @@ define([
     parseHTML,
 
     domAddEventListener,
+    domFind,
+    domClosest,
+    domAddClass,
+    domRemoveClass,
+    domHasClass,
 
     getListColumns,
 
@@ -34,6 +44,8 @@ define([
     PRIVATE = dataStore.create(),
 
     CSS_CLASS_BASE = "spwidgets-SPFilterPanel-ColumnSelector",
+
+    CSS_CLASS_COL_SELECTED = CSS_CLASS_BASE + "-col--selected",
 
     /**
      * Widget description
@@ -80,6 +92,19 @@ define([
                 emit("select");
             });
 
+            domAddEventListener($ui, "click", function(ev){
+                var colEle = domClosest(ev.target, BASE_SELECTOR + "-col");
+
+                if (colEle) {
+                    if (domHasClass(colEle, CSS_CLASS_COL_SELECTED)) {
+                        domRemoveClass(colEle, CSS_CLASS_COL_SELECTED);
+
+                    } else {
+                        domAddClass(colEle, CSS_CLASS_COL_SELECTED);
+                    }
+                }
+            });
+
             loadColumns.call(this)
                 .then(showColumns.bind(this))
                 ["catch"](function(e){
@@ -89,6 +114,29 @@ define([
             this.onDestroy(function () {
                 PRIVATE.delete(this);
             }.bind(this));
+        },
+
+        /**
+         * returns the List Column Models for the columns selected
+         *
+         * @return {Array}
+         */
+        getSelected: function(){
+            var listCols = PRIVATE.get(this).listCols;
+
+            return domFind(this.getEle(), "." + CSS_CLASS_COL_SELECTED).map(function(selColEle){
+                var colName = selColEle.getAttribute("data-name"),
+                    colDef = {};
+
+                listCols.some(function(listColDef){
+                    if (listColDef.Name === colName) {
+                        colDef = listColDef;
+                        return true;
+                    }
+                });
+
+                return colDef;
+            });
         }
     };
 

@@ -38,7 +38,7 @@ define([
      *     JSON response object)
      *
      */
-    ListColumnModel = /** @lends ListColumn.prototype */{
+    ListColumnModel = /** @lends ListColumnModel.prototype */{
 
         init: function(columnData, options){
 

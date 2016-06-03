@@ -1,0 +1,39 @@
+<div class="spwidgets-SPFilterPanel-FilterColumn ms-borderColor-neutralLight">
+    <h3 class="spwidgets-SPFilterPanel-FilterColumn-title">{{column.DisplayName}}</h3>
+    <div class="spwidgets-SPFilterPanel-FilterColumn-options ms-u-slideDownIn20">
+        <select name="compareOperator" tabindex="-1">
+            <option value="Contains">{{labels.contains}}</option>
+            <option value="Eq" selected="selected">{{labels.equal}}</option>
+            <option value="Neq">{{labels.notEqual}}</option>
+            <option value="IsNull">{{labels.isBlank}}</option>
+            <option value="IsNotNull">{{labels.isNotBlank}}</option>
+        </select>
+        <select name="logicalOperator" tabindex="-1">
+            <option value="Or" selected="selected">{{labels.any}}</option>
+            <option value="And">{{labels.all}}</option>
+        </select>
+        <select name="sortOrder" tabindex="-1">
+            <option value="" selected="selected">{{labels.sort}}</option>
+            <option value="Asc">&#9650; {{labels.asc}}</option>
+            <option value="Des">&#9660; {{labels.des}}</option>
+        </select>
+    </div>
+    <div class="spwidgets-SPFilterPanel-FilterColumn-input">
+        <div class="spwidgets-SPFilterPanel-FilterColumn-input-holder">
+            <input type="text" name="s" value="" class="ms-TextField-field" placeholder="{{labels.inputKeywords}}"/>
+        </div>
+    </div>
+    <div class="spwidgets-SPFilterPanel-FilterColumn-info">
+        <div class="spwidgets-SPFilterPanel-FilterColumn-info-keywords ms-fontWeight-light ms-font-s">{{labels.keywordsInfo}}</div>
+        <a class="spwidgets-SPFilterPanel-FilterColumn-info-optLink ms-Link">{{labels.options}}</a>
+    </div>
+
+    <div class="spwidgets-SPFilterPanel-FilterColumn-move">
+        <a tabindex="-1" class="spwidgets-SPFilterPanel-FilterColumn-move-up ms-Link" title="{{labels.moveUp}}">
+            <i class="ms-Icon ms-Icon--chevronUp"></i>
+        </a>
+        <a tabindex="-1" class="spwidgets-SPFilterPanel-FilterColumn-move-down ms-Link" title="{{labels.moveDown}}">
+            <i class="ms-Icon ms-Icon--chevronDown"></i>
+        </a>
+    </div>
+</div>

@@ -42,12 +42,51 @@
     &-col {
         box-sizing:     border-box;
         display:        inline-block;
-        width:          24%;
-        text-overflow:  ellipsis;
-        overflow:       hidden;
-        white-space:    nowrap;
+        width:          ~"calc((100% / 3) - 1em)";
         cursor:         pointer;
-        padding:        0.5em;
+        margin:         0.5em 0.5em 0em 0em;
+        position:       relative;
+
+        &:last-child {
+            margin-right: 0;
+        }
+
+        &-icon,
+        &-title {
+            padding:    0.5em;
+            box-sizing: border-box;
+        }
+
+        &-icon {
+            position:   absolute;
+            left:       0;
+            top:        0;
+            height:     100%;
+            width:      2.5em;
+            padding:    0.5em;
+            text-align: center;
+
+            .ms-Icon--check {
+                display: none;
+            }
+        }
+
+        &-title {
+            width:          100%;
+            padding-left:   3em;
+            text-overflow:  ellipsis;
+            overflow:       hidden;
+            white-space:    nowrap;
+        }
+
+        // MODIFIER
+        &--selected {
+            color: #0078d7; // same as ms-Link
+        }
+        &--selected &-icon .ms-Icon--check {
+            display: inline-block;
+        }
     }
+
 
 }

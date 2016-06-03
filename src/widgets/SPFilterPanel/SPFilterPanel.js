@@ -11,6 +11,7 @@ define([
 
     "../Message/Message",
     "./ColumnSelector/ColumnSelector",
+    "./FilterColumn/FilterColumn",
 
     "text!./SPFilterPanel.html",
 
@@ -29,6 +30,7 @@ define([
 
     Message,
     ColumnSelector,
+    FilterColumn,
 
     SPFilterPanelTemplate
 ) {
@@ -68,14 +70,15 @@ define([
                 opt:        objectExtend({}, SPFilterPanel.defaults, options),
                 uiFind:     null,
                 body:       null,
-                infoMsg:    null
+                infoMsg:    null,
+                colsWdg:    {}      // List of columns currently shown
             },
             opt = inst.opt;
 
             PRIVATE.set(this, inst);
 
-            opt.lang    = String(WINDOW_NAVIGATOR.language || WINDOW_NAVIGATOR.userLanguage || "en-us").toLowerCase();
-            opt.labels  = opt.i18n[opt.lang] || opt.i18n["en-us"];
+            opt.lang    = String(WINDOW_NAVIGATOR.language || WINDOW_NAVIGATOR.userLanguage || "en-US");
+            opt.labels  = opt.i18n[opt.lang] || opt.i18n["en-US"];
 
             var me  = this,
                 $ui = me.$ui = parseHTML(
@@ -107,7 +110,7 @@ define([
             });
 
             domAddEventListener(uiFind(BASE_SELECTOR + "-footer-action-clear"), "click", function(){
-                // FIXME: clear filters
+                addColumns.call(this, []);
 
                 /**
                  * Defined filters were cleared
@@ -115,10 +118,9 @@ define([
                  * @event SPFilterPanel#clear
                  */
                 emit("clear");
-            });
+            }.bind(this));
 
             domAddEventListener(uiFind(BASE_SELECTOR + "-footer-action-find"), "click", function(){
-
                 /**
                  * Find button was clicked
                  *
@@ -128,7 +130,6 @@ define([
             });
 
             domAddEventListener(uiFind(BASE_SELECTOR + "-header-close"), "click", function(){
-
                 /**
                  * Close button was clicked
                  *
@@ -143,7 +144,7 @@ define([
 
             me.on("columnSelector:select", function(){
                 inst.columnSelector.hide();
-                // FIXME: handle selection of new columns
+                addColumns.call(me, inst.columnSelector.getSelected());
             });
 
             //--------------------------------------
@@ -161,6 +162,50 @@ define([
         }
     };
 
+    /**
+     * Adds a column to the UI, if not already there.
+     *
+     * @param {Array} colList
+     *  The list of column definition that should be added to the UI
+     *  for the user to define criteria.
+     *
+     * @private
+     */
+    function addColumns(colList){
+        var inst    = PRIVATE.get(this),
+            colsWdg = inst.colsWdg,
+            body    = inst.body,
+            newSet  = document.createDocumentFragment();
+
+        // Detach all
+        Object.keys(colsWdg).forEach(function(colName){
+            colsWdg[colName].detach();
+        });
+
+        if (colList.length) {
+            colList.forEach(function(colDef){
+                var colName = colDef.Name;
+
+                if (!colsWdg[colName]){
+                    colsWdg[colName] = FilterColumn.create({
+                        column: colDef,
+                        labels: inst.opt.labels
+                    });
+                }
+
+                colsWdg[colName].appendTo(newSet);
+            });
+
+            inst.infoMsg.detach();
+            body.appendChild(newSet);
+
+        } else {
+            inst.infoMsg.appendTo(body);
+        }
+    }
+
+
+
     SPFilterPanel = EventEmitter.extend(Widget, SPFilterPanel);
     SPFilterPanel.defaults = {
         listName:       "",
@@ -168,7 +213,7 @@ define([
         ignoreKeywords: /^(of|and|a|an|to|by|the|or|from)$/i,
         delimiter:      ';',
         i18n: {
-            "en-us": {
+            "en-US": {
                 title:          "Filter",
                 find:           "Find",
                 clear:          "Clear",
@@ -177,7 +222,25 @@ define([
                 add:            "Add Field",
                 msg:            "Click the Add button below to add a list field.",
                 select:         "Select Fields",
-                ok:             "Ok"
+                ok:             "Ok",
+                options:        "options",
+                inputKeywords:  "Enter Keywords",
+                keywordsInfo:   "Use a semicolon to delimiter multiple keywords.",
+                moveUp:         "Move Up",
+                moveDown:       "Move Down",
+                // Comparison operators
+                contains:       "Contains",
+                equal:          "Equal",
+                notEqual:       "Not Equal",
+                isBlank:        "Is Blank",
+                isNotBlank:     "Is Not Blank",
+                // Logical Operators
+                any:             "Any",
+                all:             "All",
+                // Sort Order
+                sort:           "Sort",
+                asc:            "Ascending",
+                des:            "Descending"
             }
         }
     };
