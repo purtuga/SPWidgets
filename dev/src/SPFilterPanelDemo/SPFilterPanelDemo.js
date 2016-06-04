@@ -64,8 +64,20 @@ define([
         filterPanel.on("*", function(evName){
             out.appendChild(
                 parseHTML('<div>Event: ' + evName + '</div>')
-            )
-        })
+            );
+
+            if (evName === 'find') {
+                out.appendChild(
+                    parseHTML(
+                        '<div><pre>' + JSON.stringify(
+                            filterPanel.getFilters().slice(),
+                            null,
+                            2
+                        ) + '</pre></div>'
+                    )
+                );
+            }
+        });
 
     }
 

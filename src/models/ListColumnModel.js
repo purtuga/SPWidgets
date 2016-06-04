@@ -22,7 +22,7 @@ define([
     /**
      * list Column Model.
      *
-     * @constructor ListColumnModel
+     * @class ListColumnModel
      * @extends Compose
      *
      * @param {Object} columnData

@@ -12,6 +12,7 @@ define([
     "../Message/Message",
     "./ColumnSelector/ColumnSelector",
     "./FilterColumn/FilterColumn",
+    "./FiltersCollection",
 
     "text!./SPFilterPanel.html",
 
@@ -31,6 +32,7 @@ define([
     Message,
     ColumnSelector,
     FilterColumn,
+    FiltersCollection,
 
     SPFilterPanelTemplate
 ) {
@@ -159,6 +161,33 @@ define([
                     }
                 });
             }.bind(this));
+        },
+
+        /**
+         * Fits the widgets to its parent element, by ensuring that
+         * the Filter widget's buttons and header are always visible.
+         */
+        fitToParent: function(){
+            // FIXME: complete fitToParent()
+        },
+
+        /**
+         * Returns a collection of filters defined by the user.
+         *
+         * @return {FiltersCollection}
+         */
+        getFilters: function(){
+            var inst    = PRIVATE.get(this),
+                colsWdg = inst.colsWdg,
+                filters = Object.keys(colsWdg)
+                    .filter(function(colName){
+                        return !!colsWdg[colName].getEle().parentNode;
+                    })
+                    .map(function(colName){
+                        return colsWdg[colName].getFilter();
+                    });
+
+            return FiltersCollection.create(filters);
         }
     };
 
@@ -173,6 +202,7 @@ define([
      */
     function addColumns(colList){
         var inst    = PRIVATE.get(this),
+            opt     = inst.opt,
             colsWdg = inst.colsWdg,
             body    = inst.body,
             newSet  = document.createDocumentFragment();
@@ -188,13 +218,17 @@ define([
 
                 if (!colsWdg[colName]){
                     colsWdg[colName] = FilterColumn.create({
-                        column: colDef,
-                        labels: inst.opt.labels
+                        column:         colDef,
+                        labels:         opt.labels,
+                        delimiter:      opt.delimiter,
+                        ignoreKeywords: opt.ignoreKeywords
                     });
+
+                    colsWdg[colName].pipe(this, "filterColumn:", true);
                 }
 
                 colsWdg[colName].appendTo(newSet);
-            });
+            }.bind(this));
 
             inst.infoMsg.detach();
             body.appendChild(newSet);
@@ -203,8 +237,6 @@ define([
             inst.infoMsg.appendTo(body);
         }
     }
-
-
 
     SPFilterPanel = EventEmitter.extend(Widget, SPFilterPanel);
     SPFilterPanel.defaults = {
