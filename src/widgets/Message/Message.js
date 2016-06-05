@@ -41,7 +41,10 @@ define([
      * @param {String} [options.type="info"]
      *  Type of message. valid values: `info`, `error`, `alert`, `success`
      *
-     * @param
+     * @param {String} [options.iconClass]
+     *  A css class to be applied to the icon element. If defined,
+     *  the icon associated with `options.type` will be ignored.
+     *
      */
     Message = /** @lends Message.prototype */{
         init: function (options) {
@@ -86,6 +89,7 @@ define([
 
     Message = Widget.extend(Message);
     Message.defaults = {
+        message:    '',
         type:       'info',
         iconClass:  ''
     };
