@@ -4,8 +4,10 @@ define([
     "./getSiteWebUrl",
     "./searchPrincipals",
 
+    "vendor/jsutils/es7-fetch",
     "vendor/jsutils/objectExtend",
     "vendor/jsutils/es6-promise",
+    "vendor/jsutils/parseHTML",
 
     "vendor/domutils/domFind"
 ], function(
@@ -14,13 +16,16 @@ define([
     getSiteWebUrl,
     searchPrincipals,
 
+    fetchPolyfill,
     objectExtend,
     Promise,
+    parseHTML,
 
     domFind
 ){
 
     var
+    fetch           = fetchPolyfill.fetch,
     PROMISE_CATCH   = "catch",
     consoleLog      = console.log.bind(console),  // jshint ignore:line
 
@@ -48,6 +53,8 @@ define([
                     return cache.get(cacheId);
                 }
 
+                cache(cacheId, reqPromise);
+
                 return searchUserPrincipals(opt);
 
             })[PROMISE_CATCH](function(e){
@@ -59,10 +66,6 @@ define([
                 consoleLog(e); // jshint ignore:line
                 return Promise.reject(new Error("Unable to get current user info."));
             });
-
-        if (!cache.isCached(cacheId)) {
-            cache(cacheId, reqPromise);
-        }
 
         return reqPromise;
     };
@@ -136,18 +139,23 @@ define([
 
         return getSiteWebUrl(opt.webURL).then(function(webURL){
 
-            return apiFetch(webURL + "/_layouts/userdisp.aspx?Force=True&" + (new Date()).getTime())
+            return fetch(webURL + "/_layouts/userdisp.aspx?Force=True&" + (new Date()).getTime())
                 .then(function(response){
+                    return response.text().then(function(responseString){
+                        return parseHTML(responseString);
+                    });
+                })
+                .then(function(contentDocFrag){
                     var userInfo = {};
 
-                    domFind(response.content, "table.ms-formtable td.ms-formbody").forEach(function($td){
+                    domFind(contentDocFrag, "table.ms-formtable td.ms-formbody").forEach(function($td){
                         var
                         tdInnerHtml     = $td.innerHTML,
                         reInternalName  = /FieldInternalName="(.+?)"/i,
                         reFieldType     = /FieldType="(.+?)"/i,
                         internalName    = reInternalName.exec(tdInnerHtml),
                         fieldType       = reFieldType.exec(tdInnerHtml),
-                        key, value;
+                        key, value, $child;
 
                         // If we found an internal name, then use that as the key
                         if (internalName) {
@@ -163,11 +171,17 @@ define([
                         // Get the value for this field
                         switch (fieldType) {
                             case "SPFieldNote":
-                                value = $td.querySelector("div").innerHTML;
+                                $child = $td.querySelector("div");
+                                if ($child) {
+                                    value = $child.innerHTML;
+                                }
                                 break;
 
                             case "SPFieldURL":
-                                value = $td.querySelector("img").getAttribute("src");
+                                $child = $td.querySelector("img");
+                                if ($child) {
+                                    value = $child.getAttribute("src");
+                                }
                                 break;
 
                             default:
@@ -175,15 +189,15 @@ define([
                                 break;
                         }
 
-                        userInfo[key] = value.trim();
+                        userInfo[key] = (value || "").trim();
                     });
 
 
                     // If no ID, then get it from the Edit link
                     if (!userInfo.hasOwnProperty("ID")) {
 
-                        domFind(response.content, "table.ms-toolbar a[id*='EditItem']").some(function(ele){
-                            var idMatch = (/ID=(\d*)/i).exec(this.href);
+                        domFind(contentDocFrag, "table.ms-toolbar a[id*='EditItem']").some(function(ele){
+                            var idMatch = (/ID=(\d*)/i).exec(ele.href);
                             if (idMatch) {
                                 userInfo.ID = idMatch[1];
                                 return true;
@@ -191,11 +205,40 @@ define([
                         });
                     }
 
+
                     if (userInfo.ID) {
+                        // FIXME: need to use getUserProfile now to get good profile
+
                         return userInfo;
                     }
 
                     return Promise.reject(new Error("Unable to get ID from scraping userdisp.aspx."));
+
+                    // EXAMPLE OF DATA RETRIEVED FROM SCRAPE:
+                    //{
+                    //    "Name": "i:0#.f|membership|joe.doe@sharepoint.com",
+                    //    "Title": "Joe Doe",
+                    //    "EMail": "joedoe@sharepoint.com",
+                    //    "MobilePhone": "",
+                    //    "Notes": "<div dir=\"\"></div>&nbsp;",
+                    //    "Picture": "https://my.sharepoint.com:443/User%20Photos/Profile%20Pictures/joeDoe.jpg?t=63523359043",
+                    //    "Department": "",
+                    //    "JobTitle": "",
+                    //    "SipAddress": "",
+                    //    "FirstName": "joe",
+                    //    "LastName": "doe",
+                    //    "WorkPhone": "",
+                    //    "UserName": "joe.doe@sympraxisconsulting.com",
+                    //    "WebSite": "",
+                    //    "SPSResponsibility": "",
+                    //    "Office": "",
+                    //    "SPSPictureTimestamp": "63523359043",
+                    //    "SPSPicturePlaceholderState": "",
+                    //    "SPSPictureExchangeSyncState": "",
+                    //    "Attachments": "",
+                    //    "ID": "11"
+                    //}
+
                 })
         });
     }
