@@ -44,7 +44,6 @@ define([
     CSS_CLASS_HIDE_INPUT    = CSS_CLASS_BASE + "--hideInput",
     CSS_CLASS_IS_DIRTY      = CSS_CLASS_BASE + "--isDirty",
 
-
     /**
      * Widget description
      *
@@ -58,8 +57,7 @@ define([
      *
      * @param {String} options.delimiter
      *
-     * @param {Widget} [options.Widget=TextField]
-     *  the widget to be used for user to define its filtering values
+     * // FIXME: document all other parameters inherited from FilerPanel
      *
      * @fires FilterColumn#up
      * @fires FilterColumn#down
@@ -96,6 +94,7 @@ define([
                 case "Counter":
                 case "Number":
                 case "RatingCount":
+                case "AverageRating":
                 case "Likes":
                     buildNumberField.call(me);
                     break;
@@ -107,6 +106,11 @@ define([
                 case "Choice":
                 case "MultiChoice":
                     buildChoiceField.call(me);
+                    break;
+
+                case "Lookup":
+                case "LookupMulti":
+                    buildTextField.call(me); // FIXME: create lookup
                     break;
 
                 case "Attachments":
@@ -402,12 +406,15 @@ define([
         );
 
         choice.on("change", function(){
-            this.setDirty(!!choice.getValue());
+            this.setDirty(!!choice.getValue().length);
         }.bind(this));
     }
 
     FilterColumn = EventEmitter.extend(Widget, FilterColumn);
-    FilterColumn.defaults = {};
+    FilterColumn.defaults = {
+        column:     {},
+        delimiter:  ';'
+    };
 
     return FilterColumn;
 });

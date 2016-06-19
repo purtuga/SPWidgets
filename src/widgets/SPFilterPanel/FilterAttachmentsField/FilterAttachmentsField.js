@@ -57,6 +57,10 @@ define([
             this.getEle()
                 .querySelector(".spwidgets-ChoiceField-choices")
                 .appendChild(listUI);
+
+            if (options.selected) {
+                this.setSelected(options.selected);
+            }
         }
     });
 

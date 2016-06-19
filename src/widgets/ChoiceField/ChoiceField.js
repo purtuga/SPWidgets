@@ -10,6 +10,7 @@ define([
 
     "vendor/domutils/domAddClass",
     "vendor/domutils/domAddEventListener",
+    "vendor/domutils/domFind",
 
     "text!./ChoiceField.html",
     "text!./choice.html",
@@ -27,6 +28,7 @@ define([
 
     domAddClass,
     domAddEventListener,
+    domFind,
 
     ChoiceFieldTemplate,
     choiceTemplate
@@ -46,6 +48,7 @@ define([
      *
      * @class ChoiceField
      * @extends Widget
+     * @extends EventEmitter
      *
      * @param {Object} options
      * @param {ListColumnModel} [options.column={}]
@@ -55,8 +58,10 @@ define([
      * @param {String} [options.selected=""]
      *  The item in the list of choices that should be selected. Either the `value` or
      *  `title` can be used.
+     * @param {String} [options.maxHeight="10em"]
+     *  A CSS dimension indicating the max height for the area that displays the
+     *  choices.
      * @param {Boolean} [options.hideLabel=false]
-     * @param {String} [options.description=""]
      * @param {String} [options.layout=""]
      *  The layout to be used. Possible values:
      *
@@ -76,25 +81,30 @@ define([
             }
 
             var
+            opt     = inst.opt,
             $ui     = this.$ui = parseHTML(
-                        fillTemplate(ChoiceFieldTemplate, inst.opt)
+                        fillTemplate(ChoiceFieldTemplate, opt)
                     ).firstChild,
-            uiFind = inst.uiFind  = $ui.querySelector.bind($ui);
+            uiFind  = inst.uiFind  = $ui.querySelector.bind($ui);
 
             inst.title      = uiFind(".ms-ChoiceFieldGroup-title");
             inst.choices    = uiFind("." + CSS_CLASS_CHOICES);
             getChoices.call(this).then(addChoicesToUI.bind(this));
 
-            if (inst.opt.hideLabel) {
+            if (opt.hideLabel) {
                 domAddClass($ui, CSS_CLASS_NO_LABEL);
             }
 
-            if (inst.opt.hideDescription) {
+            if (opt.hideDescription) {
                 domAddClass($ui, CSS_CLASS_NO_DESCRIPTION);
             }
 
-            if (inst.opt.layout) {
-                domAddClass($ui, CSS_CLASS_BASE + '--' + inst.opt.layout);
+            if (opt.layout) {
+                domAddClass($ui, CSS_CLASS_BASE + '--' + opt.layout);
+            }
+
+            if (opt.maxHeight) {
+                inst.choices.style.maxHeight = opt.maxHeight;
             }
 
             domAddEventListener($ui, "change", function(){
@@ -116,10 +126,19 @@ define([
         /**
          * Gets the value of the input.
          *
-         * @returns {String}
+         * @returns {Array<String>}
+         *  An array is always returned. for single selection choice fields,
+         *  this array will contain only 1 item.
          */
         getValue: function(){
-            return "";
+            var inst = PRIVATE.get(this);
+            return domFind(inst.choices, ".ms-ChoiceField-input")
+                .filter(function(input){
+                    return input.checked;
+                })
+                .map(function(input){
+                    return input.value;
+                });
         },
 
         /**
@@ -151,7 +170,7 @@ define([
     function addChoicesToUI(choiceList) {
         var inst        = PRIVATE.get(this),
             defVal      = inst.opt.selected,
-            groupname   = inst.groupName,
+            groupName   = inst.groupName,
             defId       = "",
             listUI;
 
@@ -163,7 +182,7 @@ define([
             }
 
             return {
-                name:   groupname,
+                name:   groupName,
                 title:  choice,
                 value:  choice,
                 id:     id
@@ -187,7 +206,10 @@ define([
     ChoiceField = EventEmitter.extend(Widget, ChoiceField);
     ChoiceField.defaults = {
         column:     {},
-        selected:   ""
+        selected:   "",
+        maxHeight:  "10em",
+        hideLabel:  false,
+        layout:     ""
     };
 
     return ChoiceField;

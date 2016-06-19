@@ -46,7 +46,6 @@ define([
      *  some of display values are obtained from the list column definition - example
      *  the label (DisplayName) and field description if any.
      * @param {Boolean} [options.hideLabel=false]
-     * @param {String} [options.description=""],
      * @param {String} [options.placeholder=""]
      *
      * @fires TextField#change
