@@ -96,12 +96,7 @@ define([
                 var colEle = domClosest(ev.target, BASE_SELECTOR + "-col");
 
                 if (colEle) {
-                    if (domHasClass(colEle, CSS_CLASS_COL_SELECTED)) {
-                        domRemoveClass(colEle, CSS_CLASS_COL_SELECTED);
-
-                    } else {
-                        domAddClass(colEle, CSS_CLASS_COL_SELECTED);
-                    }
+                    toggleColumnSelection(colEle);
                 }
             });
 
@@ -113,6 +108,17 @@ define([
 
             this.onDestroy(function () {
                 PRIVATE.delete(this);
+            }.bind(this));
+        },
+
+        /**
+         * Un-selects all columns.
+         */
+        unSelectAll: function(){
+            domFind(this.getEle(), "." + CSS_CLASS_COL_SELECTED).forEach(function(colEle){
+                if (domHasClass(colEle, CSS_CLASS_COL_SELECTED)) {
+                    toggleColumnSelection(colEle);
+                }
             }.bind(this));
         },
 
@@ -183,6 +189,15 @@ define([
                 fillTemplate(columnTemplate, cols)
             )
         );
+    }
+
+    function toggleColumnSelection(colEle) {
+        if (domHasClass(colEle, CSS_CLASS_COL_SELECTED)) {
+            domRemoveClass(colEle, CSS_CLASS_COL_SELECTED);
+
+        } else {
+            domAddClass(colEle, CSS_CLASS_COL_SELECTED);
+        }
     }
 
     ColumnSelector = EventEmitter.extend(Widget, ColumnSelector);

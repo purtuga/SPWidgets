@@ -16,6 +16,7 @@ define([
 
     "../TextField/TextField",
     "../ChoiceField/ChoiceField",
+    "../LookupField/LookupField",
     "../SPPeoplePicker/SPPeoplePicker",
     "./FilterAttachmentsField/FilterAttachmentsField",
 
@@ -41,6 +42,7 @@ define([
 
     TextField,
     ChoiceField,
+    LookupField,
     SPPeoplePicker,
     FilterAttachmentsField,
 
@@ -52,7 +54,6 @@ define([
     WINDOW_NAVIGATOR    = window.navigator,
 
     CSS_CLASS_BASE      = "spwidgets-FilterPanel",
-
 
     /**
      * A Filter panel allowing a user the ability to define filtering
@@ -122,7 +123,7 @@ define([
             });
 
             domAddEventListener(uiFind(BASE_SELECTOR + "-footer-action-clear"), "click", function(){
-                addColumns.call(this, []);
+                this.clear();
 
                 /**
                  * Defined filters were cleared
@@ -149,6 +150,21 @@ define([
                  */
                 emit("close");
             });
+
+            // FIXME: handle move up|down of columns
+            // See snippet from stackoverflow on movement:
+            // http://stackoverflow.com/questions/5306680/move-an-array-element-from-one-array-position-to-another
+            //    Array.prototype.move = function (old_index, new_index) {
+            //        if (new_index >= this.length) {
+            //            var k = new_index - this.length;
+            //            while ((k--) + 1) {
+            //                this.push(undefined);
+            //            }
+            //        }
+            //        this.splice(new_index, 0, this.splice(old_index, 1)[0]);
+            //        return this; // for testing purposes
+            //    };
+
 
             me.on("columnSelector:cancel", function(){
                 inst.columnSelector.hide();
@@ -182,6 +198,13 @@ define([
         },
 
         /**
+         * Clears the selected fields in the Filter Panel
+         */
+        clear: function(){
+            addColumns.call(this, []);
+        },
+
+        /**
          * Returns a collection of filters defined by the user.
          *
          * @return {FiltersCollection}
@@ -191,7 +214,8 @@ define([
                 colsWdg = inst.colsWdg,
                 filters = Object.keys(colsWdg)
                     .filter(function(colName){
-                        return !!colsWdg[colName].getEle().parentNode;
+                        return  !!colsWdg[colName].getEle().parentNode &&
+                                colsWdg[colName].isDirty();
                     })
                     .map(function(colName){
                         return colsWdg[colName].getFilter();
@@ -217,14 +241,14 @@ define([
             body    = inst.body,
             newSet  = document.createDocumentFragment();
 
-        // Detach all
+        // Detach all widgets currently visible
         Object.keys(colsWdg).forEach(function(colName){
             colsWdg[colName].detach();
         });
 
         if (colList.length) {
             colList.forEach(function(colDef){
-                var colName = colDef.Name;
+                var colName = colDef.StaticName;
 
                 if (!colsWdg[colName]){
                     colsWdg[colName] = FilterColumn.create(
@@ -242,6 +266,7 @@ define([
 
         } else {
             inst.infoMsg.appendTo(body);
+            inst.columnSelector.unSelectAll();
         }
     }
 
@@ -255,6 +280,7 @@ define([
         ChoiceField:        ChoiceField,
         AttachmentsField:   FilterAttachmentsField,
         PeoplePicker:       SPPeoplePicker,
+        LookupField:        LookupField,
         i18n: {
             "en-US": {
                 title:          "Filter",

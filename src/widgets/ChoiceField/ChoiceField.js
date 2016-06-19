@@ -69,6 +69,8 @@ define([
      *
      * @param {Boolean} [options.hideLabel=false]
      *
+     * @param {Boolean} [options.hideDescription=false]
+     *
      * @param {String} [options.layout=""]
      *  The layout to be used. Possible values:
      *
@@ -164,7 +166,7 @@ define([
         /**
          * Sets the selected value(s)
          *
-         * @param {String} newValue
+         * @param {String|Array<String>} newValue
          *  The new value that should be selected.
          */
         setValue: function(newValue){
@@ -183,7 +185,6 @@ define([
 
                 input.checked = isNewVal;
             });
-
         }
     };
 
@@ -196,7 +197,6 @@ define([
 
         if (type === "Choice" || type === "MultiChoice") {
             return column.getColumnValues();
-
         }
 
         return Promise.resolve([]);
@@ -242,12 +242,13 @@ define([
 
     ChoiceField = EventEmitter.extend(Widget, ChoiceField);
     ChoiceField.defaults = {
-        column:     {},
-        selected:   "",
-        maxHeight:  "10em",
-        hideLabel:  false,
-        layout:     "",
-        isMulti:    null
+        column:             {},
+        selected:           "",
+        maxHeight:          "10em",
+        hideLabel:          false,
+        hideDescription:    false,
+        layout:             "",
+        isMulti:            null
     };
 
     return ChoiceField;

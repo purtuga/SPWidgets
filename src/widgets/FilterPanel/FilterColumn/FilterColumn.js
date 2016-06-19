@@ -65,7 +65,11 @@ define([
     FilterColumn = /** @lends FilterColumn.prototype */{
         init: function (options) {
             var inst = {
-                opt: objectExtend({}, FilterColumn.defaults, options)
+                opt: objectExtend({}, FilterColumn.defaults, options),
+                // Default getKeywords method. Other field types have their own.
+                // This one handles text fields. The return value should always
+                // be the same as `FilterColumn#getKeyswords`
+                getKeywords: getTextFieldKeywords.bind(this)
             };
 
             PRIVATE.set(this, inst);
@@ -99,6 +103,16 @@ define([
                     buildNumberField.call(me);
                     break;
 
+                case "Computed":
+                    // FIXME: check for Content Type field
+                    //    Content Type Attribute:
+                    //      Name: "ContentType"
+                    //      PIAttribute:"ContentTypeID"
+                    //      StaticName:"ContentType"
+
+                    buildTextField.call(me);
+                    break;
+
                 case "DateTime":
                     buildDateTimeField.call(me);
                     break;
@@ -110,7 +124,7 @@ define([
 
                 case "Lookup":
                 case "LookupMulti":
-                    buildTextField.call(me); // FIXME: create lookup
+                    buildLookupField.call(me);
                     break;
 
                 case "Attachments":
@@ -156,6 +170,10 @@ define([
                 }
             });
 
+            domAddEventListener(inst.sortOrder, "change", function(){
+                me.setDirty(!!inst.sortOrder.value);
+            });
+
             this.onDestroy(function () {
                 Object.keys(inst, function(instProp){
                     if (inst[instProp] && inst[instProp].destroy ) {
@@ -186,18 +204,7 @@ define([
          * @return {Array<String>}
          */
         getKeywords: function () {
-            var opt         = PRIVATE.get(this).opt,
-                delimiter   = opt.delimeter || ";",
-                reIgnore    = opt.ignoreKeywords;
-
-            return this.getValue()
-                .split(delimiter)
-                .map(function(keyword){
-                    return keyword.trim();
-                })
-                .filter(function(keyword){
-                    return (keyword && !reIgnore.test(keyword));
-                });
+            return PRIVATE.get(this).getKeywords();
         },
 
         /**
@@ -256,6 +263,16 @@ define([
         },
 
         /**
+         * checks if the filter column is dirty - either it has a valu entered or
+         * Sort order was set
+         *
+         * @return {Boolean}
+         */
+        isDirty: function(){
+            return domHasClass(this.getEle(), CSS_CLASS_IS_DIRTY);
+        },
+
+        /**
          * Adds comparison operators to the column's dropdown.
          *
          * @param {Array<Object>} operators
@@ -300,6 +317,25 @@ define([
             });
         }
     };
+
+    function getTextFieldKeywords() {
+        var opt         = PRIVATE.get(this).opt,
+            delimiter   = opt.delimeter || ";",
+            reIgnore    = opt.ignoreKeywords;
+
+        return this.getValue()
+            .split(delimiter)
+            .map(function(keyword){
+                return keyword.trim();
+            })
+            .filter(function(keyword){
+                return (keyword && !reIgnore.test(keyword));
+            });
+    }
+
+    function getChoiceFieldKeywords() {
+        return this.getValue();
+    }
 
     function buildTextField() {
         var inst = PRIVATE.get(this);
@@ -383,10 +419,20 @@ define([
         this.setKeywordInfo(opt.labels.attachmentsInfo);
 
         domAddClass(this.getEle(), CSS_CLASS_BASE + "--noOptionsToggle");
-        inst.inputWdg = opt.AttachmentsField.create({
+        var attachmentsField = inst.inputWdg = opt.AttachmentsField.create({
             hideLabel:  true,
             column:     opt.column
         });
+
+        attachmentsField.on("change", function(){
+            var selectedValues  = attachmentsField.getValue(),
+                totalSelected   = selectedValues.length > 1 ||
+                                (selectedValues[0] && selectedValues[0] !== "");
+
+            this.setDirty(!!totalSelected);
+        }.bind(this));
+
+        inst.getKeywords = getChoiceFieldKeywords.bind(this);
     }
 
     function buildChoiceField(options){
@@ -423,10 +469,23 @@ define([
         }.bind(this));
 
         this.setKeywordInfo("");
+        inst.getKeywords = getChoiceFieldKeywords.bind(this);
 
         if (column.Type === "Choice") {
             this.setCompareOperatorDefault("Eq");
         }
+    }
+
+    function buildLookupField() {
+        var
+        inst    = PRIVATE.get(this),
+        opt     = inst.opt;
+
+        inst.inputWdg = opt.LookupField.create({
+            column:             opt.column,
+            hideLabel:          true,
+            hideDescription:    true
+        });
     }
 
     FilterColumn = EventEmitter.extend(Widget, FilterColumn);
