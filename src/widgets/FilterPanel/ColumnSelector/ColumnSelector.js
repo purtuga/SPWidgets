@@ -43,7 +43,7 @@ define([
     var
     PRIVATE = dataStore.create(),
 
-    CSS_CLASS_BASE = "spwidgets-SPFilterPanel-ColumnSelector",
+    CSS_CLASS_BASE = "spwidgets-FilterPanel-ColumnSelector",
 
     CSS_CLASS_COL_SELECTED = CSS_CLASS_BASE + "-col--selected",
 

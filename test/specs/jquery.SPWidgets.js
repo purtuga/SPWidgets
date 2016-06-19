@@ -94,7 +94,7 @@ define(["jquery", "src/SPWidgets"], function($){
             it("includes pickSPUser", function(){
                 expect($.fn.pickSPUser).toBeDefined();
             });
-            it("includes SPFilterPanel", function(){
+            it("includes FilterPanel", function(){
                 expect($.fn.SPFilterPanel).toBeDefined();
             });
             it("includes SPControlUpload", function(){

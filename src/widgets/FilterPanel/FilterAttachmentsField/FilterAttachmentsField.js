@@ -37,19 +37,22 @@ define([
                         name:   groupName,
                         title:  labels.any,
                         value:  "",
-                        id:     uuid.generate()
+                        id:     uuid.generate(),
+                        type:   "radio"
                     },
                     {
                         name:   groupName,
                         title:  labels.yes,
                         value:  "1",
-                        id:     uuid.generate()
+                        id:     uuid.generate(),
+                        type:   "radio"
                     },
                     {
                         name:   groupName,
                         title:  labels.no,
                         value:  "0",
-                        id:     uuid.generate()
+                        id:     uuid.generate(),
+                        type:   "radio"
                     }
                 ])
             );
@@ -58,14 +61,15 @@ define([
                 .querySelector(".spwidgets-ChoiceField-choices")
                 .appendChild(listUI);
 
-            if (options.selected) {
-                this.setSelected(options.selected);
+            if (typeof options.selected !== "undefined") {
+                this.setValue(options.selected);
             }
         }
     });
 
     FilterAttachmentsField.defaults = {
-        layout: "inline",
+        layout:     "inline",
+        selected:   "",
         i18n: {
             "en-US": {
                 "any": "Any",

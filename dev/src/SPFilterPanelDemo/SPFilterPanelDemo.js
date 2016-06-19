@@ -5,7 +5,7 @@ define([
     "vendor/jsutils/fillTemplate",
     "vendor/jsutils/parseHTML",
 
-    "src/widgets/SPFilterPanel/SPFilterPanel",
+    "../../../src/widgets/FilterPanel/FilterPanel",
 
     "text!./SPFilterPanelDemo.html"
 ], function (
@@ -15,7 +15,7 @@ define([
     fillTemplate,
     parseHTML,
 
-    SPFilterPanel,
+    FilterPanel,
 
     SPFilterPanelDemoTemplate
 ) {
@@ -53,7 +53,7 @@ define([
 
     function setupDemo1(){
         var inst = PRIVATE.get(this),
-            filterPanel = SPFilterPanel.create({listName: "Tasks"}),
+            filterPanel = FilterPanel.create({listName: "Tasks"}),
             cntr        = inst.uiFind("#spfilterpaneldemo_1");
             out         = inst.uiFind("#spfilterpaneldemo_1_out");
 

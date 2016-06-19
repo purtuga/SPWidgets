@@ -106,7 +106,6 @@ define([
         getList: function(){
             return instData.get(this).list;
         }
-
     };
 
     ListColumnModel = Compose.extend(ListColumnModel);

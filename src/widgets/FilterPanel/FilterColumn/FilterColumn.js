@@ -39,7 +39,7 @@ define([
     var
     PRIVATE         = dataStore.create(),
 
-    CSS_CLASS_BASE          = 'spwidgets-SPFilterPanel-FilterColumn',
+    CSS_CLASS_BASE          = 'spwidgets-FilterPanel-FilterColumn',
     CSS_CLASS_SHOW_OPTIONS  = CSS_CLASS_BASE + "--showOptions",
     CSS_CLASS_HIDE_INPUT    = CSS_CLASS_BASE + "--hideInput",
     CSS_CLASS_IS_DIRTY      = CSS_CLASS_BASE + "--isDirty",
@@ -390,24 +390,43 @@ define([
     }
 
     function buildChoiceField(options){
-        this.setKeywordInfo("");
-
         var
         inst    = PRIVATE.get(this),
         opt     = inst.opt,
-        choice  = inst.inputWdg = opt.ChoiceField.create(
+        column  = opt.column,
+        choice;
+
+        // Change the type temporarily so that the widget is
+        // created with Checkboxes
+        choice = inst.inputWdg = opt.ChoiceField.create(
             objectExtend(
                 {
-                    column:     opt.column,
-                    hideLabel:  true
+                    column:     column,
+                    hideLabel:  true,
+                    isMulti:    true
                 },
                 options
             )
         );
 
         choice.on("change", function(){
-            this.setDirty(!!choice.getValue().length);
+            var totalSelected = choice.getValue().length;
+
+            this.setDirty(!!totalSelected);
+
+            if (totalSelected) {
+                this.setKeywordInfo(fillTemplate(opt.labels.totalSelected, {total: totalSelected}));
+
+            } else {
+                this.setKeywordInfo("");
+            }
         }.bind(this));
+
+        this.setKeywordInfo("");
+
+        if (column.Type === "Choice") {
+            this.setCompareOperatorDefault("Eq");
+        }
     }
 
     FilterColumn = EventEmitter.extend(Widget, FilterColumn);

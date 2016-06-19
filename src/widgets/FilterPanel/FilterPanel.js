@@ -19,10 +19,10 @@ define([
     "../SPPeoplePicker/SPPeoplePicker",
     "./FilterAttachmentsField/FilterAttachmentsField",
 
-    "text!./SPFilterPanel.html",
+    "text!./FilterPanel.html",
 
     //----------------------------------
-    "less!./SPFilterPanel.less"
+    "less!./FilterPanel.less"
 ], function (
     Widget,
     EventEmitter,
@@ -51,7 +51,7 @@ define([
     PRIVATE             = dataStore.create(),
     WINDOW_NAVIGATOR    = window.navigator,
 
-    CSS_CLASS_BASE      = "spwidgets-SPFilterPanel",
+    CSS_CLASS_BASE      = "spwidgets-FilterPanel",
 
 
     /**
@@ -59,7 +59,7 @@ define([
      * criteria for data in a List or Document Library using the
      * columns of that list or library.
      *
-     * @class SPFilterPanel
+     * @class FilterPanel
      * @extends Widget
      *
      * @param {Object} options
@@ -72,14 +72,14 @@ define([
      * @param {String} [options.i18n.en-us.close]
      * @param {String} [options.i18n.en-us.add]
      *
-     * @fires SPFilterPanel#clear
-     * @fires SPFilterPanel#find
-     * @fires SPFilterPanel#close
+     * @fires FilterPanel#clear
+     * @fires FilterPanel#find
+     * @fires FilterPanel#close
      */
-    SPFilterPanel = /** @lends SPFilterPanel.prototype */{
+    FilterPanel = /** @lends FilterPanel.prototype */{
         init: function (options) {
             var inst = {
-                opt:        objectExtend({}, SPFilterPanel.defaults, options),
+                opt:        objectExtend({}, FilterPanel.defaults, options),
                 uiFind:     null,
                 body:       null,
                 infoMsg:    null,
@@ -127,7 +127,7 @@ define([
                 /**
                  * Defined filters were cleared
                  *
-                 * @event SPFilterPanel#clear
+                 * @event FilterPanel#clear
                  */
                 emit("clear");
             }.bind(this));
@@ -136,7 +136,7 @@ define([
                 /**
                  * Find button was clicked
                  *
-                 * @event SPFilterPanel#find
+                 * @event FilterPanel#find
                  */
                 emit("find");
             });
@@ -145,7 +145,7 @@ define([
                 /**
                  * Close button was clicked
                  *
-                 * @event SPFilterPanel#close
+                 * @event FilterPanel#close
                  */
                 emit("close");
             });
@@ -245,8 +245,8 @@ define([
         }
     }
 
-    SPFilterPanel = EventEmitter.extend(Widget, SPFilterPanel);
-    SPFilterPanel.defaults = {
+    FilterPanel = EventEmitter.extend(Widget, FilterPanel);
+    FilterPanel.defaults = {
         listName:           "",
         webURL:             "",
         ignoreKeywords:     /^(of|and|a|an|to|by|the|or|from)$/i,
@@ -269,7 +269,8 @@ define([
                 options:        "options",
                 inputKeywords:  "Enter Keywords",
                 keywordsInfo:   "Use a semicolon to delimiter multiple keywords.",
-                attachmentsInfo:"Match items that include attachments",
+                attachmentsInfo:"Match items that include attachments.",
+                totalSelected:  "{{total}} selected.",
                 moveUp:         "Move Up",
                 moveDown:       "Move Down",
                 // Comparison operators
@@ -293,5 +294,5 @@ define([
         }
     };
 
-    return SPFilterPanel;
+    return FilterPanel;
 });
