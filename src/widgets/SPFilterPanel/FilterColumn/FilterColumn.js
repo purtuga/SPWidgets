@@ -10,6 +10,7 @@ define([
     "vendor/domutils/domAddClass",
     "vendor/domutils/domRemoveClass",
     "vendor/domutils/domHasClass",
+    "vendor/domutils/domFind",
 
     "../FilterModel",
 
@@ -28,6 +29,7 @@ define([
     domAddClass,
     domRemoveClass,
     domHasClass,
+    domFind,
 
     FilterModel,
 
@@ -39,6 +41,8 @@ define([
 
     CSS_CLASS_BASE          = 'spwidgets-SPFilterPanel-FilterColumn',
     CSS_CLASS_SHOW_OPTIONS  = CSS_CLASS_BASE + "--showOptions",
+    CSS_CLASS_HIDE_INPUT    = CSS_CLASS_BASE + "--hideInput",
+    CSS_CLASS_IS_DIRTY      = CSS_CLASS_BASE + "--isDirty",
 
 
     /**
@@ -76,10 +80,44 @@ define([
                 BASE_SELECTOR   = "." + CSS_CLASS_BASE,
                 emit            = me.emit.bind(me);
 
-            inst.input              = uiFind("." + CSS_CLASS_BASE + "-input-holder input");
-            inst.logicalOperator    = uiFind("select[name='logicalOperator']");
+            inst.inputHolder        = uiFind(BASE_SELECTOR + "-input-holder");
+            inst.infoKeywords       = uiFind(BASE_SELECTOR + "-info-keywords");
             inst.compareOperator    = uiFind("select[name='compareOperator']");
+            inst.logicalOperator    = uiFind("select[name='logicalOperator']");
             inst.sortOrder          = uiFind("select[name='sortOrder']");
+
+            // Build the input for this widget
+            switch (inst.opt.column.Type) {
+                case "User":
+                case "UserMulti":
+                    buildUserField.call(me);
+                    break;
+
+                case "Counter":
+                case "Number":
+                case "RatingCount":
+                case "Likes":
+                    buildNumberField.call(me);
+                    break;
+
+                case "DateTime":
+                    buildDateTimeField.call(me);
+                    break;
+
+                case "Choice":
+                case "MultiChoice":
+                    buildChoiceField.call(me);
+                    break;
+
+                case "Attachments":
+                    buildAttachmentField.call(me);
+                    break;
+
+                default:
+                    buildTextField.call(me);
+            }
+
+            inst.inputWdg.appendTo(inst.inputHolder);
 
             domAddEventListener(uiFind(BASE_SELECTOR + "-info-optLink"), "click", function(){
                 me.toggleOptions();
@@ -103,9 +141,25 @@ define([
                 emit("down");
             });
 
+            domAddEventListener(inst.compareOperator, "change", function(){
+                var operator = inst.compareOperator.value;
+
+                if (operator === "IsNull" || operator === "IsNotNull") {
+                    domAddClass($ui, CSS_CLASS_HIDE_INPUT);
+
+                } else {
+                    domRemoveClass($ui, CSS_CLASS_HIDE_INPUT);
+                }
+            });
+
             this.onDestroy(function () {
-                PRIVATE.delete(this);
-            }.bind(this));
+                Object.keys(inst, function(instProp){
+                    if (inst[instProp] && inst[instProp].destroy ) {
+                        inst[instProp].destroy();
+                    }
+                });
+                PRIVATE.delete(me);
+            });
         },
 
         /**
@@ -169,9 +223,188 @@ define([
          * @return {String}
          */
         getValue: function(){
-            return PRIVATE.get(this).input.value;
+            return PRIVATE.get(this).inputWdg.getValue();
+        },
+
+        /**
+         * Sets the text displayed below the input field.
+         *
+         * @param {String} message
+         */
+        setKeywordInfo: function(message){
+            var inst = PRIVATE.get(this);
+            inst.infoKeywords.textContent = String(message);
+        },
+
+        /**
+         * Sets the column dirty indicator
+         *
+         * @param {Boolean} isDirty
+         */
+        setDirty: function(isDirty){
+            var $ui = this.getEle();
+            if (isDirty) {
+                domAddClass($ui, CSS_CLASS_IS_DIRTY);
+
+            } else {
+                domRemoveClass($ui, CSS_CLASS_IS_DIRTY);
+            }
+        },
+
+        /**
+         * Adds comparison operators to the column's dropdown.
+         *
+         * @param {Array<Object>} operators
+         */
+        addCompareOperators: function(operators){
+            var compareOperator     = PRIVATE.get(this).compareOperator,
+                newOperatorsHtml    = operators.reduce(function(html, operator){
+                html += '<option value="' + operator.value + '">' + operator.title + '</option>';
+                return html;
+            }, "");
+
+            compareOperator.appendChild(parseHTML(newOperatorsHtml));
+        },
+
+        /**
+         * Selects the given comparison operator on the widget.
+         *
+         * @param {String} internalOperatorName
+         */
+        setCompareOperator: function(internalOperatorName){
+            var compareOperator     = PRIVATE.get(this).compareOperator;
+            compareOperator.value = internalOperatorName;
+
+            // FIXME: trigger events?
+        },
+
+        /**
+         * Changes the default operator on the given value and then sets that value as the selected one.
+         *
+         * @param internalOperatorName
+         */
+        setCompareOperatorDefault: function (internalOperatorName) {
+            var compareOperator     = PRIVATE.get(this).compareOperator;
+            domFind(compareOperator, "option").forEach(function(option){
+                if (option.value === internalOperatorName) {
+                    option.setAttribute("selected", "selected");
+                    compareOperator.value = internalOperatorName;
+
+                } else {
+                    option.removeAttribute("selected");
+                }
+            });
         }
     };
+
+    function buildTextField() {
+        var inst = PRIVATE.get(this);
+
+        inst.inputWdg = inst.opt.TextField.create({
+            column:             inst.opt.column,
+            hideLabel:          true,
+            hideDescription:    true,
+            placeholder:        inst.opt.inputKeywords
+        });
+
+        inst.inputWdg.on("change", function (newValue) {
+            this.setDirty(Boolean(newValue));
+        }.bind(this));
+    }
+
+    function buildUserField() {
+        this.setKeywordInfo("");
+
+        var
+        inst                = PRIVATE.get(this),
+        FilterPeoplePicker  = inst.opt.PeoplePicker.extend({
+            getValue: function(){
+                return this.getSelected().map(function(person){
+                    return person.ID;
+                }).join(inst.opt.delimeter);
+            }
+        }),
+        peoplePicker    = inst.inputWdg = FilterPeoplePicker.create(),
+        checkDirtyState = function () {
+            this.setDirty(!!peoplePicker.getSelected().length);
+        }.bind(this);
+
+        ['remove', 'select'].forEach(function(evName){
+            peoplePicker.on(evName, checkDirtyState);
+        });
+    }
+
+    function buildNumberField() {
+        var labels = PRIVATE.get(this).opt.labels;
+
+        this.addCompareOperators([
+            {
+                value: "Gt",
+                title: labels.greaterThan
+            },
+            {
+                value: "Lt",
+                title: labels.lessThan
+            }
+        ]);
+
+        this.setCompareOperatorDefault("Eq");
+
+        buildTextField.call(this);
+    }
+
+    function buildDateTimeField(){
+        var labels = PRIVATE.get(this).opt.labels;
+
+        this.addCompareOperators([
+            {
+                value: "Gt",
+                title: labels.after
+            },
+            {
+                value: "Lt",
+                title: labels.before
+            }
+        ]);
+
+        // FIXME: use a date picker widget
+        buildTextField.call(this);
+    }
+
+    function buildAttachmentField() {
+        var inst    = PRIVATE.get(this),
+            opt     = inst.opt;
+
+        this.setCompareOperatorDefault("Eq");
+        this.setKeywordInfo(opt.labels.attachmentsInfo);
+
+        domAddClass(this.getEle(), CSS_CLASS_BASE + "--noOptionsToggle");
+        inst.inputWdg = opt.AttachmentsField.create({
+            hideLabel:  true,
+            column:     opt.column
+        });
+    }
+
+    function buildChoiceField(options){
+        this.setKeywordInfo("");
+
+        var
+        inst    = PRIVATE.get(this),
+        opt     = inst.opt,
+        choice  = inst.inputWdg = opt.ChoiceField.create(
+            objectExtend(
+                {
+                    column:     opt.column,
+                    hideLabel:  true
+                },
+                options
+            )
+        );
+
+        choice.on("change", function(){
+            this.setDirty(!!choice.getValue());
+        }.bind(this));
+    }
 
     FilterColumn = EventEmitter.extend(Widget, FilterColumn);
     FilterColumn.defaults = {};

@@ -1,9 +1,13 @@
 <div class="spwidgets-SPFilterPanel-FilterColumn ms-borderColor-neutralLight">
-    <h3 class="spwidgets-SPFilterPanel-FilterColumn-title">{{column.DisplayName}}</h3>
+    <h3 class="spwidgets-SPFilterPanel-FilterColumn-title">
+        <span class="spwidgets-SPFilterPanel-FilterColumn-dirtyIndicator">
+            <i class="ms-Icon ms-Icon--circleFill"></i>
+        </span>
+        <span>{{column.DisplayName}}</span></h3>
     <div class="spwidgets-SPFilterPanel-FilterColumn-options ms-u-slideDownIn20">
         <select name="compareOperator" tabindex="-1">
-            <option value="Contains">{{labels.contains}}</option>
-            <option value="Eq" selected="selected">{{labels.equal}}</option>
+            <option value="Contains" selected="selected">{{labels.contains}}</option>
+            <option value="Eq">{{labels.equal}}</option>
             <option value="Neq">{{labels.notEqual}}</option>
             <option value="IsNull">{{labels.isBlank}}</option>
             <option value="IsNotNull">{{labels.isNotBlank}}</option>
@@ -20,7 +24,7 @@
     </div>
     <div class="spwidgets-SPFilterPanel-FilterColumn-input">
         <div class="spwidgets-SPFilterPanel-FilterColumn-input-holder">
-            <input type="text" name="s" value="" class="ms-TextField-field" placeholder="{{labels.inputKeywords}}"/>
+
         </div>
     </div>
     <div class="spwidgets-SPFilterPanel-FilterColumn-info">

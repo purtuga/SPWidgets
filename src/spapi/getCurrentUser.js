@@ -23,6 +23,7 @@ define([
 
     domFind
 ){
+    /* globals _spPageContextInfo  */
 
     var
     fetch           = fetchPolyfill.fetch,
@@ -239,7 +240,7 @@ define([
                     //    "ID": "11"
                     //}
 
-                })
+                });
         });
     }
 

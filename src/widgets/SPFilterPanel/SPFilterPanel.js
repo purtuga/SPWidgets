@@ -14,6 +14,11 @@ define([
     "./FilterColumn/FilterColumn",
     "./FiltersCollection",
 
+    "../TextField/TextField",
+    "../ChoiceField/ChoiceField",
+    "../SPPeoplePicker/SPPeoplePicker",
+    "./FilterAttachmentsField/FilterAttachmentsField",
+
     "text!./SPFilterPanel.html",
 
     //----------------------------------
@@ -33,6 +38,11 @@ define([
     ColumnSelector,
     FilterColumn,
     FiltersCollection,
+
+    TextField,
+    ChoiceField,
+    SPPeoplePicker,
+    FilterAttachmentsField,
 
     SPFilterPanelTemplate
 ) {
@@ -217,12 +227,9 @@ define([
                 var colName = colDef.Name;
 
                 if (!colsWdg[colName]){
-                    colsWdg[colName] = FilterColumn.create({
-                        column:         colDef,
-                        labels:         opt.labels,
-                        delimiter:      opt.delimiter,
-                        ignoreKeywords: opt.ignoreKeywords
-                    });
+                    colsWdg[colName] = FilterColumn.create(
+                        objectExtend({}, opt, {column: colDef})
+                    );
 
                     colsWdg[colName].pipe(this, "filterColumn:", true);
                 }
@@ -240,10 +247,14 @@ define([
 
     SPFilterPanel = EventEmitter.extend(Widget, SPFilterPanel);
     SPFilterPanel.defaults = {
-        listName:       "",
-        webURL:         "",
-        ignoreKeywords: /^(of|and|a|an|to|by|the|or|from)$/i,
-        delimiter:      ';',
+        listName:           "",
+        webURL:             "",
+        ignoreKeywords:     /^(of|and|a|an|to|by|the|or|from)$/i,
+        delimiter:          ';',
+        TextField:          TextField,
+        ChoiceField:        ChoiceField,
+        AttachmentsField:   FilterAttachmentsField,
+        PeoplePicker:       SPPeoplePicker,
         i18n: {
             "en-US": {
                 title:          "Filter",
@@ -258,6 +269,7 @@ define([
                 options:        "options",
                 inputKeywords:  "Enter Keywords",
                 keywordsInfo:   "Use a semicolon to delimiter multiple keywords.",
+                attachmentsInfo:"Match items that include attachments",
                 moveUp:         "Move Up",
                 moveDown:       "Move Down",
                 // Comparison operators
@@ -266,6 +278,10 @@ define([
                 notEqual:       "Not Equal",
                 isBlank:        "Is Blank",
                 isNotBlank:     "Is Not Blank",
+                lessThan:       "Less Than",
+                greaterThan:    "Greater Than",
+                after:          "After",
+                before:         "Before",
                 // Logical Operators
                 any:             "Any",
                 all:             "All",

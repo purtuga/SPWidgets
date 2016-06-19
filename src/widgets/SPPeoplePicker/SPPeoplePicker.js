@@ -453,6 +453,9 @@ define([
                     }
                 });
 
+                // If we found the person, then emit a 'remove' on it...
+                // Widget's events are pipe'd to the SPPeoplePicker instance
+                // as 'selected-remove' which is being listened to.
                 if (wdgToRemove) {
                     wdgToRemove.emit('remove');
                 }
@@ -463,7 +466,7 @@ define([
          * Returns an array of `UserProfileModels` for those that are currently
          * selected.
          *
-         * @returns {Array.<UserProfileModel>}
+         * @returns {Array<UserProfileModel>}
          */
         getSelected: function(){
             // FIXME: add methods to returned array to provide easy methods to get array values for update to SP - use Collection

@@ -17,6 +17,20 @@
         display: none;
     }
 
+    &:hover {
+        background-color:   #F4F4F4;
+        transition:         background-color 0.5s 0s;
+    }
+
+    &-title > * {
+        vertical-align: middle;
+    }
+
+    &-dirtyIndicator {
+        color:          #C8C8C8;
+        font-size:      8px;
+    }
+
     &-options {
         font-size:      0.8em;
         opacity:        0.7;
@@ -62,21 +76,50 @@
             padding-top:    70%;
             text-align:     center;
             font-size:      1.3em;
+            cursor:         pointer;
 
             &:hover {
-                background-color: #EFF6FC
+                background-color: #EAEAEA;
             }
         }
 
     }
 
+
+    // Choice fields: make Choices holder white
+    .spwidgets-ChoiceField-choices {
+        background-color: white;
+    }
+
     //------------------------------
     // MODIFIERS
     //------------------------------
+
+    // ==> show the options for column
     &--showOptions &-options {
         display: block;
     }
     &--showOptions &-info-optLink {
         color: #A6A6A6;
+    }
+
+    // ==> No Options Link
+    &--noOptionsToggle &-info-optLink {
+        display: none;
+    }
+
+
+    // ==> Hide the input
+    &--hideInput &-input-holder {
+        display: none;
+    }
+    &--hideInput &-info {
+        display: none;
+    }
+
+
+    // ==> Column is dirty (something was changed/entered)
+    &--isDirty &-dirtyIndicator  {
+        color: #107C10;
     }
 }

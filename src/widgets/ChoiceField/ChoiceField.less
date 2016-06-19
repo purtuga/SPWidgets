@@ -1,0 +1,32 @@
+.spwidgets-ChoiceField {
+
+    &-choices {
+        padding: 0.5em;
+    }
+
+    label.ms-ChoiceField-field {
+        display: block;
+    }
+
+
+    //---------------------------
+    // NO MODIFIERS
+    //---------------------------
+    &--noLabel .ms-ChoiceFieldGroup-title {
+        display: none;
+    }
+
+    &--noDescription .ms-TextField-description {
+        display: none;
+    }
+
+    &--inline .ms-ChoiceField {
+        display:        inline-block;
+        margin-right:   1em;
+        padding-right:  0.5em;
+
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+}

@@ -91,10 +91,10 @@ define([
                     xDoc:               list.getSource(),
                     nodeName:           "Field",
                     nodeModel:          opt.ListColumnModel,
+                    convertTypes:       true,
                     nodeModelOptions:   {
                         list: list
                     }
-                    // FIXME: need to set the convertTypes to true
                 }),
                 cols = [],
                 i,j;
