@@ -17,13 +17,14 @@ define([
 
     "../../spapi/searchPrincipals",
     "../../spapi/resolvePrincipals",
+
     "./ResultGroup/ResultGroup",
     "./PeoplePickerPersona/PeoplePickerPersona",
 
-    "text!./SPPeoplePicker.html",
+    "text!./PeoplePicker.html",
 
     //=================================
-    "less!./SPPeoplePicker"
+    "less!./PeoplePicker"
 ], function(
     Widget,
     EventEmitter,
@@ -43,6 +44,7 @@ define([
 
     searchPrincipals,
     resolvePrincipals,
+
     ResultGroup,
     PeoplePickerPersona,
 
@@ -54,7 +56,7 @@ define([
 
     BODY = document.body,
 
-    CSS_CLASS_BASE                      = "spwidgets-SPPeoplePicker",
+    CSS_CLASS_BASE                      = "spwidgets-PeoplePicker",
     CSS_CLASS_SUGGESTIONS_RIGHT_ALIGN   = CSS_CLASS_BASE + "--suggestionsRight",
     CSS_CLASS_IS_ACTIVE                 = "is-active",
     CSS_CLASS_IS_SEARCHING              = "is-searching",
@@ -67,7 +69,7 @@ define([
     /**
      * SharePoint People Picker widget.
      *
-     * @class SPPeoplePicker
+     * @class PeoplePicker
      *
      * @extends EventEmitter
      * @extends Widget
@@ -102,7 +104,7 @@ define([
      *  Set to this `false`, if all that is desired to show is the
      *  search input element. Note that when set to `false`, `getSelected` method
      *  will always return an empty array and the
-     *  [remove]{@link SPPeoplePicker#select} event should be used to capture
+     *  [remove]{@link PeoplePicker#select} event should be used to capture
      *  the selection made by the user.
      *
      * @param {String} [options.resolvePrincipals=true]
@@ -135,13 +137,13 @@ define([
      * @param {String} [options.searchInfoMsg="Type a value to see list of candidates."]
      * @param {String} [options.searchingMsg="Searching directory..."]
      *
-     * @fires SPPeoplePicker#select
-     * @fires SPPeoplePicker#remove
+     * @fires PeoplePicker#select
+     * @fires PeoplePicker#remove
      */
-    SPPeoplePicker = {
+    PeoplePicker = {
         init: function (options) {
             var inst = {
-                opt:            objectExtend({}, SPPeoplePicker.defaults, options),
+                opt:            objectExtend({}, PeoplePicker.defaults, options),
                 resultGroup:    null,
                 selected:       [] // array of Persona widgets
             };
@@ -304,7 +306,7 @@ define([
                 /**
                  * A selection was removed
                  *
-                 * @event SPPeoplePicker#remove
+                 * @event PeoplePicker#remove
                  *
                  * @type {UserProfileModel}
                  */
@@ -454,7 +456,7 @@ define([
                 });
 
                 // If we found the person, then emit a 'remove' on it...
-                // Widget's events are pipe'd to the SPPeoplePicker instance
+                // Widget's events are pipe'd to the PeoplePicker instance
                 // as 'selected-remove' which is being listened to.
                 if (wdgToRemove) {
                     wdgToRemove.emit('remove');
@@ -639,7 +641,7 @@ define([
             /**
              * A suggestion was selected.
              *
-             * @event SPPeoplePicker#select
+             * @event PeoplePicker#select
              * @type {PeoplePickerUserProfileModel}
              */
             this.emit("select", resultModel);
@@ -682,9 +684,9 @@ define([
         }
     }
 
-    SPPeoplePicker = EventEmitter.extend(Widget, SPPeoplePicker);
+    PeoplePicker = EventEmitter.extend(Widget, PeoplePicker);
 
-    SPPeoplePicker.defaults = {
+    PeoplePicker.defaults = {
         allowMultiples:         true,                           // done
         maxSearchResults:       50,                             // done
         webURL:                 null,                           // done
@@ -713,5 +715,5 @@ define([
         }
     };
 
-    return SPPeoplePicker;
+    return PeoplePicker;
 });

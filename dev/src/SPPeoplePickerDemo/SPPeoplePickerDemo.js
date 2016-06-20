@@ -2,7 +2,7 @@ define([
     "vendor/jsutils/Widget",
     "vendor/jsutils/parseHTML",
     "vendor/domutils/domFind",
-    "src/widgets/SPPeoplePicker/SPPeoplePicker",
+    "../../../src/widgets/PeoplePicker/PeoplePicker",
 
     "text!./SPPeoplePickerDemo.html"
 ], function(

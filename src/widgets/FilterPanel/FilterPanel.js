@@ -17,7 +17,7 @@ define([
     "../TextField/TextField",
     "../ChoiceField/ChoiceField",
     "../LookupField/LookupField",
-    "../SPPeoplePicker/SPPeoplePicker",
+    "../PeoplePicker/PeoplePicker",
     "./FilterAttachmentsField/FilterAttachmentsField",
 
     "text!./FilterPanel.html",
@@ -43,7 +43,7 @@ define([
     TextField,
     ChoiceField,
     LookupField,
-    SPPeoplePicker,
+    PeoplePicker,
     FilterAttachmentsField,
 
     SPFilterPanelTemplate
@@ -279,7 +279,7 @@ define([
         TextField:          TextField,
         ChoiceField:        ChoiceField,
         AttachmentsField:   FilterAttachmentsField,
-        PeoplePicker:       SPPeoplePicker,
+        PeoplePicker:       PeoplePicker,
         LookupField:        LookupField,
         i18n: {
             "en-US": {
