@@ -8,6 +8,7 @@ define([
 
     "vendor/domutils/domSetStyle",
     "vendor/domutils/domAddEventListener",
+    "vendor/domutils/domAddClass",
 
     "../Message/Message",
     "./ColumnSelector/ColumnSelector",
@@ -34,6 +35,7 @@ define([
 
     domSetStyle,
     domAddEventListener,
+    domAddClass,
 
     Message,
     ColumnSelector,
@@ -54,6 +56,7 @@ define([
     WINDOW_NAVIGATOR    = window.navigator,
 
     CSS_CLASS_BASE      = "spwidgets-FilterPanel",
+    CSS_CLASS_NO_HEADER = CSS_CLASS_BASE + "--noHeader",
 
     /**
      * A Filter panel allowing a user the ability to define filtering
@@ -100,6 +103,11 @@ define([
                 uiFind          = inst.uiFind = $ui.querySelector.bind($ui),
                 BASE_SELECTOR   = "." + CSS_CLASS_BASE,
                 emit            = me.emit.bind(me);
+
+            // hide Header?
+            if (opt.hideHeader) {
+                domAddClass($ui, CSS_CLASS_NO_HEADER);
+            }
 
             inst.main = uiFind(BASE_SELECTOR + "-main");
             inst.body = uiFind(BASE_SELECTOR + "-body");
@@ -281,6 +289,7 @@ define([
         AttachmentsField:   FilterAttachmentsField,
         PeoplePicker:       PeoplePicker,
         LookupField:        LookupField,
+        hideHeader:         false,
         i18n: {
             "en-US": {
                 title:          "Filter",
