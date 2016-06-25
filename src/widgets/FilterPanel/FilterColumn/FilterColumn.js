@@ -37,7 +37,7 @@ define([
 ) {
 
     var
-    PRIVATE         = dataStore.create(),
+    PRIVATE = dataStore.create(),
 
     CSS_CLASS_BASE          = 'spwidgets-FilterPanel-FilterColumn',
     CSS_CLASS_SHOW_OPTIONS  = CSS_CLASS_BASE + "--showOptions",
@@ -65,11 +65,7 @@ define([
     FilterColumn = /** @lends FilterColumn.prototype */{
         init: function (options) {
             var inst = {
-                opt: objectExtend({}, FilterColumn.defaults, options),
-                // Default getKeywords method. Other field types have their own.
-                // This one handles text fields. The return value should always
-                // be the same as `FilterColumn#getKeyswords`
-                getKeywords: getTextFieldKeywords.bind(this)
+                opt: objectExtend({}, FilterColumn.defaults, options)
             };
 
             PRIVATE.set(this, inst);
@@ -159,20 +155,8 @@ define([
                 emit("down");
             });
 
-            domAddEventListener(inst.compareOperator, "change", function(){
-                var operator = inst.compareOperator.value;
-
-                if (operator === "IsNull" || operator === "IsNotNull") {
-                    domAddClass($ui, CSS_CLASS_HIDE_INPUT);
-
-                } else {
-                    domRemoveClass($ui, CSS_CLASS_HIDE_INPUT);
-                }
-            });
-
-            domAddEventListener(inst.sortOrder, "change", function(){
-                me.setDirty(!!inst.sortOrder.value);
-            });
+            domAddEventListener(inst.compareOperator, "change", evalDirtyState.bind(this));
+            domAddEventListener(inst.sortOrder, "change", evalDirtyState.bind(this));
 
             this.onDestroy(function () {
                 Object.keys(inst, function(instProp){
@@ -203,8 +187,19 @@ define([
          *
          * @return {Array<String>}
          */
-        getKeywords: function () {
-            return PRIVATE.get(this).getKeywords();
+        getKeywords: function() {
+            var opt         = PRIVATE.get(this).opt,
+                delimiter   = opt.delimeter || ";",
+                reIgnore    = opt.ignoreKeywords;
+
+            return this.getValue()
+                .split(delimiter)
+                .map(function(keyword){
+                    return keyword.trim();
+                })
+                .filter(function(keyword){
+                    return (keyword && !reIgnore.test(keyword));
+                });
         },
 
         /**
@@ -221,10 +216,25 @@ define([
                     logicalOperator:    inst.logicalOperator.value,
                     compareOperator:    inst.compareOperator.value,
                     sortOrder:          inst.sortOrder.value,
+                    input:              this.getValue(),
                     values:             this.getKeywords()
                 },
                 { column: inst.opt.column }
             );
+        },
+
+        /**
+         * Sets the filter with the default values. Any of the values provided by
+         * FilterModel can be set.
+         */
+        setFilter: function (filter) {
+            setFieldCommonFilters.call(this, filter);
+
+            if (filter && Array.isArray(filter.values)) {
+                var inst = PRIVATE.get(this);
+                inst.inputWdg.setValue(filter.values.join(inst.opt.delimiter));
+                evalDirtyState.call(this);
+            }
         },
 
         /**
@@ -248,28 +258,35 @@ define([
         },
 
         /**
-         * Sets the column dirty indicator
-         *
-         * @param {Boolean} isDirty
-         */
-        setDirty: function(isDirty){
-            var $ui = this.getEle();
-            if (isDirty) {
-                domAddClass($ui, CSS_CLASS_IS_DIRTY);
-
-            } else {
-                domRemoveClass($ui, CSS_CLASS_IS_DIRTY);
-            }
-        },
-
-        /**
-         * checks if the filter column is dirty - either it has a valu entered or
+         * checks if the filter column is dirty - either it has a value entered or
          * Sort order was set
          *
          * @return {Boolean}
          */
         isDirty: function(){
             return domHasClass(this.getEle(), CSS_CLASS_IS_DIRTY);
+        },
+
+        /**
+         * Selects the given logical operator on the widget.
+         *
+         * @param {String} internalLogicalOperator
+         */
+        setLogicalOperator: function(internalLogicalOperator) {
+            var logicalOperator = PRIVATE.get(this).logicalOperator;
+            logicalOperator.value = internalLogicalOperator;
+            evalDirtyState.call(this);
+        },
+
+        /**
+         * Selects the given sort order on the widget.
+         *
+         * @param {String} internalSortOrder
+         */
+        setSortOrder: function(internalSortOrder){
+            var sortOrder = PRIVATE.get(this).sortOrder;
+            sortOrder.value = internalSortOrder;
+            evalDirtyState.call(this);
         },
 
         /**
@@ -293,10 +310,19 @@ define([
          * @param {String} internalOperatorName
          */
         setCompareOperator: function(internalOperatorName){
-            var compareOperator     = PRIVATE.get(this).compareOperator;
+            var compareOperator     = PRIVATE.get(this).compareOperator,
+                $ui = this.getEle();
             compareOperator.value = internalOperatorName;
 
-            // FIXME: trigger events?
+            if (internalOperatorName === "IsNull" || internalOperatorName === "IsNotNull") {
+                domAddClass($ui, CSS_CLASS_SHOW_OPTIONS);
+                domAddClass($ui, CSS_CLASS_HIDE_INPUT);
+
+            } else {
+                domRemoveClass($ui, CSS_CLASS_HIDE_INPUT);
+            }
+
+            evalDirtyState.call(this);
         },
 
         /**
@@ -318,23 +344,50 @@ define([
         }
     };
 
-    function getTextFieldKeywords() {
-        var opt         = PRIVATE.get(this).opt,
-            delimiter   = opt.delimeter || ";",
-            reIgnore    = opt.ignoreKeywords;
+    /**
+     * Evaluates the filter column dirty state and marks it as such
+     *
+     * @private
+     *
+     * @returns {boolean}
+     */
+    function evalDirtyState() {
+        var inst                    = PRIVATE.get(this),
+            compareOperatorValue    = inst.compareOperator.value,
+            isCompareOperatorDirty  = compareOperatorValue === "IsNull" || compareOperatorValue === "IsNotNull",
+            isSortOrderDirty        = !!inst.sortOrder.value,
+            isUserInputDirty        = !!inst.inputWdg.getValue(),
+            $ui                     = this.getEle();
 
-        return this.getValue()
-            .split(delimiter)
-            .map(function(keyword){
-                return keyword.trim();
-            })
-            .filter(function(keyword){
-                return (keyword && !reIgnore.test(keyword));
-            });
+        if (!isCompareOperatorDirty) {
+            domRemoveClass($ui, CSS_CLASS_HIDE_INPUT);
+        }
+
+        if (isUserInputDirty || isSortOrderDirty || isCompareOperatorDirty) {
+            domAddClass($ui, CSS_CLASS_IS_DIRTY);
+            return true;
+        }
+
+        domRemoveClass($ui, CSS_CLASS_IS_DIRTY);
+        return false;
     }
 
     function getChoiceFieldKeywords() {
         return this.getValue();
+    }
+
+    function setFieldCommonFilters(filter) {
+        if (filter.compareOperator) {
+            this.setCompareOperator(filter.compareOperator);
+        }
+
+        if (filter.logicalOperator) {
+            this.setLogicalOperator(filter.logicalOperator);
+        }
+
+        if (typeof filter.sortOrder === "string") {
+            this.setSortOrder(filter.sortOrder);
+        }
     }
 
     function buildTextField() {
@@ -347,8 +400,8 @@ define([
             placeholder:        inst.opt.inputKeywords
         });
 
-        inst.inputWdg.on("change", function (newValue) {
-            this.setDirty(Boolean(newValue));
+        inst.inputWdg.on("change", function() {
+            evalDirtyState.call(this);
         }.bind(this));
     }
 
@@ -366,7 +419,7 @@ define([
         }),
         peoplePicker    = inst.inputWdg = FilterPeoplePicker.create(),
         checkDirtyState = function () {
-            this.setDirty(!!peoplePicker.getSelected().length);
+            setDirtyIndicator.calL(this, !!peoplePicker.getSelected().length);
         }.bind(this);
 
         ['remove', 'select'].forEach(function(evName){
@@ -429,10 +482,10 @@ define([
                 totalSelected   = selectedValues.length > 1 ||
                                 (selectedValues[0] && selectedValues[0] !== "");
 
-            this.setDirty(!!totalSelected);
+            setDirtyIndicator.call(this, !!totalSelected);
         }.bind(this));
 
-        inst.getKeywords = getChoiceFieldKeywords.bind(this);
+        this.getKeywords = getChoiceFieldKeywords;
     }
 
     function buildChoiceField(options){
@@ -458,7 +511,7 @@ define([
         choice.on("change", function(){
             var totalSelected = choice.getValue().length;
 
-            this.setDirty(!!totalSelected);
+            setDirtyIndicator.call(this, !!totalSelected);
 
             if (totalSelected) {
                 this.setKeywordInfo(fillTemplate(opt.labels.totalSelected, {total: totalSelected}));
@@ -469,7 +522,7 @@ define([
         }.bind(this));
 
         this.setKeywordInfo("");
-        inst.getKeywords = getChoiceFieldKeywords.bind(this);
+        this.getKeywords = getChoiceFieldKeywords.bind(this);
 
         if (column.Type === "Choice") {
             this.setCompareOperatorDefault("Eq");
@@ -487,6 +540,22 @@ define([
             hideDescription:    true
         });
     }
+
+    /**
+     * Sets the column dirty indicator
+     *
+     * @param {Boolean} isDirty
+     */
+    function setDirtyIndicator(isDirty){
+        var $ui = this.getEle();
+        if (isDirty) {
+            domAddClass($ui, CSS_CLASS_IS_DIRTY);
+
+        } else {
+            domRemoveClass($ui, CSS_CLASS_IS_DIRTY);
+        }
+    }
+
 
     FilterColumn = EventEmitter.extend(Widget, FilterColumn);
     FilterColumn.defaults = {

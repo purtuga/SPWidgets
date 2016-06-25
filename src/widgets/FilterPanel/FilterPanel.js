@@ -21,8 +21,10 @@ define([
     "../PeoplePicker/PeoplePicker",
     "./FilterAttachmentsField/FilterAttachmentsField",
 
-    "text!./FilterPanel.html",
+    "../../spapi/getListColumns",
 
+
+    "text!./FilterPanel.html",
     //----------------------------------
     "less!./FilterPanel.less"
 ], function (
@@ -47,6 +49,8 @@ define([
     LookupField,
     PeoplePicker,
     FilterAttachmentsField,
+
+    getListColumns,
 
     SPFilterPanelTemplate
 ) {
@@ -120,7 +124,6 @@ define([
             // Column selector widget
             inst.columnSelector = ColumnSelector.create(opt);
             inst.columnSelector.pipe(this, "columnSelector:");
-
 
             //----------------------------------------
             // Initialize event handlers
@@ -230,19 +233,60 @@ define([
                     });
 
             return FiltersCollection.create(filters);
+        },
+
+        /**
+         * Sets the filters on the panel, by removing all of the ones
+         * currently displayed and showing only the set given on input.
+         *
+         * @param {Array<Object>|FiltersCollection} filters
+         */
+        setFilters: function(filters){
+            if (!Array.isArray(filters) || !filters.length) {
+                addColumns.call(this, []);
+            }
+
+            getColumnList.call(this)
+            .then(function(columns){
+                var colList     = [],
+                    colValues   = filters.filter(function(filter){
+                        var column = columns.getColumn(filter.column);
+                        if (column) {
+                            colList.push(column);
+                            return true;
+                        }
+                        return false;
+                    });
+
+                if (colList.length) {
+                    addColumns.call(this, colList, colValues);
+                }
+
+            }.bind(this))["catch"](function(e){
+                console.error(e); // jshint ignore:line
+            });
         }
     };
+
+    function getColumnList() {
+        var opt = PRIVATE.get(this).opt;
+        return getListColumns({listName: opt.listName, webURL: opt.webURL});
+    }
 
     /**
      * Adds a column to the UI, if not already there.
      *
-     * @param {Array} colList
+     * @param {Array<ListColumnModel>} colList
      *  The list of column definition that should be added to the UI
      *  for the user to define criteria.
      *
+     * @param {Array} [colValues]
+     *  A FiltersCollection like array with the defaults values for
+     *  the columns that will be made visible.
+     *
      * @private
      */
-    function addColumns(colList){
+    function addColumns(colList, colValues){
         var inst    = PRIVATE.get(this),
             opt     = inst.opt,
             colsWdg = inst.colsWdg,
@@ -256,7 +300,8 @@ define([
 
         if (colList.length) {
             colList.forEach(function(colDef){
-                var colName = colDef.StaticName;
+                var colName     = colDef.StaticName,
+                    colValue    = { values: [] };
 
                 if (!colsWdg[colName]){
                     colsWdg[colName] = FilterColumn.create(
@@ -264,6 +309,18 @@ define([
                     );
 
                     colsWdg[colName].pipe(this, "filterColumn:", true);
+                }
+
+                // If a colValue was set on input, then set that now as well.
+                if (Array.isArray(colValues)) {
+                    colValues.some(function(colDefValue){
+                        if (colDefValue && colDefValue.column === colName) {
+                            colValue = colDefValue;
+                            return true;
+                        }
+                    });
+
+                    colsWdg[colName].setFilter(colValue);
                 }
 
                 colsWdg[colName].appendTo(newSet);

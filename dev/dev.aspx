@@ -84,7 +84,8 @@
                 'vendor/domutils':      'vendor/common-micro-libs/src/domutils'
             },
             less: {
-                relativeUrls: true
+                relativeUrls:   true,
+                logLevel:       0
             }
         });
 

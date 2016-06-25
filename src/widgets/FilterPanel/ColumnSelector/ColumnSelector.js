@@ -125,7 +125,7 @@ define([
         /**
          * returns the List Column Models for the columns selected
          *
-         * @return {Array}
+         * @return {Array<ListColumnModel>}
          */
         getSelected: function(){
             var listCols = PRIVATE.get(this).listCols;
@@ -159,6 +159,7 @@ define([
         return getListColumns({listName: inst.opt.listName, webURL: inst.opt.webURL})
             .then(function(columns){
                 inst.listCols = columns;
+                return columns;
             });
     }
 
