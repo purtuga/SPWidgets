@@ -361,6 +361,10 @@ define([
 
         if (!isCompareOperatorDirty) {
             domRemoveClass($ui, CSS_CLASS_HIDE_INPUT);
+
+        } else {
+            domAddClass($ui, CSS_CLASS_SHOW_OPTIONS);
+            domAddClass($ui, CSS_CLASS_HIDE_INPUT);
         }
 
         if (isUserInputDirty || isSortOrderDirty || isCompareOperatorDirty) {
@@ -419,7 +423,7 @@ define([
         }),
         peoplePicker    = inst.inputWdg = FilterPeoplePicker.create(),
         checkDirtyState = function () {
-            setDirtyIndicator.calL(this, !!peoplePicker.getSelected().length);
+            setDirtyIndicator.call(this, !!peoplePicker.getSelected().length);
         }.bind(this);
 
         ['remove', 'select'].forEach(function(evName){
