@@ -72,6 +72,12 @@ define([
      *
      * @param {Object} options
      *
+     * @param {Array<String>} [options.columns]
+     *  List of columns that should be made available to the user for use in
+     *  the filter panel. By default, all exposed columns of the given List
+     *  are shown. The column names defined in this option must be the `InternalName`
+     *  of the list column.
+     *
      * @param {Object} [options.i18n]
      * @param {Object} [options.i18n.en-us]
      * @param {String} [options.i18n.en-us.title]
@@ -191,7 +197,7 @@ define([
             //--------------------------------------
             this.onDestroy(function () {
                 PRIVATE.delete(this);
-                Object.key(inst).forEach(function(prop){
+                Object.keys(inst).forEach(function(prop){
                     if (inst[prop] && inst[prop].destroy) {
                         inst[prop].destroy();
                         inst[prop] = undefined;
@@ -244,9 +250,11 @@ define([
         setFilters: function(filters){
             if (!Array.isArray(filters) || !filters.length) {
                 addColumns.call(this, []);
+                return;
             }
 
-            getColumnList.call(this)
+            var opt = PRIVATE.get(this).opt;
+            getListColumns({listName: opt.listName, webURL: opt.webURL})
             .then(function(columns){
                 var colList     = [],
                     colValues   = filters.filter(function(filter){
@@ -267,11 +275,6 @@ define([
             });
         }
     };
-
-    function getColumnList() {
-        var opt = PRIVATE.get(this).opt;
-        return getListColumns({listName: opt.listName, webURL: opt.webURL});
-    }
 
     /**
      * Adds a column to the UI, if not already there.
@@ -339,6 +342,7 @@ define([
     FilterPanel.defaults = {
         listName:           "",
         webURL:             "",
+        columns:            null,
         ignoreKeywords:     /^(of|and|a|an|to|by|the|or|from)$/i,
         delimiter:          ';',
         TextField:          TextField,
@@ -346,7 +350,10 @@ define([
         AttachmentsField:   FilterAttachmentsField,
         PeoplePicker:       PeoplePicker,
         LookupField:        LookupField,
+        // FIXME: add all other modules, like collection, model, and internal widgets here as well.
+
         hideHeader:         false,
+        selectFieldsLayout: '3-col',    // 1, 2 or 3 -col
         i18n: {
             "en-US": {
                 title:          "Filter",

@@ -41,6 +41,34 @@ define([
          */
         toURLParams: function(){
             return toUrlParams(this.slice().filter(isFilterDefined), "filter");
+        },
+
+        /**
+         * returns a string of CAML with the sort orders defined by
+         * any of the Columns in the collection. Return value could
+         * be an empty string. Note that this method will return only
+         * the `FieldRef` definition by default. Use input parameter
+         * to wrap that in a CAML `OrderBy` clause
+         *
+         * @param {Booolean} [wrapInOrderBy=false]
+         *
+         * @return {String}
+         */
+        toCAMLSortOrder: function(wrapInOrderBy){
+            var caml = this
+                .map(function(filter){
+                    return filter.toCAMLSortOrder();
+                })
+                .filter(function(filter){
+                    return !!filter;
+                })
+                .join("");
+
+            if (caml && wrapInOrderBy) {
+                caml = '<OrderBy>' + caml + '</OrderBy>';
+            }
+
+            return caml;
         }
     };
 

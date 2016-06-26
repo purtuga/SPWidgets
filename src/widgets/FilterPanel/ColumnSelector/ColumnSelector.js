@@ -76,6 +76,10 @@ define([
 
             inst.bodyContent = uiFind(BASE_SELECTOR + "-body-content");
 
+            if (inst.opt.selectFieldsLayout !== "3-col") {
+                domAddClass($ui, CSS_CLASS_BASE + "--" + inst.opt.selectFieldsLayout);
+            }
+
             domAddEventListener(uiFind(BASE_SELECTOR + "-action-cancel"), "click", function () {
                 /**
                  * Cancel button was clicked
@@ -154,12 +158,15 @@ define([
      * @returns {Promise<ListColumnsCollection, Error>}
      */
     function loadColumns() {
-        var inst = PRIVATE.get(this);
+        var inst        = PRIVATE.get(this),
+            allowedCols = inst.opt.columns || [];
 
         return getListColumns({listName: inst.opt.listName, webURL: inst.opt.webURL})
             .then(function(columns){
-                inst.listCols = columns;
-                return columns;
+                inst.listCols = columns.filter(function(column){
+                    return !allowedCols.length || allowedCols.indexOf(column.InternalName)
+                });
+                return inst.listCols;
             });
     }
 

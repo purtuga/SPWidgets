@@ -127,6 +127,26 @@ define([
         },
 
         /**
+         * Returns the `FieldRef` CAML definition for the sort order
+         * of this Column, if one is defined. Return value could be empty.
+         *
+         * @returns {string}
+         */
+        toCAMLSortOrder: function(){
+            var sortOrder = this.sortOrder;
+
+            return sortOrder ?
+                "<FieldRef Name='" +
+                    this.column +
+                    "' Ascending='" +
+                    sortOrder === "Des" ?
+                        "FALSE" :
+                        "TRUE" +
+                "'/>" :
+                '';
+        },
+
+        /**
          * Returns the Filter as a URL parameters string
          *
          * @return {String}
