@@ -241,7 +241,9 @@ define([
          * Returns the value currently defined for the Column displayed
          * inside of the FilterColumn
          *
-         * @return {String}
+         * @return {String|Array}
+         *  Depending on the type of column, getValue will either be a
+         *  `String` or `Array`
          */
         getValue: function(){
             return PRIVATE.get(this).inputWdg.getValue();
@@ -380,6 +382,12 @@ define([
         return this.getValue();
     }
 
+    function setPeoplePickerFilter(filter) {
+        setFieldCommonFilters.call(this, filter);
+        PRIVATE.get(this).inputWdg.add(filter.values);
+        evalDirtyState.call(this);
+    }
+
     function setFieldCommonFilters(filter) {
         if (filter.compareOperator) {
             this.setCompareOperator(filter.compareOperator);
@@ -414,11 +422,19 @@ define([
 
         var
         inst                = PRIVATE.get(this),
+        // FIXME: should this move to FilterPanel? or maybe in .init()?
         FilterPeoplePicker  = inst.opt.PeoplePicker.extend({
             getValue: function(){
                 return this.getSelected().map(function(person){
-                    return person.ID;
-                }).join(inst.opt.delimeter);
+                    return {
+                        ID:             person.ID,
+                        Name:           person.Name,
+                        AccountName:    person.AccountName
+                    };
+                });
+            },
+            setValue: function(){
+                return this.add.apply(this, arguments);
             }
         }),
         peoplePicker    = inst.inputWdg = FilterPeoplePicker.create(),
@@ -429,6 +445,9 @@ define([
         ['remove', 'select'].forEach(function(evName){
             peoplePicker.on(evName, checkDirtyState);
         });
+
+        this.getKeywords = peoplePicker.getValue.bind(peoplePicker);
+        this.setFilter   = setPeoplePickerFilter;
     }
 
     function buildNumberField() {

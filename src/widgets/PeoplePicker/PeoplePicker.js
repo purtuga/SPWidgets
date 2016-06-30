@@ -408,7 +408,9 @@ define([
                 }.bind(this))
             ).then(function(peopleList){
                 peopleList.forEach(function(personModel){
-                    addPersonToSelectedList.call(this, personModel);
+                    if (personModel) {
+                        addPersonToSelectedList.call(this, personModel);
+                    }
                 }.bind(this));
 
                 return peopleList;
@@ -661,12 +663,20 @@ define([
             $inputCntr  = inst.$inputCntr,
             newSelectedPerson;
 
-        newSelectedPerson = PeoplePickerPersona.create({userProfile: personModel});
-        newSelectedPerson.setSize("xs");
-        newSelectedPerson.pipe(this, "selected-");
+        if (!isPersonInSelectedList.call(this, personModel)) {
+            newSelectedPerson = PeoplePickerPersona.create({userProfile: personModel});
+            newSelectedPerson.setSize("xs");
+            newSelectedPerson.pipe(this, "selected-");
 
-        $inputCntr.parentNode.insertBefore(newSelectedPerson.getEle(), $inputCntr);
-        inst.selected.push(newSelectedPerson);
+            $inputCntr.parentNode.insertBefore(newSelectedPerson.getEle(), $inputCntr);
+            inst.selected.push(newSelectedPerson);
+        }
+    }
+
+    function isPersonInSelectedList(personModel){
+        return PRIVATE.get(this).selected.some(function(selectedPerson){
+            return selectedPerson.getUserProfile().ID === personModel.ID;
+        });
     }
 
     /**

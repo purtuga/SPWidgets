@@ -164,7 +164,9 @@ define([
         return getListColumns({listName: inst.opt.listName, webURL: inst.opt.webURL})
             .then(function(columns){
                 inst.listCols = columns.filter(function(column){
-                    return !allowedCols.length || allowedCols.indexOf(column.InternalName)
+                    return  !allowedCols.length ||
+                            allowedCols.indexOf(column.StaticName) ||
+                            allowedCols.indexOf(column.DisplayName);
                 });
                 return inst.listCols;
             });

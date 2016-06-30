@@ -246,6 +246,10 @@ define([
          * currently displayed and showing only the set given on input.
          *
          * @param {Array<Object>|FiltersCollection} filters
+         *
+         * @returns {Promise}
+         *  A promise is returned because it is possible that a network might
+         *  be made to get the list of columns associated with the list.
          */
         setFilters: function(filters){
             if (!Array.isArray(filters) || !filters.length) {
@@ -254,8 +258,8 @@ define([
             }
 
             var opt = PRIVATE.get(this).opt;
-            getListColumns({listName: opt.listName, webURL: opt.webURL})
-            .then(function(columns){
+
+            return getListColumns({listName: opt.listName, webURL: opt.webURL}).then(function(columns){
                 var colList     = [],
                     colValues   = filters.filter(function(filter){
                         var column = columns.getColumn(filter.column);
@@ -269,7 +273,6 @@ define([
                 if (colList.length) {
                     addColumns.call(this, colList, colValues);
                 }
-
             }.bind(this))["catch"](function(e){
                 console.error(e); // jshint ignore:line
             });
