@@ -73,7 +73,17 @@ define([
                             filterPanel.getFilters().slice(),
                             null,
                             2
-                        ) + '</pre></div>'
+                        ) + "\r\n URL PARAMS: " +
+                        filterPanel.getFilters().toURLParams() +
+                        "\r\n URL PARAMS W/abreviated keys: " +
+                        filterPanel.getFilters().toURLParams({
+                            stringifyProperties: [
+                                {column: "c"},
+                                {values: 'v'},
+                                {logicalOperator: 'lO'}
+                            ]
+                        }) +
+                        '</pre></div>'
                     )
                 );
             }
