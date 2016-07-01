@@ -5,6 +5,7 @@ define([
     "vendor/jsutils/objectExtend",
     "vendor/jsutils/fillTemplate",
     "vendor/jsutils/parseHTML",
+    "vendor/jsutils/es6-promise",
 
     "vendor/domutils/domSetStyle",
     "vendor/domutils/domAddEventListener",
@@ -34,6 +35,7 @@ define([
     objectExtend,
     fillTemplate,
     parseHTML,
+    Promise,
 
     domSetStyle,
     domAddEventListener,
@@ -254,7 +256,7 @@ define([
         setFilters: function(filters){
             if (!Array.isArray(filters) || !filters.length) {
                 addColumns.call(this, []);
-                return;
+                return Promise.resolve();
             }
 
             var opt = PRIVATE.get(this).opt;
@@ -271,7 +273,7 @@ define([
                     });
 
                 if (colList.length) {
-                    addColumns.call(this, colList, colValues);
+                    return addColumns.call(this, colList, colValues);
                 }
             }.bind(this))["catch"](function(e){
                 console.error(e); // jshint ignore:line
@@ -282,6 +284,8 @@ define([
     /**
      * Adds a column to the UI, if not already there.
      *
+     * @private
+     *
      * @param {Array<ListColumnModel>} colList
      *  The list of column definition that should be added to the UI
      *  for the user to define criteria.
@@ -290,14 +294,15 @@ define([
      *  A FiltersCollection like array with the defaults values for
      *  the columns that will be made visible.
      *
-     * @private
+     * @returns {Promise}
      */
     function addColumns(colList, colValues){
-        var inst    = PRIVATE.get(this),
-            opt     = inst.opt,
-            colsWdg = inst.colsWdg,
-            body    = inst.body,
-            newSet  = document.createDocumentFragment();
+        var inst                = PRIVATE.get(this),
+            opt                 = inst.opt,
+            colsWdg             = inst.colsWdg,
+            body                = inst.body,
+            newSet              = document.createDocumentFragment(),
+            colsInitPromises    = [];
 
         // Detach all widgets currently visible
         Object.keys(colsWdg).forEach(function(colName){
@@ -317,7 +322,11 @@ define([
                     colsWdg[colName].pipe(this, "filterColumn:", true);
                 }
 
-                // If a colValue was set on input, then set that now as well.
+                colsWdg[colName].appendTo(newSet);
+
+                // If a colValue was set on input, then set that now as well
+                // and add teh return value to the list of init promises, since
+                // setting a value could trigger async calls.
                 if (Array.isArray(colValues)) {
                     colValues.some(function(colDefValue){
                         if (colDefValue && colDefValue.column === colName) {
@@ -326,10 +335,8 @@ define([
                         }
                     });
 
-                    colsWdg[colName].setFilter(colValue);
+                    colsInitPromises.push(colsWdg[colName].setFilter(colValue));
                 }
-
-                colsWdg[colName].appendTo(newSet);
             }.bind(this));
 
             inst.infoMsg.detach();
@@ -339,6 +346,8 @@ define([
             inst.infoMsg.appendTo(body);
             inst.columnSelector.unSelectAll();
         }
+
+        return Promise.all(colsInitPromises);
     }
 
     FilterPanel = EventEmitter.extend(Widget, FilterPanel);

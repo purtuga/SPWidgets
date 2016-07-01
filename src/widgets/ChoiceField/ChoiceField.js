@@ -87,7 +87,9 @@ define([
             var inst = {
                 opt:        objectExtend({}, ChoiceField.defaults, options),
                 groupName:  uuid.generate(),
-                isMulti:    null
+                isMulti:    null,
+                onReady:    null,
+                isReady:    false
             };
 
             PRIVATE.set(this, inst);
@@ -111,7 +113,13 @@ define([
 
             inst.title      = uiFind(".ms-ChoiceFieldGroup-title");
             inst.choices    = uiFind("." + CSS_CLASS_CHOICES);
-            getChoices.call(this).then(addChoicesToUI.bind(this));
+            inst.onReady    = getChoices.call(this)
+                                .then(addChoicesToUI.bind(this))
+                                .then(function(){
+                                    inst.isReady = true;
+                                })["catch"](function(e){
+                                    console.log(e); //jshint ignore:line
+                                });
 
             if (opt.hideLabel) {
                 domAddClass($ui, CSS_CLASS_NO_LABEL);
@@ -168,23 +176,36 @@ define([
          *
          * @param {String|Array<String>} newValue
          *  The new value that should be selected.
+         *
+         * @returns {Promise}
          */
         setValue: function(newValue){
-            var newVals     = Array.isArray(newValue) ? newValue : [newValue],
-                choiceEles  = domFind(PRIVATE.get(this).choices, "." + CSS_CLASS_MS_INPUT);
+            var inst = PRIVATE.get(this),
+                setValueOnWidget = function(){
+                var newVals     = Array.isArray(newValue) ? newValue : [newValue],
+                    choiceEles  = domFind(inst.choices, "." + CSS_CLASS_MS_INPUT);
 
-            choiceEles.forEach(function(input){
-                var isNewVal = false;
+                choiceEles.forEach(function(input){
+                    var isNewVal = false;
 
-                newVals.some(function(newVal){
-                    if (input.value === newVal) {
-                        isNewVal = true;
-                        return true;
-                    }
+                    newVals.some(function(newVal){
+                        if (input.value === newVal) {
+                            isNewVal = true;
+                            return true;
+                        }
+                    });
+
+                    input.checked = isNewVal;
                 });
+            }.bind(this);
 
-                input.checked = isNewVal;
-            });
+            if (inst.isReady) {
+                setValueOnWidget();
+                return Promise.resolve();
+
+            } else {
+                return inst.onReady.then(setValueOnWidget);
+            }
         }
     };
 

@@ -5,6 +5,7 @@ define([
     "vendor/jsutils/objectExtend",
     "vendor/jsutils/fillTemplate",
     "vendor/jsutils/parseHTML",
+    "vendor/jsutils/es6-promise",
 
     "vendor/domutils/domAddEventListener",
     "vendor/domutils/domAddClass",
@@ -24,6 +25,7 @@ define([
     objectExtend,
     fillTemplate,
     parseHTML,
+    Promise,
 
     domAddEventListener,
     domAddClass,
@@ -226,15 +228,23 @@ define([
         /**
          * Sets the filter with the default values. Any of the values provided by
          * FilterModel can be set.
+         *
+         * @param {Object} filter
+         *
+         * @returns {Promise}
          */
         setFilter: function (filter) {
             setFieldCommonFilters.call(this, filter);
 
+            var response = Promise.resolve();
+
             if (filter && Array.isArray(filter.values)) {
                 var inst = PRIVATE.get(this);
-                inst.inputWdg.setValue(filter.values.join(inst.opt.delimiter));
+                response.then(inst.inputWdg.setValue(filter.values.join(inst.opt.delimiter)));
                 evalDirtyState.call(this);
             }
+
+            return response;
         },
 
         /**
@@ -380,6 +390,20 @@ define([
 
     function getChoiceFieldKeywords() {
         return this.getValue();
+    }
+
+    function setChoiceFieldFilter(filter) {
+        setFieldCommonFilters.call(this, filter);
+
+        var response = Promise.resolve();
+
+        if (filter && Array.isArray(filter.values)) {
+            var inst = PRIVATE.get(this);
+            response.then(inst.inputWdg.setValue(filter.values));
+            evalDirtyState.call(this);
+        }
+
+        return response;
     }
 
     function setPeoplePickerFilter(filter) {
@@ -544,12 +568,14 @@ define([
             }
         }.bind(this));
 
-        this.setKeywordInfo("");
-        this.getKeywords = getChoiceFieldKeywords.bind(this);
-
         if (column.Type === "Choice") {
             this.setCompareOperatorDefault("Eq");
         }
+
+        this.setKeywordInfo("");
+        this.getKeywords = getChoiceFieldKeywords.bind(this);
+
+        this.setFilter = setChoiceFieldFilter;
     }
 
     function buildLookupField() {
