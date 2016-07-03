@@ -3,6 +3,7 @@ define([
     "vendor/jsutils/objectExtend",
     "vendor/jsutils/dataStore",
     "vendor/jsutils/toUrlParams",
+    "vendor/jsutils/fillTemplate",
 
     "../../sputils/getCamlLogical",
     "../../sputils/xmlEscape"
@@ -11,6 +12,7 @@ define([
     objectExtend,
     dataStore,
     toUrlParams,
+    fillTemplate,
 
     getCamlLogical,
     xmlEscape
@@ -96,7 +98,7 @@ define([
             this.count      = this.values.length;
 
             if (!this.column) {
-                this.column = options.column.Name;
+                this.column = inst.opt.column.Name;
             }
 
             this.onDestroy(function (){
@@ -110,18 +112,47 @@ define([
          * @return {String}
          */
         toCAMLQuery: function () {
-            var me          = this,
-                compareOperator = me.compareOperator,
-                colName         = xmlEscape.escape(PRIVATE.get(this).opt.column.Name);
+            var
+            me              = this,
+            columnSetup     = PRIVATE.get(this).opt.column,
+            compareOperator = me.compareOperator || 'Eq',
+            colName         = xmlEscape.escape(me.column)
+            filterValues    = me.values,
+            template        = "<FieldRef Name='{{colName}}'/><Value Type='Text'>{{colValue}}</Value>";
+
+            // If we have a column Setup object, then adjust the template for
+            // the given type of column
+            if (columnSetup) {
+                switch (columnSetup.Type) {
+                    // Lookup type of fields. We use only the ID to query along
+                    // with LookupId=True in the CAMl definition
+                    case "User":
+                    case "UserMulti":
+                    case "Lookup":
+                    case "LookupMulti":
+                        template        = "<FieldRef Name='{{colName}}' LookupId='True'/><Value Type='Lookup'>{{colValue}}</Value>";
+                        filterValues    = filterValues.map(function(filter){
+                            if (filter && filter.ID) {
+                                return filter.ID;
+                            }
+                            return filter;
+                        });
+
+                        break;
+                }
+            }
+
+            template = "<{{cOP}}>" + template + "</{{cOP}}>";
 
             return getCamlLogical({
                 type:           me.logicalOperator,
-                values:         me.values,
+                values:         filterValues,
                 onEachValue:    function(filterVal){
-                    return "<" + compareOperator +"><FieldRef Name='" + colName +
-                        "' /><Value Type='Text'>" + xmlEscape.escape(filterVal) +
-                        "</Value></" + compareOperator + ">";
-
+                    return fillTemplate(template, {
+                        colName:    colName,
+                        cOP:        compareOperator,
+                        colValue:   xmlEscape.escape(filterVal)
+                    });
                 }
             });
         },
