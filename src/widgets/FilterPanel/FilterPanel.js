@@ -10,6 +10,8 @@ define([
     "vendor/domutils/domSetStyle",
     "vendor/domutils/domAddEventListener",
     "vendor/domutils/domAddClass",
+    "vendor/domutils/domRemoveClass",
+    "vendor/domutils/fitEleToParent",
 
     "../Message/Message",
     "./ColumnSelector/ColumnSelector",
@@ -40,6 +42,8 @@ define([
     domSetStyle,
     domAddEventListener,
     domAddClass,
+    domRemoveClass,
+    fitEleToParent,
 
     Message,
     ColumnSelector,
@@ -61,8 +65,9 @@ define([
     PRIVATE             = dataStore.create(),
     WINDOW_NAVIGATOR    = window.navigator,
 
-    CSS_CLASS_BASE      = "spwidgets-FilterPanel",
-    CSS_CLASS_NO_HEADER = CSS_CLASS_BASE + "--noHeader",
+    CSS_CLASS_BASE              = "spwidgets-FilterPanel",
+    CSS_CLASS_NO_HEADER         = CSS_CLASS_BASE + "--noHeader",
+    CSS_CLASS_BODY_FIXED_HEIGHT = CSS_CLASS_BASE + "--fixHeight",
 
     /**
      * A Filter panel allowing a user the ability to define filtering
@@ -211,9 +216,22 @@ define([
         /**
          * Fits the widgets to its parent element, by ensuring that
          * the Filter widget's buttons and header are always visible.
+         *
+         * @param {Number} [offset]
+         *  Number of pixels to offset the fitting by.
          */
-        fitToParent: function(){
-            // FIXME: complete fitToParent()
+        fitToParent: function(offset){
+            var ele = this.getEle();
+            domAddClass(ele, CSS_CLASS_BODY_FIXED_HEIGHT);
+            return fitEleToParent(ele, offset, PRIVATE.get(this).body);
+        },
+
+        /**
+         * Clears the fixed height placed on the Filter Panel
+         */
+        clearFitToParent: function(){
+            domRemoveClass(this.getEle(), CSS_CLASS_BODY_FIXED_HEIGHT);
+            PRIVATE.get(this).body.style.height = "";
         },
 
         /**
