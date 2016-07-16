@@ -189,7 +189,6 @@ define([
             //        return this; // for testing purposes
             //    };
 
-
             me.on("columnSelector:cancel", function(){
                 inst.columnSelector.hide();
             });

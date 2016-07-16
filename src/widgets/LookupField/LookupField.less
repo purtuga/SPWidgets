@@ -1,14 +1,81 @@
 .spwidgets-LookupField {
 
+    &-items {
+        border:     1px solid #ababab;
+        position:   relative;
+        box-sizing: border-box;
+    }
+
+    &-selected {
+        max-height: 15em;
+        overflow-y: auto;
+    }
+
+    &-input {
+        position:   relative;
+        box-sizing: border-box;
+
+        & > input {
+            box-sizing:     border-box;
+            display:        inline-block;
+            border:         0;
+            height:         38px;
+            outline:        none;
+            padding-left:   8px;
+            width:          100%;
+        }
+
+        &-choices {
+            box-sizing:         border-box;
+            display:            none;
+            position:           absolute;
+            top:                100%;
+            left:               0;
+            min-height:         2em;
+            border:             1px solid #ababab;
+            border-top:         none;
+            padding:            0.5em 1em;
+            box-shadow:         0 0 5px 0 rgba(0,0,0,.4);
+            background-color:   white;
+            z-index:            1;
+            min-width:          100%;
+            max-width:          100%;
+            max-height:         20em;
+            overflow-y:         auto;
+        }
+    }
+
+
     //---------------------------
     // NO MODIFIERS
     //---------------------------
+
+    //==> Hide label
     &--noLabel &-label {
         display: none;
     }
 
+    //==> Hide description
     &--noDescription &-description {
         display: none;
+    }
+
+    //==> -displayInline
+    &--displayInline &-selected,
+    &--displayInline &-selected > *,
+    &--displayInline &-input {
+        display: inline-block;
+    }
+    &--displayInline &-selected {
+        max-height: none;
+    }
+    &--displayInline &-input-choices {
+        max-width: 450px;
+    }
+
+    // ==> Show the list of choices
+    &--showChoices &-input-choices {
+        display: inline-block;
     }
 
 }

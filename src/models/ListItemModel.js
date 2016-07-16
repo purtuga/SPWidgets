@@ -8,7 +8,7 @@ define([
     dataStore
 ){
 
-    var data = dataStore.stash;
+    var PRIVATE = dataStore.stash;
 
     /**
      * Model for SharePoint List Items (rows). Object return will include all of
@@ -20,28 +20,39 @@ define([
      * @param {Object} itemData
      *      An object with the properties for the model
      * @param {Object} [options]
-     * @param {Object} [options.itemData]
      * @param {Object|String} [options.list]
      * @param {String} [options.webURL]
      *
      */
-    return Compose.extend(/** @lends ListItem.prototype */{
-
+    return Compose.extend(/** @lends ListItemModel.prototype */{
         init: function(itemData, options){
-
             var opt = objectExtend({}, {
-                list:       null,
-                webURL:     null
+                list:       "",
+                webURL:     ""
             }, options);
 
             if (itemData) {
                 objectExtend(this, itemData);
             }
 
-            data.set(this, opt);
+            PRIVATE.set(this, opt);
 
+            this.onDestroy(function(){
+                PRIVATE["delete"](this);
+            }.bind(this));
+        },
+
+        /**
+         * Returns an object with the `listName` and `webURL`
+         * attributes needed to retrieve list information. Data
+         * will only be available if provided on input when model
+         * was initialized.
+         *
+         * @returns {Object}
+         */
+        getListInfo: function(){
+            return PRIVATE.get(this);
         }
-
     });
 
 });

@@ -116,7 +116,7 @@ define([
             me              = this,
             columnSetup     = PRIVATE.get(this).opt.column,
             compareOperator = me.compareOperator || 'Eq',
-            colName         = xmlEscape.escape(me.column)
+            colName         = xmlEscape.escape(me.column),
             filterValues    = me.values,
             template        = "<FieldRef Name='{{colName}}'/><Value Type='Text'>{{colValue}}</Value>";
 

@@ -60,6 +60,16 @@ define([
      *   Promise is resolved with a Collection, or rejected with an Error object
      *
      * @see https://msdn.microsoft.com/en-us/library/websvclists.lists.getlistitems(v=office.14).aspx
+     *
+     * @example
+     *
+     * getListItems({
+     *   listName: "tasks",
+     *   cacheXML: true,
+     *   async: false,
+     *   CAMLQuery: '<Query><OrderBy><FieldRef Name="Title"/></OrderBy></Query>',
+     *   CAMLViewFields: '<ViewFields><FieldRef Name="Title"/></ViewFields>'
+     * })
      */
     var getListItems = function(options){
 
@@ -117,9 +127,13 @@ define([
             }).then(function(response){
                 return ListItemsCollection.create(
                     getNodesFromXml({
-                        xDoc:       response.content,
-                        nodeName:   "z:row",
-                        nodeModel:  opt.listItemModel
+                        xDoc:               response.content,
+                        nodeName:           "z:row",
+                        nodeModel:          opt.listItemModel,
+                        nodeModelOptions:   {
+                            list:   opt.listName,
+                            webURL: opt.webURL
+                        }
                     }),
                     {
                         apiResponse:    response,
