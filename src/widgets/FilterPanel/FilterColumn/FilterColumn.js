@@ -39,7 +39,7 @@ define([
 ) {
 
     var
-    PRIVATE = dataStore.create(),
+    PRIVATE = dataStore.stash,
 
     CSS_CLASS_BASE          = 'spwidgets-FilterPanel-FilterColumn',
     CSS_CLASS_SHOW_OPTIONS  = CSS_CLASS_BASE + "--showOptions",
@@ -47,7 +47,11 @@ define([
     CSS_CLASS_IS_DIRTY      = CSS_CLASS_BASE + "--isDirty",
 
     /**
-     * Widget description
+     * Base filter column widget with no input; it simply provides the UI and
+     * expected API interface for fields displayed in the filter panel.
+     * When extending this widget to create specialized columns, ensure that
+     * this widget's `init` method is called and that `PRIVATE` points to the
+     * shared private data `dataStore.stash`.
      *
      * @class FilterColumn
      * @extends Widget
@@ -55,11 +59,7 @@ define([
      * @param {Object} options
      *
      * @param {ListColumnModel} options.column
-     *  the column definition
-     *
-     * @param {String} options.delimiter
-     *
-     * // FIXME: document all other parameters inherited from FilerPanel
+     *  The column definition or an object defining similar information
      *
      * @fires FilterColumn#up
      * @fires FilterColumn#down
@@ -67,73 +67,41 @@ define([
     FilterColumn = /** @lends FilterColumn.prototype */{
         init: function (options) {
             var inst = {
-                opt: objectExtend({}, FilterColumn.defaults, options)
+                opt:        objectExtend({}, FilterColumn.defaults, options),
+                inputWdg:   null, // should store the input widget being used by the filter panel
+                // Sets common filters... used with .setFilter()
+                setFieldCommonFilters: function(filter) {
+                    if (filter.compareOperator) {
+                        this.setCompareOperator(filter.compareOperator);
+                    }
+
+                    if (filter.logicalOperator) {
+                        this.setLogicalOperator(filter.logicalOperator);
+                    }
+
+                    if (typeof filter.sortOrder === "string") {
+                        this.setSortOrder(filter.sortOrder);
+                    }
+                }.bind(this)
             };
 
             PRIVATE.set(this, inst);
 
-            var me  = this,
-                $ui = me.$ui = parseHTML(
-                    fillTemplate(FilterColumnTemplate, inst.opt)
-                ).firstChild,
-                uiFind          = inst.uiFind = $ui.querySelector.bind($ui),
-                BASE_SELECTOR   = "." + CSS_CLASS_BASE,
-                emit            = me.emit.bind(me);
+            var
+            me  = this,
+            $ui = me.$ui = parseHTML(
+                fillTemplate(FilterColumnTemplate, inst.opt)
+            ).firstChild,
+            uiFind          = inst.uiFind = $ui.querySelector.bind($ui),
+            BASE_SELECTOR   = "." + CSS_CLASS_BASE,
+            emit            = me.emit.bind(me),
+            evalDirtyState  = me.evalDirtyState.bind(me);
 
             inst.inputHolder        = uiFind(BASE_SELECTOR + "-input-holder");
             inst.infoKeywords       = uiFind(BASE_SELECTOR + "-info-keywords");
             inst.compareOperator    = uiFind("select[name='compareOperator']");
             inst.logicalOperator    = uiFind("select[name='logicalOperator']");
             inst.sortOrder          = uiFind("select[name='sortOrder']");
-
-            // Build the input for this widget
-            switch (inst.opt.column.Type) {
-                case "User":
-                case "UserMulti":
-                    buildUserField.call(me);
-                    break;
-
-                case "Counter":
-                case "Number":
-                case "RatingCount":
-                case "AverageRating":
-                case "Likes":
-                    buildNumberField.call(me);
-                    break;
-
-                case "Computed":
-                    // FIXME: check for Content Type field
-                    //    Content Type Attribute:
-                    //      Name: "ContentType"
-                    //      PIAttribute:"ContentTypeID"
-                    //      StaticName:"ContentType"
-
-                    buildTextField.call(me);
-                    break;
-
-                case "DateTime":
-                    buildDateTimeField.call(me);
-                    break;
-
-                case "Choice":
-                case "MultiChoice":
-                    buildChoiceField.call(me);
-                    break;
-
-                case "Lookup":
-                case "LookupMulti":
-                    buildLookupField.call(me);
-                    break;
-
-                case "Attachments":
-                    buildAttachmentField.call(me);
-                    break;
-
-                default:
-                    buildTextField.call(me);
-            }
-
-            inst.inputWdg.appendTo(inst.inputHolder);
 
             domAddEventListener(uiFind(BASE_SELECTOR + "-info-optLink"), "click", function(){
                 me.toggleOptions();
@@ -157,8 +125,8 @@ define([
                 emit("down");
             });
 
-            domAddEventListener(inst.compareOperator, "change", evalDirtyState.bind(this));
-            domAddEventListener(inst.sortOrder, "change", evalDirtyState.bind(this));
+            domAddEventListener(inst.compareOperator,   "change", evalDirtyState);
+            domAddEventListener(inst.sortOrder,         "change", evalDirtyState);
 
             this.onDestroy(function () {
                 Object.keys(inst, function(instProp){
@@ -185,23 +153,20 @@ define([
         },
 
         /**
+         * Hides the link on the Filter Column that allows
+         * the user to show/hide the filter options
+         */
+        hideOptionsToggle: function(){
+            domAddClass(this.getEle(), CSS_CLASS_BASE + "--noOptionsToggle");
+        },
+
+        /**
          * returns an array of keywords from the value entered.
          *
          * @return {Array<String>}
          */
         getKeywords: function() {
-            var opt         = PRIVATE.get(this).opt,
-                delimiter   = opt.delimeter || ";",
-                reIgnore    = opt.ignoreKeywords;
-
-            return this.getValue()
-                .split(delimiter)
-                .map(function(keyword){
-                    return keyword.trim();
-                })
-                .filter(function(keyword){
-                    return (keyword && !reIgnore.test(keyword));
-                });
+            return this.getValue();
         },
 
         /**
@@ -226,6 +191,24 @@ define([
         },
 
         /**
+         * Returns the value currently defined for the input displayed
+         * inside of the FilterColumn
+         *
+         * @return {String|Array}
+         *  Depending on the type of column, getValue will either be a
+         *  `String` or `Array`
+         */
+        getValue: function(){
+            var inst = PRIVATE.get(this);
+
+            if (inst.inputWdg && inst.inputWdg.getValue) {
+                return inst.inputWdg.getValue();
+            }
+
+            return "";
+        },
+
+        /**
          * Sets the filter with the default values. Any of the values provided by
          * FilterModel can be set.
          *
@@ -234,29 +217,18 @@ define([
          * @returns {Promise}
          */
         setFilter: function (filter) {
-            setFieldCommonFilters.call(this, filter);
+            var inst = PRIVATE.get(this);
+
+            inst.setFieldCommonFilters.call(this, filter);
 
             var response = Promise.resolve();
 
             if (filter && Array.isArray(filter.values)) {
-                var inst = PRIVATE.get(this);
-                response.then(inst.inputWdg.setValue(filter.values.join(inst.opt.delimiter)));
-                evalDirtyState.call(this);
+                response = response.then(inst.inputWdg.setValue(filter.values.join(inst.opt.delimiter)));
+                this.evalDirtyState();
             }
 
             return response;
-        },
-
-        /**
-         * Returns the value currently defined for the Column displayed
-         * inside of the FilterColumn
-         *
-         * @return {String|Array}
-         *  Depending on the type of column, getValue will either be a
-         *  `String` or `Array`
-         */
-        getValue: function(){
-            return PRIVATE.get(this).inputWdg.getValue();
         },
 
         /**
@@ -287,7 +259,7 @@ define([
         setLogicalOperator: function(internalLogicalOperator) {
             var logicalOperator = PRIVATE.get(this).logicalOperator;
             logicalOperator.value = internalLogicalOperator;
-            evalDirtyState.call(this);
+            this.evalDirtyState();
         },
 
         /**
@@ -298,7 +270,7 @@ define([
         setSortOrder: function(internalSortOrder){
             var sortOrder = PRIVATE.get(this).sortOrder;
             sortOrder.value = internalSortOrder;
-            evalDirtyState.call(this);
+            this.evalDirtyState();
         },
 
         /**
@@ -334,7 +306,7 @@ define([
                 domRemoveClass($ui, CSS_CLASS_HIDE_INPUT);
             }
 
-            evalDirtyState.call(this);
+            this.evalDirtyState();
         },
 
         /**
@@ -353,263 +325,52 @@ define([
                     option.removeAttribute("selected");
                 }
             });
+        },
+
+        /**
+         * Evaluates the filter column and set the dirty state on it if
+         * it finds that it has been changed.
+         *
+         * @returns {boolean}
+         */
+        evalDirtyState: function() {
+            var inst                    = PRIVATE.get(this),
+                compareOperatorValue    = inst.compareOperator.value,
+                isCompareOperatorDirty  = compareOperatorValue === "IsNull" || compareOperatorValue === "IsNotNull",
+                isSortOrderDirty        = !!inst.sortOrder.value,
+                $ui                     = this.getEle(),
+                val                     = this.getValue(),
+                isUserInputDirty;
+
+            if (typeof val === "string") {
+                isUserInputDirty = !!val;
+
+            } else if (Array.isArray(val)) {
+                isUserInputDirty = !!val.length;
+            }
+
+            if (!isCompareOperatorDirty) {
+                domRemoveClass($ui, CSS_CLASS_HIDE_INPUT);
+
+            } else {
+                domAddClass($ui, CSS_CLASS_SHOW_OPTIONS);
+                domAddClass($ui, CSS_CLASS_HIDE_INPUT);
+            }
+
+            if (isUserInputDirty || isSortOrderDirty || isCompareOperatorDirty) {
+                domAddClass($ui, CSS_CLASS_IS_DIRTY);
+                return true;
+            }
+
+            domRemoveClass($ui, CSS_CLASS_IS_DIRTY);
+            return false;
         }
     };
 
-    /**
-     * Evaluates the filter column dirty state and marks it as such
-     *
-     * @private
-     *
-     * @returns {boolean}
-     */
-    function evalDirtyState() {
-        var inst                    = PRIVATE.get(this),
-            compareOperatorValue    = inst.compareOperator.value,
-            isCompareOperatorDirty  = compareOperatorValue === "IsNull" || compareOperatorValue === "IsNotNull",
-            isSortOrderDirty        = !!inst.sortOrder.value,
-            isUserInputDirty        = !!inst.inputWdg.getValue(),
-            $ui                     = this.getEle();
-
-        if (!isCompareOperatorDirty) {
-            domRemoveClass($ui, CSS_CLASS_HIDE_INPUT);
-
-        } else {
-            domAddClass($ui, CSS_CLASS_SHOW_OPTIONS);
-            domAddClass($ui, CSS_CLASS_HIDE_INPUT);
-        }
-
-        if (isUserInputDirty || isSortOrderDirty || isCompareOperatorDirty) {
-            domAddClass($ui, CSS_CLASS_IS_DIRTY);
-            return true;
-        }
-
-        domRemoveClass($ui, CSS_CLASS_IS_DIRTY);
-        return false;
-    }
-
-    function getChoiceFieldKeywords() {
-        return this.getValue();
-    }
-
-    function setChoiceFieldFilter(filter) {
-        setFieldCommonFilters.call(this, filter);
-
-        var response = Promise.resolve();
-
-        if (filter && Array.isArray(filter.values)) {
-            var inst = PRIVATE.get(this);
-            response.then(inst.inputWdg.setValue(filter.values));
-            evalDirtyState.call(this);
-        }
-
-        return response;
-    }
-
-    function setPeoplePickerFilter(filter) {
-        setFieldCommonFilters.call(this, filter);
-        PRIVATE.get(this).inputWdg.add(filter.values);
-        evalDirtyState.call(this);
-    }
-
-    function setFieldCommonFilters(filter) {
-        if (filter.compareOperator) {
-            this.setCompareOperator(filter.compareOperator);
-        }
-
-        if (filter.logicalOperator) {
-            this.setLogicalOperator(filter.logicalOperator);
-        }
-
-        if (typeof filter.sortOrder === "string") {
-            this.setSortOrder(filter.sortOrder);
-        }
-    }
-
-    function buildTextField() {
-        var inst = PRIVATE.get(this);
-
-        inst.inputWdg = inst.opt.TextField.create({
-            column:             inst.opt.column,
-            hideLabel:          true,
-            hideDescription:    true,
-            placeholder:        inst.opt.inputKeywords
-        });
-
-        inst.inputWdg.on("change", function() {
-            evalDirtyState.call(this);
-        }.bind(this));
-    }
-
-    function buildUserField() {
-        this.setKeywordInfo("");
-
-        var
-        inst                = PRIVATE.get(this),
-        // FIXME: should this move to FilterPanel? or maybe in .init()?
-        FilterPeoplePicker  = inst.opt.PeoplePicker.extend({
-            getValue: function(){
-                return this.getSelected().map(function(person){
-                    return {
-                        ID:             person.ID,
-                        Name:           person.Name,
-                        AccountName:    person.AccountName
-                    };
-                });
-            },
-            setValue: function(){
-                return this.add.apply(this, arguments);
-            }
-        }),
-        peoplePicker    = inst.inputWdg = FilterPeoplePicker.create(),
-        checkDirtyState = function () {
-            setDirtyIndicator.call(this, !!peoplePicker.getSelected().length);
-        }.bind(this);
-
-        ['remove', 'select'].forEach(function(evName){
-            peoplePicker.on(evName, checkDirtyState);
-        });
-
-        this.getKeywords = peoplePicker.getValue.bind(peoplePicker);
-        this.setFilter   = setPeoplePickerFilter;
-    }
-
-    function buildNumberField() {
-        var labels = PRIVATE.get(this).opt.labels;
-
-        this.addCompareOperators([
-            {
-                value: "Gt",
-                title: labels.greaterThan
-            },
-            {
-                value: "Lt",
-                title: labels.lessThan
-            }
-        ]);
-
-        this.setCompareOperatorDefault("Eq");
-
-        buildTextField.call(this);
-    }
-
-    function buildDateTimeField(){
-        var labels = PRIVATE.get(this).opt.labels;
-
-        this.addCompareOperators([
-            {
-                value: "Gt",
-                title: labels.after
-            },
-            {
-                value: "Lt",
-                title: labels.before
-            }
-        ]);
-
-        // FIXME: use a date picker widget
-        buildTextField.call(this);
-    }
-
-    function buildAttachmentField() {
-        var inst    = PRIVATE.get(this),
-            opt     = inst.opt;
-
-        this.setCompareOperatorDefault("Eq");
-        this.setKeywordInfo(opt.labels.attachmentsInfo);
-
-        domAddClass(this.getEle(), CSS_CLASS_BASE + "--noOptionsToggle");
-        var attachmentsField = inst.inputWdg = opt.AttachmentsField.create({
-            hideLabel:  true,
-            column:     opt.column
-        });
-
-        attachmentsField.on("change", function(){
-            var selectedValues  = attachmentsField.getValue(),
-                totalSelected   = selectedValues.length > 1 ||
-                                (selectedValues[0] && selectedValues[0] !== "");
-
-            setDirtyIndicator.call(this, !!totalSelected);
-        }.bind(this));
-
-        this.getKeywords = getChoiceFieldKeywords;
-    }
-
-    function buildChoiceField(options){
-        var
-        inst    = PRIVATE.get(this),
-        opt     = inst.opt,
-        column  = opt.column,
-        choice;
-
-        // Change the type temporarily so that the widget is
-        // created with Checkboxes
-        choice = inst.inputWdg = opt.ChoiceField.create(
-            objectExtend(
-                {
-                    column:     column,
-                    hideLabel:  true,
-                    isMulti:    true
-                },
-                options
-            )
-        );
-
-        choice.on("change", function(){
-            var totalSelected = choice.getValue().length;
-
-            setDirtyIndicator.call(this, !!totalSelected);
-
-            if (totalSelected) {
-                this.setKeywordInfo(fillTemplate(opt.labels.totalSelected, {total: totalSelected}));
-
-            } else {
-                this.setKeywordInfo("");
-            }
-        }.bind(this));
-
-        if (column.Type === "Choice") {
-            this.setCompareOperatorDefault("Eq");
-        }
-
-        this.setKeywordInfo("");
-        this.getKeywords = getChoiceFieldKeywords.bind(this);
-
-        this.setFilter = setChoiceFieldFilter;
-    }
-
-    function buildLookupField() {
-        var
-        inst    = PRIVATE.get(this),
-        opt     = inst.opt;
-
-        inst.inputWdg = opt.LookupField.create({
-            column:             opt.column,
-            hideLabel:          true,
-            hideDescription:    true
-        });
-    }
-
-    /**
-     * Sets the column dirty indicator
-     *
-     * @param {Boolean} isDirty
-     */
-    function setDirtyIndicator(isDirty){
-        var $ui = this.getEle();
-        if (isDirty) {
-            domAddClass($ui, CSS_CLASS_IS_DIRTY);
-
-        } else {
-            domRemoveClass($ui, CSS_CLASS_IS_DIRTY);
-        }
-    }
-
-
     FilterColumn = EventEmitter.extend(Widget, FilterColumn);
     FilterColumn.defaults = {
-        column:     {},
-        delimiter:  ';'
+        column:         {},
+        inputKeywords:  ''
     };
 
     return FilterColumn;

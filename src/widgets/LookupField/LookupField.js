@@ -42,10 +42,7 @@ define([
     LookupFieldTemplate
 ) {
 
-    // FIXME: Support CAMLQuery
-    // FIXME: Support SortOrder
-    // FIXME: support search box
-    // FIXME: need to use Map
+    // FIXME: support search box input
 
     var
     PRIVATE             = dataStore.create(),
@@ -69,19 +66,36 @@ define([
      *
      * @param {ListColumnModel} options.column
      *  The list column model for the LookupField.
-     *  This column definition (if not of type ListColumnModel) should have
+     *  This column definition (if not of type `ListColumnModel`) should have
      *  an attribute called `List` with the Name or UUID of the list.
      *
      * @param {Array} [options.fields=[options.column.ShowField]]
      *  List of column fields from the lookup list to be retrieved. Defaults to
-     *  the column `ShowField` value or the `Title` column.
+     *  the column `ShowField` value or the `Title` column. Note that if
+     *  `options.queryOptions` (below) defines a `CAMLViewFields`, then that
+     *  will take precedence and the value in the options will not be used.
+     *
+     * @param {Array<String>} [options.searchColumns=[optons.column.ShowField]
+     *  A list of column internal names that will be used to search against
+     *  when use types in a value in the input box. Defaults to the column
+     *  definition `ShowField` setting.
      *
      * @param {Widget} [options.ListWidget=List]
      *  The List widget to use for displaying the items.
      *
      * @param {Widget} [options.SelectedItemWidget=SelectedItem]
      *
-     * @fires LookupField#selected:remove
+     * @param {Boolean} [options.allowMultiples]
+     *  Allow multiple values to be selected. If set, value will override
+     *  whatever is defined in the `Type` property of `options.column`
+     *
+     * @param {Object} [options.queryOptions={}]
+     *  Additional options to be used in querying the lookup list. With the
+     *  exception of `listName`, all other options supported by
+     *  `getListItems` can be defined.
+     *
+     * @fires LookupField#item:selected
+     * @fires LookupField#item:unselected
      */
     LookupField = /** @lends LookupField.prototype */{
         init: function (options) {
@@ -92,25 +106,34 @@ define([
                 list:                   '',
                 fields:                 '',
                 listWdg:                null,
-                selected:               new Map() // Keeps ListItemRow->Widget associations
+                selected:               new Map(), // Keeps ListItemRow->Widget associations
+                allowMultiples:         false
             },
             opt = inst.opt;
 
             PRIVATE.set(this, inst);
 
-            opt.lang    = String(WINDOW_NAVIGATOR.language || WINDOW_NAVIGATOR.userLanguage || "en-US");
+            opt.lang    = opt.lang || String(WINDOW_NAVIGATOR.language || WINDOW_NAVIGATOR.userLanguage || "en-US");
             opt.labels  = opt.i18n[opt.lang] || opt.i18n["en-US"];
+
+            opt._selectedCountUI = fillTemplate(opt.labels.selectedCount, {
+                count: '<span class="' + CSS_CLASS_BASE + '-selectedCount-number"></span>'
+            });
+
+            if (!Array.isArray(opt.searchColumns)) {
+                opt.searchColumns = [opt.column.ShowField || 'Title'];
+            }
 
             var
             $ui             = this.$ui = parseHTML(fillTemplate(LookupFieldTemplate, opt)).firstChild,
             BASE_SELECTOR   = "." + CSS_CLASS_BASE,
             uiFind          = $ui.querySelector.bind($ui),
             $input          = inst.$input = uiFind(BASE_SELECTOR + "-input > input"),
-            on              = this.on.bind(this),
-            selected        = inst.selected;
+            on              = this.on.bind(this);
 
             inst.$selectedHolder    = uiFind(BASE_SELECTOR + "-selected");
             inst.$choicesHolder     = uiFind(BASE_SELECTOR + "-input-choices");
+            inst.$count             = uiFind(BASE_SELECTOR + '-selectedCount-number');
 
             if (opt.hideLabel) {
                 domAddClass($ui, CSS_CLASS_NO_LABEL);
@@ -119,6 +142,16 @@ define([
             if (opt.hideDescription) {
                 domAddClass($ui, CSS_CLASS_NO_DESCRIPTION);
             }
+
+            // Determine if multiple selections are allowed
+            if (typeof opt.allowMultiples === "boolean") {
+                inst.allowMultiples =  opt.allowMultiples;
+
+            } else if (opt.column && opt.column.Type) {
+                inst.allowMultiples =  opt.column.Type === "LookupMulti";
+            }
+
+            setSelectedCount.call(this);
 
             // Get the list name to be used in the lookup
             if (opt.column.List === "Self") {
@@ -144,6 +177,11 @@ define([
             //   setup events
             //---------------------------------
 
+            domAddEventListener(uiFind(BASE_SELECTOR + "-items-clear"), "click", function(ev){
+                ev.stopPropagation();
+                clearAllSelected.call(this);
+            }.bind(this));
+
             // When clicking on any part of the -items section, focus on input field
             domAddEventListener(uiFind(BASE_SELECTOR + "-items"), "click", function(ev){
                 if (ev.target !== $input) {
@@ -160,11 +198,11 @@ define([
 
             // User removes an item from the selected list
             on("selected:remove", function(itemData){
-                if (selected.has(itemData)){
-                    selected.get(itemData).destroy();
-                    selected["delete"](itemData);
+                removeItemFromSelected.call(this, itemData);
+                if (inst.listWdg){
+                    inst.listWdg.unselectItem(itemData);
                 }
-            });
+            }.bind(this));
 
             // Load first page of data and add it to the list of selectable items.
             retrieveListData.call(this).then(function(rows){
@@ -176,16 +214,11 @@ define([
                     inst.showChoicesListener.remove();
                 }
 
+                clearAllSelected.call(this);
+
                 if (inst.listWdg) {
                     inst.listWdg.destroy();
                 }
-
-                selected.forEach(function(selectedWdg){
-                    if (selectedWdg) {
-                        selectedWdg.destroy();
-                    }
-                });
-                selected.clear();
 
                 PRIVATE.delete(this);
             }.bind(this));
@@ -226,6 +259,28 @@ define([
                 inst.showChoicesListener.remove();
                 inst.showChoicesListener = null;
             }
+        },
+
+        /**
+         * returns an array with the selected items. The item
+         * definition (ex. `ListItemModel`) is returned in the array.
+         *
+         * @return {Array<Object|ListItemModel>}
+         */
+        getSelected: function(){
+            var selectedKeys    = PRIVATE.get(this).selected.keys(),
+                response        = [],
+                selectedItem;
+
+            while (!(selectedItem = selectedKeys.next()).done) {
+                response.push(selectedItem.value);
+            }
+
+            return response;
+        },
+
+        setSelected: function(){
+            debugger; // jshint ignore:line
         }
     };
 
@@ -238,12 +293,18 @@ define([
 
     function retrieveListData() {
         var me      = this,
-            inst    = PRIVATE.get(me);
+            inst    = PRIVATE.get(me),
+            queryOptions = objectExtend(
+                {},
+                inst.opt.queryOptions,
+                { listName: inst.list }
+            );
 
-        return getListItems({
-            listName:       inst.list,
-            CAMLViewFields: inst.fields
-        });
+        if (!queryOptions.CAMLViewFields) {
+            queryOptions.CAMLViewFields = inst.fields;
+        }
+
+        return getListItems(queryOptions);
     }
 
     function addItemsToUI(rows) {
@@ -256,9 +317,11 @@ define([
 
         inst.listWdg = inst.opt.ListWidget.create({items: rows});
 
-        inst.listWdg.on("item:selected", showItemAsSelected.bind(this));
-        inst.listWdg.on("item:unselected", removeItemFromSelected.bind(this));
+        inst.listWdg.on("item:selected", function(itemData){
+            showItemAsSelected.call(this, itemData);
+        }.bind(this));
 
+        inst.listWdg.on("item:unselected", removeItemFromSelected.bind(this));
         inst.listWdg.appendTo(inst.$choicesHolder);
     }
 
@@ -272,12 +335,20 @@ define([
             return;
         }
 
+        if (!inst.allowMultiples) {
+            clearAllSelected.call(this);
+        }
+
         itemWdg = inst.opt.SelectedItemWidget.create({
             item: itemData
         });
-        itemWdg.appendTo(inst.$selectedHolder);
+
         // Pipe events of the Selected Widget to LookupField prefixed with `selected:`
         itemWdg.pipe(this, "selected:");
+        itemWdg.appendTo(inst.$selectedHolder);
+
+        // FIXME: on remove - update List to show item "unchecked"
+
         itemWdg.onDestroy(function(){
             if (selected.has(itemData)) {
                 selected["delete"](itemData);
@@ -285,6 +356,17 @@ define([
         });
 
         selected.set(itemData, itemWdg);
+        setSelectedCount.call(this);
+
+        /**
+         * An item was added to the list of selected items.
+         * The selected item's data is provided to event callbacks
+         *
+         * @event LookupField#item:selected
+         *
+         * @type {Object}
+         */
+        this.emit("item:selected", itemData);
     }
 
     function removeItemFromSelected(itemData){
@@ -293,20 +375,56 @@ define([
             selected.get(itemData).destroy();
             selected["delete"](itemData);
         }
+        setSelectedCount.call(this);
+
+        /**
+         * An item was added to the list of selected items.
+         * The selected item's data is provided to event callbacks
+         *
+         * @event LookupField#item:unselected
+         *
+         * @type {Object}
+         */
+        this.emit("item:unselected", itemData);
     }
 
+    function clearAllSelected() {
+        var selected = PRIVATE.get(this).selected;
+
+        selected.forEach(function(selectedWdg){
+            if (selectedWdg) {
+                selectedWdg.remove();
+                selectedWdg.destroy();
+            }
+        });
+
+        selected.clear();
+    }
+
+    function setSelectedCount(){
+        var inst    = PRIVATE.get(this),
+            $count  = inst.$count;
+        if ($count) {
+            $count.textContent = inst.selected.size;
+        }
+    }
 
     LookupField = EventEmitter.extend(Widget, LookupField);
     LookupField.defaults = {
-        column:             {},
+        column:             null,
         fields:             null,
         hideLabel:          false,
         hideDescription:    false,
+        queryOptions:       null,
+        searchColumns:      null,
         ListWidget:         List,
         SelectedItemWidget: SelectedItem,
+        lang:               '',
         i18n:               {
             'en-US': {
-                placeholder: "Choose..."
+                placeholder:    "Choose...",
+                selectedCount:  "{{count}} Selected",
+                clear:          "Clear"
             }
         }
     };

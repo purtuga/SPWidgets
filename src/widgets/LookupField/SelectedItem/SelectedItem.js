@@ -54,7 +54,9 @@ define([
                 fillTemplate(this.getTemplate(), inst.opt)
             ).firstChild;
 
-            domAddEventListener(this.$ui.querySelector("." + CSS_CLASS_REMOVE_BUTTON), "click", function(ev){
+            inst.$removeBtn = this.$ui.querySelector("." + CSS_CLASS_REMOVE_BUTTON);
+
+            domAddEventListener(inst.$removeBtn, "click", function(ev){
                 ev.stopPropagation();
                 /**
                  * User clicked on the Remove button. The `item` object provided on input
@@ -78,6 +80,13 @@ define([
          */
         getTemplate: function(){
             return SelectedItemTemplate;
+        },
+
+        /**
+         * Same as user clicking the remove button of the selected item
+         */
+        remove: function(){
+            PRIVATE.get(this).$removeBtn.click();
         }
     };
 

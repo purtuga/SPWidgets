@@ -16,13 +16,22 @@ define([
     "../Message/Message",
     "./ColumnSelector/ColumnSelector",
     "./FilterColumn/FilterColumn",
+    "./FilterColumnTextField/FilterColumnTextField",
+    "./FilterColumnAttachmentsField/FilterColumnAttachmentsField",
+    "./FilterColumnChoiceField/FilterColumnChoiceField",
+    "./FilterColumnLookupField/FilterColumnLookupField",
+    "./FilterColumnNumberField/FilterColumnNumberField",
+    "./FilterColumnUserField/FilterColumnUserField",
+    "./FilterColumnDateTimeField/FilterColumnDateTimeField",
+
     "./FiltersCollection",
 
-    "../TextField/TextField",
-    "../ChoiceField/ChoiceField",
-    "../LookupField/LookupField",
-    "../PeoplePicker/PeoplePicker",
-    "./FilterAttachmentsField/FilterAttachmentsField",
+    // FIXME: don't need thse... remove them...
+    //"../TextField/TextField",
+    //"../ChoiceField/ChoiceField",
+    //"../LookupField/LookupField",
+    //"../PeoplePicker/PeoplePicker",
+    //"./FilterAttachmentsField/FilterAttachmentsField",
 
     "../../spapi/getListColumns",
 
@@ -48,13 +57,21 @@ define([
     Message,
     ColumnSelector,
     FilterColumn,
+    FilterColumnTextField,
+    FilterColumnAttachmentsField,
+    FilterColumnChoiceField,
+    FilterColumnLookupField,
+    FilterColumnNumberField,
+    FilterColumnUserField,
+    FilterColumnDateTimeField,
+
     FiltersCollection,
 
-    TextField,
-    ChoiceField,
-    LookupField,
-    PeoplePicker,
-    FilterAttachmentsField,
+    //TextField,
+    //ChoiceField,
+    //LookupField,
+    //PeoplePicker,
+    //FilterAttachmentsField,
 
     getListColumns,
 
@@ -110,7 +127,7 @@ define([
 
             PRIVATE.set(this, inst);
 
-            opt.lang    = String(WINDOW_NAVIGATOR.language || WINDOW_NAVIGATOR.userLanguage || "en-US");
+            opt.lang    = opt.lang || String(WINDOW_NAVIGATOR.language || WINDOW_NAVIGATOR.userLanguage || "en-US");
             opt.labels  = opt.i18n[opt.lang] || opt.i18n["en-US"];
 
             var me  = this,
@@ -299,7 +316,7 @@ define([
     };
 
     /**
-     * Adds a column to the UI, if not already there.
+     * Adds a column to the UI for the user to define criteria, if not already there.
      *
      * @private
      *
@@ -329,10 +346,59 @@ define([
         if (colList.length) {
             colList.forEach(function(colDef){
                 var colName     = colDef.StaticName,
-                    colValue    = { values: [] };
+                    colValue    = { values: []},
+                    FilterColumnConstructor;
 
                 if (!colsWdg[colName]){
-                    colsWdg[colName] = FilterColumn.create(
+
+                    // Get the constructor based on type
+                    switch (colDef.Type) {
+                        case "User":
+                        case "UserMulti":
+                            FilterColumnConstructor = opt.UserWidget;
+                            break;
+
+                        case "Counter":
+                        case "Number":
+                        case "RatingCount":
+                        case "AverageRating":
+                        case "Likes":
+                            FilterColumnConstructor = opt.NumberWidget;
+                            break;
+
+                        case "Computed":
+                            // FIXME: check for Content Type field
+                            //    Content Type Attribute:
+                            //      Name: "ContentType"
+                            //      PIAttribute:"ContentTypeID"
+                            //      StaticName:"ContentType"
+
+                            FilterColumnConstructor = opt.TextWidget;
+                            break;
+
+                        case "DateTime":
+                            FilterColumnConstructor = opt.DateTimeWidget;
+                            break;
+
+                        case "Choice":
+                        case "MultiChoice":
+                            FilterColumnConstructor = opt.ChoiceWidget;
+                            break;
+
+                        case "Lookup":
+                        case "LookupMulti":
+                            FilterColumnConstructor = opt.LookupWidget;
+                            break;
+
+                        case "Attachments":
+                            FilterColumnConstructor = opt.AttachmentsWidget;
+                            break;
+
+                        default:
+                            FilterColumnConstructor = opt.TextWidget;
+                    }
+
+                    colsWdg[colName] = FilterColumnConstructor.create(
                         objectExtend({}, opt, {column: colDef})
                     );
 
@@ -374,15 +440,21 @@ define([
         columns:            null,
         ignoreKeywords:     /^(of|and|a|an|to|by|the|or|from)$/i,
         delimiter:          ';',
-        TextField:          TextField,
-        ChoiceField:        ChoiceField,
-        AttachmentsField:   FilterAttachmentsField,
-        PeoplePicker:       PeoplePicker,
-        LookupField:        LookupField,
+
+        FilterColumn:       FilterColumn,   // Base class. Use it to build other fields
+        TextWidget:         FilterColumnTextField,
+        AttachmentsWidget:  FilterColumnAttachmentsField,
+        ChoiceWidget:       FilterColumnChoiceField,
+        LookupWidget:       FilterColumnLookupField,
+        NumberWidget:       FilterColumnNumberField,
+        UserWidget:         FilterColumnUserField,
+        DateTimeWidget:     FilterColumnDateTimeField,
+
         // FIXME: add all other modules, like collection, model, and internal widgets here as well.
 
         hideHeader:         false,
         selectFieldsLayout: '3-col',    // 1, 2 or 3 -col
+        lang:               '',
         i18n: {
             "en-US": {
                 title:          "Filter",
@@ -417,7 +489,11 @@ define([
                 // Sort Order
                 sort:           "Sort",
                 asc:            "Ascending",
-                des:            "Descending"
+                des:            "Descending",
+
+                // Attachments
+                "yes": "Yes",
+                "no":  "No"
             }
         }
     };

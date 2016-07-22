@@ -59,10 +59,12 @@ define([
     };
 
     function setupDemo1() {
+        var inst = PRIVATE.get(this);
+
         getListColumns("Tasks")
         .then(function(columns){
-            this.demo1 = LookupField.create({column: columns.getColumn("Predecessors")});
-            this.demo1.appendTo(this.getEle().querySelector("#lookupFieldDemo_1"));
+            inst.demo1 = LookupField.create({column: columns.getColumn("Predecessors")});
+            inst.demo1.appendTo(this.getEle().querySelector("#lookupFieldDemo_1"));
 
         }.bind(this))["catch"](function(e){
             console.log(e); // jshint ignore:line
