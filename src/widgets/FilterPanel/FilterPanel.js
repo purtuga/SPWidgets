@@ -366,12 +366,12 @@ define([
                             FilterColumnConstructor = opt.NumberWidget;
                             break;
 
+            // FIXME: check for Content Type field
+            //    Content Type Attribute:
+            //      Name: "ContentType"
+            //      PIAttribute:"ContentTypeID"
+            //      StaticName:"ContentType"
                         case "Computed":
-                            // FIXME: check for Content Type field
-                            //    Content Type Attribute:
-                            //      Name: "ContentType"
-                            //      PIAttribute:"ContentTypeID"
-                            //      StaticName:"ContentType"
 
                             FilterColumnConstructor = opt.TextWidget;
                             break;

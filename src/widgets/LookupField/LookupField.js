@@ -12,10 +12,13 @@ define([
     "vendor/domutils/domAddClass",
     "vendor/domutils/domRemoveClass",
     "vendor/domutils/domHasClass",
+    "vendor/domutils/DomKeyboardInteraction",
 
     "./SelectedItem/SelectedItem",
     "../List/List",
     "../../spapi/getListItems",
+    "../../sputils/getCamlLogical",
+    "../../sputils/xmlEscape",
 
     "text!./LookupField.html",
     //-------------------------------
@@ -34,15 +37,16 @@ define([
     domAddClass,
     domRemoveClass,
     domHasClass,
+    DomKeyboardInteraction,
 
     SelectedItem,
     List,
     getListItems,
+    getCamlLogical,
+    xmlEscape,
 
     LookupFieldTemplate
 ) {
-
-    // FIXME: support search box input
 
     var
     PRIVATE             = dataStore.create(),
@@ -75,7 +79,7 @@ define([
      *  `options.queryOptions` (below) defines a `CAMLViewFields`, then that
      *  will take precedence and the value in the options will not be used.
      *
-     * @param {Array<String>} [options.searchColumns=[optons.column.ShowField]
+     * @param {Array<String>} [options.searchColumns=[options.column.ShowField]
      *  A list of column internal names that will be used to search against
      *  when use types in a value in the input box. Defaults to the column
      *  definition `ShowField` setting.
@@ -151,8 +155,6 @@ define([
                 inst.allowMultiples =  opt.column.Type === "LookupMulti";
             }
 
-            setSelectedCount.call(this);
-
             // Get the list name to be used in the lookup
             if (opt.column.List === "Self") {
                 inst.list = opt.column.getList().Name;
@@ -160,6 +162,8 @@ define([
             } else {
                 inst.list = opt.column.List;
             }
+
+            setSelectedCount.call(this);
 
             // Define the Query Fields
             if (!Array.isArray(opt.fields)) {
@@ -173,10 +177,20 @@ define([
                 }, "") +
                 '</ViewFields>';
 
+            // Add keyboard interaction to the CHoices from the input field
+
+            // Setup keyboard interaction between input field and list of choices
+            inst.keyboardInteraction = DomKeyboardInteraction.create({
+                input:              $input,
+                eleGroup:           inst.$choicesHolder,
+                focusClass:         'spwidgets-ListItem--hover',
+                eleSelector:        '.ms-ListItem'
+            });
+
+
             //---------------------------------
             //   setup events
             //---------------------------------
-
             domAddEventListener(uiFind(BASE_SELECTOR + "-items-clear"), "click", function(ev){
                 ev.stopPropagation();
                 clearAllSelected.call(this);
@@ -190,7 +204,38 @@ define([
             });
 
             // Typing in the input field, searches the list
-            domAddEventListener($input, "keyup", handleKeywordInput.bind(this));
+            var currentRetrieval,
+                lastSearchString = "";
+            domAddEventListener($input, "keyup", function(ev){
+                var thisSearchString = String(ev.target.value).trim();
+
+                // If search string is the same as the last one, exit.
+                // no need to pull results
+                if (thisSearchString === lastSearchString) {
+                    return;
+                }
+
+                lastSearchString = thisSearchString;
+
+                if (currentRetrieval) {
+                    clearTimeout(currentRetrieval);
+                }
+
+                var thisIteration = setTimeout(function(){
+                    if (thisIteration !== currentRetrieval) {
+                        return;
+                    }
+
+                    retrieveListData.call(this, thisSearchString)
+                        .then(
+                            addItemsToChoices.bind(this)
+                        )["catch"](function(e){
+                            console.log(e);//jshint ignore:line
+                        });
+                }.bind(this), 300);
+
+                currentRetrieval = thisIteration;
+            }.bind(this));
 
             domAddEventListener($input, "focus", function(){
                 this.showChoices();
@@ -206,7 +251,7 @@ define([
 
             // Load first page of data and add it to the list of selectable items.
             retrieveListData.call(this).then(function(rows){
-                addItemsToUI.call(this, rows);
+                addItemsToChoices.call(this, rows);
             }.bind(this));
 
             this.onDestroy(function () {
@@ -218,6 +263,10 @@ define([
 
                 if (inst.listWdg) {
                     inst.listWdg.destroy();
+                }
+
+                if (inst.keyboardInteraction) {
+                    inst.keyboardInteraction.destroy();
                 }
 
                 PRIVATE.delete(this);
@@ -284,14 +333,7 @@ define([
         }
     };
 
-
-    function handleKeywordInput(ev){
-
-        ev;
-
-    }
-
-    function retrieveListData() {
+    function retrieveListData(query) {
         var me      = this,
             inst    = PRIVATE.get(me),
             queryOptions = objectExtend(
@@ -304,10 +346,24 @@ define([
             queryOptions.CAMLViewFields = inst.fields;
         }
 
+        if (query) {
+            queryOptions.CAMLQuery = "<Query><Where>" +
+                getCamlLogical({
+                    type:   'OR',
+                    values: inst.opt.searchColumns.map(function(colName){
+                        return '<Contains><FieldRef Name="' + colName +
+                            '"/><Value Type="Text">' +
+                            xmlEscape.escape(query) +
+                            '</Value></Contains>';
+                    })
+                }) +
+                "</Where></Query>";
+        }
+
         return getListItems(queryOptions);
     }
 
-    function addItemsToUI(rows) {
+    function addItemsToChoices(rows) {
         var inst = PRIVATE.get(this);
 
         if (inst.listWdg) {
@@ -315,14 +371,14 @@ define([
             inst.listWdg = null;
         }
 
-        inst.listWdg = inst.opt.ListWidget.create({items: rows});
+        var listWdg = inst.listWdg = inst.opt.ListWidget.create({items: rows});
 
-        inst.listWdg.on("item:selected", function(itemData){
+        listWdg.on("item:selected", function(itemData){
             showItemAsSelected.call(this, itemData);
         }.bind(this));
 
-        inst.listWdg.on("item:unselected", removeItemFromSelected.bind(this));
-        inst.listWdg.appendTo(inst.$choicesHolder);
+        listWdg.on("item:unselected", removeItemFromSelected.bind(this));
+        listWdg.appendTo(inst.$choicesHolder);
     }
 
     function showItemAsSelected(itemData){

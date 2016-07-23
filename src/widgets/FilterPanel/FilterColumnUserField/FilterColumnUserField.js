@@ -16,7 +16,7 @@ define([
     PRIVATE = dataStore.stash,
 
     /**
-     * Widget description
+     * Filter Panel User field.
      *
      * @class FilterColumnUserField
      * @extends FilterColumn
@@ -45,7 +45,7 @@ define([
             return PRIVATE.get(this).inputWdg.getSelected();
         },
 
-        setValue: function(options){
+        setFilter: function(options){
             return PRIVATE.get(this).inputWdg.add(options);
         }
     };

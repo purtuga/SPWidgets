@@ -60,6 +60,7 @@ define([
      *   Promise is resolved with a Collection, or rejected with an Error object
      *
      * @see https://msdn.microsoft.com/en-us/library/websvclists.lists.getlistitems(v=office.14).aspx
+     * @see https://msdn.microsoft.com/en-us/library/office/ms467521.aspx
      *
      * @example
      *
@@ -67,7 +68,14 @@ define([
      *   listName: "tasks",
      *   cacheXML: true,
      *   async: false,
-     *   CAMLQuery: '<Query><OrderBy><FieldRef Name="Title"/></OrderBy></Query>',
+     *   CAMLQuery: '<Query>' +
+     *      '<Where>' +
+     *      '<Eq>' +
+     *          '<FieldRef Name="Author" LookupId="TRUE"/>" +
+     *          '<Value Type="Integer"><UserID/></Value>' +
+     *      '</Eq>' +
+     *      '</Where>
+     *      '<OrderBy><FieldRef Name="Title"/></OrderBy></Query>',
      *   CAMLViewFields: '<ViewFields><FieldRef Name="Title"/></ViewFields>'
      * })
      */
