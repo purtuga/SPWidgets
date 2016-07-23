@@ -38,6 +38,8 @@ define([
     ResultGroupTemplate
 ) {
 
+    // FIXME: convert to use DomKeyboardInteraction
+
     var
     PRIVATE = dataStore.create(),
 

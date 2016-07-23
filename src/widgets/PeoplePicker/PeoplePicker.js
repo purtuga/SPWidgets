@@ -14,6 +14,7 @@ define([
     "vendor/domutils/domFind",
     "vendor/domutils/domTriggerEvent",
     "vendor/domutils/domChildren",
+    "vendor/domutils/DomKeyboardInteraction",
 
     "../../spapi/searchPrincipals",
     "../../spapi/resolvePrincipals",
@@ -41,6 +42,7 @@ define([
     domFind,
     domTriggerEvent,
     domChildren,
+    DomKeyboardInteraction,
 
     searchPrincipals,
     resolvePrincipals,
@@ -151,14 +153,15 @@ define([
             inst.opt.UserProfileModel = inst.opt.UserProfileModel.extend({webURL: inst.opt.webURL});
             PRIVATE.set(this, inst);
 
-            var $ui         = this.$ui = parseHTML(
-                                fillTemplate(SPPeoplePickerTemplate, inst.opt)
-                            ).firstChild,
-                uiFind      = $ui.querySelector.bind($ui),
-                $input      = inst.$input = uiFind("input[name='search']"),
-                $searchBox  = inst.$searchBox = uiFind("." + CSS_CLASS_MS_PICKER_SEARCHBOX),
-                requestSuggestions,
-                bodyClickEv;
+            var
+            $ui         = this.$ui = parseHTML(
+                            fillTemplate(SPPeoplePickerTemplate, inst.opt)
+                        ).firstChild,
+            uiFind      = $ui.querySelector.bind($ui),
+            $input      = inst.$input = uiFind("input[name='search']"),
+            $searchBox  = inst.$searchBox = uiFind("." + CSS_CLASS_MS_PICKER_SEARCHBOX),
+            requestSuggestions,
+            bodyClickEv;
 
             inst.$groups    = uiFind(SELECTOR_BASE + "-suggestions-groups");
             inst.$inputCntr = uiFind(SELECTOR_BASE + "-searchFieldCntr");
@@ -187,64 +190,43 @@ define([
                 }.bind(this));
             }.bind(this));
 
+            // Add keyboard interaction to the Input field
+            var keyboardInteraction = inst.keyboardInteraction = DomKeyboardInteraction.create({
+                input:          $input,
+                eleGroup:       inst.$groups,
+                eleSelector:    "." + CSS_CLASS_MS_PICKER_BASE + '-result',
+                focusClass:     CSS_CLASS_MS_PICKER_BASE + '-result--focus'
+            });
+
+            keyboardInteraction.on("keyEnter", function(){
+                if (inst.resultGroup) {
+                    inst.resultGroup.selectCurrent();
+                }
+            });
+
+            keyboardInteraction.on("keyEsc", function(){
+                if (!$input.value) {
+                    domTriggerEvent(BODY, "click");
+                    $input.blur();
+                }
+                $input.value = "";
+            });
+
             // When user types, get suggestions
-            domAddEventListener($input, "keyup", function(ev){
-                var key         = ev.which || ev.keyCode,
-                    resultGroup = inst.resultGroup,
-                    stopEvent   = function() {
-                        ev.preventDefault();
-                        ev.stopPropagation();
-                        ev.stopImmediatePropagation();
-                    },
+            var lastSearchInput = "";
+            domAddEventListener($input, "keyup", function(/*ev*/){
+                var //key         = ev.which || ev.keyCode,
                     searchInput = String($input.value).trim();
+
+                if (lastSearchInput === searchInput) {
+                    return;
+                }
+                lastSearchInput = searchInput;
 
                 if (!searchInput) {
                     requestSuggestions = undefined;
                     clearSuggestions.call(this);
-
-                    // ESC key + no value: close suggestions panel
-                    if (key === 27 && !$input.value) {
-                        domTriggerEvent(BODY, "click");
-                        $input.blur();
-                    }
                     return;
-                }
-
-                // DOWN key
-                if (key === 40) {
-                    if (resultGroup) {
-                        resultGroup.focusNext();
-                    }
-                    stopEvent();
-                    return false;
-                }
-
-                // UP key
-                if (key === 38) {
-                    if (resultGroup) {
-                        resultGroup.focusPrevious();
-                    }
-                    stopEvent();
-                    return false;
-                }
-
-                // ESC key
-                if (key === 27) {
-                    $input.value = "";
-                    setTimeout(function(){
-                        domTriggerEvent($input, "keyup");
-                    }, 50);
-                    stopEvent();
-                    return false;
-                }
-
-                // ENTER key
-                if (key === 13) {
-                    if (resultGroup) {
-                        resultGroup.selectCurrent();
-                    }
-                    stopEvent();
-                    return false;
                 }
 
                 // If not min length, exit
