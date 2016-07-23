@@ -53,6 +53,8 @@ define([
     SPPeoplePickerTemplate
 ){
 
+    // FIXME: support for 'Suggested' grouping
+
     var
     PRIVATE = dataStore.create(),
 
@@ -147,6 +149,7 @@ define([
             var inst = {
                 opt:            objectExtend({}, PeoplePicker.defaults, options),
                 resultGroup:    null,
+                lastSearchInput:"",
                 selected:       [] // array of Persona widgets
             };
 
@@ -183,6 +186,7 @@ define([
 
                     if (!closestPeoplePicker || closestPeoplePicker !== $ui) {
                         domRemoveClass($ui, CSS_CLASS_IS_ACTIVE);
+                        inst.lastSearchInput = "";
                         bodyClickEv.remove();
                         bodyClickEv = null;
                         clearSuggestions.call(this);
@@ -213,15 +217,14 @@ define([
             });
 
             // When user types, get suggestions
-            var lastSearchInput = "";
             domAddEventListener($input, "keyup", function(/*ev*/){
                 var //key         = ev.which || ev.keyCode,
                     searchInput = String($input.value).trim();
 
-                if (lastSearchInput === searchInput) {
+                if (inst.lastSearchInput === searchInput) {
                     return;
                 }
-                lastSearchInput = searchInput;
+                inst.lastSearchInput = searchInput;
 
                 if (!searchInput) {
                     requestSuggestions = undefined;
@@ -319,7 +322,7 @@ define([
             selected.forEach(function(userWdg){
                 userWdg.destroy();
             });
-            selected.slice(0);
+            selected.splice(0);
         },
 
         /**
@@ -646,6 +649,10 @@ define([
             newSelectedPerson;
 
         if (!isPersonInSelectedList.call(this, personModel)) {
+            if (!inst.opt.allowMultiples) {
+                this.clear();
+            }
+
             newSelectedPerson = PeoplePickerPersona.create({userProfile: personModel});
             newSelectedPerson.setSize("xs");
             newSelectedPerson.pipe(this, "selected-");
@@ -679,18 +686,18 @@ define([
     PeoplePicker = EventEmitter.extend(Widget, PeoplePicker);
 
     PeoplePicker.defaults = {
-        allowMultiples:         true,                           // done
-        maxSearchResults:       50,                             // done
-        webURL:                 null,                           // done
-        type:                   'User',                         // done
-        inputPlaceholder:       "Type and Pick",                // done
-        minLength:              2,                              // done
-        showSelected:           true,                           // done
-        resolvePrincipals:      true,                           // done
-        meKeyword:              "[me]",                         // done
-        meKeywordLabel:         "Current User",                 // done
-        filterSuggestions:      null,                           // done
-        UserProfileModel:       PeoplePickerUserProfileModel,   // done
+        allowMultiples:         true,
+        maxSearchResults:       50,
+        webURL:                 null,
+        type:                   'User',
+        inputPlaceholder:       "Type and Pick",
+        minLength:              2,
+        showSelected:           true,
+        resolvePrincipals:      true,
+        meKeyword:              "[me]",
+        meKeywordLabel:         "Current User",
+        filterSuggestions:      null,
+        UserProfileModel:       PeoplePickerUserProfileModel,
         suggestionsRightAlign:  false,
         searchInfoMsg:          "Type a value to see list of candidates. Use '[me]' for current user.",
         searchingMsg:           "Searching directory...",
