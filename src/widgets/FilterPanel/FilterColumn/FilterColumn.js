@@ -231,7 +231,9 @@ define([
 
             var response = Promise.resolve();
 
-            if (filter && Array.isArray(filter.values)) {
+            // If the actual input widget has a `setValue` method and values
+            // were provided on input, then call it.
+            if (filter && Array.isArray(filter.values) && inst.inputWdg.setValue) {
                 response = response.then(inst.inputWdg.setValue(filter.values.join(inst.opt.delimiter)));
                 this.evalDirtyState();
             }

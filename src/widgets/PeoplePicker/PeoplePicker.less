@@ -25,7 +25,18 @@
         top:        100%;
 
         &-groups {
-            padding: 1px; // needed to avoid unnecessary scroll bar
+            padding:    1px; // needed to avoid unnecessary scroll bar
+            overflow-y: auto;
+
+            &::-webkit-scrollbar {
+                width:              0.5em;
+                background-color:   #F5F5F5;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+                background-color  : #555;
+            }
         }
     }
 

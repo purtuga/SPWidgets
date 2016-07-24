@@ -45,8 +45,16 @@ define([
             return PRIVATE.get(this).inputWdg.getSelected();
         },
 
-        setFilter: function(options){
-            return PRIVATE.get(this).inputWdg.add(options);
+        setFilter: function(filter){
+            var inst = PRIVATE.get(this);
+
+            inst.setFieldCommonFilters.call(this, filter);
+
+            return inst.inputWdg
+                .add(filter.values)
+                .then(function(){
+                    this.evalDirtyState();
+                }.bind(this));
         }
     };
 

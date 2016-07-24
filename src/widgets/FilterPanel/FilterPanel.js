@@ -303,9 +303,15 @@ define([
                 return Promise.resolve();
             }
 
-            var opt = PRIVATE.get(this).opt;
+            var
+            inst    = PRIVATE.get(this),
+            opt     = inst.opt;
 
-            return getListColumns({listName: opt.listName, webURL: opt.webURL}).then(function(columns){
+            return getListColumns({
+                listName: opt.listName,
+                webURL: opt.webURL
+            })
+            .then(function(columns){
                 var colList     = [],
                     colValues   = filters.filter(function(filter){
                         var column = columns.getColumn(filter.column);
@@ -314,11 +320,15 @@ define([
                             return true;
                         }
                         return false;
-                    });
+                    }),
+                    response;
 
                 if (colList.length) {
-                    return addColumns.call(this, colList, colValues);
+                    response = addColumns.call(this, colList, colValues);
+                    inst.columnSelector.setSelected(colList);
                 }
+                return response;
+
             }.bind(this))["catch"](function(e){
                 console.error(e); // jshint ignore:line
             });

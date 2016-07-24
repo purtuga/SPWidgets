@@ -77,7 +77,7 @@ define([
             var $ui = this.$ui = parseHTML(
                     fillTemplate(ColumnSelectorTemplate, inst.opt)
                 ).firstChild,
-                uiFind          = $ui.querySelector.bind($ui),
+                uiFind          = inst.uiFind = $ui.querySelector.bind($ui),
                 BASE_SELECTOR   = "." + CSS_CLASS_BASE,
                 emit            = this.emit.bind(this);
 
@@ -143,6 +143,27 @@ define([
             return domFind(this.getEle(), "." + CSS_CLASS_COL_SELECTED).map(function(selColEle){
                 return getColumnDefForElement.call(this, selColEle);
             }.bind(this));
+        },
+
+        /**
+         * Given an list of column defintions, this method will mark them
+         * selected in the UI.
+         *
+         * @param {Array<ListColumnModel>} columns
+         */
+        setSelected: function(columns){
+            var inst = PRIVATE.get(this);
+
+            if (!Array.isArray(columns)) {
+                columns = [columns];
+            }
+
+            columns.forEach(function(colDef){
+                var ele = inst.uiFind("[data-name='" + colDef.StaticName + "']");
+                if (ele) {
+                    domAddClass(ele, CSS_CLASS_COL_SELECTED);
+                }
+            });
         }
     };
 
