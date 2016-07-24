@@ -68,6 +68,7 @@
         right:      0;
         height:     100%;
         width:      1.5em;
+        visibility: hidden;
 
         > a {
             display:        block;
@@ -83,6 +84,9 @@
             }
         }
 
+    }
+    &:hover &-move {
+        visibility: visible;
     }
 
 

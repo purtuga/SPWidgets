@@ -39,6 +39,7 @@ define([
          *
          * @param {Object} options
          * @param {UserProfileModel} options.userProfile
+         * @param {String} [options.presence='offline']
          *
          * @fires Persona#click
          */
@@ -46,12 +47,14 @@ define([
             init: function (options) {
                 var inst = {
                     opt:            objectExtend({}, Persona.defaults, options),
-                    sizeModifier:    ""
+                    sizeModifier:    "",
+                    presenceModifier:""
                 };
 
                 PRIVATE.set(this, inst);
 
                 this._model = inst.opt.userProfile;
+                inst.presenceModifier = inst.opt.presence || 'offline';
 
                 this.$ui = parseHTML(
                     fillTemplate(this.getTemplate(), inst.opt.userProfile)
@@ -118,12 +121,37 @@ define([
 
                 inst.sizeModifier = cssClassName;
                 domAddClass($persona, cssClassName);
+            },
+
+            /**
+             * Sets the presence of the Persona.
+             *
+             * @param {String} state
+             *  The state to set on the Persona. Possible values are:
+             *  `available`, `away`, `blocked`, `busy`,
+             *  `dnd` (do not disturb) and `offline`
+             */
+            setPresence: function(state){
+                var inst = PRIVATE.get(this),
+                    $ui = this.getEle();
+
+                if (inst.presenceModifier) {
+                    domRemoveClass($ui, CSS_CLASS_MS_PERSONA + "--" + inst.presenceModifier);
+                    inst.presenceModifier = "";
+                }
+
+                if (state) {
+                    state = String(state).toLowerCase();
+                    domAddClass($ui, CSS_CLASS_MS_PERSONA + "--" + state);
+                    inst.presenceModifier = state;
+                }
             }
         };
 
     Persona = EventEmitter.extend(Widget, Persona);
     Persona.defaults = {
-        userProfile: {}
+        userProfile: null,
+        presence: 'offline'
     };
 
     return Persona;

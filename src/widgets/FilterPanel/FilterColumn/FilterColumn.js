@@ -55,6 +55,7 @@ define([
      *
      * @class FilterColumn
      * @extends Widget
+     * @extends EventEmitter
      *
      * @param {Object} options
      *
@@ -63,6 +64,7 @@ define([
      *
      * @fires FilterColumn#up
      * @fires FilterColumn#down
+     * @fires FilterColumn#change
      */
     FilterColumn = /** @lends FilterColumn.prototype */{
         init: function (options) {
@@ -108,6 +110,9 @@ define([
             });
 
             domAddEventListener(uiFind(BASE_SELECTOR + "-move-up"), "click", function(){
+                if ($ui.parentNode && $ui.previousSibling) {
+                    $ui.parentNode.insertBefore($ui, $ui.previousSibling);
+                }
                 /**
                  * The Up arrow was clicked on the Filter column definition
                  *
@@ -117,6 +122,9 @@ define([
             });
 
             domAddEventListener(uiFind(BASE_SELECTOR + "-move-down"), "click", function(){
+                if ($ui.parentNode && $ui.nextSibling) {
+                    $ui.parentNode.insertBefore($ui.nextSibling, $ui);
+                }
                 /**
                  * The Down arrow was clicked on the Filter column definition
                  *
@@ -340,6 +348,17 @@ define([
                 isSortOrderDirty        = !!inst.sortOrder.value,
                 $ui                     = this.getEle(),
                 val                     = this.getValue(),
+                wasDirty                = this.isDirty(),
+                triggerChange           = function(){
+                    if (wasDirty !== this.isDirty()) {
+                        /**
+                         * Filter Column was changed.
+                         *
+                         * @event FilterColumn#change
+                         */
+                        this.emit("change");
+                    }
+                }.bind(this),
                 isUserInputDirty;
 
             if (typeof val === "string") {
@@ -359,10 +378,12 @@ define([
 
             if (isUserInputDirty || isSortOrderDirty || isCompareOperatorDirty) {
                 domAddClass($ui, CSS_CLASS_IS_DIRTY);
+                triggerChange();
                 return true;
             }
 
             domRemoveClass($ui, CSS_CLASS_IS_DIRTY);
+            triggerChange();
             return false;
         }
     };

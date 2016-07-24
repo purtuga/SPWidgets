@@ -52,9 +52,18 @@ define([
      *
      * @class ColumnSelector
      * @extends Widget
+     * @extends EventEmitter
+     *
+     * @param {Object} options
+     * @param {String} options.listName
+     * @param {String} [options.webURL]
+     * @param {String} [options.columns]
+     * @param {String} [options.selectFieldsLayout]
      *
      * @fires ColumnSelector#cancel
+     * @fires ColumnSelector#ok
      * @fires ColumnSelector#select
+     * @fires ColumnSelector#unselect
      */
     ColumnSelector = /** @lends ColumnSelector.prototype */{
         init: function (options) {
@@ -88,21 +97,20 @@ define([
                 emit("cancel");
             });
 
-            domAddEventListener(uiFind(BASE_SELECTOR + "-action-select"), "click", function () {
+            domAddEventListener(uiFind(BASE_SELECTOR + "-action-ok"), "click", function () {
                 /**
-                 * Select button was clicked
-                 * @event ColumnSelector#cancel
+                 * The OK button was clicked
+                 * @event ColumnSelector#ok
                  */
-                emit("select");
+                emit("ok");
             });
 
             domAddEventListener($ui, "click", function(ev){
                 var colEle = domClosest(ev.target, BASE_SELECTOR + "-col");
-
                 if (colEle) {
-                    toggleColumnSelection(colEle);
+                    toggleColumnSelection.call(this, colEle);
                 }
-            });
+            }.bind(this));
 
             loadColumns.call(this)
                 .then(showColumns.bind(this))
@@ -121,7 +129,7 @@ define([
         unSelectAll: function(){
             domFind(this.getEle(), "." + CSS_CLASS_COL_SELECTED).forEach(function(colEle){
                 if (domHasClass(colEle, CSS_CLASS_COL_SELECTED)) {
-                    toggleColumnSelection(colEle);
+                    toggleColumnSelection.call(this, colEle);
                 }
             }.bind(this));
         },
@@ -132,23 +140,32 @@ define([
          * @return {Array<ListColumnModel>}
          */
         getSelected: function(){
-            var listCols = PRIVATE.get(this).listCols;
-
             return domFind(this.getEle(), "." + CSS_CLASS_COL_SELECTED).map(function(selColEle){
-                var colName = selColEle.getAttribute("data-name"),
-                    colDef = {};
-
-                listCols.some(function(listColDef){
-                    if (listColDef.Name === colName) {
-                        colDef = listColDef;
-                        return true;
-                    }
-                });
-
-                return colDef;
-            });
+                return getColumnDefForElement.call(this, selColEle);
+            }.bind(this));
         }
     };
+
+    /**
+     * returns the ListColumnModel for the given HTML element
+     *
+     * @private
+     *
+     * @returns {ListColumnModel|Object}
+     */
+    function getColumnDefForElement(element) {
+        var colName = element.getAttribute("data-name"),
+            colDef  = {};
+
+        PRIVATE.get(this).listCols.some(function(listColDef){
+            if (listColDef.Name === colName) {
+                colDef = listColDef;
+                return true;
+            }
+        });
+
+        return colDef;
+    }
 
     /**
      * Retrieves the list of columns from the List definition.
@@ -202,11 +219,28 @@ define([
     }
 
     function toggleColumnSelection(colEle) {
+        var emit = this.emit.bind(this),
+            colDef = getColumnDefForElement.call(this, colEle);
+
         if (domHasClass(colEle, CSS_CLASS_COL_SELECTED)) {
             domRemoveClass(colEle, CSS_CLASS_COL_SELECTED);
+            /**
+             * Column was unselected from the list
+             *
+             * @event ColumnSelector#unselect
+             * @type {ListColumnModel}
+             */
+            emit("unselect", colDef);
 
         } else {
             domAddClass(colEle, CSS_CLASS_COL_SELECTED);
+            /**
+             * Column was unselected from the list
+             *
+             * @event ColumnSelector#select
+             * @type {ListColumnModel}
+             */
+            emit("select", colDef);
         }
     }
 

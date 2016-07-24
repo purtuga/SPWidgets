@@ -26,15 +26,7 @@ define([
 
     "./FiltersCollection",
 
-    // FIXME: don't need thse... remove them...
-    //"../TextField/TextField",
-    //"../ChoiceField/ChoiceField",
-    //"../LookupField/LookupField",
-    //"../PeoplePicker/PeoplePicker",
-    //"./FilterAttachmentsField/FilterAttachmentsField",
-
     "../../spapi/getListColumns",
-
 
     "text!./FilterPanel.html",
     //----------------------------------
@@ -67,12 +59,6 @@ define([
 
     FiltersCollection,
 
-    //TextField,
-    //ChoiceField,
-    //LookupField,
-    //PeoplePicker,
-    //FilterAttachmentsField,
-
     getListColumns,
 
     SPFilterPanelTemplate
@@ -85,6 +71,8 @@ define([
     CSS_CLASS_BASE              = "spwidgets-FilterPanel",
     CSS_CLASS_NO_HEADER         = CSS_CLASS_BASE + "--noHeader",
     CSS_CLASS_BODY_FIXED_HEIGHT = CSS_CLASS_BASE + "--fixHeight",
+
+    CSS_CLASS_MS_BUTTON_PRIMARY = "ms-Button--primary",
 
     /**
      * A Filter panel allowing a user the ability to define filtering
@@ -99,7 +87,7 @@ define([
      * @param {Array<String>} [options.columns]
      *  List of columns that should be made available to the user for use in
      *  the filter panel. By default, all exposed columns of the given List
-     *  are shown. The column names defined in this option must be the `InternalName`
+     *  are shown. The column names defined in this option must be the `StaticName`
      *  of the list column.
      *
      * @param {Object} [options.i18n]
@@ -145,10 +133,11 @@ define([
 
             inst.main = uiFind(BASE_SELECTOR + "-main");
             inst.body = uiFind(BASE_SELECTOR + "-body");
+            inst.find = uiFind(BASE_SELECTOR + "-footer-action-find");
 
             // Info widget
-            inst.infoMsg = Message.create({ message: opt.labels.msg });
-            domSetStyle(inst.infoMsg.getEle(), {margin: "2em 5%"});
+            inst.infoMsg = Widget.extend({$ui: parseHTML('<div style="padding: 2em 5%;"/>').firstChild}).create();
+            Message.create({ message: opt.labels.msg }).appendTo(inst.infoMsg.getEle());
             inst.infoMsg.appendTo(inst.body);
 
             // Column selector widget
@@ -174,7 +163,7 @@ define([
                 emit("clear");
             }.bind(this));
 
-            domAddEventListener(uiFind(BASE_SELECTOR + "-footer-action-find"), "click", function(){
+            domAddEventListener(inst.find, "click", function(){
                 /**
                  * Find button was clicked
                  *
@@ -210,10 +199,25 @@ define([
                 inst.columnSelector.hide();
             });
 
-            me.on("columnSelector:select", function(){
+            me.on("columnSelector:ok", function(){
                 inst.columnSelector.hide();
-                addColumns.call(me, inst.columnSelector.getSelected());
             });
+
+            me.on("columnSelector:select", function(colDef){
+                addColumns.call(me, [colDef], null, true);
+            });
+
+            me.on("columnSelector:unselect", function(colDef){
+                hideFilterColumn.call(me, colDef.StaticName);
+            });
+
+            me.on("filterColumn:change", function(){
+                if (this.isDirty()) {
+                    domAddClass(inst.find, CSS_CLASS_MS_BUTTON_PRIMARY);
+                } else {
+                    domRemoveClass(inst.find, CSS_CLASS_MS_BUTTON_PRIMARY);
+                }
+            }.bind(this));
 
             //--------------------------------------
             // Destroy logic
@@ -258,21 +262,27 @@ define([
         },
 
         /**
+         * Returns a boolean indicating whether the filter panel
+         * contains columns that have been changed by the user.
+         *
+         * @returns {Boolean}
+         */
+        isDirty: function(){
+            return getVisibleFilterColumnWidgets.call(this).some(function(colWidget){
+                return colWidget.isDirty();
+            });
+        },
+
+        /**
          * Returns a collection of filters defined by the user.
          *
          * @return {FiltersCollection}
          */
         getFilters: function(){
-            var inst    = PRIVATE.get(this),
-                colsWdg = inst.colsWdg,
-                filters = Object.keys(colsWdg)
-                    .filter(function(colName){
-                        return  !!colsWdg[colName].getEle().parentNode &&
-                                colsWdg[colName].isDirty();
-                    })
-                    .map(function(colName){
-                        return colsWdg[colName].getFilter();
-                    });
+            var filters = getVisibleFilterColumnWidgets.call(this)
+                .map(function(colWidget){
+                    return colWidget.getFilter();
+                });
 
             return FiltersCollection.create(filters);
         },
@@ -316,6 +326,37 @@ define([
     };
 
     /**
+     * returns array with the filter columns that are visible
+     * @private
+     * @return {Array<Widget>}
+     */
+    function getVisibleFilterColumnWidgets() {
+        var colsWdg = PRIVATE.get(this).colsWdg;
+
+        return Object.keys(colsWdg)
+            .filter(function(colName){
+                return  !!colsWdg[colName].getEle().parentNode &&
+                    colsWdg[colName].isDirty();
+            }).map(function(colName){
+                return colsWdg[colName];
+            });
+    }
+
+    /**
+     * Hides a filter column currently displayed
+     *
+     * @private
+     * @param {String} internalColumnName
+     */
+    function hideFilterColumn(internalColumnName) {
+        var colsWdg = PRIVATE.get(this).colsWdg;
+
+        if (colsWdg[internalColumnName]) {
+            colsWdg[internalColumnName].detach();
+        }
+    }
+
+    /**
      * Adds a column to the UI for the user to define criteria, if not already there.
      *
      * @private
@@ -328,9 +369,11 @@ define([
      *  A FiltersCollection like array with the defaults values for
      *  the columns that will be made visible.
      *
+     * @param {Boolean} [append=false]
+     *
      * @returns {Promise}
      */
-    function addColumns(colList, colValues){
+    function addColumns(colList, colValues, append){
         var inst                = PRIVATE.get(this),
             opt                 = inst.opt,
             colsWdg             = inst.colsWdg,
@@ -339,9 +382,11 @@ define([
             colsInitPromises    = [];
 
         // Detach all widgets currently visible
-        Object.keys(colsWdg).forEach(function(colName){
-            colsWdg[colName].detach();
-        });
+        if (!append) {
+            Object.keys(colsWdg).forEach(function(colName){
+                colsWdg[colName].detach();
+            });
+        }
 
         if (colList.length) {
             colList.forEach(function(colDef){
