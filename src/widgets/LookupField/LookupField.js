@@ -7,6 +7,7 @@ define([
     "vendor/jsutils/parseHTML",
     "vendor/jsutils/uuid",
     "vendor/jsutils/es6-Map",
+    "vendor/jsutils/es6-promise",
 
     "vendor/domutils/domAddEventListener",
     "vendor/domutils/domAddClass",
@@ -32,6 +33,7 @@ define([
     parseHTML,
     uuid,
     Map,
+    Promise,
 
     domAddEventListener,
     domAddClass,
@@ -56,6 +58,9 @@ define([
     CSS_CLASS_NO_LABEL          = CSS_CLASS_BASE + "--noLabel",
     CSS_CLASS_NO_DESCRIPTION    = CSS_CLASS_BASE + "--noDescription",
     CSS_CLASS_SHOW_CHOICES      = CSS_CLASS_BASE + "--showChoices",
+
+
+    isArray = Array.isArray,
 
     /**
      * A Lookup field. Supports either Single lookup or Multi Lookup
@@ -111,7 +116,8 @@ define([
                 fields:                 '',
                 listWdg:                null,
                 selected:               new Map(), // Keeps ListItemRow->Widget associations
-                allowMultiples:         false
+                allowMultiples:         false,
+                currentData:            null        // Rows[] Array
             },
             opt = inst.opt;
 
@@ -124,7 +130,7 @@ define([
                 count: '<span class="' + CSS_CLASS_BASE + '-selectedCount-number"></span>'
             });
 
-            if (!Array.isArray(opt.searchColumns)) {
+            if (!isArray(opt.searchColumns)) {
                 opt.searchColumns = [opt.column.ShowField || 'Title'];
             }
 
@@ -166,7 +172,7 @@ define([
             setSelectedCount.call(this);
 
             // Define the Query Fields
-            if (!Array.isArray(opt.fields)) {
+            if (!isArray(opt.fields)) {
                 opt.fields = [opt.column.ShowField || 'Title'];
             }
 
@@ -328,23 +334,88 @@ define([
             return response;
         },
 
-        setSelected: function(){
-            debugger; // jshint ignore:line
+        /**
+         * Sets items as selected on the lookup widget.
+         *
+         * @param {Array<Object|ListItemModel>|Object|ListItemModel} items
+         *  The items to show selected. Each item must have at least the `ID` defined if
+         *  not a `ListItemModel`.
+         *
+         * @return {Promise}
+         */
+        setSelected: function(items){
+            var me      = this,
+                inst    = PRIVATE.get(this);
+
+            if (!isArray(items)) {
+                items = [items];
+            }
+
+            if (!inst.allowMultiples && items.length > 1) {
+                items = [items.pop()];
+            }
+
+            return Promise.resolve()
+            .then(function(){
+                var loadDataIDs = [],
+                    itemsData = items.map(function(item){
+                        var itemData = getItemDataById.call(me, item.ID) ||
+                                        getSelectedItemById.call(me, item.ID);
+
+                        // It itemData is already stored within this widget,
+                        // then use that, but only if item is not yet selected
+                        if (itemData) {
+                            if (isItemSelected.call(me, itemData)) {
+                                return;
+                            }
+
+                            return itemData;
+                        }
+
+                        loadDataIDs.push(item.ID);
+                        return null;
+
+                    }).filter(function(item){
+                        return !!item;
+                    }),
+                    queryOptions;
+
+                if (loadDataIDs.length) {
+                    queryOptions = getQueryOptions.call(me);
+                    queryOptions.CAMLQuery = "<Query><Where>" +
+                        getCamlLogical({
+                            type:   'OR',
+                            values: loadDataIDs.map(function(id){
+                                return '<Eq><FieldRef Name="ID"/><Value Type="Counter">' +
+                                    id + '</Value></Eq>';
+                            })
+                        }) +
+                        "</Where></Query>";
+
+                    return getListItems(queryOptions).then(function(rows){
+                        return rows.concat(itemsData);
+                    });
+                }
+
+                return itemsData;
+            })
+            .then(function(rows){
+                rows.forEach(function (itemData) {
+                    showItemAsSelected.call(me, itemData);
+
+                    if (inst.listWdg) {
+                        inst.listWdg.selectItem(itemData);
+                    }
+                });
+                return rows;
+            });
         }
     };
 
     function retrieveListData(query) {
-        var me      = this,
-            inst    = PRIVATE.get(me),
-            queryOptions = objectExtend(
-                {},
-                inst.opt.queryOptions,
-                { listName: inst.list }
-            );
-
-        if (!queryOptions.CAMLViewFields) {
-            queryOptions.CAMLViewFields = inst.fields;
-        }
+        var me              = this,
+            inst            = PRIVATE.get(me),
+            queryOptions    = getQueryOptions.call(me);
 
         if (query) {
             queryOptions.CAMLQuery = "<Query><Where>" +
@@ -363,15 +434,46 @@ define([
         return getListItems(queryOptions);
     }
 
+    function getQueryOptions() {
+        var inst            = PRIVATE.get(this),
+            queryOptions    = objectExtend(
+                {},
+                inst.opt.queryOptions,
+                { listName: inst.list }
+            );
+
+        if (!queryOptions.CAMLViewFields) {
+            queryOptions.CAMLViewFields = inst.fields;
+        }
+
+        return queryOptions;
+    }
+
     function addItemsToChoices(rows) {
-        var inst = PRIVATE.get(this);
+        var inst = PRIVATE.get(this),
+            listWdg;
 
         if (inst.listWdg) {
             inst.listWdg.destroy();
             inst.listWdg = null;
         }
 
-        var listWdg = inst.listWdg = inst.opt.ListWidget.create({items: rows});
+        // If there are items selected, then loop through the new set
+        // of rows and if any are selected, use the data object from the
+        // selection instead
+        rows = rows.map(function(row){
+            return getSelectedItemById.call(this, row.ID) || row;
+        }.bind(this));
+
+        inst.currentData = rows;
+
+        listWdg = inst.listWdg = inst.opt.ListWidget.create({items: rows});
+
+        rows.forEach(function(row){
+            if (isItemSelected.call(this, row)) {
+                listWdg.selectItem(row);
+            }
+        }.bind(this));
 
         listWdg.on("item:selected", function(itemData){
             showItemAsSelected.call(this, itemData);
@@ -379,6 +481,44 @@ define([
 
         listWdg.on("item:unselected", removeItemFromSelected.bind(this));
         listWdg.appendTo(inst.$choicesHolder);
+    }
+
+    function isItemSelected(itemData){
+        return PRIVATE.get(this).selected.has(itemData);
+    }
+
+    function getSelectedItemById(id) {
+        if (!id) {
+            return;
+        }
+
+        var selectedKeys    = PRIVATE.get(this).selected.keys(),
+            response        = null,
+            selectedItem;
+
+        while (!response && !(selectedItem = selectedKeys.next()).done) {
+            if (selectedItem.value.ID === id) {
+                response = selectedItem.value;
+            }
+        }
+
+        return response;
+    }
+
+    function getItemDataById(id){
+        var data = PRIVATE.get(this).currentData,
+            response;
+
+        if (data && id) {
+            data.some(function(itemData){
+                if (itemData.ID === id) {
+                    response = itemData;
+                    return true;
+                }
+            });
+        }
+
+        return response;
     }
 
     function showItemAsSelected(itemData){
@@ -402,8 +542,6 @@ define([
         // Pipe events of the Selected Widget to LookupField prefixed with `selected:`
         itemWdg.pipe(this, "selected:");
         itemWdg.appendTo(inst.$selectedHolder);
-
-        // FIXME: on remove - update List to show item "unchecked"
 
         itemWdg.onDestroy(function(){
             if (selected.has(itemData)) {
@@ -471,7 +609,9 @@ define([
         fields:             null,
         hideLabel:          false,
         hideDescription:    false,
-        queryOptions:       null,
+        queryOptions:       {
+            CAMLRowLimit: 100
+        },
         searchColumns:      null,
         ListWidget:         List,
         SelectedItemWidget: SelectedItem,
