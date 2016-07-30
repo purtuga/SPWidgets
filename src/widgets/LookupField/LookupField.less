@@ -12,8 +12,6 @@
         }
     }
 
-
-
     background-color: white;
 
     &-items {
@@ -74,8 +72,7 @@
             padding:            0.5em 1em;
             box-shadow:         0 0 5px 0 rgba(0,0,0,.4);
             background-color:   white;
-            z-index:            1;
-            min-width:          100%;
+            z-index:            5;
             max-width:          100%;
             max-height:         20em;
             overflow-y:         auto;
@@ -108,11 +105,6 @@
     }
     &--displayInline &-input-choices {
         max-width: 450px;
-    }
-
-    // ==> Show the list of choices
-    &--showChoices &-input-choices {
-        display: inline-block;
     }
 
 }

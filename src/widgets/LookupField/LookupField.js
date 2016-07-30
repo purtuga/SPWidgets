@@ -13,6 +13,7 @@ define([
     "vendor/domutils/domAddClass",
     "vendor/domutils/domRemoveClass",
     "vendor/domutils/domHasClass",
+    "vendor/domutils/domPosition",
     "vendor/domutils/DomKeyboardInteraction",
 
     "./SelectedItem/SelectedItem",
@@ -39,6 +40,7 @@ define([
     domAddClass,
     domRemoveClass,
     domHasClass,
+    domPosition,
     DomKeyboardInteraction,
 
     SelectedItem,
@@ -53,12 +55,12 @@ define([
     var
     PRIVATE             = dataStore.create(),
     WINDOW_NAVIGATOR    = window.navigator,
+    DOCUMENT            = document,
+    BODY                = DOCUMENT.body,
 
     CSS_CLASS_BASE              = 'spwidgets-LookupField',
     CSS_CLASS_NO_LABEL          = CSS_CLASS_BASE + "--noLabel",
     CSS_CLASS_NO_DESCRIPTION    = CSS_CLASS_BASE + "--noDescription",
-    CSS_CLASS_SHOW_CHOICES      = CSS_CLASS_BASE + "--showChoices",
-
 
     isArray = Array.isArray,
 
@@ -98,6 +100,9 @@ define([
      *  Allow multiple values to be selected. If set, value will override
      *  whatever is defined in the `Type` property of `options.column`
      *
+     * @param {Number} [options.choicesZIndex=5]
+     *  The CSS `zIndex` of the choices popup.
+     *
      * @param {Object} [options.queryOptions={}]
      *  Additional options to be used in querying the lookup list. With the
      *  exception of `listName`, all other options supported by
@@ -134,6 +139,7 @@ define([
                 opt.searchColumns = [opt.column.ShowField || 'Title'];
             }
 
+
             var
             $ui             = this.$ui = parseHTML(fillTemplate(LookupFieldTemplate, opt)).firstChild,
             BASE_SELECTOR   = "." + CSS_CLASS_BASE,
@@ -141,6 +147,7 @@ define([
             $input          = inst.$input = uiFind(BASE_SELECTOR + "-input > input"),
             on              = this.on.bind(this);
 
+            inst.$inputHolder       = uiFind(BASE_SELECTOR + "-input");
             inst.$selectedHolder    = uiFind(BASE_SELECTOR + "-selected");
             inst.$choicesHolder     = uiFind(BASE_SELECTOR + "-input-choices");
             inst.$count             = uiFind(BASE_SELECTOR + '-selectedCount-number');
@@ -151,6 +158,10 @@ define([
 
             if (opt.hideDescription) {
                 domAddClass($ui, CSS_CLASS_NO_DESCRIPTION);
+            }
+
+            if (opt.choicesZIndex) {
+                inst.$choicesHolder.style.zIndex = opt.choicesZIndex;
             }
 
             // Determine if multiple selections are allowed
@@ -212,6 +223,7 @@ define([
             // Typing in the input field, searches the list
             var currentRetrieval,
                 lastSearchString = "";
+
             domAddEventListener($input, "keyup", function(ev){
                 var thisSearchString = String(ev.target.value).trim();
 
@@ -261,19 +273,27 @@ define([
             }.bind(this));
 
             this.onDestroy(function () {
-                if (inst.showChoicesListener) {
-                    inst.showChoicesListener.remove();
-                }
-
                 clearAllSelected.call(this);
 
-                if (inst.listWdg) {
-                    inst.listWdg.destroy();
-                }
+                // Destroy all Compose object
+                Object.keys(inst).forEach(function(prop){
+                    if (inst[prop]) {
+                        // Widgets
+                        if (inst[prop].destroy) {
+                            inst[prop].destroy();
 
-                if (inst.keyboardInteraction) {
-                    inst.keyboardInteraction.destroy();
-                }
+                        // DOM events
+                        } else if (inst[prop].remove) {
+                            inst[prop].remove();
+
+                        // EventEmitter events
+                        } else if (inst[prop].off) {
+                            inst[prop].off();
+                        }
+
+                        inst[prop] = undefined;
+                    }
+                });
 
                 PRIVATE.delete(this);
             }.bind(this));
@@ -283,22 +303,24 @@ define([
          * Shows the list of possible items that can be selected.
          */
         showChoices: function(){
-            var me      = this,
-                inst    = PRIVATE.get(this),
-                ele     = this.getEle();
+            var me          = this,
+                inst        = PRIVATE.get(me),
+                $choices    = inst.$choicesHolder,
+                $inputHldr  = inst.$inputHolder;
 
-            if (!domHasClass(ele, CSS_CLASS_SHOW_CHOICES)) {
-                domAddClass(ele, CSS_CLASS_SHOW_CHOICES);
+            BODY.appendChild($choices);
+            domPosition($choices, $inputHldr);
+            $choices.style.width    = $inputHldr.clientWidth + "px";
+            $choices.style.display  = "block";
 
-                if (!inst.showChoicesListener) {
-                    setTimeout(function() {
-                        inst.showChoicesListener = domAddEventListener(document, "click", function(ev){
-                            if (ev.target !== inst.$input && !inst.$choicesHolder.contains(ev.target)) {
-                                me.hideChoices();
-                            }
-                        });
-                    }, 20);
-                }
+            if (!inst.showChoicesListener) {
+                setTimeout(function() {
+                    inst.showChoicesListener = domAddEventListener(DOCUMENT, "click", function(ev){
+                        if (ev.target !== inst.$input && !inst.$choicesHolder.contains(ev.target)) {
+                            me.hideChoices();
+                        }
+                    });
+                }, 20);
             }
         },
 
@@ -306,9 +328,14 @@ define([
          * Hides the list of possible items.
          */
         hideChoices: function(){
-            var inst = PRIVATE.get(this);
+            var inst = PRIVATE.get(this),
+                $choices    = inst.$choicesHolder;
 
-            domRemoveClass(this.getEle(), CSS_CLASS_SHOW_CHOICES);
+            $choices.style.display  = "none";
+
+            if ($choices.parentNode) {
+                $choices.parentNode.removeChild($choices);
+            }
 
             if (inst.showChoicesListener) {
                 inst.showChoicesListener.remove();
@@ -613,6 +640,7 @@ define([
             CAMLRowLimit: 100
         },
         searchColumns:      null,
+        choicesZIndex:      0,  // Default to 5 via css file
         ListWidget:         List,
         SelectedItemWidget: SelectedItem,
         lang:               '',
