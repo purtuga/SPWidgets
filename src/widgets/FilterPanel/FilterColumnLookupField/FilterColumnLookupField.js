@@ -42,6 +42,7 @@ define([
             inputWdg.on("item:selected", this.evalDirtyState.bind(this));
             inputWdg.on("item:unselected", this.evalDirtyState.bind(this));
             inputWdg.appendTo(inst.inputHolder);
+            inputWdg.pipe(this, "LookupField:");
 
             this.setKeywordInfo("");
         },
@@ -50,8 +51,10 @@ define([
             return PRIVATE.get(this).inputWdg.getSelected();
         },
 
-        setValue: function(options){
-            return PRIVATE.get(this).inputWdg.setSelected(options);
+        setFilter: function(filter){
+            var inst = PRIVATE.get(this);
+            inst.setFieldCommonFilters(filter);
+            return inst.inputWdg.setSelected(filter.values);
         }
     };
 
