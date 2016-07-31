@@ -1,7 +1,13 @@
 <div class="spwidgets-DateTimeField">
     <label class="ms-Label">{{column.DisplayName}}</label>
-    <div class="ms-TextField">
-        <input class="ms-TextField-field" type="text" placeholder="{{placeholder}}" pattern="{{validationPattern}}">
+    <div class="ms-TextField spwidgets-DateTimeField-inputHolder">
+        <input class="ms-TextField-field" data-input type="text" placeholder="{{labels.placeholder}}">
+        <div class="ms-Button spwidgets-DateTimeField-calIcon" data-toggle>
+            <i class="ms-Icon ms-Icon--calendar"></i>
+        </div>
+        <div class="ms-Button spwidgets-DateTimeField-clearIcon" data-clear>
+            <i class="ms-Icon ms-Icon--x"></i>
+        </div>
     </div>
     <span class="ms-TextField-description">{{column.Description}}</span>
 </div>

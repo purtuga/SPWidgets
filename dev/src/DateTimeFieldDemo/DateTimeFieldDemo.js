@@ -71,7 +71,6 @@ define([
         inst.demo1.appendTo($demo1Cntr);
     }
 
-
     DateTimeFieldDemo = Widget.extend(DateTimeFieldDemo);
     DateTimeFieldDemo.defaults = {};
 

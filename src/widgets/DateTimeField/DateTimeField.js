@@ -7,6 +7,7 @@ define([
     "vendor/jsutils/parseHTML",
 
     "vendor/domutils/domAddClass",
+    "vendor/domutils/domAddEventListener",
 
     "../3pp/flatpickr/flatpickr",
 
@@ -22,6 +23,7 @@ define([
     parseHTML,
 
     domAddClass,
+    domAddEventListener,
 
     flatpickr,
 
@@ -31,7 +33,8 @@ define([
     var
     PRIVATE = dataStore.create(),
 
-    CSS_BASE_CLASS = 'spwidgets-DateTimeField',
+    WINDOW_NAVIGATOR    = window.navigator,
+    CSS_BASE_CLASS      = 'spwidgets-DateTimeField',
 
     /**
      * A SharePoint DateTime field.
@@ -73,7 +76,9 @@ define([
                 fillTemplate(DateTimeFieldTemplate, inst.opt)
             ).firstChild;
 
-            var uiFind = this.$ui.querySelector.bind($ui);
+            var uiFind          = this.$ui.querySelector.bind($ui);
+            var BASE_SELECTOR   = "." + CSS_BASE_CLASS;
+
             inst.isDateOnly = column.Format === "DateOnly";
 
             if (opt.hideLabel) {
@@ -84,7 +89,10 @@ define([
                 domAddClass($ui, CSS_BASE_CLASS + "--noDescription");
             }
 
-            inst.dateWdg = flatpickr(uiFind("input"), {
+            opt.lang    = opt.lang || String(WINDOW_NAVIGATOR.language || WINDOW_NAVIGATOR.userLanguage || "en-US");
+            opt.labels  = opt.i18n[opt.lang] || opt.i18n["en-US"];
+
+            var dateWdg = inst.dateWdg = flatpickr(uiFind("input"), {
                 dateFormat: inst.isDateOnly ? opt.dateFormat : opt.dateTimeFormat,
                 enableTime: !inst.isDateOnly,
                 prevArrow:  '<i class="ms-Icon ms-Icon--chevronThickLeft" />',
@@ -105,6 +113,9 @@ define([
                     });
                 }.bind(this)
             });
+
+            domAddEventListener(uiFind(BASE_SELECTOR + "-calIcon"),   "click", dateWdg.toggle.bind(dateWdg));
+            domAddEventListener(uiFind(BASE_SELECTOR + "-clearIcon"), "click", dateWdg.clear.bind(dateWdg));
 
             this.onDestroy(function () {
                 // Destroy all Compose object
@@ -192,7 +203,12 @@ define([
         hideLabel:          false,
         hideDescription:    false,
 
-        allowMultiples: false              // FIXME: implement
+        allowMultiples: false,             // FIXME: implement
+        i18n: {
+            'en-US': {
+                placeholder: "Click to select..."
+            }
+        }
     };
 
     return DateTimeField;
