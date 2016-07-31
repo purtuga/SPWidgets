@@ -6,6 +6,8 @@ define([
     "vendor/jsutils/fillTemplate",
     "vendor/jsutils/parseHTML",
 
+    "vendor/domutils/domAddClass",
+
     "../3pp/flatpickr/flatpickr",
 
     "text!./DateTimeField.html",
@@ -19,6 +21,8 @@ define([
     fillTemplate,
     parseHTML,
 
+    domAddClass,
+
     flatpickr,
 
     DateTimeFieldTemplate
@@ -26,6 +30,8 @@ define([
 
     var
     PRIVATE = dataStore.create(),
+
+    CSS_BASE_CLASS = 'spwidgets-DateTimeField',
 
     /**
      * A SharePoint DateTime field.
@@ -63,13 +69,20 @@ define([
 
             PRIVATE.set(this, inst);
 
-            this.$ui = parseHTML(
+            var $ui = this.$ui = parseHTML(
                 fillTemplate(DateTimeFieldTemplate, inst.opt)
             ).firstChild;
 
-            var uiFind = this.$ui.querySelector.bind(this.$ui);
-
+            var uiFind = this.$ui.querySelector.bind($ui);
             inst.isDateOnly = column.Format === "DateOnly";
+
+            if (opt.hideLabel) {
+                domAddClass($ui, CSS_BASE_CLASS + "--noLabel");
+            }
+
+            if (opt.hideDescription) {
+                domAddClass($ui, CSS_BASE_CLASS + "--noDescription");
+            }
 
             inst.dateWdg = flatpickr(uiFind("input"), {
                 dateFormat: inst.isDateOnly ? opt.dateFormat : opt.dateTimeFormat,
@@ -173,11 +186,13 @@ define([
 
     DateTimeField = EventEmitter.extend(Widget, DateTimeField);
     DateTimeField.defaults = {
-        column:         null,
-        dateFormat:     "F j, Y",
-        dateTimeFormat: "F j, Y h:i:S K",
+        column:             null,
+        dateFormat:         "F j, Y",
+        dateTimeFormat:     "F j, Y h:i:S K",
+        hideLabel:          false,
+        hideDescription:    false,
 
-        allowMultiples: false               // FIXME: implement allowMultiples (for filter panel)
+        allowMultiples: false              // FIXME: implement
     };
 
     return DateTimeField;
