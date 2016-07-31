@@ -23,10 +23,12 @@
     &-suggestions {
         min-width:  250px;
         top:        100%;
+        z-index:    5;
 
         &-groups {
             padding:    1px; // needed to avoid unnecessary scroll bar
             overflow-y: auto;
+            overflow-x: hidden;
 
             &::-webkit-scrollbar {
                 width:              0.5em;

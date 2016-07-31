@@ -14,6 +14,8 @@ define([
     "vendor/domutils/domFind",
     "vendor/domutils/domTriggerEvent",
     "vendor/domutils/domChildren",
+    "vendor/domutils/domPosition",
+    "vendor/domutils/domSetStyle",
     "vendor/domutils/DomKeyboardInteraction",
 
     "../../spapi/searchPrincipals",
@@ -42,6 +44,8 @@ define([
     domFind,
     domTriggerEvent,
     domChildren,
+    domPosition,
+    domSetStyle,
     DomKeyboardInteraction,
 
     searchPrincipals,
@@ -124,6 +128,9 @@ define([
      *  item should be kept in the list or no (`true` == keep, `false` don't keep). See
      *  `Array.filter` for more information.
      *
+     * @param {Function} [options.resultsZIndex=5]
+     *  The CSS `z-index` value to be used for the element that display the search results.
+     *
      * @param {String} [options.suggestionsRightAlign=false"]
      *  If true, the search suggestion element is right aligned with the search input
      *  box. good for when widget is close to the right edge of the viewport
@@ -149,6 +156,7 @@ define([
             var inst = {
                 opt:            objectExtend({}, PeoplePicker.defaults, options),
                 resultGroup:    null,
+                bodyClickEv:    null,
                 lastSearchInput:"",
                 selected:       [] // array of Persona widgets
             };
@@ -163,36 +171,15 @@ define([
             uiFind      = $ui.querySelector.bind($ui),
             $input      = inst.$input = uiFind("input[name='search']"),
             $searchBox  = inst.$searchBox = uiFind("." + CSS_CLASS_MS_PICKER_SEARCHBOX),
-            requestSuggestions,
-            bodyClickEv;
+            $suggestions= inst.$suggestions   = uiFind(SELECTOR_BASE + "-suggestions"),
+            requestSuggestions;
 
-            inst.$groups    = uiFind(SELECTOR_BASE + "-suggestions-groups");
-            inst.$inputCntr = uiFind(SELECTOR_BASE + "-searchFieldCntr");
+            inst.$groups        = uiFind(SELECTOR_BASE + "-suggestions-groups");
+            inst.$inputCntr     = uiFind(SELECTOR_BASE + "-searchFieldCntr");
 
-            // Focusing on the Input field, show the suggestions
-            // and sets up the event to close it clicking outside of it.
-            domAddEventListener($input, "focus", function(){
-                domAddClass($ui, CSS_CLASS_IS_ACTIVE);
-                domTriggerEvent($input, "keyup");
+            // Detach the Suggestions element
+            $suggestions.parentNode.removeChild($suggestions);
 
-                if (bodyClickEv) {
-                    bodyClickEv.remove();
-                    bodyClickEv = null;
-                }
-
-                // Clicking anywhere outside of this widget - removes active class
-                bodyClickEv = domAddEventListener(BODY, "click", function(ev){
-                    var closestPeoplePicker = domClosest(ev.target, SELECTOR_BASE);
-
-                    if (!closestPeoplePicker || closestPeoplePicker !== $ui) {
-                        domRemoveClass($ui, CSS_CLASS_IS_ACTIVE);
-                        inst.lastSearchInput = "";
-                        bodyClickEv.remove();
-                        bodyClickEv = null;
-                        clearSuggestions.call(this);
-                    }
-                }.bind(this));
-            }.bind(this));
 
             // Add keyboard interaction to the Input field
             var keyboardInteraction = inst.keyboardInteraction = DomKeyboardInteraction.create({
@@ -215,6 +202,16 @@ define([
                 }
                 $input.value = "";
             });
+
+            // Focusing on the Input field, show the suggestions
+            // and sets up the event to close it clicking outside of it.
+            domAddEventListener($input, "focus", function(){
+                this.showResults();
+            }.bind(this));
+
+            domAddEventListener($input, "blur", function(){
+                this.hideResults();
+            }.bind(this));
 
             // When user types, get suggestions
             domAddEventListener($input, "keyup", function(/*ev*/){
@@ -286,6 +283,7 @@ define([
                     inst.selected.splice(selectedIndex, 1);
                 }
 
+                domPosition(inst.$suggestions, inst.$inputCntr);
                 domTriggerEvent($input, "keyup");
 
                 /**
@@ -469,6 +467,62 @@ define([
          */
         setFocus: function(){
             PRIVATE.get(this).$input.focus();
+        },
+
+        /**
+         * Shows the results UI
+         */
+        showResults: function(){
+            var inst            = PRIVATE.get(this);
+            var $input          = inst.$input;
+            var $suggestions    = inst.$suggestions;
+            var $inputCntr      = inst.$inputCntr;
+            var $ui             = this.getEle();
+
+            domAddClass($ui, CSS_CLASS_IS_ACTIVE);
+            BODY.appendChild($suggestions);
+            domPosition($suggestions, $inputCntr);
+            domSetStyle($suggestions, {
+                width:      $inputCntr.clientWidth + "px",
+                display:    "block"
+            });
+
+            domTriggerEvent($input, "keyup");
+
+            if (inst.bodyClickEv) {
+                inst.bodyClickEv.remove();
+                inst.bodyClickEv = null;
+            }
+
+            // Clicking anywhere outside of this widget - removes active class
+            inst.bodyClickEv = domAddEventListener(BODY, "click", function(ev){
+                var closestPeoplePicker = domClosest(ev.target, SELECTOR_BASE);
+
+                if (!closestPeoplePicker || closestPeoplePicker !== $ui) {
+                    this.hideResults();
+                }
+            }.bind(this));
+        },
+
+        /**
+         * Hides the results UI
+         */
+        hideResults: function(){
+            var inst            = PRIVATE.get(this);
+            var $suggestions    = inst.$suggestions;
+
+            if (inst.bodyClickEv) {
+                inst.bodyClickEv.remove();
+                inst.bodyClickEv = null;
+            }
+
+            domRemoveClass(this.getEle(), CSS_CLASS_IS_ACTIVE);
+            if ($suggestions.parentNode) {
+                BODY.removeChild($suggestions);
+            }
+            domSetStyle($suggestions, {display: "none"});
+            inst.lastSearchInput = "";
+            clearSuggestions.call(this);
         }
     },
 
@@ -625,6 +679,8 @@ define([
                 addPersonToSelectedList.call(this, resultModel);
             }
 
+            domPosition(inst.$suggestions, inst.$inputCntr);
+
             /**
              * A suggestion was selected.
              *
@@ -692,6 +748,7 @@ define([
         type:                   'User',
         inputPlaceholder:       "Type and Pick",
         minLength:              2,
+        resultsZIndex:          0,
         showSelected:           true,
         resolvePrincipals:      true,
         meKeyword:              "[me]",
