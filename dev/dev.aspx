@@ -62,6 +62,7 @@
     <div>
         <select id="demo_selector"  style="display:none">
             <option value="">Select...</option>
+            <option value="DateTimeField">DateTimeField</option>
             <option value="LookupField">LookupField</option>
             <option value="SPPeoplePicker">SPPeoplePicker</option>
             <option value="SPFilterPanel">SPFilterPanel</option>
@@ -93,11 +94,13 @@
     require([
         'dev/src/SPPeoplePickerDemo/SPPeoplePickerDemo',
         'dev/src/SPFilterPanelDemo/SPFilterPanelDemo',
-        'dev/src/LookupFieldDemo/LookupFieldDemo'
+        'dev/src/LookupFieldDemo/LookupFieldDemo',
+        'dev/src/DateTimeFieldDemo/DateTimeFieldDemo'
     ], function(
         SPPeoplePickerDemo,
         SPFilterPanelDemo,
-        LookupFieldDemo
+        LookupFieldDemo,
+        DateTimeFieldDemo
     ){
         var demoCntr = document.querySelector("#spwidgets_dev_demo"),
             demoSelector = document.querySelector("#demo_selector"),
@@ -120,6 +123,10 @@
 
                 case "LookupField":
                     currentDemo = LookupFieldDemo.create();
+                    break;
+
+                case "DateTimeField":
+                    currentDemo = DateTimeFieldDemo.create();
                     break;
             }
 
