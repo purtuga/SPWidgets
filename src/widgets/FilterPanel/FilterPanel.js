@@ -11,6 +11,7 @@ define([
     "vendor/domutils/domAddEventListener",
     "vendor/domutils/domAddClass",
     "vendor/domutils/domRemoveClass",
+    "vendor/domutils/domChildren",
     "vendor/domutils/fitEleToParent",
 
     "../Message/Message",
@@ -44,6 +45,7 @@ define([
     domAddEventListener,
     domAddClass,
     domRemoveClass,
+    domChildren,
     fitEleToParent,
 
     Message,
@@ -337,19 +339,48 @@ define([
 
     /**
      * returns array with the filter columns that are visible
+     * in the order in which they are displayed on the screen.
+     *
      * @private
+     *
      * @return {Array<Widget>}
      */
     function getVisibleFilterColumnWidgets() {
-        var colsWdg = PRIVATE.get(this).colsWdg;
-
-        return Object.keys(colsWdg)
+        var colsWdg     = PRIVATE.get(this).colsWdg;
+        var response    = Object.keys(colsWdg)
             .filter(function(colName){
                 return  !!colsWdg[colName].getEle().parentNode &&
                     colsWdg[colName].isDirty();
             }).map(function(colName){
                 return colsWdg[colName];
             });
+        var getDomPositionIndex = function(colWdg){
+            var $colWdgUI       = colWdg.getEle();
+            var $colWdgParent   = $colWdgUI.parentNode;
+
+            if (!$colWdgParent) {
+                return -1;
+            }
+
+            return domChildren($colWdgParent).indexOf($colWdgUI);
+        };
+
+        response.sort(function(wdgA, wdgB){
+            var wdgAIndex = getDomPositionIndex(wdgA);
+            var wdgBIndex = getDomPositionIndex(wdgB);
+
+            if (wdgAIndex > wdgBIndex) {
+                return 1;
+            }
+
+            if (wdgAIndex < wdgBIndex) {
+                return -1;
+            }
+
+            return 0;
+        });
+
+        return response;
     }
 
     /**
