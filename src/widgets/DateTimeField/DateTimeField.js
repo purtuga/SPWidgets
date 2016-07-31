@@ -74,6 +74,8 @@ define([
             inst.dateWdg = flatpickr(uiFind("input"), {
                 dateFormat: inst.isDateOnly ? opt.dateFormat : opt.dateTimeFormat,
                 enableTime: !inst.isDateOnly,
+                prevArrow:  '<i class="ms-Icon ms-Icon--chevronThickLeft" />',
+                nextArrow:  '<i class="ms-Icon ms-Icon--chevronThickRight" />',
                 onChange:   function(dtObj, dtStr){
                     /**
                      * Date and/or time was changed

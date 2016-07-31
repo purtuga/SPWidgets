@@ -368,6 +368,9 @@ define([
 
             } else if (Array.isArray(val)) {
                 isUserInputDirty = !!val.length;
+
+            } else if (val) {
+                isUserInputDirty = true;
             }
 
             if (!isCompareOperatorDirty) {
