@@ -165,8 +165,9 @@ define([
             PRIVATE.set(this, inst);
 
             var
+            opt         = inst.opt,
             $ui         = this.$ui = parseHTML(
-                            fillTemplate(SPPeoplePickerTemplate, inst.opt)
+                            fillTemplate(SPPeoplePickerTemplate, opt)
                         ).firstChild,
             uiFind      = $ui.querySelector.bind($ui),
             $input      = inst.$input = uiFind("input[name='search']"),
@@ -179,6 +180,10 @@ define([
 
             // Detach the Suggestions element
             $suggestions.parentNode.removeChild($suggestions);
+
+            if (opt.resultsZIndex) {
+                domSetStyle($suggestions, {zIndex: opt.resultsZIndex});
+            }
 
 
             // Add keyboard interaction to the Input field
