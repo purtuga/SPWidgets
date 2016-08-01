@@ -36,7 +36,8 @@ define([
                 column:             opt.column,
                 hideLabel:          true,
                 hideDescription:    true,
-                allowMultiples:     true
+                allowMultiples:     true,
+                choicesZIndex:      opt.zIndex
             });
 
             inputWdg.on("item:selected", this.evalDirtyState.bind(this));

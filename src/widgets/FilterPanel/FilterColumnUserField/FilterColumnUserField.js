@@ -1,4 +1,4 @@
-define([
+{}define([
     "../FilterColumn/FilterColumn",
     "../../PeoplePicker/PeoplePicker",
 
@@ -31,7 +31,9 @@ define([
 
             var
             inst            = PRIVATE.get(this),
-            peoplePicker    = inst.inputWdg = PeoplePicker.create();
+            peoplePicker    = inst.inputWdg = PeoplePicker.create({
+                resultsZIndex: inst.opt.zIndex
+            });
 
             ['remove', 'select'].forEach(function(evName){
                 peoplePicker.on(evName, this.evalDirtyState.bind(this));

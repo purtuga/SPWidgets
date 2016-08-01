@@ -526,6 +526,7 @@ define([
         columns:            null,
         ignoreKeywords:     /^(of|and|a|an|to|by|the|or|from)$/i,
         delimiter:          ';',
+        zIndex:             15,
 
         FilterColumn:       FilterColumn,   // Base class. Use it to build other fields
         TextWidget:         FilterColumnTextField,

@@ -203,7 +203,9 @@ define([
         hideLabel:          false,
         hideDescription:    false,
 
-        allowMultiples: false,             // FIXME: implement
+        inline:             false,          // TODO: implement
+        allowMultiples: false,              // FIXME: implement
+
         i18n: {
             'en-US': {
                 placeholder: "Click to select..."
