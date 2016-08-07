@@ -52,6 +52,11 @@ define([
             ]);
         },
 
+        getValue: function(){
+            // FIXME: change coerce to array here once multiple dates are supported
+            return [FilterColumn.prototype.getValue.call(this)];
+        },
+
         setFilter: function(filter){
             var inst = PRIVATE.get(this);
             inst.setFieldCommonFilters(filter);

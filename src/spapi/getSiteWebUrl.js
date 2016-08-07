@@ -39,18 +39,20 @@ define([
             siteUrlResponse, siteUrl;
 
         if (!pageUrl) {
-            pageUrl     = docLocation.href;
+            page = docLocation.href;
             isThisPage  = true;
+
+        } else {
+            page = pageUrl;
         }
 
-        page = pageUrl;
 
         // Get only the pure url up to the page... no URL params or hash.
-        if (pageUrl.indexOf("?") > -1) {
-            page = pageUrl.substr(0, pageUrl.indexOf("?"));
+        if (page.indexOf("?") > -1) {
+            page = page.substr(0, page.indexOf("?"));
 
-        } else if (pageUrl.indexOf("#") > -1) {
-            page = pageUrl.substr(0, pageUrl.indexOf("#"));
+        } else if (page.indexOf("#") > -1) {
+            page = page.substr(0, page.indexOf("#"));
         }
         cacheKey += page;
 
@@ -91,22 +93,31 @@ define([
                 }
             }
 
+            // Lets try to validate webURL against current root site collection
+            // Works only if running inside of SharePoint (ex. in webpart)
             apiFetch(getFullUrl("/_vti_bin/Webs.asmx", true), {
                 method:     "POST",
                 headers:    { 'Content-Type': 'text/xml;charset=UTF-8' },
                 body:       "<soap:Envelope xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'><soap:Body><WebUrlFromPageUrl xmlns='http://schemas.microsoft.com/sharepoint/soap/' >" +
-                            "<pageUrl>" + page + "</pageUrl></WebUrlFromPageUrl></soap:Body></soap:Envelope>"
+                "<pageUrl>" + page + "</pageUrl></WebUrlFromPageUrl></soap:Body></soap:Envelope>"
             })
-            .then(
-                function(response){
-                    siteUrl = response.content.querySelector("WebUrlFromPageUrlResult").textContent;
-                    resolve(getFullUrl(siteUrl));
+                .then(
+                    function(response){
+                        siteUrl = response.content.querySelector("WebUrlFromPageUrlResult").textContent;
+                        resolve(getFullUrl(siteUrl));
+                    }
 
-                },
-                function(error){
-                    reject(error);
+                    // If request failed, then its likely because the page is not running
+                    // inside of SharePoint. If a webURL was passed on input, then lets
+                    // just assume that its correct and use it.
+                )["catch"](function(error){
+                if (pageUrl) {
+                    resolve(getFullUrl(pageUrl));
+                    return;
                 }
-            );
+
+                reject(error);
+            });
 
         })["catch"](function(error){
             cache.clear(cacheKey);
@@ -146,7 +157,7 @@ define([
             docLocation.hostname +
             (   Number(docLocation.port) !== 80 &&
                 Number(docLocation.port) > 0 ?
-                    ":" + docLocation.port :
+                ":" + docLocation.port :
                     ""
             ) +
             pageAddress;
