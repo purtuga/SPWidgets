@@ -1,20 +1,9 @@
-define([
-    "../sputils/apiFetch",
-    "../sputils/cache",
-    "./getSiteWebUrl",
-    "../models/UserProfileModel",
-
-    "vendor/jsutils/objectExtend",
-    "vendor/domutils/domFind"
-], function(
-    apiFetch,
-    cache,
-    getSiteWebUrl,
-    UserProfileModel,
-
-    objectExtend,
-    domFind
-){
+import apiFetch from "../sputils/apiFetch";
+import cache from "../sputils/cache";
+import getSiteWebUrl from "./getSiteWebUrl";
+import UserProfileModel from "../models/UserProfileModel";
+import objectExtend from "vendor/jsutils/objectExtend";
+import domFind from "vendor/domutils/domFind";
 
     /**
      * Given some text, the operation will search for user that match
@@ -290,6 +279,6 @@ define([
 //
 //    })(); //end: API.searchPrincipals()
 
-    return searchPrincipals;
-});
+    export default searchPrincipals;
+
 

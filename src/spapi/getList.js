@@ -1,16 +1,8 @@
-define([
-    "../sputils/apiFetch",
-    "../sputils/cache",
-    "./getSiteWebUrl",
-    "../models/ListModel",
-    "vendor/jsutils/objectExtend"
-], function(
-    apiFetch,
-    cache,
-    getSiteWebUrl,
-    ListModel,
-    objectExtend
-){
+import apiFetch from "../sputils/apiFetch";
+import cache from "../sputils/cache";
+import getSiteWebUrl from "./getSiteWebUrl";
+import ListModel from "../models/ListModel";
+import objectExtend from "vendor/jsutils/objectExtend";
 
      /**
      * Get a list definition from sharepoint or return its cached version
@@ -115,5 +107,5 @@ define([
         ListModel:  ListModel
     };
 
-    return getList;
-});
+    export default getList;
+

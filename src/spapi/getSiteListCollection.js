@@ -1,18 +1,8 @@
-define([
-    "../sputils/apiFetch",
-    "../sputils/cache",
-    "./getSiteWebUrl",
-
-    "vendor/jsutils/objectExtend",
-    "vendor/domutils/domFind"
-], function(
-    apiFetch,
-    cache,
-    getSiteWebUrl,
-
-    objectExtend,
-    domFind
-){
+import apiFetch from "../sputils/apiFetch";
+import cache from "../sputils/cache";
+import getSiteWebUrl from "./getSiteWebUrl";
+import objectExtend from "vendor/jsutils/objectExtend";
+import domFind from "vendor/domutils/domFind";
 
     /**
      * Returns a Deferred that is resolved with an Array of Objects containing
@@ -150,5 +140,5 @@ define([
         cache:  true
     };
 
-    return getSiteListCollection;
-});
+    export default getSiteListCollection;
+

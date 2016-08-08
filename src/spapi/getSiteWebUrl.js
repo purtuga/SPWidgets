@@ -1,12 +1,6 @@
-define([
-    "vendor/jsutils/es6-promise",
-    "../sputils/apiFetch",
-    "../sputils/cache"
-], function(
-    Promise,
-    apiFetch,
-    cache
-){
+import Promise from "vendor/jsutils/es6-promise";
+import apiFetch from "../sputils/apiFetch";
+import cache from "../sputils/cache";
     /* global _spPageContextInfo, L_Menu_BaseUrl */
 
     /**
@@ -165,5 +159,5 @@ define([
         return pageAddress;
     };
 
-    return getSiteUrl;
-});
+    export default getSiteUrl;
+

@@ -1,28 +1,12 @@
-define([
-    "../sputils/apiFetch",
-    "../sputils/cache",
-    "./getSiteWebUrl",
-    "./searchPrincipals",
-
-    "vendor/jsutils/es7-fetch",
-    "vendor/jsutils/objectExtend",
-    "vendor/jsutils/es6-promise",
-    "vendor/jsutils/parseHTML",
-
-    "vendor/domutils/domFind"
-], function(
-    apiFetch,
-    cache,
-    getSiteWebUrl,
-    searchPrincipals,
-
-    fetchPolyfill,
-    objectExtend,
-    Promise,
-    parseHTML,
-
-    domFind
-){
+import apiFetch from "../sputils/apiFetch";
+import cache from "../sputils/cache";
+import getSiteWebUrl from "./getSiteWebUrl";
+import searchPrincipals from "./searchPrincipals";
+import fetchPolyfill from "vendor/jsutils/es7-fetch";
+import objectExtend from "vendor/jsutils/objectExtend";
+import Promise from "vendor/jsutils/es6-promise";
+import parseHTML from "vendor/jsutils/parseHTML";
+import domFind from "vendor/domutils/domFind";
     /* globals _spPageContextInfo  */
 
     var
@@ -249,7 +233,7 @@ define([
         webURL: null
     };
 
-    return getCurrentUser;
+    export default getCurrentUser;
 
     //------------------------------------------------
     // Other possible approaches
@@ -279,4 +263,4 @@ define([
 
 
 
-});
+

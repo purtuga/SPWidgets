@@ -1,18 +1,8 @@
-define([
-    "../sputils/apiFetch",
-    "./getSiteWebUrl",
-    "../models/UserProfileModel",
-
-    "vendor/jsutils/objectExtend",
-    "vendor/domutils/domFind"
-], function(
-    apiFetch,
-    getSiteWebUrl,
-    UserProfileModel,
-
-    objectExtend,
-    domFind
-){
+import apiFetch from "../sputils/apiFetch";
+import getSiteWebUrl from "./getSiteWebUrl";
+import UserProfileModel from "../models/UserProfileModel";
+import objectExtend from "vendor/jsutils/objectExtend";
+import domFind from "vendor/domutils/domFind";
 
     /**
      * Given a list of users, this method will resolve those if they
@@ -112,7 +102,7 @@ define([
         UserProfileModel:   UserProfileModel
     };
 
-    return resolvePrincipals;
+    export default resolvePrincipals;
 
 
     //------------------------
@@ -137,5 +127,5 @@ define([
     //  </soap:Body>
     // </soap:Envelope>
 
-});
+
 

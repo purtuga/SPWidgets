@@ -1,18 +1,9 @@
-define([
-    "vendor/jsutils/objectExtend",
-    './getList',
-    '../sputils/cache',
-    '../sputils/getNodesFromXml',
-    '../models/ListColumnModel',
-    '../collections/ListColumnsCollection'
-], function(
-    objectExtend,
-    getList,
-    cache,
-    getNodesFromXml,
-    ListColumnModel,
-    ListColumnsCollection
-){
+import objectExtend from "vendor/jsutils/objectExtend";
+import getList from './getList';
+import cache from '../sputils/cache';
+import getNodesFromXml from '../sputils/getNodesFromXml';
+import ListColumnModel from '../models/ListColumnModel';
+import ListColumnsCollection from '../collections/ListColumnsCollection';
 
     var
     /**
@@ -168,5 +159,5 @@ define([
         ListColumnsCollection:  ListColumnsCollection
     };
 
-    return getListColumns;
-});
+    export default getListColumns;
+

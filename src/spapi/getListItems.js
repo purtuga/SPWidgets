@@ -1,26 +1,10 @@
-define([
-    "../sputils/cache",
-    "../sputils/getNodesFromXml",
-    "../models/ListItemModel",
-
-    "../collections/ListItemsCollection",
-
-    "../sputils/apiFetch",
-    "../spapi/getSiteWebUrl",
-
-    "vendor/jsutils/objectExtend"
-], function(
-    cache,
-    getNodesFromXml,
-    ListItemModel,
-
-    ListItemsCollection,
-
-    apiFetch,
-    getSiteWebUrl,
-
-    objectExtend
-){
+import cache from "../sputils/cache";
+import getNodesFromXml from "../sputils/getNodesFromXml";
+import ListItemModel from "../models/ListItemModel";
+import ListItemsCollection from "../collections/ListItemsCollection";
+import apiFetch from "../sputils/apiFetch";
+import getSiteWebUrl from "../spapi/getSiteWebUrl";
+import objectExtend from "vendor/jsutils/objectExtend";
 
     /**
      * Method to retrieve data from a SharePoint list using GetListItems or
@@ -175,5 +159,5 @@ define([
         ListItemCollection: ListItemsCollection
     };
 
-    return getListItems;
-});
+    export default getListItems;
+

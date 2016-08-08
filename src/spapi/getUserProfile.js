@@ -1,20 +1,9 @@
-define([
-    "../sputils/apiFetch",
-    "../sputils/cache",
-    "./getSiteWebUrl",
-    "../models/UserProfileModel",
-
-    "vendor/jsutils/objectExtend",
-    "vendor/domutils/domFind"
-], function(
-    apiFetch,
-    cache,
-    getSiteWebUrl,
-    UserProfileModel,
-
-    objectExtend,
-    domFind
-){
+import apiFetch from "../sputils/apiFetch";
+import cache from "../sputils/cache";
+import getSiteWebUrl from "./getSiteWebUrl";
+import UserProfileModel from "../models/UserProfileModel";
+import objectExtend from "vendor/jsutils/objectExtend";
+import domFind from "vendor/domutils/domFind";
 
     /**
      * Retrieves a User's profile using the Login name (ex. DOMAIN\name).
@@ -116,5 +105,5 @@ define([
         UserProfileModel:   UserProfileModel
     };
 
-    return getUserProfile;
-});
+    export default getUserProfile;
+

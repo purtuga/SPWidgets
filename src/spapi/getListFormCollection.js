@@ -1,16 +1,8 @@
-define([
-    "../sputils/apiFetch",
-    "../sputils/cache",
-    "./getSiteWebUrl",
-    "vendor/jsutils/objectExtend",
-    "vendor/domutils/domFind"
-], function(
-    apiFetch,
-    cache,
-    getSiteWebUrl,
-    objectExtend,
-    domFind
-){
+import apiFetch from "../sputils/apiFetch";
+import cache from "../sputils/cache";
+import getSiteWebUrl from "./getSiteWebUrl";
+import objectExtend from "vendor/jsutils/objectExtend";
+import domFind from "vendor/domutils/domFind";
 
     /**
      * Given a list name, this method will query the SP service and retrieve
@@ -124,5 +116,5 @@ define([
         cache:      true
     };
 
-    return getListFormCollection;
-});
+    export default getListFormCollection;
+

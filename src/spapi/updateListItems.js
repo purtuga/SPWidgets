@@ -1,18 +1,7 @@
-define([
-    "../sputils/apiFetch",
-    "./getSiteWebUrl",
-
-    "vendor/jsutils/objectExtend",
-    "vendor/jsutils/es6-promise"
-
-
-], function(
-    apiFetch,
-    getSiteWebUrl,
-
-    objectExtend,
-    Promise
-){
+import apiFetch from "../sputils/apiFetch";
+import getSiteWebUrl from "./getSiteWebUrl";
+import objectExtend from "vendor/jsutils/objectExtend";
+import Promise from "vendor/jsutils/es6-promise";
 
     var
     /**
@@ -589,6 +578,6 @@ define([
         concurrency:    2
     };
 
-    return updateListItems;
+    export default updateListItems;
 
-});
+

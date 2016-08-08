@@ -1,4 +1,4 @@
-define(["jquery"], function($){
+import $ from "jquery";
     /* global _spPageContextInfo, L_Menu_BaseUrl */
 
 
@@ -153,8 +153,8 @@ define(["jquery"], function($){
 
     })(); // end: getSiteUrl()
 
-    return getSiteUrl;
+    export default getSiteUrl;
 
-});
+
 
 
