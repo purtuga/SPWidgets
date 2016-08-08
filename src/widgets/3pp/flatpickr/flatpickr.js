@@ -1,5 +1,5 @@
 define([
-	"less!./flatpickr"
+	"./flatpickr.less"
 ], function(){
 
 	/**

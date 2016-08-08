@@ -18,7 +18,7 @@ define([
     "text!./ColumnSelector.html",
     "text!./column.html",
     //-------------------------------------
-    "less!./ColumnSelector"
+    "./ColumnSelector.less"
 ], function (
     Widget,
     EventEmitter,

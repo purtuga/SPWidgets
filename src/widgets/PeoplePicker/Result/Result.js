@@ -10,7 +10,7 @@ define([
     "text!./Result.html",
 
     //------------------------------------
-    "less!./Result"
+    "./Result.less"
 ], function (
     Persona,
 

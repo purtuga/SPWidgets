@@ -14,7 +14,7 @@ define([
 
     "text!./ListItemSimple.html",
     //------------------------------------
-    "less!./ListItem.less"
+    "./ListItem.less"
 ], function (
     Widget,
     EventEmitter,

@@ -24,7 +24,7 @@ define([
 
     "text!./LookupField.html",
     //-------------------------------
-    "less!./LookupField.less"
+    "./LookupField.less"
 ], function (
     Widget,
     EventEmitter,

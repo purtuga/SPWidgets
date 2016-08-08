@@ -15,7 +15,7 @@ define([
     "text!./ChoiceField.html",
     "text!./choice.html",
     //---------------------------------
-    "less!./ChoiceField.less"
+    "./ChoiceField.less"
 ], function (
     Widget,
     EventEmitter,

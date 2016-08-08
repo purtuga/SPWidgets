@@ -7,7 +7,7 @@ define([
     "text!./PeoplePickerPersona.html",
 
     //-----------------------------
-    "less!./PeoplePickerPersona"
+    "./PeoplePickerPersona.less"
 ], function (
     Persona,
     fillTemplate,

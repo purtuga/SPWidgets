@@ -27,7 +27,7 @@ define([
     "text!./PeoplePicker.html",
 
     //=================================
-    "less!./PeoplePicker"
+    "./PeoplePicker.less"
 ], function(
     Widget,
     EventEmitter,

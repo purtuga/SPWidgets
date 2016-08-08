@@ -31,7 +31,7 @@ define([
 
     "text!./FilterPanel.html",
     //----------------------------------
-    "less!./FilterPanel.less"
+    "./FilterPanel.less"
 ], function (
     Widget,
     EventEmitter,

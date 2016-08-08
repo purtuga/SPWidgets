@@ -11,7 +11,7 @@ define([
 
     "text!./SelectedItem.html",
     //-----------------------------
-    "less!./SelectedItem.less"
+    "./SelectedItem.less"
 ], function (
     Widget,
     EventEmitter,

@@ -17,7 +17,7 @@ define([
 
     "text!./FilterColumn.html",
     //--------------------------------------
-    "less!./FilterColumn"
+    "./FilterColumn.less"
 ], function (
     Widget,
     EventEmitter,

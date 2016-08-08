@@ -1,119 +1,109 @@
-define([
-    "../jsutils/Compose",
-    "../jsutils/objectExtend",
-    "../jsutils/dataStore",
-    "../sputils/getNodesFromXml",
-    "../spapi/getListItems",
+import Compose         from "../jsutils/Compose"
+import objectExtend    from "../jsutils/objectExtend"
+import dataStore       from "../jsutils/dataStore"
+import getNodesFromXml from "../sputils/getNodesFromXml"
+import getListItems    from "../spapi/getListItems"
+import Promise         from "vendor/jsutils/es6-promise"
 
-    "vendor/jsutils/es6-promise"
-], function(
-    Compose,
-    objectExtend,
-    dataStore,
-    getNodesFromXml,
-    getListItems,
 
-    Promise
-){
+var
+instData = dataStore.stash,
 
-    var
-    instData = dataStore.stash,
+/**
+ * list Column Model.
+ *
+ * @class ListColumnModel
+ * @extends Compose
+ *
+ * @param {Object} columnData
+ *      A javascript Object with the column
+ * @param {Object} [options]
+ * @param {ListModel|String} [options.list=null]
+ *      A reference to the [ListModel]{ListModel} of the column
+ * @param {String} [options.type="xml"]
+ *      A static string of either `xml` or `json`
+ *      (json not yet supported, 2015-07-03)
+ * @param {Object} [options.source=null]
+ *      The source originally used to create the model. (ex. the XML node or the
+ *     JSON response object)
+ *
+ */
+ListColumnModel = /** @lends ListColumnModel.prototype */{
+
+    init: function(columnData, options){
+
+        var opt = objectExtend({}, ListColumnModel.defaults, options);
+        if (columnData) {
+            objectExtend(this, columnData);
+        }
+        instData.set(this, opt);
+
+    },
 
     /**
-     * list Column Model.
+     * Returns the values for the column. Useful for column of type Choice or Lookup.
      *
-     * @class ListColumnModel
-     * @extends Compose
-     *
-     * @param {Object} columnData
-     *      A javascript Object with the column
-     * @param {Object} [options]
-     * @param {ListModel|String} [options.list=null]
-     *      A reference to the [ListModel]{ListModel} of the column
-     * @param {String} [options.type="xml"]
-     *      A static string of either `xml` or `json`
-     *      (json not yet supported, 2015-07-03)
-     * @param {Object} [options.source=null]
-     *      The source originally used to create the model. (ex. the XML node or the
-     *     JSON response object)
-     *
+     * @return {Promise<Array<Object|String>, Error>}
      */
-    ListColumnModel = /** @lends ListColumnModel.prototype */{
+    getColumnValues: function() {
+        var me          = this,
+            $colXml     = instData.get(me).source,
+            colType     = me.Type,
+            colValues   = [];
 
-        init: function(columnData, options){
+        return new Promise(function(resolve, reject){
+            switch (colType) {
+                case "Choice":
+                case "MultiChoice":
+                    Array.prototype.slice.call($colXml.querySelectorAll("CHOICE"), 0).forEach(function(choiceEle){
+                        colValues.push(choiceEle.textContent || "");
+                    });
 
-            var opt = objectExtend({}, ListColumnModel.defaults, options);
-            if (columnData) {
-                objectExtend(this, columnData);
+                    resolve(colValues);
+                    break;
+
+                case "Lookup":
+                case "LookupMulti":
+                    getListItems({
+                        listName:   me.List,
+                        // FIXME: missing webURL here.
+                        CAMLQuery:  '<Query><OrderBy><FieldRef Name="' +
+                            me.ShowField + '"/></OrderBy></Query>',
+                        CAMLViewFields: '<ViewFields><FieldRef Name="' +
+                            me.ShowField + '"/></ViewFields>'
+                    }).then(
+                        function(rows){
+                            resolve(rows);
+                        },
+                        function(err){
+                            reject(err);
+                        }
+                    );
+                    break;
+
+                default:
+                    resolve(colValues);
             }
-            instData.set(this, opt);
+        });
+    },
 
-        },
+    /**
+     * returns the ListModel if one was given on input when listColumnModel instance
+     * was created.
+     *
+     * @return {ListModel}
+     */
+    getList: function(){
+        return instData.get(this).list;
+    }
+};
 
-        /**
-         * Returns the values for the column. Useful for column of type Choice or Lookup.
-         *
-         * @return {Promise<Array<Object|String>, Error>}
-         */
-        getColumnValues: function() {
-            var me          = this,
-                $colXml     = instData.get(me).source,
-                colType     = me.Type,
-                colValues   = [];
+ListColumnModel = Compose.extend(ListColumnModel);
 
-            return new Promise(function(resolve, reject){
-                switch (colType) {
-                    case "Choice":
-                    case "MultiChoice":
-                        Array.prototype.slice.call($colXml.querySelectorAll("CHOICE"), 0).forEach(function(choiceEle){
-                            colValues.push(choiceEle.textContent || "");
-                        });
+ListColumnModel.defaults = {
+    list:   null,
+    type:   "xml",
+    source: null
+};
 
-                        resolve(colValues);
-                        break;
-
-                    case "Lookup":
-                    case "LookupMulti":
-                        getListItems({
-                            listName:   me.List,
-                            // FIXME: missing webURL here.
-                            CAMLQuery:  '<Query><OrderBy><FieldRef Name="' +
-                                me.ShowField + '"/></OrderBy></Query>',
-                            CAMLViewFields: '<ViewFields><FieldRef Name="' +
-                                me.ShowField + '"/></ViewFields>'
-                        }).then(
-                            function(rows){
-                                resolve(rows);
-                            },
-                            function(err){
-                                reject(err);
-                            }
-                        );
-                        break;
-
-                    default:
-                        resolve(colValues);
-                }
-            });
-        },
-
-        /**
-         * returns the ListModel if one was given on input when listColumnModel instance
-         * was created.
-         *
-         * @return {ListModel}
-         */
-        getList: function(){
-            return instData.get(this).list;
-        }
-    };
-
-    ListColumnModel = Compose.extend(ListColumnModel);
-
-    ListColumnModel.defaults = {
-        list:   null,
-        type:   "xml",
-        source: null
-    };
-    return ListColumnModel;
-});
+export default ListColumnModel;

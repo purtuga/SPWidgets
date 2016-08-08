@@ -8,7 +8,7 @@ define([
     "text!./Message.html",
 
     //-----------------------------
-    "less!./Message"
+    "./Message.less"
 ], function (
     Widget,
     dataStore,

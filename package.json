@@ -1,43 +1,79 @@
 {
-  "name": "SPWidgets",
-  "version": "2.5.2",
-  "description": "SharePoint widgets and tools for custom client side web solutions",
-  "main": "dist/jquery.SPWidgets.js",
-  "scripts": {
-    "test": "grunt test",
-    "server": "node tools/server.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:purtuga/SPWidgets.git"
-  },
-  "author": {
-    "name": "Paul Tavares"
-  },
-  "homepage": "http://purtuga.github.io/SPWidgets",
-  "license": "MIT",
-  "devDependencies": {
-    "amdclean": "^2.7.0",
-    "csso": "^1.3.11",
-    "grunt": "~0.4.1",
-    "grunt-contrib-clean": "~0.7.0",
-    "grunt-contrib-concat": "~0.5.1",
-    "grunt-contrib-connect": "^0.11.2",
-    "grunt-contrib-copy": "^0.8.2",
-    "grunt-contrib-jasmine": "^1.0.0",
-    "grunt-contrib-jshint": "^0.12.0",
-    "grunt-contrib-requirejs": "^0.4.4",
-    "grunt-contrib-uglify": "^0.11.0",
-    "grunt-contrib-watch": "~0.6.1",
-    "grunt-jsdoc": "^1.1.0",
-    "grunt-template-jasmine-requirejs": "^0.2.2",
-    "html-minifier": "^1.1.1",
-    "less": "^1.7.5",
-    "metalsmith": "^2.1.0",
-    "metalsmith-layouts": "^1.4.2",
-    "metalsmith-markdown": "^0.2.1",
-    "open": "0.0.5",
-    "rjs-build-analysis": "0.0.3",
-    "serve-static": "^1.9.2"
-  }
+    "name": "SPWidgets",
+    "version": "3.0.0",
+    "description": "SharePoint widgets and tools for custom client side web solutions",
+    "main": "dist/jquery.SPWidgets.js",
+    "_OLD______scripts": {
+        "test": "grunt test",
+        "server": "node tools/server.js"
+    },
+    "scripts": {
+        "start": "npm run open && npm run serve",
+        "serve": "webpack-dev-server --progress --hot --inline --colors --port 8184",
+        "open": "opener http://127.0.0.1:8184",
+        "spDev": "opener chrome.exe --user-data-dir=\"C:/chromeDevSession\" --disable-web-security http://127.0.0.1:8184 && npm run serve",
+        "build": "webpack",
+        "test": "babel-node test/*.js | faucet"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:purtuga/SPWidgets.git"
+    },
+    "author": {
+        "name": "Paul Tavares"
+    },
+    "homepage": "http://purtuga.github.io/SPWidgets",
+    "license": "MIT",
+    "_OLD____devDependencies": {
+        "amdclean": "^2.7.0",
+        "csso": "^1.3.11",
+        "grunt": "~0.4.1",
+        "grunt-contrib-clean": "~0.7.0",
+        "grunt-contrib-concat": "~0.5.1",
+        "grunt-contrib-connect": "^0.11.2",
+        "grunt-contrib-copy": "^0.8.2",
+        "grunt-contrib-jasmine": "^1.0.0",
+        "grunt-contrib-jshint": "^0.12.0",
+        "grunt-contrib-requirejs": "^0.4.4",
+        "grunt-contrib-uglify": "^0.11.0",
+        "grunt-contrib-watch": "~0.6.1",
+        "grunt-jsdoc": "^1.1.0",
+        "grunt-template-jasmine-requirejs": "^0.2.2",
+        "html-minifier": "^1.1.1",
+        "less": "^1.7.5",
+        "metalsmith": "^2.1.0",
+        "metalsmith-layouts": "^1.4.2",
+        "metalsmith-markdown": "^0.2.1",
+        "open": "0.0.5",
+        "rjs-build-analysis": "0.0.3",
+        "serve-static": "^1.9.2"
+    },
+    "devDependencies": {
+        "SPWidgets": "file:..\\SPWidgetsPrj",
+        "babel-core": "^6.7.4",
+        "babel-eslint": "^6.0.0",
+        "babel-loader": "^6.2.4",
+        "babel-preset-es2015": "^6.6.0",
+        "babel-preset-stage-0": "^6.5.0",
+        "common-micro-libs": "purtuga/common-micro-libs",
+        "copy-webpack-plugin": "^1.1.1",
+        "css-loader": "^0.23.1",
+        "eslint": "^2.5.3",
+        "eslint-config-airbnb": "^6.0.2",
+        "flatpickr": "^1.9.1",
+        "less": "^2.7.1",
+        "less-loader": "^2.2.3",
+        "opener": "^1.4.1",
+        "raw-loader": "^0.5.1",
+        "style-loader": "^0.13.1",
+        "text-loader": "0.0.1",
+        "webpack": "^1.12.14",
+        "webpack-dev-server": "^1.14.1"
+    },
+    "babel": {
+        "presets": [
+            "es2015",
+            "stage-0"
+        ]
+    }
 }

@@ -11,7 +11,7 @@ define([
 
     "text!./TextField.html",
     //-------------------------------
-    "less!./TextField"
+    "./TextField.less"
 ], function (
     Widget,
     EventEmitter,

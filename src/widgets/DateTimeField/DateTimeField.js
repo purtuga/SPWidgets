@@ -13,7 +13,7 @@ define([
 
     "text!./DateTimeField.html",
     //---------------------------------
-    "less!./DateTimeField.less"
+    "./DateTimeField.less"
 ], function (
     Widget,
     EventEmitter,
