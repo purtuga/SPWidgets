@@ -1,4 +1,4 @@
-define(["vendor/domutils/domFind"], function(domFind){
+import domFind from "vendor/domutils/domFind";
 
     /**
      * Checks if an xml message has an error. Taken from
@@ -8,7 +8,7 @@ define(["vendor/domutils/domFind"], function(domFind){
      *
      * @return {Boolean}
      */
-    return function(xmlMsg) {
+    export default function(xmlMsg) {
 
         // BACKWARD COMPATIBILITY
         // if xmlMsg seems to be a jQuery object, then get it native element
@@ -50,4 +50,4 @@ define(["vendor/domutils/domFind"], function(domFind){
 
         return response;
     };
-});
+

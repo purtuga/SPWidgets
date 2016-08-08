@@ -1,17 +1,8 @@
-define([
-    "vendor/jsutils/es7-fetch",
-    "vendor/jsutils/parseXML",
-    "vendor/jsutils/es6-promise",
-    "./doesMsgHaveError",
-    "./getMsgError"
-], function(
-    fetchPolyfill,
-    parseXML,
-    Promise,
-
-    doesMsgHaveError,
-    getMsgError
-){
+import fetchPolyfill from "vendor/jsutils/es7-fetch";
+import parseXML from "vendor/jsutils/parseXML";
+import Promise from "vendor/jsutils/es6-promise";
+import doesMsgHaveError from "./doesMsgHaveError";
+import getMsgError from "./getMsgError";
 
     var fetch = fetchPolyfill.fetch;
 
@@ -118,5 +109,5 @@ define([
         return response;
     };
 
-    return apiFetch;
-});
+    export default apiFetch;
+

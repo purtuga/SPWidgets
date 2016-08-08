@@ -1,3 +1,2 @@
-define(["vendor/jsutils/fillTemplate"], function(fillTemplate){
-    return fillTemplate;
-});
+import fillTemplate from "vendor/jsutils/fillTemplate";
+    export default fillTemplate;

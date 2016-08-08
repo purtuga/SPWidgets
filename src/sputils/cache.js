@@ -1,4 +1,4 @@
-define([], function(){
+
 
      /**
      * Simple caching function.
@@ -109,6 +109,6 @@ define([], function(){
 
     })(); //end: cache method.
 
-    return cache;
+    export default cache;
 
-});
+

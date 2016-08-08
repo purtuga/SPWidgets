@@ -1,4 +1,4 @@
-define([], function(){
+
 
     /**
      * Parses a date string in ISO 8601 format into a Date object.
@@ -131,5 +131,5 @@ define([], function(){
 
     }; //end: parseDateString()
 
-    return parseDateString;
-});
+    export default parseDateString;
+

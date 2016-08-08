@@ -1,10 +1,5 @@
-define([
-    "vendor/domutils/domFind",
-    "vendor/jsutils/parseXML"
-], function(
-    domFind,
-    parseXML
-){
+import domFind from "vendor/domutils/domFind";
+import parseXML from "vendor/jsutils/parseXML";
 
     /**
      * Given a sharepoint webservices response, this method will
@@ -16,7 +11,7 @@ define([
      * @return {String} errorMessage
      *
      */
-    return function getMsgError(xmlMsg){
+    export default function getMsgError(xmlMsg){
 
         if (typeof xmlMsg === "string") {
             xmlMsg = parseXML(xmlMsg);
@@ -80,4 +75,4 @@ define([
         error = count + " error(s) encountered! \n" + error;
         return error;
     };
-});
+

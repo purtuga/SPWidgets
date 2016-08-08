@@ -1,4 +1,4 @@
-define(["vendor/jsutils/xmlEscape"], function(xmlEscape){
+import xmlEscape from "vendor/jsutils/xmlEscape";
     // FIXME: remove references to this file and replace with 'vendor/jsutils/xmlEscape'
-    return xmlEscape;
-});
+    export default xmlEscape;
+

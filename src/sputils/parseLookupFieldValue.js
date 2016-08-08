@@ -1,4 +1,4 @@
-define([], function(){
+
 
     /**
      * Parses a Sharepoint lookup values as returned by webservices
@@ -56,6 +56,6 @@ define([], function(){
 
     }; //end: parseLookupFieldValue
 
-    return parseLookupFieldValue;
+    export default parseLookupFieldValue;
 
-});
+

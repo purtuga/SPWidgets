@@ -1,8 +1,4 @@
-define([
-    "vendor/jsutils/objectExtend"
-], function(
-    objectExtend
-){
+import objectExtend from "vendor/jsutils/objectExtend";
 
     /**
      * Returns the requested nodes from the given xml document
@@ -159,6 +155,6 @@ define([
 
     getNodesFromXml.getJsNativeFromString = getJsNativeFromString;
 
-    return getNodesFromXml;
+    export default getNodesFromXml;
 
-});
+

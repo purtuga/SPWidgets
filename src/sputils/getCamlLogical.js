@@ -1,8 +1,4 @@
-define([
-    "vendor/jsutils/objectExtend"
-], function(
-    objectExtend
-){
+import objectExtend from "vendor/jsutils/objectExtend";
 
     /**
      * Given an array of CAML matches, this method will wrap them all in a
@@ -165,6 +161,6 @@ define([
 
     };// getCamlLogical()
 
-    return getCamlLogical;
+    export default getCamlLogical;
 
-});
+
