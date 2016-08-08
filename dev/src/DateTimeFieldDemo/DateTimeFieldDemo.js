@@ -1,24 +1,10 @@
-define([
-    "vendor/jsutils/Widget",
-    "vendor/jsutils/dataStore",
-    "vendor/jsutils/objectExtend",
-    "vendor/jsutils/fillTemplate",
-    "vendor/jsutils/parseHTML",
-
-    "../../../src/widgets/DateTimeField/DateTimeField",
-
-    "text!./DateTimeFieldDemo.html"
-], function (
-    Widget,
-    dataStore,
-    objectExtend,
-    fillTemplate,
-    parseHTML,
-
-    DateTimeField,
-
-    DateTimeFieldDemoTemplate
-) {
+import Widget from "vendor/jsutils/Widget";
+import dataStore from "vendor/jsutils/dataStore";
+import objectExtend from "vendor/jsutils/objectExtend";
+import fillTemplate from "vendor/jsutils/fillTemplate";
+import parseHTML from "vendor/jsutils/parseHTML";
+import DateTimeField from "../../../src/widgets/DateTimeField/DateTimeField";
+import DateTimeFieldDemoTemplate from "text!./DateTimeFieldDemo.html";
 
     var
     PRIVATE = dataStore.create(),
@@ -74,5 +60,4 @@ define([
     DateTimeFieldDemo = Widget.extend(DateTimeFieldDemo);
     DateTimeFieldDemo.defaults = {};
 
-    return DateTimeFieldDemo;
-});
+    export default DateTimeFieldDemo;

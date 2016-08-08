@@ -1,18 +1,8 @@
-define([
-    "vendor/jsutils/Widget",
-    "vendor/jsutils/parseHTML",
-    "vendor/domutils/domFind",
-    "../../../src/widgets/PeoplePicker/PeoplePicker",
-
-    "text!./SPPeoplePickerDemo.html"
-], function(
-    Widget,
-    parseHTML,
-    domFind,
-    SPPeoplePicker,
-
-    template
-){
+import Widget from "vendor/jsutils/Widget";
+import parseHTML from "vendor/jsutils/parseHTML";
+import domFind from "vendor/domutils/domFind";
+import SPPeoplePicker from "../../../src/widgets/PeoplePicker/PeoplePicker";
+import template from "text!./SPPeoplePickerDemo.html";
 
     var $CONSOLE_LOG_OUT,
         log = function(data){
@@ -21,7 +11,7 @@ define([
             );
         };
 
-    return Widget.extend({
+    export default Widget.extend({
         init: function(){
             this.$ui = parseHTML(template).firstChild;
             $CONSOLE_LOG_OUT = domFind(this.$ui, "#SPPeoplePicker_console_out").shift();
@@ -60,4 +50,3 @@ define([
         });
     }
 
-});

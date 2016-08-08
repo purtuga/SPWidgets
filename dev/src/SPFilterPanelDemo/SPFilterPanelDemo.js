@@ -1,24 +1,10 @@
-define([
-    "vendor/jsutils/Widget",
-    "vendor/jsutils/dataStore",
-    "vendor/jsutils/objectExtend",
-    "vendor/jsutils/fillTemplate",
-    "vendor/jsutils/parseHTML",
-
-    "../../../src/widgets/FilterPanel/FilterPanel",
-
-    "text!./SPFilterPanelDemo.html"
-], function (
-    Widget,
-    dataStore,
-    objectExtend,
-    fillTemplate,
-    parseHTML,
-
-    FilterPanel,
-
-    SPFilterPanelDemoTemplate
-) {
+import Widget from "vendor/jsutils/Widget";
+import dataStore from "vendor/jsutils/dataStore";
+import objectExtend from "vendor/jsutils/objectExtend";
+import fillTemplate from "vendor/jsutils/fillTemplate";
+import parseHTML from "vendor/jsutils/parseHTML";
+import FilterPanel from "../../../src/widgets/FilterPanel/FilterPanel";
+import SPFilterPanelDemoTemplate from "text!./SPFilterPanelDemo.html";
 
     var
         PRIVATE = dataStore.create(),
@@ -94,5 +80,4 @@ define([
     SPFilterPanelDemo = Widget.extend(SPFilterPanelDemo);
     SPFilterPanelDemo.defaults = {};
 
-    return SPFilterPanelDemo;
-});
+    export default SPFilterPanelDemo;

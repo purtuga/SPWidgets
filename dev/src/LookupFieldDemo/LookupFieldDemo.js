@@ -1,26 +1,11 @@
-define([
-    "vendor/jsutils/Widget",
-    "vendor/jsutils/dataStore",
-    "vendor/jsutils/objectExtend",
-    "vendor/jsutils/fillTemplate",
-    "vendor/jsutils/parseHTML",
-
-    "../../../src/widgets/LookupField/LookupField",
-    "../../../src/spapi/getListColumns",
-
-    "text!./LookupFieldDemo.html"
-], function (
-    Widget,
-    dataStore,
-    objectExtend,
-    fillTemplate,
-    parseHTML,
-
-    LookupField,
-    getListColumns,
-
-    LookupFieldDemoTemplate
-) {
+import Widget from "vendor/jsutils/Widget";
+import dataStore from "vendor/jsutils/dataStore";
+import objectExtend from "vendor/jsutils/objectExtend";
+import fillTemplate from "vendor/jsutils/fillTemplate";
+import parseHTML from "vendor/jsutils/parseHTML";
+import LookupField from "../../../src/widgets/LookupField/LookupField";
+import getListColumns from "../../../src/spapi/getListColumns";
+import LookupFieldDemoTemplate from "text!./LookupFieldDemo.html";
 
     var
     PRIVATE = dataStore.create(),
@@ -74,5 +59,4 @@ define([
     LookupFieldDemo = Widget.extend(LookupFieldDemo);
     LookupFieldDemo.defaults = {};
 
-    return LookupFieldDemo;
-});
+    export default LookupFieldDemo;
