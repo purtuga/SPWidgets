@@ -1,23 +1,10 @@
-define([
-    "vendor/jsutils/Widget",
-    "vendor/jsutils/dataStore",
-    "vendor/jsutils/objectExtend",
-    "vendor/jsutils/fillTemplate",
-    "vendor/jsutils/parseHTML",
-
-    "text!./Message.html",
-
-    //-----------------------------
-    "./Message.less"
-], function (
-    Widget,
-    dataStore,
-    objectExtend,
-    fillTemplate,
-    parseHTML,
-
-    MessageTemplate
-) {
+import Widget from "vendor/jsutils/Widget";
+import dataStore from "vendor/jsutils/dataStore";
+import objectExtend from "vendor/jsutils/objectExtend";
+import fillTemplate from "vendor/jsutils/fillTemplate";
+import parseHTML from "vendor/jsutils/parseHTML";
+import MessageTemplate from "text!./Message.html";
+import "./Message.less";
 
     var
     PRIVATE = dataStore.create(),
@@ -94,5 +81,4 @@ define([
         iconClass:  ''
     };
 
-    return Message;
-});
+    export default Message;

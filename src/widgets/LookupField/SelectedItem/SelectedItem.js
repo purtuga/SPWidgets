@@ -1,30 +1,13 @@
-define([
-    "vendor/jsutils/Widget",
-    "vendor/jsutils/EventEmitter",
-    "vendor/jsutils/dataStore",
-    "vendor/jsutils/objectExtend",
-    "vendor/jsutils/fillTemplate",
-    "vendor/jsutils/parseHTML",
-
-    "vendor/domutils/domMatches",
-    "vendor/domutils/domAddEventListener",
-
-    "text!./SelectedItem.html",
-    //-----------------------------
-    "./SelectedItem.less"
-], function (
-    Widget,
-    EventEmitter,
-    dataStore,
-    objectExtend,
-    fillTemplate,
-    parseHTML,
-
-    domMatches,
-    domAddEventListener,
-
-    SelectedItemTemplate
-) {
+import Widget from "vendor/jsutils/Widget";
+import EventEmitter from "vendor/jsutils/EventEmitter";
+import dataStore from "vendor/jsutils/dataStore";
+import objectExtend from "vendor/jsutils/objectExtend";
+import fillTemplate from "vendor/jsutils/fillTemplate";
+import parseHTML from "vendor/jsutils/parseHTML";
+import domMatches from "vendor/domutils/domMatches";
+import domAddEventListener from "vendor/domutils/domAddEventListener";
+import SelectedItemTemplate from "text!./SelectedItem.html";
+import "./SelectedItem.less";
 
     var
     PRIVATE = dataStore.create(),
@@ -95,5 +78,4 @@ define([
         item: null
     };
 
-    return SelectedItem;
-});
+    export default SelectedItem;

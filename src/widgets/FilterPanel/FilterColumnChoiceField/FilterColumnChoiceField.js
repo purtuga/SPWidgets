@@ -1,18 +1,8 @@
-define([
-    "../FilterColumn/FilterColumn",
-    "../../ChoiceField/ChoiceField",
-
-    "vendor/jsutils/objectExtend",
-    "vendor/jsutils/dataStore",
-    "vendor/jsutils/fillTemplate"
-], function (
-    FilterColumn,
-    ChoiceField,
-
-    objectExtend,
-    dataStore,
-    fillTemplate
-) {
+import FilterColumn from "../FilterColumn/FilterColumn";
+import ChoiceField from "../../ChoiceField/ChoiceField";
+import objectExtend from "vendor/jsutils/objectExtend";
+import dataStore from "vendor/jsutils/dataStore";
+import fillTemplate from "vendor/jsutils/fillTemplate";
 
     var
     PRIVATE = dataStore.stash,
@@ -75,5 +65,4 @@ define([
     FilterColumnChoiceField = FilterColumn.extend(FilterColumnChoiceField);
     FilterColumnChoiceField.defaults = {};
 
-    return FilterColumnChoiceField;
-});
+    export default FilterColumnChoiceField;

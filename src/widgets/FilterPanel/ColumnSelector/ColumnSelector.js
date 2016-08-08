@@ -1,44 +1,19 @@
-define([
-    "vendor/jsutils/Widget",
-    "vendor/jsutils/EventEmitter",
-    "vendor/jsutils/dataStore",
-    "vendor/jsutils/objectExtend",
-    "vendor/jsutils/fillTemplate",
-    "vendor/jsutils/parseHTML",
-
-    "vendor/domutils/domAddEventListener",
-    "vendor/domutils/domFind",
-    "vendor/domutils/domClosest",
-    "vendor/domutils/domAddClass",
-    "vendor/domutils/domRemoveClass",
-    "vendor/domutils/domHasClass",
-
-    "../../../spapi/getListColumns",
-
-    "text!./ColumnSelector.html",
-    "text!./column.html",
-    //-------------------------------------
-    "./ColumnSelector.less"
-], function (
-    Widget,
-    EventEmitter,
-    dataStore,
-    objectExtend,
-    fillTemplate,
-    parseHTML,
-
-    domAddEventListener,
-    domFind,
-    domClosest,
-    domAddClass,
-    domRemoveClass,
-    domHasClass,
-
-    getListColumns,
-
-    ColumnSelectorTemplate,
-    columnTemplate
-) {
+import Widget from "vendor/jsutils/Widget";
+import EventEmitter from "vendor/jsutils/EventEmitter";
+import dataStore from "vendor/jsutils/dataStore";
+import objectExtend from "vendor/jsutils/objectExtend";
+import fillTemplate from "vendor/jsutils/fillTemplate";
+import parseHTML from "vendor/jsutils/parseHTML";
+import domAddEventListener from "vendor/domutils/domAddEventListener";
+import domFind from "vendor/domutils/domFind";
+import domClosest from "vendor/domutils/domClosest";
+import domAddClass from "vendor/domutils/domAddClass";
+import domRemoveClass from "vendor/domutils/domRemoveClass";
+import domHasClass from "vendor/domutils/domHasClass";
+import getListColumns from "../../../spapi/getListColumns";
+import ColumnSelectorTemplate from "text!./ColumnSelector.html";
+import columnTemplate from "text!./column.html";
+import "./ColumnSelector.less";
 
     var
     PRIVATE = dataStore.create(),
@@ -268,5 +243,4 @@ define([
     ColumnSelector = EventEmitter.extend(Widget, ColumnSelector);
     ColumnSelector.defaults = {};
 
-    return ColumnSelector;
-});
+    export default ColumnSelector;

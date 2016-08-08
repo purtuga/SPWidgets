@@ -1,38 +1,17 @@
-define([
-    "vendor/jsutils/Widget",
-    "vendor/jsutils/EventEmitter",
-    "vendor/jsutils/dataStore",
-    "vendor/jsutils/objectExtend",
-    "vendor/jsutils/fillTemplate",
-    "vendor/jsutils/parseHTML",
-    "vendor/jsutils/es6-promise",
-    "vendor/jsutils/uuid",
-
-    "vendor/domutils/domAddClass",
-    "vendor/domutils/domAddEventListener",
-    "vendor/domutils/domFind",
-
-    "text!./ChoiceField.html",
-    "text!./choice.html",
-    //---------------------------------
-    "./ChoiceField.less"
-], function (
-    Widget,
-    EventEmitter,
-    dataStore,
-    objectExtend,
-    fillTemplate,
-    parseHTML,
-    Promise,
-    uuid,
-
-    domAddClass,
-    domAddEventListener,
-    domFind,
-
-    ChoiceFieldTemplate,
-    choiceTemplate
-) {
+import Widget from "vendor/jsutils/Widget";
+import EventEmitter from "vendor/jsutils/EventEmitter";
+import dataStore from "vendor/jsutils/dataStore";
+import objectExtend from "vendor/jsutils/objectExtend";
+import fillTemplate from "vendor/jsutils/fillTemplate";
+import parseHTML from "vendor/jsutils/parseHTML";
+import Promise from "vendor/jsutils/es6-promise";
+import uuid from "vendor/jsutils/uuid";
+import domAddClass from "vendor/domutils/domAddClass";
+import domAddEventListener from "vendor/domutils/domAddEventListener";
+import domFind from "vendor/domutils/domFind";
+import ChoiceFieldTemplate from "text!./ChoiceField.html";
+import choiceTemplate from "text!./choice.html";
+import "./ChoiceField.less";
 
     var
     PRIVATE = dataStore.create(),
@@ -272,5 +251,4 @@ define([
         isMulti:            null
     };
 
-    return ChoiceField;
-});
+    export default ChoiceField;

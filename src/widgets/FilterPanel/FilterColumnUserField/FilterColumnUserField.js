@@ -1,16 +1,7 @@
-{}define([
-    "../FilterColumn/FilterColumn",
-    "../../PeoplePicker/PeoplePicker",
-
-    "vendor/jsutils/objectExtend",
-    "vendor/jsutils/dataStore"
-], function (
-    FilterColumn,
-    PeoplePicker,
-
-    objectExtend,
-    dataStore
-) {
+{}import FilterColumn from "../FilterColumn/FilterColumn";
+import PeoplePicker from "../../PeoplePicker/PeoplePicker";
+import objectExtend from "vendor/jsutils/objectExtend";
+import dataStore from "vendor/jsutils/dataStore";
 
     var
     PRIVATE = dataStore.stash,
@@ -63,5 +54,4 @@
     FilterColumnUserField = FilterColumn.extend(FilterColumnUserField);
     FilterColumnUserField.defaults = {};
 
-    return FilterColumnUserField;
-});
+    export default FilterColumnUserField;

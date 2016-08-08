@@ -1,16 +1,7 @@
-define([
-    "../FilterColumn/FilterColumn",
-    "../../LookupField/LookupField",
-
-    "vendor/jsutils/objectExtend",
-    "vendor/jsutils/dataStore"
-], function (
-    FilterColumn,
-    LookupField,
-
-    objectExtend,
-    dataStore
-) {
+import FilterColumn from "../FilterColumn/FilterColumn";
+import LookupField from "../../LookupField/LookupField";
+import objectExtend from "vendor/jsutils/objectExtend";
+import dataStore from "vendor/jsutils/dataStore";
 
     var
     PRIVATE = dataStore.stash,
@@ -62,5 +53,4 @@ define([
     FilterColumnLookupField = FilterColumn.extend(FilterColumnLookupField);
     FilterColumnLookupField.defaults = {};
 
-    return FilterColumnLookupField;
-});
+    export default FilterColumnLookupField;

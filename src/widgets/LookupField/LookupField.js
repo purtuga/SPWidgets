@@ -1,56 +1,25 @@
-define([
-    "vendor/jsutils/Widget",
-    "vendor/jsutils/EventEmitter",
-    "vendor/jsutils/dataStore",
-    "vendor/jsutils/objectExtend",
-    "vendor/jsutils/fillTemplate",
-    "vendor/jsutils/parseHTML",
-    "vendor/jsutils/uuid",
-    "vendor/jsutils/es6-Map",
-    "vendor/jsutils/es6-promise",
-
-    "vendor/domutils/domAddEventListener",
-    "vendor/domutils/domAddClass",
-    "vendor/domutils/domRemoveClass",
-    "vendor/domutils/domHasClass",
-    "vendor/domutils/domPosition",
-    "vendor/domutils/DomKeyboardInteraction",
-
-    "./SelectedItem/SelectedItem",
-    "../List/List",
-    "../../spapi/getListItems",
-    "../../sputils/getCamlLogical",
-    "../../sputils/xmlEscape",
-
-    "text!./LookupField.html",
-    //-------------------------------
-    "./LookupField.less"
-], function (
-    Widget,
-    EventEmitter,
-    dataStore,
-    objectExtend,
-    fillTemplate,
-    parseHTML,
-    uuid,
-    Map,
-    Promise,
-
-    domAddEventListener,
-    domAddClass,
-    domRemoveClass,
-    domHasClass,
-    domPosition,
-    DomKeyboardInteraction,
-
-    SelectedItem,
-    List,
-    getListItems,
-    getCamlLogical,
-    xmlEscape,
-
-    LookupFieldTemplate
-) {
+import Widget from "vendor/jsutils/Widget";
+import EventEmitter from "vendor/jsutils/EventEmitter";
+import dataStore from "vendor/jsutils/dataStore";
+import objectExtend from "vendor/jsutils/objectExtend";
+import fillTemplate from "vendor/jsutils/fillTemplate";
+import parseHTML from "vendor/jsutils/parseHTML";
+import uuid from "vendor/jsutils/uuid";
+import Map from "vendor/jsutils/es6-Map";
+import Promise from "vendor/jsutils/es6-promise";
+import domAddEventListener from "vendor/domutils/domAddEventListener";
+import domAddClass from "vendor/domutils/domAddClass";
+import domRemoveClass from "vendor/domutils/domRemoveClass";
+import domHasClass from "vendor/domutils/domHasClass";
+import domPosition from "vendor/domutils/domPosition";
+import DomKeyboardInteraction from "vendor/domutils/DomKeyboardInteraction";
+import SelectedItem from "./SelectedItem/SelectedItem";
+import List from "../List/List";
+import getListItems from "../../spapi/getListItems";
+import getCamlLogical from "../../sputils/getCamlLogical";
+import xmlEscape from "../../sputils/xmlEscape";
+import LookupFieldTemplate from "text!./LookupField.html";
+import "./LookupField.less";
 
     var
     PRIVATE             = dataStore.create(),
@@ -653,5 +622,4 @@ define([
         }
     };
 
-    return LookupField;
-});
+    export default LookupField;

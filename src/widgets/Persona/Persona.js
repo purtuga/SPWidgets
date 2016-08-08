@@ -1,30 +1,13 @@
-define([
-    "vendor/jsutils/Widget",
-    "vendor/jsutils/EventEmitter",
-    "vendor/jsutils/dataStore",
-    "vendor/jsutils/objectExtend",
-    "vendor/jsutils/fillTemplate",
-    "vendor/jsutils/parseHTML",
-
-    "vendor/domutils/domClosest",
-    "vendor/domutils/domAddClass",
-    "vendor/domutils/domRemoveClass",
-
-    "text!./Persona.html"
-], function (
-    Widget,
-    EventEmitter,
-    dataStore,
-    objectExtend,
-    fillTemplate,
-    parseHTML,
-
-    domClosest,
-    domAddClass,
-    domRemoveClass,
-
-    PersonaTemplate
-) {
+import Widget from "vendor/jsutils/Widget";
+import EventEmitter from "vendor/jsutils/EventEmitter";
+import dataStore from "vendor/jsutils/dataStore";
+import objectExtend from "vendor/jsutils/objectExtend";
+import fillTemplate from "vendor/jsutils/fillTemplate";
+import parseHTML from "vendor/jsutils/parseHTML";
+import domClosest from "vendor/domutils/domClosest";
+import domAddClass from "vendor/domutils/domAddClass";
+import domRemoveClass from "vendor/domutils/domRemoveClass";
+import PersonaTemplate from "text!./Persona.html";
 
     var
         PRIVATE = dataStore.create(),
@@ -154,5 +137,4 @@ define([
         presence: 'offline'
     };
 
-    return Persona;
-});
+    export default Persona;

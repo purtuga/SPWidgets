@@ -1,61 +1,26 @@
-define([
-    "vendor/jsutils/Widget",
-    "vendor/jsutils/EventEmitter",
-    "vendor/jsutils/dataStore",
-    "vendor/jsutils/objectExtend",
-    "vendor/jsutils/parseHTML",
-    "vendor/jsutils/fillTemplate",
-    "vendor/jsutils/es6-promise",
-
-    "vendor/domutils/domAddEventListener",
-    "vendor/domutils/domAddClass",
-    "vendor/domutils/domRemoveClass",
-    "vendor/domutils/domClosest",
-    "vendor/domutils/domFind",
-    "vendor/domutils/domTriggerEvent",
-    "vendor/domutils/domChildren",
-    "vendor/domutils/domPosition",
-    "vendor/domutils/domSetStyle",
-    "vendor/domutils/DomKeyboardInteraction",
-
-    "../../spapi/searchPrincipals",
-    "../../spapi/resolvePrincipals",
-
-    "./ResultGroup/ResultGroup",
-    "./PeoplePickerPersona/PeoplePickerPersona",
-
-    "text!./PeoplePicker.html",
-
-    //=================================
-    "./PeoplePicker.less"
-], function(
-    Widget,
-    EventEmitter,
-    dataStore,
-    objectExtend,
-    parseHTML,
-    fillTemplate,
-    Promise,
-
-    domAddEventListener,
-    domAddClass,
-    domRemoveClass,
-    domClosest,
-    domFind,
-    domTriggerEvent,
-    domChildren,
-    domPosition,
-    domSetStyle,
-    DomKeyboardInteraction,
-
-    searchPrincipals,
-    resolvePrincipals,
-
-    ResultGroup,
-    PeoplePickerPersona,
-
-    SPPeoplePickerTemplate
-){
+import Widget from "vendor/jsutils/Widget";
+import EventEmitter from "vendor/jsutils/EventEmitter";
+import dataStore from "vendor/jsutils/dataStore";
+import objectExtend from "vendor/jsutils/objectExtend";
+import parseHTML from "vendor/jsutils/parseHTML";
+import fillTemplate from "vendor/jsutils/fillTemplate";
+import Promise from "vendor/jsutils/es6-promise";
+import domAddEventListener from "vendor/domutils/domAddEventListener";
+import domAddClass from "vendor/domutils/domAddClass";
+import domRemoveClass from "vendor/domutils/domRemoveClass";
+import domClosest from "vendor/domutils/domClosest";
+import domFind from "vendor/domutils/domFind";
+import domTriggerEvent from "vendor/domutils/domTriggerEvent";
+import domChildren from "vendor/domutils/domChildren";
+import domPosition from "vendor/domutils/domPosition";
+import domSetStyle from "vendor/domutils/domSetStyle";
+import DomKeyboardInteraction from "vendor/domutils/DomKeyboardInteraction";
+import searchPrincipals from "../../spapi/searchPrincipals";
+import resolvePrincipals from "../../spapi/resolvePrincipals";
+import ResultGroup from "./ResultGroup/ResultGroup";
+import PeoplePickerPersona from "./PeoplePickerPersona/PeoplePickerPersona";
+import SPPeoplePickerTemplate from "text!./PeoplePicker.html";
+import "./PeoplePicker.less";
 
     // FIXME: support for 'Suggested' grouping
 
@@ -776,5 +741,5 @@ define([
         }
     };
 
-    return PeoplePicker;
-});
+    export default PeoplePicker;
+

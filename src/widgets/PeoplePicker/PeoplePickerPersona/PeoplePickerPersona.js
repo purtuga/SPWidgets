@@ -1,21 +1,8 @@
-define([
-    "../../Persona/Persona",
-    "vendor/jsutils/fillTemplate",
-
-    "vendor/domutils/domAddClass",
-
-    "text!./PeoplePickerPersona.html",
-
-    //-----------------------------
-    "./PeoplePickerPersona.less"
-], function (
-    Persona,
-    fillTemplate,
-
-    domAddClass,
-
-    PeoplePickerPersonaTemplate
-) {
+import Persona from "../../Persona/Persona";
+import fillTemplate from "vendor/jsutils/fillTemplate";
+import domAddClass from "vendor/domutils/domAddClass";
+import PeoplePickerPersonaTemplate from "text!./PeoplePickerPersona.html";
+import "./PeoplePickerPersona.less";
 
     var
     /**
@@ -62,5 +49,4 @@ define([
 
     PeoplePickerPersona = Persona.extend(PeoplePickerPersona);
 
-    return PeoplePickerPersona;
-});
+    export default PeoplePickerPersona;

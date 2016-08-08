@@ -1,28 +1,12 @@
-define([
-    "vendor/jsutils/Widget",
-    "vendor/jsutils/EventEmitter",
-    "vendor/jsutils/dataStore",
-    "vendor/jsutils/objectExtend",
-    "vendor/jsutils/fillTemplate",
-    "vendor/jsutils/parseHTML",
-    "vendor/jsutils/es6-Map",
-
-    "../ListItem/ListItem",
-
-    "text!./List.html"
-], function (
-    Widget,
-    EventEmitter,
-    dataStore,
-    objectExtend,
-    fillTemplate,
-    parseHTML,
-    Map,
-
-    ListItem,
-
-    ListTemplate
-) {
+import Widget from "vendor/jsutils/Widget";
+import EventEmitter from "vendor/jsutils/EventEmitter";
+import dataStore from "vendor/jsutils/dataStore";
+import objectExtend from "vendor/jsutils/objectExtend";
+import fillTemplate from "vendor/jsutils/fillTemplate";
+import parseHTML from "vendor/jsutils/parseHTML";
+import Map from "vendor/jsutils/es6-Map";
+import ListItem from "../ListItem/ListItem";
+import ListTemplate from "text!./List.html";
 
     var
     PRIVATE = dataStore.create(),
@@ -166,5 +150,4 @@ define([
         listItemOptions:    null
     };
 
-    return List;
-});
+    export default List;

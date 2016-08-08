@@ -1,16 +1,7 @@
-define([
-    "vendor/jsutils/Collection",
-    "vendor/jsutils/objectExtend",
-    "vendor/jsutils/toUrlParams",
-
-    "../../sputils/getCamlLogical"
-], function(
-    Collection,
-    objectExtend,
-    toUrlParams,
-
-    getCamlLogical
-){
+import Collection from "vendor/jsutils/Collection";
+import objectExtend from "vendor/jsutils/objectExtend";
+import toUrlParams from "vendor/jsutils/toUrlParams";
+import getCamlLogical from "../../sputils/getCamlLogical";
 
     /**
      * A collection (Array like object) with the list of
@@ -176,5 +167,4 @@ define([
         }
     };
 
-    return FiltersCollection;
-});
+    export default FiltersCollection;

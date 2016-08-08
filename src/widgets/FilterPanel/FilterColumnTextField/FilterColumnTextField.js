@@ -1,17 +1,7 @@
-define([
-    "../FilterColumn/FilterColumn",
-    "../../TextField/TextField",
-
-    "vendor/jsutils/dataStore",
-    "vendor/jsutils/objectExtend"
-
-], function (
-    FilterColumn,
-    TextField,
-
-    dataStore,
-    objectExtend
-) {
+import FilterColumn from "../FilterColumn/FilterColumn";
+import TextField from "../../TextField/TextField";
+import dataStore from "vendor/jsutils/dataStore";
+import objectExtend from "vendor/jsutils/objectExtend";
 
     var
     PRIVATE = dataStore.stash,
@@ -75,5 +65,4 @@ define([
         ignoreKeywords: new RegExp()
     };
 
-    return FilterColumnTextField;
-});
+    export default FilterColumnTextField;

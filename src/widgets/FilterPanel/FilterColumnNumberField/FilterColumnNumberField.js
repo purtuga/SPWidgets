@@ -1,14 +1,6 @@
-define([
-    "../FilterColumnTextField/FilterColumnTextField",
-
-    "vendor/jsutils/objectExtend",
-    "vendor/jsutils/dataStore"
-], function (
-    FilterColumnTextField,
-
-    objectExtend,
-    dataStore
-) {
+import FilterColumnTextField from "../FilterColumnTextField/FilterColumnTextField";
+import objectExtend from "vendor/jsutils/objectExtend";
+import dataStore from "vendor/jsutils/dataStore";
 
     var
     PRIVATE = dataStore.stash,
@@ -47,5 +39,4 @@ define([
     FilterColumnNumberField = FilterColumnTextField.extend(FilterColumnNumberField);
     FilterColumnNumberField.defaults = {};
 
-    return FilterColumnNumberField;
-});
+    export default FilterColumnNumberField;

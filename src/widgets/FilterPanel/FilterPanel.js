@@ -1,70 +1,30 @@
-define([
-    "vendor/jsutils/Widget",
-    "vendor/jsutils/EventEmitter",
-    "vendor/jsutils/dataStore",
-    "vendor/jsutils/objectExtend",
-    "vendor/jsutils/fillTemplate",
-    "vendor/jsutils/parseHTML",
-    "vendor/jsutils/es6-promise",
-
-    "vendor/domutils/domSetStyle",
-    "vendor/domutils/domAddEventListener",
-    "vendor/domutils/domAddClass",
-    "vendor/domutils/domRemoveClass",
-    "vendor/domutils/domChildren",
-    "vendor/domutils/fitEleToParent",
-
-    "../Message/Message",
-    "./ColumnSelector/ColumnSelector",
-    "./FilterColumn/FilterColumn",
-    "./FilterColumnTextField/FilterColumnTextField",
-    "./FilterColumnAttachmentsField/FilterColumnAttachmentsField",
-    "./FilterColumnChoiceField/FilterColumnChoiceField",
-    "./FilterColumnLookupField/FilterColumnLookupField",
-    "./FilterColumnNumberField/FilterColumnNumberField",
-    "./FilterColumnUserField/FilterColumnUserField",
-    "./FilterColumnDateTimeField/FilterColumnDateTimeField",
-
-    "./FiltersCollection",
-
-    "../../spapi/getListColumns",
-
-    "text!./FilterPanel.html",
-    //----------------------------------
-    "./FilterPanel.less"
-], function (
-    Widget,
-    EventEmitter,
-    dataStore,
-    objectExtend,
-    fillTemplate,
-    parseHTML,
-    Promise,
-
-    domSetStyle,
-    domAddEventListener,
-    domAddClass,
-    domRemoveClass,
-    domChildren,
-    fitEleToParent,
-
-    Message,
-    ColumnSelector,
-    FilterColumn,
-    FilterColumnTextField,
-    FilterColumnAttachmentsField,
-    FilterColumnChoiceField,
-    FilterColumnLookupField,
-    FilterColumnNumberField,
-    FilterColumnUserField,
-    FilterColumnDateTimeField,
-
-    FiltersCollection,
-
-    getListColumns,
-
-    SPFilterPanelTemplate
-) {
+import Widget from "vendor/jsutils/Widget";
+import EventEmitter from "vendor/jsutils/EventEmitter";
+import dataStore from "vendor/jsutils/dataStore";
+import objectExtend from "vendor/jsutils/objectExtend";
+import fillTemplate from "vendor/jsutils/fillTemplate";
+import parseHTML from "vendor/jsutils/parseHTML";
+import Promise from "vendor/jsutils/es6-promise";
+import domSetStyle from "vendor/domutils/domSetStyle";
+import domAddEventListener from "vendor/domutils/domAddEventListener";
+import domAddClass from "vendor/domutils/domAddClass";
+import domRemoveClass from "vendor/domutils/domRemoveClass";
+import domChildren from "vendor/domutils/domChildren";
+import fitEleToParent from "vendor/domutils/fitEleToParent";
+import Message from "../Message/Message";
+import ColumnSelector from "./ColumnSelector/ColumnSelector";
+import FilterColumn from "./FilterColumn/FilterColumn";
+import FilterColumnTextField from "./FilterColumnTextField/FilterColumnTextField";
+import FilterColumnAttachmentsField from "./FilterColumnAttachmentsField/FilterColumnAttachmentsField";
+import FilterColumnChoiceField from "./FilterColumnChoiceField/FilterColumnChoiceField";
+import FilterColumnLookupField from "./FilterColumnLookupField/FilterColumnLookupField";
+import FilterColumnNumberField from "./FilterColumnNumberField/FilterColumnNumberField";
+import FilterColumnUserField from "./FilterColumnUserField/FilterColumnUserField";
+import FilterColumnDateTimeField from "./FilterColumnDateTimeField/FilterColumnDateTimeField";
+import FiltersCollection from "./FiltersCollection";
+import getListColumns from "../../spapi/getListColumns";
+import SPFilterPanelTemplate from "text!./FilterPanel.html";
+import "./FilterPanel.less";
 
     var
     PRIVATE             = dataStore.create(),
@@ -585,5 +545,4 @@ define([
         }
     };
 
-    return FilterPanel;
-});
+    export default FilterPanel;

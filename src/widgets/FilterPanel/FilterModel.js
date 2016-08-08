@@ -1,22 +1,10 @@
-define([
-    "vendor/jsutils/Compose",
-    "vendor/jsutils/objectExtend",
-    "vendor/jsutils/dataStore",
-    "vendor/jsutils/toUrlParams",
-    "vendor/jsutils/fillTemplate",
-
-    "../../sputils/getCamlLogical",
-    "../../sputils/xmlEscape"
-], function(
-    Compose,
-    objectExtend,
-    dataStore,
-    toUrlParams,
-    fillTemplate,
-
-    getCamlLogical,
-    xmlEscape
-){
+import Compose from "vendor/jsutils/Compose";
+import objectExtend from "vendor/jsutils/objectExtend";
+import dataStore from "vendor/jsutils/dataStore";
+import toUrlParams from "vendor/jsutils/toUrlParams";
+import fillTemplate from "vendor/jsutils/fillTemplate";
+import getCamlLogical from "../../sputils/getCamlLogical";
+import xmlEscape from "../../sputils/xmlEscape";
 
     var
     PRIVATE = dataStore.create(),
@@ -193,5 +181,4 @@ define([
         column: null
     };
 
-    return FilterModel;
-});
+    export default FilterModel;

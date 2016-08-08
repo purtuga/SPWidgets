@@ -1,42 +1,18 @@
-define([
-    "vendor/jsutils/Widget",
-    "vendor/jsutils/EventEmitter",
-    "vendor/jsutils/dataStore",
-    "vendor/jsutils/objectExtend",
-    "vendor/jsutils/fillTemplate",
-    "vendor/jsutils/parseHTML",
-
-    "vendor/domutils/domAddEventListener",
-    "vendor/domutils/domClosest",
-    "vendor/domutils/domFind",
-    "vendor/domutils/domHasClass",
-    "vendor/domutils/domAddClass",
-    "vendor/domutils/domRemoveClass",
-    "vendor/domutils/domTriggerEvent",
-
-    "../Result/Result",
-
-    "text!./ResultGroup.html"
-], function (
-    Widget,
-    EventEmitter,
-    dataStore,
-    objectExtend,
-    fillTemplate,
-    parseHTML,
-
-    domAddEventListener,
-    domClosest,
-    domFind,
-    domHasClass,
-    domAddClass,
-    domRemoveClass,
-    domTriggerEvent,
-
-    Result,
-
-    ResultGroupTemplate
-) {
+import Widget from "vendor/jsutils/Widget";
+import EventEmitter from "vendor/jsutils/EventEmitter";
+import dataStore from "vendor/jsutils/dataStore";
+import objectExtend from "vendor/jsutils/objectExtend";
+import fillTemplate from "vendor/jsutils/fillTemplate";
+import parseHTML from "vendor/jsutils/parseHTML";
+import domAddEventListener from "vendor/domutils/domAddEventListener";
+import domClosest from "vendor/domutils/domClosest";
+import domFind from "vendor/domutils/domFind";
+import domHasClass from "vendor/domutils/domHasClass";
+import domAddClass from "vendor/domutils/domAddClass";
+import domRemoveClass from "vendor/domutils/domRemoveClass";
+import domTriggerEvent from "vendor/domutils/domTriggerEvent";
+import Result from "../Result/Result";
+import ResultGroupTemplate from "text!./ResultGroup.html";
 
     // FIXME: convert to use DomKeyboardInteraction
 
@@ -232,5 +208,4 @@ define([
         results:    []
     };
 
-    return ResultGroup;
-});
+    export default ResultGroup;

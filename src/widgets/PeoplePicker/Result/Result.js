@@ -1,27 +1,10 @@
-define([
-    "../../Persona/Persona",
-
-    "vendor/jsutils/fillTemplate",
-
-    "vendor/domutils/domHasClass",
-    "vendor/domutils/domAddClass",
-    "vendor/domutils/domRemoveClass",
-
-    "text!./Result.html",
-
-    //------------------------------------
-    "./Result.less"
-], function (
-    Persona,
-
-    fillTemplate,
-
-    domHasClass,
-    domAddClass,
-    domRemoveClass,
-
-    ResultTemplate
-) {
+import Persona from "../../Persona/Persona";
+import fillTemplate from "vendor/jsutils/fillTemplate";
+import domHasClass from "vendor/domutils/domHasClass";
+import domAddClass from "vendor/domutils/domAddClass";
+import domRemoveClass from "vendor/domutils/domRemoveClass";
+import ResultTemplate from "text!./Result.html";
+import "./Result.less";
 
     var
     CSS_CLASS_MS_PICKER_RESULT         = "ms-PeoplePicker-result",
@@ -83,5 +66,5 @@ define([
 
     Result = Persona.extend(Result);
 
-    return Result;
-});
+    export default Result;
+

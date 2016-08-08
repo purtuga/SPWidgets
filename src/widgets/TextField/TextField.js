@@ -1,30 +1,13 @@
-define([
-    "vendor/jsutils/Widget",
-    "vendor/jsutils/EventEmitter",
-    "vendor/jsutils/dataStore",
-    "vendor/jsutils/objectExtend",
-    "vendor/jsutils/fillTemplate",
-    "vendor/jsutils/parseHTML",
-
-    "vendor/domutils/domAddClass",
-    "vendor/domutils/domAddEventListener",
-
-    "text!./TextField.html",
-    //-------------------------------
-    "./TextField.less"
-], function (
-    Widget,
-    EventEmitter,
-    dataStore,
-    objectExtend,
-    fillTemplate,
-    parseHTML,
-
-    domAddClass,
-    domAddEventListener,
-
-    TextFieldTemplate
-) {
+import Widget from "vendor/jsutils/Widget";
+import EventEmitter from "vendor/jsutils/EventEmitter";
+import dataStore from "vendor/jsutils/dataStore";
+import objectExtend from "vendor/jsutils/objectExtend";
+import fillTemplate from "vendor/jsutils/fillTemplate";
+import parseHTML from "vendor/jsutils/parseHTML";
+import domAddClass from "vendor/domutils/domAddClass";
+import domAddEventListener from "vendor/domutils/domAddEventListener";
+import TextFieldTemplate from "text!./TextField.html";
+import "./TextField.less";
 
     var
     PRIVATE = dataStore.create(),
@@ -141,7 +124,7 @@ define([
         placeholder:        ""
     };
 
-    return TextField;
+    export default TextField;
 
 
     // SAMPLE OF TEXT FIELD DEFINITION:
@@ -157,4 +140,3 @@ define([
     //      Sealed="TRUE"
     //      ColName="nvarchar1"/>
 
-});

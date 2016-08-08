@@ -1,18 +1,8 @@
-define([
-    "../FilterColumn/FilterColumn",
-    "../../DateTimeField/DateTimeField",
-
-    "vendor/jsutils/objectExtend",
-    "vendor/jsutils/dataStore",
-    "vendor/jsutils/es6-promise"
-], function (
-    FilterColumn,
-    DateTimeField,
-
-    objectExtend,
-    dataStore,
-    Promise
-) {
+import FilterColumn from "../FilterColumn/FilterColumn";
+import DateTimeField from "../../DateTimeField/DateTimeField";
+import objectExtend from "vendor/jsutils/objectExtend";
+import dataStore from "vendor/jsutils/dataStore";
+import Promise from "vendor/jsutils/es6-promise";
 
     var
     PRIVATE = dataStore.stash,
@@ -68,5 +58,4 @@ define([
     FilterColumnDateTimeField = FilterColumn.extend(FilterColumnDateTimeField);
     FilterColumnDateTimeField.defaults = {};
 
-    return FilterColumnDateTimeField;
-});
+    export default FilterColumnDateTimeField;

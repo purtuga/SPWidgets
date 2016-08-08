@@ -1,26 +1,11 @@
-define([
-    "../FilterColumn/FilterColumn",
-
-    "vendor/jsutils/objectExtend",
-    "vendor/jsutils/dataStore",
-    "vendor/jsutils/uuid",
-    "vendor/jsutils/fillTemplate",
-    "vendor/jsutils/parseHTML",
-
-    "../../ChoiceField/ChoiceField",
-    "text!../../ChoiceField/choice.html"
-], function (
-    FilterColumn,
-
-    objectExtend,
-    dataStore,
-    uuid,
-    fillTemplate,
-    parseHTML,
-
-    ChoiceField,
-    choiceTemplate
-) {
+import FilterColumn from "../FilterColumn/FilterColumn";
+import objectExtend from "vendor/jsutils/objectExtend";
+import dataStore from "vendor/jsutils/dataStore";
+import uuid from "vendor/jsutils/uuid";
+import fillTemplate from "vendor/jsutils/fillTemplate";
+import parseHTML from "vendor/jsutils/parseHTML";
+import ChoiceField from "../../ChoiceField/ChoiceField";
+import choiceTemplate from "text!../../ChoiceField/choice.html";
 
     var
     WINDOW_NAVIGATOR    = window.navigator,
@@ -124,5 +109,4 @@ define([
         }
     };
 
-    return FilterColumnAttachmentsField;
-});
+    export default FilterColumnAttachmentsField;

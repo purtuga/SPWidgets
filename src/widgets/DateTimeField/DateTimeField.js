@@ -1,34 +1,14 @@
-define([
-    "vendor/jsutils/Widget",
-    "vendor/jsutils/EventEmitter",
-    "vendor/jsutils/dataStore",
-    "vendor/jsutils/objectExtend",
-    "vendor/jsutils/fillTemplate",
-    "vendor/jsutils/parseHTML",
-
-    "vendor/domutils/domAddClass",
-    "vendor/domutils/domAddEventListener",
-
-    "../3pp/flatpickr/flatpickr",
-
-    "text!./DateTimeField.html",
-    //---------------------------------
-    "./DateTimeField.less"
-], function (
-    Widget,
-    EventEmitter,
-    dataStore,
-    objectExtend,
-    fillTemplate,
-    parseHTML,
-
-    domAddClass,
-    domAddEventListener,
-
-    flatpickr,
-
-    DateTimeFieldTemplate
-) {
+import Widget from "vendor/jsutils/Widget";
+import EventEmitter from "vendor/jsutils/EventEmitter";
+import dataStore from "vendor/jsutils/dataStore";
+import objectExtend from "vendor/jsutils/objectExtend";
+import fillTemplate from "vendor/jsutils/fillTemplate";
+import parseHTML from "vendor/jsutils/parseHTML";
+import domAddClass from "vendor/domutils/domAddClass";
+import domAddEventListener from "vendor/domutils/domAddEventListener";
+import flatpickr from "../3pp/flatpickr/flatpickr";
+import DateTimeFieldTemplate from "text!./DateTimeField.html";
+import "./DateTimeField.less";
 
     var
     PRIVATE = dataStore.create(),
@@ -213,7 +193,7 @@ define([
         }
     };
 
-    return DateTimeField;
+    export default DateTimeField;
 
     // SP List DATE field definition
     //-------------------------------------
@@ -233,4 +213,3 @@ define([
     //      Version="2"
     //      RowOrdinal="0"/>
 
-});

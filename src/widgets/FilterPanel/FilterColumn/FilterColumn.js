@@ -1,42 +1,18 @@
-define([
-    "vendor/jsutils/Widget",
-    "vendor/jsutils/EventEmitter",
-    "vendor/jsutils/dataStore",
-    "vendor/jsutils/objectExtend",
-    "vendor/jsutils/fillTemplate",
-    "vendor/jsutils/parseHTML",
-    "vendor/jsutils/es6-promise",
-
-    "vendor/domutils/domAddEventListener",
-    "vendor/domutils/domAddClass",
-    "vendor/domutils/domRemoveClass",
-    "vendor/domutils/domHasClass",
-    "vendor/domutils/domFind",
-
-    "../FilterModel",
-
-    "text!./FilterColumn.html",
-    //--------------------------------------
-    "./FilterColumn.less"
-], function (
-    Widget,
-    EventEmitter,
-    dataStore,
-    objectExtend,
-    fillTemplate,
-    parseHTML,
-    Promise,
-
-    domAddEventListener,
-    domAddClass,
-    domRemoveClass,
-    domHasClass,
-    domFind,
-
-    FilterModel,
-
-    FilterColumnTemplate
-) {
+import Widget from "vendor/jsutils/Widget";
+import EventEmitter from "vendor/jsutils/EventEmitter";
+import dataStore from "vendor/jsutils/dataStore";
+import objectExtend from "vendor/jsutils/objectExtend";
+import fillTemplate from "vendor/jsutils/fillTemplate";
+import parseHTML from "vendor/jsutils/parseHTML";
+import Promise from "vendor/jsutils/es6-promise";
+import domAddEventListener from "vendor/domutils/domAddEventListener";
+import domAddClass from "vendor/domutils/domAddClass";
+import domRemoveClass from "vendor/domutils/domRemoveClass";
+import domHasClass from "vendor/domutils/domHasClass";
+import domFind from "vendor/domutils/domFind";
+import FilterModel from "../FilterModel";
+import FilterColumnTemplate from "text!./FilterColumn.html";
+import "./FilterColumn.less";
 
     var
     PRIVATE = dataStore.stash,
@@ -399,5 +375,4 @@ define([
         inputKeywords:  ''
     };
 
-    return FilterColumn;
-});
+    export default FilterColumn;

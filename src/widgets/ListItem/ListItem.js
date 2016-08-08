@@ -1,36 +1,16 @@
-define([
-    "vendor/jsutils/Widget",
-    "vendor/jsutils/EventEmitter",
-    "vendor/jsutils/dataStore",
-    "vendor/jsutils/objectExtend",
-    "vendor/jsutils/fillTemplate",
-    "vendor/jsutils/parseHTML",
-
-    "vendor/domutils/domAddEventListener",
-    "vendor/domutils/domHasClass",
-    "vendor/domutils/domToggleClass",
-    "vendor/domutils/domAddClass",
-    "vendor/domutils/domRemoveClass",
-
-    "text!./ListItemSimple.html",
-    //------------------------------------
-    "./ListItem.less"
-], function (
-    Widget,
-    EventEmitter,
-    dataStore,
-    objectExtend,
-    fillTemplate,
-    parseHTML,
-
-    domAddEventListener,
-    domHasClass,
-    domToggleClass,
-    domAddClass,
-    domRemoveClass,
-
-    ListItemTemplate
-) {
+import Widget from "vendor/jsutils/Widget";
+import EventEmitter from "vendor/jsutils/EventEmitter";
+import dataStore from "vendor/jsutils/dataStore";
+import objectExtend from "vendor/jsutils/objectExtend";
+import fillTemplate from "vendor/jsutils/fillTemplate";
+import parseHTML from "vendor/jsutils/parseHTML";
+import domAddEventListener from "vendor/domutils/domAddEventListener";
+import domHasClass from "vendor/domutils/domHasClass";
+import domToggleClass from "vendor/domutils/domToggleClass";
+import domAddClass from "vendor/domutils/domAddClass";
+import domRemoveClass from "vendor/domutils/domRemoveClass";
+import ListItemTemplate from "text!./ListItemSimple.html";
+import "./ListItem.less";
 
     var
     PRIVATE = dataStore.create(),
@@ -195,5 +175,4 @@ define([
         unread:         false
     };
 
-    return ListItem;
-});
+    export default ListItem;
