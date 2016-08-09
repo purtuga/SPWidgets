@@ -87,6 +87,7 @@ import "./LookupField.less";
                 opt:                    objectExtend({}, LookupField.defaults, options),
                 showChoicesListener:    null,
                 list:                   '',
+                webURL:                 '',
                 fields:                 '',
                 listWdg:                null,
                 selected:               new Map(), // Keeps ListItemRow->Widget associations
@@ -108,6 +109,10 @@ import "./LookupField.less";
                 opt.searchColumns = [opt.column.ShowField || 'Title'];
             }
 
+            // if we have a Column Model, the get the webURL from the List model
+            if (opt.column && opt.column.getList) {
+                inst.webURL = opt.column.getList().getWebURL();
+            }
 
             var
             $ui             = this.$ui = parseHTML(fillTemplate(LookupFieldTemplate, opt)).firstChild,
@@ -433,7 +438,7 @@ import "./LookupField.less";
     function getQueryOptions() {
         var inst            = PRIVATE.get(this),
             queryOptions    = objectExtend(
-                {},
+                { webURL: inst.webURL },
                 inst.opt.queryOptions,
                 { listName: inst.list }
             );

@@ -41,7 +41,6 @@ import objectExtend from "vendor/jsutils/objectExtend";
                  opt.cache = opt.cacheXML;
              }
 
-             opt.webURL += "_vti_bin/Lists.asmx";
              opt.cacheKey = getCacheKey(opt.listName);
              opt.isCached = cache.isCached(opt.cacheKey);
 
@@ -56,7 +55,7 @@ import objectExtend from "vendor/jsutils/objectExtend";
                  cache.clear(opt.cacheKey);
              }
 
-             reqPromise = apiFetch(opt.webURL, {
+             reqPromise = apiFetch(opt.webURL + "_vti_bin/Lists.asmx", {
                  method: "POST",
                  headers: {
                      'Content-Type': 'text/xml;charset=UTF-8'

@@ -11,8 +11,10 @@ import objectExtend from "vendor/jsutils/objectExtend"
  *
  * @param {Object} [modelProperties]
  */
-export default Compose.extend(/** @lends UserProfile.prototype */{
-    init: function(modelProperties){
+var UserProfileModel = Compose.extend(/** @lends UserProfile.prototype */{
+    init: function(modelProperties, options){
+
+        var opt = objectExtend({}, UserProfileModel.defaults, options);
 
         objectExtend(
             this,
@@ -41,6 +43,7 @@ export default Compose.extend(/** @lends UserProfile.prototype */{
                 "UserName": "",
                 "UserInfoID": "",           // Should be the same as ID. returned by SearchPrincipals service
                 "UserProfile_GUID": "",
+                "UserPhoto": "",            // Will be set to use userphoto.aspx
                 "WebSite": "",
                 "WorkEmail": "",
                 "WorkPhone": ""
@@ -61,5 +64,17 @@ export default Compose.extend(/** @lends UserProfile.prototype */{
         if (this.DisplayName && !this.Name) {
             this.Name = this.DisplayName;
         }
+
+        if (!this.UserPhoto) {
+            this.UserPhoto = (opt.webURL || "/") +
+                "_layouts/userphoto.aspx?size=M&accountname=" +
+                encodeURIComponent(this.AccountName);
+        }
     }
 });
+
+UserProfileModel.defaults = {
+    webURL: ""
+};
+
+export default UserProfileModel;

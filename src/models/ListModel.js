@@ -48,7 +48,6 @@ ListModel = /** @lends ListModel.prototype */{
         }
 
         objectExtend(me, listObj);
-
     },
 
     /**
@@ -82,8 +81,16 @@ ListModel = /** @lends ListModel.prototype */{
         }
 
         return rootUrl + this.RootFolder;
-    }
+    },
 
+    /**
+     * Will return the site's URL where the list is located.
+     * __note:__ depends on the model having been initialized with
+     * the value in the options.
+     */
+    getWebURL: function(){
+        return instData.get(this).webURL;
+    }
 },
 
 /**
@@ -119,7 +126,8 @@ getListDetailsFromJSON = function(){
 
 ListModel           = Compose.extend(ListModel);
 ListModel.defaults  = {
-    type: "xml"   // possible values: xml, json
+    type:   "xml",   // possible values: xml, json
+    webURL: ""
 };
 
 export default  ListModel;

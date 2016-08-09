@@ -15,7 +15,7 @@ import domFind from "vendor/domutils/domFind";
      * @param {Object} [options.principalType='All']
      *      Default is User. Others include: None, DistributionList,
      *      SecurityGroup, SharePointGroup, All
-     * @param {Object} [options.webUrl='currentSiteUrl']
+     * @param {Object} [options.webURL='currentSiteUrl']
      * @param {Object} [options.cache=true]
      *
      * @return {Promise<Array<UserProfileModel>, Error>}
@@ -55,22 +55,35 @@ import domFind from "vendor/domutils/domFind";
                 })
                 .then(function(response){
                     return domFind(response.content, "PrincipalInfo").map(function(principalInfo){
-                        return Array.prototype.slice.call(principalInfo.childNodes, 0).reduce(function(profile, attrNode){
-                            var attrName = attrNode.nodeName;
+                        return opt.UserProfileModel.create(
+                            Array.prototype.slice.call(principalInfo.childNodes, 0).reduce(function(profile, attrNode){
+                                var attrName = attrNode.nodeName;
 
-                            if (attrNode.nodeType === 1) {
-                                profile[attrName] = attrNode.textContent;
-
-                                if (attrName === "DisplayName") {
-                                    profile.Name = profile[attrName];
+                                if (attrNode.nodeType === 1) {
+                                    profile[attrName] = attrNode.textContent;
                                 }
 
-                                if (attrName === "UserInfoID") {
-                                    profile.ID = profile[attrName];
-                                }
-                            }
-                            return profile;
-                        }, opt.UserProfileModel.create());
+                                return profile;
+                            }, {}),
+                            { webURL: webURL }
+                        );
+
+                        //return Array.prototype.slice.call(principalInfo.childNodes, 0).reduce(function(profile, attrNode){
+                        //    var attrName = attrNode.nodeName;
+                        //
+                        //    if (attrNode.nodeType === 1) {
+                        //        profile[attrName] = attrNode.textContent;
+                        //
+                        //        if (attrName === "DisplayName") {
+                        //            profile.Name = profile[attrName];
+                        //        }
+                        //
+                        //        if (attrName === "UserInfoID") {
+                        //            profile.ID = profile[attrName];
+                        //        }
+                        //    }
+                        //    return profile;
+                        //}, opt.UserProfileModel.create({}, {webURL: webURL}));
                     });
                 });
 

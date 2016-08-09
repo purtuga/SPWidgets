@@ -179,9 +179,14 @@ import "./PeoplePicker.less";
                 this.showResults();
             }.bind(this));
 
-            domAddEventListener($input, "blur", function(){
-                this.hideResults();
-            }.bind(this));
+            // On blur: we want to hide the results popup, but only if the user
+            // did not leave the input to actually click on a result item. so,
+            // we delay the hiding of the results and check later if it was realy
+            // a true blur
+            // FIXME: blur not realy playing well with results.
+            //domAddEventListener($input, "blur", function(){
+            //    this.hideResults();
+            //}.bind(this));
 
             // When user types, get suggestions
             domAddEventListener($input, "keyup", function(/*ev*/){

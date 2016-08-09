@@ -6,7 +6,7 @@ define([
     /* global SPWIDGET_DEMO */
 
     /**
-     * demo.dev.js
+     * demo.setup.js
      * Contains code that is loaded with the Dev.SPWidgets.html file
      * which assists with development, testing and debuging.
      *

@@ -4,6 +4,8 @@ import domFind from "vendor/domutils/domFind";
 import SPPeoplePicker from "../../../src/widgets/PeoplePicker/PeoplePicker";
 import template from "text!./SPPeoplePickerDemo.html";
 
+import common from "../setup/common";
+
     var $CONSOLE_LOG_OUT,
         log = function(data){
             $CONSOLE_LOG_OUT.appendChild(
@@ -22,14 +24,17 @@ import template from "text!./SPPeoplePickerDemo.html";
     });
 
     function initDemo1() {
-        var picker = SPPeoplePicker.create();
+        var picker = SPPeoplePicker.create({
+            webURL: common.getWebURL()
+        });
         picker.appendTo(domFind(this.$ui, "#SPPeoplePickerDemo1")[0]);
     }
 
     function initDemo2() {
         var picker = SPPeoplePicker.create({
             allowMultiples: false,
-            minLength:      0
+            minLength:      0,
+            webURL:         common.getWebURL()
         });
         picker.appendTo(domFind(this.$ui, "#SPPeoplePickerDemo2")[0]);
 

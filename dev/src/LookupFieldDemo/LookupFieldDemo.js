@@ -7,6 +7,8 @@ import LookupField from "../../../src/widgets/LookupField/LookupField";
 import getListColumns from "../../../src/spapi/getListColumns";
 import LookupFieldDemoTemplate from "text!./LookupFieldDemo.html";
 
+import common from "../setup/common";
+
     var
     PRIVATE = dataStore.create(),
 
@@ -46,9 +48,14 @@ import LookupFieldDemoTemplate from "text!./LookupFieldDemo.html";
     function setupDemo1() {
         var inst = PRIVATE.get(this);
 
-        getListColumns("Tasks")
+        getListColumns({
+            listName:   "Tasks",
+            webURL:     common.getWebURL()
+        })
         .then(function(columns){
-            inst.demo1 = LookupField.create({column: columns.getColumn("Predecessors")});
+            inst.demo1 = LookupField.create({
+                column: columns.getColumn("Predecessors")
+            });
             inst.demo1.appendTo(this.getEle().querySelector("#lookupFieldDemo_1"));
 
         }.bind(this))["catch"](function(e){
