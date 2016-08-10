@@ -1,5 +1,10 @@
 .spwidgets-FilterPanel {
 
+    .border-1px-solid(@prop: border) {
+        @{prop}-width: 1px;
+        @{prop}-style: solid;
+    }
+
     position: relative;
     box-sizing: border-box;
 
@@ -35,27 +40,23 @@
     &-main {
         box-sizing: border-box;
         position:   relative;
+        .border-1px-solid()
     }
 
     &-body {
         box-sizing:     border-box;
         min-height:     15em;
-        border:         1px solid;
-        border-top:     none;
-        border-bottom:  none;
     }
 
     &-footer {
         box-sizing:     border-box;
         position:       relative;
-        border:         1px solid;
-        border-top:     none;
         padding-top:    20px;
 
         &-actions {
             padding:    0.5em;
             text-align: right;
-            border-top: 1px solid;
+            .border-1px-solid(border-top);
         }
 
         &-action-add {
@@ -91,8 +92,7 @@
         display: none;
     }
     &--noHeader &-body {
-        border-top-width: 1px;
-        border-top-style: solid;
+        .border-1px-solid(border-top);
     }
 
     // ==> Fixed height filter panel

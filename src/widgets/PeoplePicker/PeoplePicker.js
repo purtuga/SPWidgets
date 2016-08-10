@@ -213,11 +213,13 @@ import "./PeoplePicker.less";
                 var exec = function(){
                     if (exec === requestSuggestions) {
                         domAddClass($ui, CSS_CLASS_IS_SEARCHING);
+                        domAddClass($suggestions, CSS_CLASS_IS_SEARCHING);
 
                         getSuggestions.call(this)
                             .then(function(peopleList){
                                 showSuggestions.call(this, peopleList);
                                 domRemoveClass($ui, CSS_CLASS_IS_SEARCHING);
+                                domRemoveClass($suggestions, CSS_CLASS_IS_SEARCHING);
                             }.bind(this))["catch"](function(e){
                                 console.log(e); // jshint ignore:line
                             });

@@ -14,6 +14,10 @@ var _srcFilename = 'SPWidgets.js';
 
 var _jsSrcPath = path.join(_appSource, _srcFilename);
 
+// DEV file
+_jsSrcPath = path.resolve(__dirname, "dev/src/setup/setup.js");
+
+
 module.exports = {
     entry: _jsSrcPath,
     output: {
@@ -70,9 +74,13 @@ module.exports = {
                 ]
             }
         ),
+
+        // For DEV only
         new CopyWebpackPlugin(
             [
-                { from: _appDev }
+                { from: path.resolve(_appDev)},
+                //{ from: path.resolve(_appDev,   "index.html")},
+                { from: path.resolve(__dirname, "my.sp.dev.js")}
             ]
         ),
         // Avoid publishing files when compilation fails

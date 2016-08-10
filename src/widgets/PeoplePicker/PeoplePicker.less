@@ -64,27 +64,31 @@
         display: none;
     }
 
-    &.is-searching .ms-Icon--search {
-        display: none;
-    }
-    &.is-searching &-searchInfo-msg {
-        display: none;
-    }
-
-    &.is-searching &-searchInfo-searchingMsg {
-        display: block;
-    }
-    &.is-searching &-busy {
-        display:            inline-block;
-        -webkit-animation:  spwidgets-PeoplePicker-rotate 0.5s linear infinite;
-        animation:          spwidgets-PeoplePicker-rotate 0.5s linear infinite;
-    }
-
     // Override UI Fabric so that each persona card has
     // a max-width of 190px instead of fixed width
     .ms-Persona-details > * {
         width:      auto;
         max-width:  190px;
+    }
+
+
+    //-----------------------------------------
+    //  MODIFIERS
+    //-----------------------------------------
+    &-suggestions.is-searching .ms-Icon--search {
+        display: none;
+    }
+    &-suggestions.is-searching &-searchInfo-msg {
+        display: none;
+    }
+
+    &-suggestions.is-searching &-searchInfo-searchingMsg {
+        display: block;
+    }
+    &-suggestions.is-searching &-busy {
+        display:            inline-block;
+        -webkit-animation:  spwidgets-PeoplePicker-rotate 0.8s linear infinite;
+        animation:          spwidgets-PeoplePicker-rotate 0.8s linear infinite;
     }
 
 
