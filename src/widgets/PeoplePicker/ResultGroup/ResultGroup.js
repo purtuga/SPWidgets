@@ -12,7 +12,7 @@ import domAddClass from "vendor/domutils/domAddClass";
 import domRemoveClass from "vendor/domutils/domRemoveClass";
 import domTriggerEvent from "vendor/domutils/domTriggerEvent";
 import Result from "../Result/Result";
-import ResultGroupTemplate from "text!./ResultGroup.html";
+import ResultGroupTemplate from "./ResultGroup.html";
 
     // FIXME: convert to use DomKeyboardInteraction
 

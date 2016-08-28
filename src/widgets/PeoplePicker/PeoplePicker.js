@@ -19,7 +19,7 @@ import searchPrincipals from "../../spapi/searchPrincipals";
 import resolvePrincipals from "../../spapi/resolvePrincipals";
 import ResultGroup from "./ResultGroup/ResultGroup";
 import PeoplePickerPersona from "./PeoplePickerPersona/PeoplePickerPersona";
-import SPPeoplePickerTemplate from "text!./PeoplePicker.html";
+import SPPeoplePickerTemplate from "./PeoplePicker.html";
 import "./PeoplePicker.less";
 
     // FIXME: support for 'Suggested' grouping

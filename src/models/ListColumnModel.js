@@ -43,9 +43,14 @@ ListColumnModel = /** @lends ListColumnModel.prototype */{
     /**
      * Returns the values for the column. Useful for column of type Choice or Lookup.
      *
+     * @param {Object} [lookupOptions]
+     *  Used only when column is of type `Lookup` or `LookupMulti`.
+     *  An object with options that will be used with [getListItems]{getListItems}
+     *  to retrieve the list of column values.
+     *
      * @return {Promise<Array<Object|String>, Error>}
      */
-    getColumnValues: function() {
+    getColumnValues: function(lookupOptions) {
         var me          = this,
             $colXml     = instData.get(me).source,
             colType     = me.Type,
@@ -64,14 +69,19 @@ ListColumnModel = /** @lends ListColumnModel.prototype */{
 
                 case "Lookup":
                 case "LookupMulti":
-                    getListItems({
-                        listName:   me.List,
-                        // FIXME: missing webURL here.
-                        CAMLQuery:  '<Query><OrderBy><FieldRef Name="' +
-                            me.ShowField + '"/></OrderBy></Query>',
-                        CAMLViewFields: '<ViewFields><FieldRef Name="' +
-                            me.ShowField + '"/></ViewFields>'
-                    }).then(
+                    getListItems(objectExtend(
+                        {
+                            CAMLQuery:  '<Query><OrderBy><FieldRef Name="' +
+                                me.ShowField + '"/></OrderBy></Query>',
+                            CAMLViewFields: '<ViewFields><FieldRef Name="' +
+                                me.ShowField + '"/></ViewFields>'
+                        },
+                        lookupOptions,
+                        {
+                            listName:   me.List
+                            // FIXME: missing webURL here.
+                        }
+                    )).then(
                         function(rows){
                             resolve(rows);
                         },

@@ -24,7 +24,8 @@ import ListColumnsCollection from '../collections/ListColumnsCollection';
      * @param {String} [options.webURL]
      *
      * @param {Boolean} [options.cache=true]
-     *      If true (default), request will be cached.
+     *      If true (default), request will be cached. This is mainly a pass through to
+     *      `getList()`.
      *
      * @param {Object} [options.ListItemModel=ListColumnModel]
      *      The List Column Model factory to be used. Factory must expose a `create` method

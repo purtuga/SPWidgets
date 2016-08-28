@@ -9,8 +9,8 @@ import uuid from "vendor/jsutils/uuid";
 import domAddClass from "vendor/domutils/domAddClass";
 import domAddEventListener from "vendor/domutils/domAddEventListener";
 import domFind from "vendor/domutils/domFind";
-import ChoiceFieldTemplate from "text!./ChoiceField.html";
-import choiceTemplate from "text!./choice.html";
+import ChoiceFieldTemplate from "./ChoiceField.html";
+import choiceTemplate from "./choice.html";
 import "./ChoiceField.less";
 
     var

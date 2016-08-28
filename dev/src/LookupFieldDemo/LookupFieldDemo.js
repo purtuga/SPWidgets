@@ -5,7 +5,7 @@ import fillTemplate from "vendor/jsutils/fillTemplate";
 import parseHTML from "vendor/jsutils/parseHTML";
 import LookupField from "../../../src/widgets/LookupField/LookupField";
 import getListColumns from "../../../src/spapi/getListColumns";
-import LookupFieldDemoTemplate from "text!./LookupFieldDemo.html";
+import LookupFieldDemoTemplate from "./LookupFieldDemo.html";
 
 import common from "../setup/common";
 

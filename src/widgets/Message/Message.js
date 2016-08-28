@@ -3,7 +3,7 @@ import dataStore from "vendor/jsutils/dataStore";
 import objectExtend from "vendor/jsutils/objectExtend";
 import fillTemplate from "vendor/jsutils/fillTemplate";
 import parseHTML from "vendor/jsutils/parseHTML";
-import MessageTemplate from "text!./Message.html";
+import MessageTemplate from "./Message.html";
 import "./Message.less";
 
     var

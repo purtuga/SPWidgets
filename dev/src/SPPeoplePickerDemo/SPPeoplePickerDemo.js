@@ -2,7 +2,7 @@ import Widget from "vendor/jsutils/Widget";
 import parseHTML from "vendor/jsutils/parseHTML";
 import domFind from "vendor/domutils/domFind";
 import SPPeoplePicker from "../../../src/widgets/PeoplePicker/PeoplePicker";
-import template from "text!./SPPeoplePickerDemo.html";
+import template from "./SPPeoplePickerDemo.html";
 
 import common from "../setup/common";
 

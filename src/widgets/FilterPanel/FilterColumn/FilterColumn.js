@@ -11,7 +11,7 @@ import domRemoveClass from "vendor/domutils/domRemoveClass";
 import domHasClass from "vendor/domutils/domHasClass";
 import domFind from "vendor/domutils/domFind";
 import FilterModel from "../FilterModel";
-import FilterColumnTemplate from "text!./FilterColumn.html";
+import FilterColumnTemplate from "./FilterColumn.html";
 import "./FilterColumn.less";
 
     var

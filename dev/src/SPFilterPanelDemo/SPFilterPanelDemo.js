@@ -4,7 +4,7 @@ import objectExtend                 from "vendor/jsutils/objectExtend";
 import fillTemplate                 from "vendor/jsutils/fillTemplate";
 import parseHTML                    from "vendor/jsutils/parseHTML";
 import FilterPanel                  from "../../../src/widgets/FilterPanel/FilterPanel";
-import SPFilterPanelDemoTemplate    from "text!./SPFilterPanelDemo.html";
+import SPFilterPanelDemoTemplate    from "./SPFilterPanelDemo.html";
 
 var PRIVATE = dataStore.create();
 

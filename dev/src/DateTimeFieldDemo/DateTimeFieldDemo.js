@@ -4,7 +4,7 @@ import objectExtend from "vendor/jsutils/objectExtend";
 import fillTemplate from "vendor/jsutils/fillTemplate";
 import parseHTML from "vendor/jsutils/parseHTML";
 import DateTimeField from "../../../src/widgets/DateTimeField/DateTimeField";
-import DateTimeFieldDemoTemplate from "text!./DateTimeFieldDemo.html";
+import DateTimeFieldDemoTemplate from "./DateTimeFieldDemo.html";
 
     var
     PRIVATE = dataStore.create(),

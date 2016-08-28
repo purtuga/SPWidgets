@@ -9,7 +9,7 @@ import domHasClass from "vendor/domutils/domHasClass";
 import domToggleClass from "vendor/domutils/domToggleClass";
 import domAddClass from "vendor/domutils/domAddClass";
 import domRemoveClass from "vendor/domutils/domRemoveClass";
-import ListItemTemplate from "text!./ListItemSimple.html";
+import ListItemTemplate from "./ListItemSimple.html";
 import "./ListItem.less";
 
     var

@@ -44,28 +44,8 @@ import objectExtend from "vendor/jsutils/objectExtend";
              opt.cacheKey = getCacheKey(opt.listName);
              opt.isCached = cache.isCached(opt.cacheKey);
 
-             // If cacheXML is true and we have a cached version, return it.
-             if (opt.cache && opt.isCached) {
-                 return cache(opt.cacheKey);
-             }
 
-             // If cache is FALSE, and we have a cached version of this key,
-             // then remove the cached version - basically reset
-             if (opt.isCached) {
-                 cache.clear(opt.cacheKey);
-             }
-
-             reqPromise = apiFetch(opt.webURL + "_vti_bin/Lists.asmx", {
-                 method: "POST",
-                 headers: {
-                     'Content-Type': 'text/xml;charset=UTF-8'
-                 },
-                 body: '<?xml version="1.0" encoding="utf-8"?>' +
-                     '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
-                     '<soap:Body><GetList xmlns="http://schemas.microsoft.com/sharepoint/soap/"><listName>' +
-                     opt.listName + '</listName></GetList></soap:Body></soap:Envelope>'
-             })
-             .then(function (response) {
+             var convertResponseToModel = function (response) {
                  var listDef = opt.ListModel.create(response.content, {
                      webURL: opt.webURL
                  });
@@ -83,6 +63,30 @@ import objectExtend from "vendor/jsutils/objectExtend";
                  }
 
                  return listDef;
+             };
+
+             // If cacheXML is true and we have a cached version, return it.
+             if (opt.cache && opt.isCached) {
+                 return cache(opt.cacheKey).then(convertResponseToModel);
+             }
+
+             // If cache is FALSE, and we have a cached version of this key,
+             // then remove the cached version - basically reset
+             if (opt.isCached) {
+                 cache.clear(opt.cacheKey);
+             }
+
+// FIXME: each invocation should get unique ListModel? instead of cached one?
+
+             reqPromise = apiFetch(opt.webURL + "_vti_bin/Lists.asmx", {
+                 method: "POST",
+                 headers: {
+                     'Content-Type': 'text/xml;charset=UTF-8'
+                 },
+                 body: '<?xml version="1.0" encoding="utf-8"?>' +
+                     '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
+                     '<soap:Body><GetList xmlns="http://schemas.microsoft.com/sharepoint/soap/"><listName>' +
+                     opt.listName + '</listName></GetList></soap:Body></soap:Envelope>'
              });
 
              // If there is a failure, remove from cache
@@ -95,7 +99,7 @@ import objectExtend from "vendor/jsutils/objectExtend";
                  cache(opt.cacheKey, reqPromise);
              }
 
-             return reqPromise;
+             return reqPromise.then(convertResponseToModel);
          });
      };
 

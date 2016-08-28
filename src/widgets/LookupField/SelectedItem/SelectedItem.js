@@ -6,7 +6,7 @@ import fillTemplate from "vendor/jsutils/fillTemplate";
 import parseHTML from "vendor/jsutils/parseHTML";
 import domMatches from "vendor/domutils/domMatches";
 import domAddEventListener from "vendor/domutils/domAddEventListener";
-import SelectedItemTemplate from "text!./SelectedItem.html";
+import SelectedItemTemplate from "./SelectedItem.html";
 import "./SelectedItem.less";
 
     var

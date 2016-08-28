@@ -23,7 +23,7 @@ import FilterColumnUserField from "./FilterColumnUserField/FilterColumnUserField
 import FilterColumnDateTimeField from "./FilterColumnDateTimeField/FilterColumnDateTimeField";
 import FiltersCollection from "./FiltersCollection";
 import getListColumns from "../../spapi/getListColumns";
-import SPFilterPanelTemplate from "text!./FilterPanel.html";
+import SPFilterPanelTemplate from "./FilterPanel.html";
 import "./FilterPanel.less";
 
     var

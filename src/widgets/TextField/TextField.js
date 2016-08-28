@@ -6,7 +6,7 @@ import fillTemplate from "vendor/jsutils/fillTemplate";
 import parseHTML from "vendor/jsutils/parseHTML";
 import domAddClass from "vendor/domutils/domAddClass";
 import domAddEventListener from "vendor/domutils/domAddEventListener";
-import TextFieldTemplate from "text!./TextField.html";
+import TextFieldTemplate from "./TextField.html";
 import "./TextField.less";
 
     var

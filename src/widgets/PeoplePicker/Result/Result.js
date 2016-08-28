@@ -3,7 +3,7 @@ import fillTemplate from "vendor/jsutils/fillTemplate";
 import domHasClass from "vendor/domutils/domHasClass";
 import domAddClass from "vendor/domutils/domAddClass";
 import domRemoveClass from "vendor/domutils/domRemoveClass";
-import ResultTemplate from "text!./Result.html";
+import ResultTemplate from "./Result.html";
 import "./Result.less";
 
     var

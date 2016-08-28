@@ -7,7 +7,7 @@ import parseHTML from "vendor/jsutils/parseHTML";
 import domClosest from "vendor/domutils/domClosest";
 import domAddClass from "vendor/domutils/domAddClass";
 import domRemoveClass from "vendor/domutils/domRemoveClass";
-import PersonaTemplate from "text!./Persona.html";
+import PersonaTemplate from "./Persona.html";
 
 var PRIVATE                 = dataStore.create();
 var CSS_CLASS_MS_PERSONA    = 'ms-Persona';

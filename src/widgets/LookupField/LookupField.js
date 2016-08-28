@@ -18,7 +18,7 @@ import List from "../List/List";
 import getListItems from "../../spapi/getListItems";
 import getCamlLogical from "../../sputils/getCamlLogical";
 import xmlEscape from "../../sputils/xmlEscape";
-import LookupFieldTemplate from "text!./LookupField.html";
+import LookupFieldTemplate from "./LookupField.html";
 import "./LookupField.less";
 
     var

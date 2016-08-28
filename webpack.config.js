@@ -3,8 +3,7 @@
 var path                = require('path');
 var webpack             = require('webpack');
 var CopyWebpackPlugin   = require('copy-webpack-plugin');
-
-var packageJson = require("./package.json");
+var packageJson         = require("./package.json");
 
 var _appSource  = path.resolve(__dirname, 'src');
 var _appBuild   = path.resolve(__dirname, '_BUILD');
@@ -13,6 +12,7 @@ var _appDev     = path.resolve(__dirname, 'dev');
 var _srcFilename = 'SPWidgets.js';
 
 var _jsSrcPath = path.join(_appSource, _srcFilename);
+
 
 // DEV file
 _jsSrcPath = path.resolve(__dirname, "dev/src/setup/setup.js");
@@ -35,7 +35,7 @@ module.exports = {
     module: {
         loaders: [
             {
-                test:       /\.js?$/,
+                test:       /\.js$/,
                 // exclude:    /node_modules/,
                 include:    [
                     /src/,
@@ -52,6 +52,10 @@ module.exports = {
             {
                 test: /\.less$/,
                 loader: "style-loader!css-loader!less-loader"
+            },
+            {
+                test: /\.html$/,
+                loader: "raw"
             }
         ]
     },

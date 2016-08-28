@@ -11,8 +11,8 @@ import domAddClass from "vendor/domutils/domAddClass";
 import domRemoveClass from "vendor/domutils/domRemoveClass";
 import domHasClass from "vendor/domutils/domHasClass";
 import getListColumns from "../../../spapi/getListColumns";
-import ColumnSelectorTemplate from "text!./ColumnSelector.html";
-import columnTemplate from "text!./column.html";
+import ColumnSelectorTemplate from "./ColumnSelector.html";
+import columnTemplate from "./column.html";
 import "./ColumnSelector.less";
 
     var

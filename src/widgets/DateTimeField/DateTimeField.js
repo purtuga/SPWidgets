@@ -7,7 +7,7 @@ import parseHTML from "vendor/jsutils/parseHTML";
 import domAddClass from "vendor/domutils/domAddClass";
 import domAddEventListener from "vendor/domutils/domAddEventListener";
 import flatpickr from "../3pp/flatpickr/flatpickr";
-import DateTimeFieldTemplate from "text!./DateTimeField.html";
+import DateTimeFieldTemplate from "./DateTimeField.html";
 import "./DateTimeField.less";
 
     var

@@ -6,7 +6,7 @@ import fillTemplate from "vendor/jsutils/fillTemplate";
 import parseHTML from "vendor/jsutils/parseHTML";
 import Map from "vendor/jsutils/es6-Map";
 import ListItem from "../ListItem/ListItem";
-import ListTemplate from "text!./List.html";
+import ListTemplate from "./List.html";
 
     var
     PRIVATE = dataStore.create(),
