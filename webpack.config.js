@@ -33,6 +33,16 @@ module.exports = {
         "lessLoader": true
     },
     module: {
+        __preLoaders: [
+            {
+                test:       /\.js$/,
+                loaders:    ['eslint-loader'],
+                include: [
+                    /src[\\\/]widgets/,
+                    /src[\\\/]spapi/
+                ]
+            }
+        ],
         loaders: [
             {
                 test:       /\.js$/,

@@ -6,6 +6,9 @@ import fillTemplate from "vendor/jsutils/fillTemplate";
 import parseHTML from "vendor/jsutils/parseHTML";
 import domAddClass from "vendor/domutils/domAddClass";
 import domAddEventListener from "vendor/domutils/domAddEventListener";
+
+
+// FIXME: remove this reference and replace with node-modules reference
 import flatpickr from "../3pp/flatpickr/flatpickr";
 import DateTimeFieldTemplate from "./DateTimeField.html";
 import "./DateTimeField.less";

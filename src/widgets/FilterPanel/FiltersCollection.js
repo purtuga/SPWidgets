@@ -1,7 +1,7 @@
-import Collection from "vendor/jsutils/Collection";
-import objectExtend from "vendor/jsutils/objectExtend";
-import toUrlParams from "vendor/jsutils/toUrlParams";
-import getCamlLogical from "../../sputils/getCamlLogical";
+import Collection       from "common-micro-libs/src/jsutils/Collection";
+import objectExtend     from "common-micro-libs/src/jsutils/objectExtend";
+import toUrlParams      from "common-micro-libs/src/jsutils/toUrlParams";
+import getCamlLogical   from "../../sputils/getCamlLogical";
 
     /**
      * A collection (Array like object) with the list of

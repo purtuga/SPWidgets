@@ -1,6 +1,7 @@
 import SPPeoplePickerDemo   from '../SPPeoplePickerDemo/SPPeoplePickerDemo';
 import SPFilterPanelDemo    from '../SPFilterPanelDemo/SPFilterPanelDemo';
 import LookupFieldDemo      from '../LookupFieldDemo/LookupFieldDemo';
+import ListPickerDemo       from '../ListPickerDemo/ListPickerDemo';
 import DateTimeFieldDemo    from '../DateTimeFieldDemo/DateTimeFieldDemo';
 
 var demoCntr = document.querySelector("#spwidgets_dev_demo"),
@@ -24,6 +25,10 @@ demoSelector.addEventListener("change", function(){
 
         case "LookupField":
             currentDemo = LookupFieldDemo.create();
+            break;
+
+        case "ListPicker":
+            currentDemo = ListPickerDemo.create();
             break;
 
         case "DateTimeField":
