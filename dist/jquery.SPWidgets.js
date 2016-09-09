@@ -41,7 +41,7 @@ var src_spapi_getSiteUrl, src_sputils_cache, src_spapi_getList, src_sputils_does
         if (pageAddress.indexOf('http') > -1) {
           return pageAddress;
         }
-        pageAddress = document.location.protocol + '//' + document.location.hostname + (Number(document.location.port) !== 80 && Number(document.location.port) > 0 ? document.location.port : '') + pageAddress;
+        pageAddress = document.location.protocol + '//' + document.location.hostname + (Number(document.location.port) !== 80 && Number(document.location.port) > 0 ? ':' + document.location.port : '') + pageAddress;
         return pageAddress;
       }
       // return caller function
