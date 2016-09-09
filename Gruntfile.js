@@ -590,6 +590,9 @@ module.exports = function(grunt) {
         jasmine: {
             all: {
                 options: {
+                    vendor: [
+                        "test/setup/polyfill.js"
+                    ],
                     specs: "test/specs/**/*.js",
                     host: "http://127.0.0.1:8182/",
                     template: require('grunt-template-jasmine-requirejs'),

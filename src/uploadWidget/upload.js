@@ -470,7 +470,7 @@ define([
             // If list Name is not the UID, then get it now
             if (opt.listName && opt.listName.indexOf("{") !== 0) {
 
-                opt.listName = Upload.getListUID(opt.listName);
+                opt.listName = Upload.getListUID(opt.listName, opt.webURL);
 
             }
             // If list name is not defined - error
@@ -1343,11 +1343,12 @@ define([
      * it's UID from SP.
      *
      * @param {String} listName     The name of the list.
+     * @param {String} webURL       The name of the list.
      * @return {String}
      * @memberOf jQuery.pt
      *
      */
-    Upload.getListUID = function(listName) {
+    Upload.getListUID = function(listName, webURL) {
 
         if (!listName) {
             return "";
@@ -1358,6 +1359,7 @@ define([
         getList({
             listName:   listName,
             async:      false,
+            webURL:     webURL,
             cacheXML:   true,
             completefunc: function (xData/*, Status*/) {
                 id = $(xData.responseXML).find("List").attr("ID");
