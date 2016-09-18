@@ -491,7 +491,7 @@ FilterPanel = EventEmitter.extend(Widget, FilterPanel);
  *
  * @method FilterPanel.getFiltersCollection
  *
- * @param {Array<Object>} filterList
+ * @param {Array<Object>|Collection} filterList
  *
  * @return {FiltersCollection}
  */

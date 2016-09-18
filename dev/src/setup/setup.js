@@ -2,6 +2,7 @@ import SPPeoplePickerDemo   from '../SPPeoplePickerDemo/SPPeoplePickerDemo';
 import SPFilterPanelDemo    from '../SPFilterPanelDemo/SPFilterPanelDemo';
 import LookupFieldDemo      from '../LookupFieldDemo/LookupFieldDemo';
 import ListPickerDemo       from '../ListPickerDemo/ListPickerDemo';
+import ColumnPickerDemo     from '../ColumnPickerDemo/ColumnPickerDemo';
 import DateTimeFieldDemo    from '../DateTimeFieldDemo/DateTimeFieldDemo';
 
 var demoCntr = document.querySelector("#spwidgets_dev_demo"),
@@ -15,6 +16,11 @@ demoSelector.addEventListener("change", function(){
     }
 
     switch (demoSelector.value) {
+        case "ColumnPicker":
+            currentDemo = ColumnPickerDemo.create();
+
+            break;
+
         case "SPPeoplePicker":
             currentDemo = SPPeoplePickerDemo.create();
             break;

@@ -33,11 +33,18 @@ ListColumnModel = /** @lends ListColumnModel.prototype */{
     init: function(columnData, options){
 
         var opt = objectExtend({}, ListColumnModel.defaults, options);
-        if (columnData) {
-            objectExtend(this, columnData);
-        }
-        instData.set(this, opt);
+        objectExtend(this, {
+            ID:             "",
+            Type:           "",
+            Name:           "",
+            DisplayName:    "",
+            Sortable:       "",
+            StaticName:     "",
+            Required:       false,
+            ReadOnly:       false
+        }, columnData);
 
+        instData.set(this, opt);
     },
 
     /**
