@@ -34,13 +34,15 @@ var ListPicker = {
         PRIVATE.set(this, inst);
         Picker.prototype.init.call(this, inst.opt);
 
-        var CSS_MS_ICON = "ms-Icon ms-Icon";
-        var CSS_PICKER  = "Picker";
-        var $ui         = this.getEle();
-        var uiFind      = $ui.querySelector.bind($ui);
+        var CSS_MS_FONT_M   = "ms-font-m";
+        var CSS_MS_ICON     = "ms-Icon ms-Icon";
+        var CSS_PICKER      = "Picker";
+        var $ui             = this.getEle();
+        var uiFind          = $ui.querySelector.bind($ui);
         var $ele;
 
-        domAddClass(this.getPopupWidget().getEle(), "ms-font-m");
+        domAddClass(this.getEle(), CSS_MS_FONT_M);
+        domAddClass(this.getPopupWidget().getEle(), CSS_MS_FONT_M);
 
         $ele = uiFind(`.${CSS_PICKER}-clear`);
         $ele.textContent = "";
