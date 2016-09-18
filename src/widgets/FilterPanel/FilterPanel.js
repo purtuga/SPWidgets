@@ -36,6 +36,7 @@ WINDOW_NAVIGATOR    = window.navigator,
 
 CSS_CLASS_BASE              = "spwidgets-FilterPanel",
 CSS_CLASS_NO_HEADER         = CSS_CLASS_BASE + "--noHeader",
+CSS_CLASS_NO_FIND_BUTTON    = `${CSS_CLASS_BASE}--noFindButton`,
 CSS_CLASS_BODY_FIXED_HEIGHT = CSS_CLASS_BASE + "--fixHeight",
 
 CSS_CLASS_MS_BUTTON_PRIMARY = "ms-Button--primary",
@@ -92,14 +93,18 @@ FilterPanel = /** @lends FilterPanel.prototype */{
             BASE_SELECTOR   = "." + CSS_CLASS_BASE,
             emit            = me.emit.bind(me);
 
-        // hide Header?
-        if (opt.hideHeader) {
-            domAddClass($ui, CSS_CLASS_NO_HEADER);
-        }
 
         inst.main = uiFind(BASE_SELECTOR + "-main");
         inst.body = uiFind(BASE_SELECTOR + "-body");
         inst.find = uiFind(BASE_SELECTOR + "-footer-action-find");
+
+        // Apply modifiers
+        if (opt.hideHeader) {
+            domAddClass($ui, CSS_CLASS_NO_HEADER);
+        }
+        if (opt.hideFindButton) {
+            domAddClass($ui, CSS_CLASS_NO_FIND_BUTTON);
+        }
 
         // Info widget
         inst.infoMsg = Widget.extend({$ui: parseHTML('<div style="padding: 2em 5%;"/>').firstChild}).create();
@@ -109,6 +114,7 @@ FilterPanel = /** @lends FilterPanel.prototype */{
         // Column selector widget
         inst.columnSelector = ColumnSelector.create(opt);
         inst.columnSelector.pipe(this, "columnSelector:");
+
 
         //----------------------------------------
         // Initialize event handlers
@@ -520,6 +526,7 @@ FilterPanel.defaults = {
     // FIXME: add all other modules, like collection, model, and internal widgets here as well.
 
     hideHeader:         false,
+    hideFindButton:     false,
     selectFieldsLayout: '3-col',    // 1, 2 or 3 -col
     lang:               '',
     i18n: {

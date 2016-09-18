@@ -91,12 +91,14 @@
     &--noHeader &-header {
         display: none;
     }
-    &--noHeader &-body {
-        .border-1px-solid(border-top);
-    }
 
     // ==> Fixed height filter panel
     &--fixHeight &-body {
         overflow-y: auto;
+    }
+
+    // ==> No Find button
+    &--noFindButton &-footer-action-find {
+        display: none;
     }
 }

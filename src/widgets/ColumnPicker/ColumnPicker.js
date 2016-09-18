@@ -78,6 +78,12 @@ const ColumnPicker = Picker.extend(/** @lends ColumnPicker.prototype */{
 function loadListColumns() {
     getListColumns(PRIVATE.get(this).opt)
         .then(columns => {
+            var filter = PRIVATE.get(this).opt.filter;
+
+            if (filter) {
+                columns = filter(columns);
+            }
+
             this.setChoices(columns.map(column => {
                 column.title = column.DisplayName;
                 return column;
@@ -90,6 +96,7 @@ function loadListColumns() {
 ColumnPicker.defaults = {
     listName:   "",
     webURL:     "",
+    filter:     null,               // function. Given array of columns. Must return array.
     title:      "Select Column..."
 };
 
