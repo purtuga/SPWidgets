@@ -79,6 +79,7 @@ isArray = Array.isArray,
  *
  * @fires LookupField#item:selected
  * @fires LookupField#item:unselected
+ * @fires LookupField#change
  */
 LookupField = /** @lends LookupField.prototype */{
     init: function (options) {
@@ -562,6 +563,13 @@ function showItemAsSelected(itemData){
      * @type {Object}
      */
     this.emit("item:selected", itemData);
+
+    /**
+     * Items selection has changed
+     *
+     * @event LookupField#change
+     */
+    this.emit("change");
 }
 
 function removeItemFromSelected(itemData){
@@ -581,6 +589,7 @@ function removeItemFromSelected(itemData){
      * @type {Object}
      */
     this.emit("item:unselected", itemData);
+    this.emit("change");
 }
 
 function clearAllSelected() {

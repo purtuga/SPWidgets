@@ -56,11 +56,12 @@ var CSS_CLASS_MS_INPUT          = 'ms-ChoiceField-input';
  *
  *  -   `inline`: Choices are displayed inline.
  *
- * @param {Boolean} [options.isMuliti=null]
+ * @param {Boolean} [options.isMulti=null]
  *  By default, this will widget will use the Column definition to determine if
  *  multiple values can be selected. This options, however, will override that
  *  setting. Set it to true of false
  *
+ * @fires ChoiceField#change
  */
 var ChoiceField = /** @lends ChoiceField.prototype */{
     init: function (options) {

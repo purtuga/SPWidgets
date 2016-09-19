@@ -326,16 +326,13 @@ import "./FilterColumn.less";
                 isSortOrderDirty        = !!inst.sortOrder.value,
                 $ui                     = this.getEle(),
                 val                     = this.getValue(),
-                wasDirty                = this.isDirty(),
                 triggerChange           = function(){
-                    if (wasDirty !== this.isDirty()) {
-                        /**
-                         * Filter Column was changed.
-                         *
-                         * @event FilterColumn#change
-                         */
-                        this.emit("change");
-                    }
+                    /**
+                     * Filter Column was changed.
+                     *
+                     * @event FilterColumn#change
+                     */
+                    this.emit("change");
                 }.bind(this),
                 isUserInputDirty;
 
