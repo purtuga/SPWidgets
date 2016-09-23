@@ -111,7 +111,7 @@ FilterModel = {
      */
     toCAMLQuery: function () {
         var me              = this;
-        var columnSetup     = PRIVATE.get(this).opt.column;
+        var columnSetup     = PRIVATE.get(this).opt.column || {};
         var columnType      = columnSetup.Type || this.type;
         var compareOperator = me.compareOperator || 'Eq';
         var colName         = xmlEscape.escape(me.column);

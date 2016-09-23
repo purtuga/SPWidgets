@@ -599,7 +599,7 @@ import "./PeoplePicker.less";
                 if (opt.meKeyword && searchString === opt.meKeyword) {
                     filteredResults.unshift(
                         opt.UserProfileModel.create({
-                            UserInfoID:     '<userid/>',
+                            UserInfoID:     '<UserID/>',
                             DisplayName:    opt.meKeywordLabel
                         })
                     );
