@@ -24,6 +24,8 @@ var CSS_CLASS_NO_DESCRIPTION    = CSS_CLASS_BASE + "--noDescription";
 
 var CSS_CLASS_MS_INPUT          = 'ms-ChoiceField-input';
 
+var ATTR_CHECKED                = "checked";
+
 /**
  * A choice field giving the user the ability to pick from a list
  * of values. Handles Choice, MultiChoice.
@@ -70,7 +72,9 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
             groupName:  uuid.generate(),
             isMulti:    null,
             onReady:    null,
-            isReady:    false
+            isReady:    false,
+            choices:    null,
+            choiceList: []
         };
 
         PRIVATE.set(this, inst);
@@ -96,8 +100,11 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
         inst.choices    = uiFind("." + CSS_CLASS_CHOICES);
         inst.onReady    = getChoices.call(this)
                             .then(addChoicesToUI.bind(this))
-                            .then(function(){
+                            .then(() => {
                                 inst.isReady = true;
+                                if (opt.checkAll) {
+                                    this.checkAll();
+                                }
                             })["catch"](function(e){
                                 console.log(e); //jshint ignore:line
                             });
@@ -187,6 +194,33 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
         } else {
             return inst.onReady.then(setValueOnWidget);
         }
+    },
+
+    /**
+     * Returns array of the choices available in the widget.
+     *
+     * @return {Array}
+     */
+    getChoices: function(){
+        return PRIVATE.get(this).choiceList;
+    },
+
+    /**
+     * Checks all choices in the list.
+     */
+    checkAll: function(){
+        domFind(this.getEle(), `.${CSS_CLASS_MS_INPUT}`).forEach(function(inputEle){
+            inputEle.setAttribute(ATTR_CHECKED, ATTR_CHECKED);
+        });
+    },
+
+    /**
+     * Unchecks all choices
+     */
+    unCheckAll: function(){
+        domFind(this.getEle(), `.${CSS_CLASS_MS_INPUT}`).forEach(function(inputEle){
+            inputEle.removeAttribute(ATTR_CHECKED, ATTR_CHECKED);
+        });
     }
 };
 
@@ -212,7 +246,7 @@ function addChoicesToUI(choiceList) {
         defId       = "",
         listUI;
 
-    choiceList = choiceList.map(function(choice){
+    choiceList = inst.choiceList = choiceList.map(function(choice){
         var id = uuid.generate();
 
         if (choice === defVal) {
@@ -231,9 +265,9 @@ function addChoicesToUI(choiceList) {
     listUI = parseHTML( fillTemplate(choiceTemplate, choiceList) );
 
     if (defId) {
-        defId = listUI.querySelector("#" + defId);
+        defId = domFind(listUI, "#" + defId);
         if (defId) {
-            defId.setAttribute('checked', 'checked');
+            defId.setAttribute(ATTR_CHECKED, ATTR_CHECKED);
         }
     }
 
@@ -246,6 +280,7 @@ ChoiceField = EventEmitter.extend(Widget, ChoiceField);
 ChoiceField.defaults = {
     column:             {},
     selected:           "",
+    checkAll:           false,
     maxHeight:          "10em",
     hideLabel:          false,
     hideDescription:    false,

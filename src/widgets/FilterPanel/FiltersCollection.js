@@ -159,6 +159,7 @@ import getCamlLogical   from "../../sputils/getCamlLogical";
             propName:           'filter',
             stringifyProperties:   [
                 "column",
+                "type",
                 "values",
                 "compareOperator",
                 "logicalOperator",

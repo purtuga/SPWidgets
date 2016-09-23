@@ -3,6 +3,7 @@ import dataStore                    from "vendor/jsutils/dataStore";
 import objectExtend                 from "vendor/jsutils/objectExtend";
 import fillTemplate                 from "vendor/jsutils/fillTemplate";
 import parseHTML                    from "vendor/jsutils/parseHTML";
+import xmlEscape                    from "common-micro-libs/src/jsutils/xmlEscape"
 import FilterPanel                  from "../../../src/widgets/FilterPanel/FilterPanel";
 import SPFilterPanelDemoTemplate    from "./SPFilterPanelDemo.html";
 
@@ -68,6 +69,8 @@ function setupDemo1(){
                             {logicalOperator: 'lO'}
                         ]
                     }) +
+                    "\r\n toCAMLQuery: " +
+                    xmlEscape.escape(filterPanel.getFilters().toCAMLQuery()) +
                     '</pre></div>'
                 )
             );
