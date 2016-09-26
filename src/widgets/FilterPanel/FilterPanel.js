@@ -106,6 +106,10 @@ FilterPanel = /** @lends FilterPanel.prototype */{
             domAddClass($ui, CSS_CLASS_NO_FIND_BUTTON);
         }
 
+        if (opt.bodyHeight) {
+            this.setBodyHeight(opt.bodyHeight);
+        }
+
         // Info widget
         inst.infoMsg = Widget.extend({$ui: parseHTML('<div style="padding: 2em 5%;"/>').firstChild}).create();
         Message.create({ message: opt.labels.msg }).appendTo(inst.infoMsg.getEle());
@@ -222,6 +226,30 @@ FilterPanel = /** @lends FilterPanel.prototype */{
      * Clears the fixed height placed on the Filter Panel
      */
     clearFitToParent: function(){
+        this.clearBodyHeight();
+    },
+
+    /**
+     * Sets a fixed height to the body of the filter panel
+     *
+     * @param {String} newHeight
+     *  the new height as a CSS value.
+     *
+     * @param {Boolean} fixed
+     *  If true, then the css `height` property will be used, else
+     *  the `max-height` property is used by default
+     */
+    setBodyHeight: function(newHeight, fixed){
+        domAddClass(this.getEle(), CSS_CLASS_BODY_FIXED_HEIGHT);
+        var cssProp = {};
+        cssProp[fixed ? "height" : "maxHeight"] = newHeight;
+        domSetStyle(PRIVATE.get(this).body, cssProp);
+    },
+
+    /**
+     * Clears the fixed height out of the body of the filter panel
+     */
+    clearBodyHeight: function(){
         domRemoveClass(this.getEle(), CSS_CLASS_BODY_FIXED_HEIGHT);
         PRIVATE.get(this).body.style.height = "";
     },
@@ -513,6 +541,7 @@ FilterPanel.defaults = {
     ignoreKeywords:     /^(of|and|a|an|to|by|the|or|from)$/i,
     delimiter:          ';',
     zIndex:             15,
+    bodyHeight:         '',
 
     FilterColumn:       FilterColumn,   // Base class. Use it to build other fields
     TextWidget:         FilterColumnTextField,
