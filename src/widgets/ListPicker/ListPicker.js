@@ -8,7 +8,8 @@ import getSiteListCollection    from "../../spapi/getSiteListCollection";
 
 //-----------------------------------------------------------
 
-var PRIVATE = dataStore.create();
+const PRIVATE           = dataStore.create();
+const PickerPrototype   = Picker.prototype;
 
 /**
  * Display a picker to select a list from the site
@@ -32,7 +33,7 @@ var ListPicker = {
         };
 
         PRIVATE.set(this, inst);
-        Picker.prototype.init.call(this, inst.opt);
+        PickerPrototype.init.call(this, inst.opt);
 
         var CSS_MS_FONT_M   = "ms-font-m";
         var CSS_MS_ICON     = "ms-Icon ms-Icon";
@@ -88,6 +89,19 @@ var ListPicker = {
             }
         });
         return list;
+    },
+
+    /**
+     * Selects a list currently in the list of choices
+     *
+     * @param {String} list
+     * @returns {Promise}
+     */
+    setSelected: function (list){
+        return this.onReady().then(() => {
+            var listInfo = this.getListInfo(list) || {};
+            return PickerPrototype.setSelected.call(this, listInfo.Title);
+        });
     }
 };
 

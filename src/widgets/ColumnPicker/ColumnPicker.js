@@ -21,7 +21,9 @@ const PickerPrototype   = Picker.prototype;
 const ColumnPicker = Picker.extend(/** @lends ColumnPicker.prototype */{
     init: function (options) {
         var inst = {
-            opt: objectExtend({}, ColumnPicker.defaults, options)
+            opt: objectExtend({}, ColumnPicker.defaults, options),
+            ready: null,
+            choices: []
         };
 
         PRIVATE.set(this, inst);
@@ -45,7 +47,9 @@ const ColumnPicker = Picker.extend(/** @lends ColumnPicker.prototype */{
         $ele.textContent = "";
         domAddClass($ele, `${CSS_MS_ICON}--chevronThickDown`);
 
-        loadListColumns.call(this);
+        inst.ready = loadListColumns.call(this).then(() => {
+            return this;
+        });
 
         this.onDestroy(function() {
 
@@ -72,11 +76,61 @@ const ColumnPicker = Picker.extend(/** @lends ColumnPicker.prototype */{
 
             PRIVATE.delete(this);
         }.bind(this));
+    },
+
+    /**
+     * Returns a promise that resolves once the Widget is ready
+     * for interaction (after getting Lists from SP)
+     *
+     * @return {Promise}
+     */
+    onReady: function(){
+        return PRIVATE.get(this).ready;
+    },
+
+    /**
+     * returns the object with info on a given columns,
+     * so long as that column is part of the choices of
+     * this widget instance.
+     *
+     * @param {String} columnName
+     *  Either StaticName or DisplayName.
+     *
+     * @return {Object|undefined}
+     */
+    getColumnInfo: function(columnName){
+        var col;
+        PRIVATE.get(this).choices.some((colObj) => {
+            if (colObj.StaticName === columnName || colObj.DisplayName === columnName) {
+                col = colObj;
+                return true;
+            }
+        });
+        return col;
+    },
+
+    /**
+     * Selects a list currently in the list of choices
+     *
+     * @param {String} list
+     * @returns {Promise}
+     */
+    setSelected: function (column){
+        return this.onReady().then(() => {
+            var colInfo = this.getColumnInfo(column) || {};
+            return PickerPrototype.setSelected.call(this, colInfo.DisplayName);
+        });
     }
 });
 
+/**
+ * Loads the list of columns
+ *
+ * @private
+ * @returns {Promise}
+ */
 function loadListColumns() {
-    getListColumns(PRIVATE.get(this).opt)
+    return getListColumns(PRIVATE.get(this).opt)
         .then(columns => {
             var filter = PRIVATE.get(this).opt.filter;
 
@@ -84,10 +138,12 @@ function loadListColumns() {
                 columns = filter(columns);
             }
 
-            this.setChoices(columns.map(column => {
+            PRIVATE.get(this).choices = columns = columns.map(column => {
                 column.title = column.DisplayName;
                 return column;
-            }));
+            });
+
+            this.setChoices(columns);
         })["catch"](e => {
             console.log(e);
         });
