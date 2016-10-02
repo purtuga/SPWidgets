@@ -112,12 +112,12 @@ const ColumnPicker = Picker.extend(/** @lends ColumnPicker.prototype */{
     /**
      * Selects a list currently in the list of choices
      *
-     * @param {String} list
+     * @param {String|Object} column
      * @returns {Promise}
      */
     setSelected: function (column){
         return this.onReady().then(() => {
-            var colInfo = this.getColumnInfo(column) || {};
+            var colInfo = typeof column === "object" ? column : this.getColumnInfo(column) || {};
             return PickerPrototype.setSelected.call(this, colInfo.DisplayName);
         });
     }

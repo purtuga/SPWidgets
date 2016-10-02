@@ -167,9 +167,9 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
      *
      * @returns {Promise}
      */
-    setValue: function(newValue){
-        var inst = PRIVATE.get(this),
-            setValueOnWidget = function(){
+    setSelected: function(newValue){
+        var inst = PRIVATE.get(this);
+        var setValueOnWidget = function(){
             var newVals     = Array.isArray(newValue) ? newValue : [newValue],
                 choiceEles  = domFind(inst.choices, "." + CSS_CLASS_MS_INPUT);
 
@@ -194,6 +194,12 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
         } else {
             return inst.onReady.then(setValueOnWidget);
         }
+    },
+
+    // backwards compatible...
+    // deprecated.
+    setValue: function(...args){
+        return this.setSelected(...args);
     },
 
     /**

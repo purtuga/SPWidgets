@@ -94,12 +94,12 @@ var ListPicker = {
     /**
      * Selects a list currently in the list of choices
      *
-     * @param {String} list
+     * @param {String|Object} list
      * @returns {Promise}
      */
     setSelected: function (list){
         return this.onReady().then(() => {
-            var listInfo = this.getListInfo(list) || {};
+            var listInfo = typeof list === "object" ? list : this.getListInfo(list) || {};
             return PickerPrototype.setSelected.call(this, listInfo.Title);
         });
     }

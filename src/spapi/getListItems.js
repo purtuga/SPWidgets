@@ -112,7 +112,7 @@ import objectExtend from "vendor/jsutils/objectExtend";
                             "</queryOptions>" +
                             (
                                 opt.operation === "GetListItemChangesSinceToken" ?
-                                "<changeToken>" + opt.changeToken + "</changeToken>" :
+                                    "<changeToken>" + (opt.changeToken || "") + "</changeToken>" :
                                     ""
                             ) +
                             "</" + opt.operation +"></soap:Body></soap:Envelope>"
