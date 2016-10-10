@@ -59,6 +59,12 @@ import fillTemplate from "vendor/jsutils/fillTemplate";
             }
 
             this.setKeywordInfo("");
+        },
+
+        setFilter: function(filter){
+            var inst = PRIVATE.get(this);
+            inst.setFieldCommonFilters.call(this, filter);
+            return inst.inputWdg.setSelected(filter.values).then(() => this.evalDirtyState());
         }
     };
 

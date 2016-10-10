@@ -187,13 +187,7 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
             });
         }.bind(this);
 
-        if (inst.isReady) {
-            setValueOnWidget();
-            return Promise.resolve();
-
-        } else {
-            return inst.onReady.then(setValueOnWidget);
-        }
+        return inst.onReady.then(setValueOnWidget);
     },
 
     // backwards compatible...

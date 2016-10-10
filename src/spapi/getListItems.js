@@ -36,7 +36,7 @@ import objectExtend from "vendor/jsutils/objectExtend";
      *
      * @param {Boolean} [options.cacheXML=false]
      *
-     * @param {Boolean} [options.listItemModel=ListItemModel]
+     * @param {Boolean} [options.ListItemModel=ListItemModel]
      *  The model to be used for each row retrieved. Model constructor must
      *  support a .create() method.
      *
@@ -69,7 +69,7 @@ import objectExtend from "vendor/jsutils/objectExtend";
             reqPromise;
 
         return getSiteWebUrl(opt.webURL).then(function(webURL){
-            opt.webURL      = webURL + "_vti_bin/Lists.asmx";
+            opt.webURL      = webURL;
             opt.cacheKey    = opt.webURL + "?" +
                             [
                                 opt.listName,
@@ -94,7 +94,7 @@ import objectExtend from "vendor/jsutils/objectExtend";
                 cache.clear(opt.cacheKey);
             }
 
-            reqPromise = apiFetch(opt.webURL, {
+            reqPromise = apiFetch(opt.webURL + "_vti_bin/Lists.asmx", {
                 method:     "POST",
                 headers:    { 'Content-Type': 'text/xml;charset=UTF-8' },
                 body:       "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
@@ -121,11 +121,8 @@ import objectExtend from "vendor/jsutils/objectExtend";
                     getNodesFromXml({
                         xDoc:               response.content,
                         nodeName:           "z:row",
-                        nodeModel:          opt.listItemModel,
-                        nodeModelOptions:   {
-                            list:   opt.listName,
-                            webURL: opt.webURL
-                        }
+                        nodeModel:          opt.ListItemModel || opt.listItemModel, // Lowercase "listItemModel" is for backward compatibiltiy
+                        nodeModelOptions:   objectExtend({}, opt)
                     }),
                     {
                         apiResponse:    response,
@@ -155,7 +152,7 @@ import objectExtend from "vendor/jsutils/objectExtend";
         cacheXML:       false,
         async:          true,
         changeToken:    '', // GetListChangesSinceToken only
-        listItemModel:  ListItemModel,
+        ListItemModel:  ListItemModel,
         ListItemCollection: ListItemsCollection
     };
 

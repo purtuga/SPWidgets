@@ -15,14 +15,13 @@ var PRIVATE = dataStore.stash;
  * @param {Object} itemData
  *      An object with the properties for the model
  * @param {Object} [options]
- * @param {Object|String} [options.list]
- * @param {String} [options.webURL]
+ *  An object with the options used to get the row from SP
  *
  */
-export default Compose.extend(/** @lends ListItemModel.prototype */{
+const ListItemModel = Compose.extend(/** @lends ListItemModel.prototype */{
     init: function(itemData, options){
         var opt = objectExtend({}, {
-            list:       "",
+            listName:   "",
             webURL:     ""
         }, options);
 
@@ -49,3 +48,5 @@ export default Compose.extend(/** @lends ListItemModel.prototype */{
         return PRIVATE.get(this);
     }
 });
+
+export default ListItemModel
