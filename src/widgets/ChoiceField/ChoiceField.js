@@ -1,14 +1,14 @@
-import Widget               from "vendor/jsutils/Widget"
-import EventEmitter         from "vendor/jsutils/EventEmitter"
-import dataStore            from "vendor/jsutils/dataStore"
-import objectExtend         from "vendor/jsutils/objectExtend"
-import fillTemplate         from "vendor/jsutils/fillTemplate"
-import parseHTML            from "vendor/jsutils/parseHTML"
-import Promise              from "vendor/jsutils/es6-promise"
-import uuid                 from "vendor/jsutils/uuid"
-import domAddClass          from "vendor/domutils/domAddClass"
-import domAddEventListener  from "vendor/domutils/domAddEventListener"
-import domFind              from "vendor/domutils/domFind"
+import Widget               from "common-micro-libs/src/jsutils/Widget"
+import EventEmitter         from "common-micro-libs/src/jsutils/EventEmitter"
+import dataStore            from "common-micro-libs/src/jsutils/dataStore"
+import objectExtend         from "common-micro-libs/src/jsutils/objectExtend"
+import fillTemplate         from "common-micro-libs/src/jsutils/fillTemplate"
+import parseHTML            from "common-micro-libs/src/jsutils/parseHTML"
+import Promise              from "common-micro-libs/src/jsutils/es6-promise"
+import uuid                 from "common-micro-libs/src/jsutils/uuid"
+import domAddClass          from "common-micro-libs/src/domutils/domAddClass"
+import domAddEventListener  from "common-micro-libs/src/domutils/domAddEventListener"
+import domFind              from "common-micro-libs/src/domutils/domFind"
 import ChoiceFieldTemplate  from "./ChoiceField.html"
 import choiceTemplate       from "./choice.html"
 import "./ChoiceField.less"
@@ -37,7 +37,7 @@ var ATTR_CHECKED                = "checked";
  * @param {Object} options
  *
  * @param {ListColumnModel} [options.column={}]
- *  Although options, it is strongly suggested this be passed in on input, since
+ *  Although optional, it is strongly suggested this be passed in on input, since
  *  some of display values are obtained from the list column definition - example
  *  the label (DisplayName) and field description if any.
  *
@@ -63,6 +63,12 @@ var ATTR_CHECKED                = "checked";
  *  multiple values can be selected. This options, however, will override that
  *  setting. Set it to true of false
  *
+ * @param {Array<String|Object>} [options.choiceList]
+ *  The list of choices to be available on the widget. Will override the use of
+ *  the `column` definition `getColumnValues()`. The value can either be a `String`
+ *  in which case i twill be used as the title and the value, or an object
+ *  containing both a `title` and `value` attributes.
+ *
  * @fires ChoiceField#change
  */
 var ChoiceField = /** @lends ChoiceField.prototype */{
@@ -82,12 +88,11 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
         if (!inst.opt.column){
             inst.opt.column = {};
         }
-        var
-        opt     = inst.opt,
-        $ui     = this.$ui = parseHTML(
-                    fillTemplate(ChoiceFieldTemplate, opt)
-                ).firstChild,
-        uiFind  = inst.uiFind  = $ui.querySelector.bind($ui);
+        var opt = inst.opt;
+        var $ui = this.$ui = parseHTML(
+            fillTemplate(ChoiceFieldTemplate, opt)
+        ).firstChild;
+        var uiFind  = inst.uiFind = $ui.querySelector.bind($ui);
 
         if (typeof inst.opt.isMulti === "boolean") {
             inst.isMulti = inst.opt.isMulti;
@@ -98,16 +103,25 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
 
         inst.title      = uiFind(".ms-ChoiceFieldGroup-title");
         inst.choices    = uiFind("." + CSS_CLASS_CHOICES);
-        inst.onReady    = getChoices.call(this)
-                            .then(addChoicesToUI.bind(this))
-                            .then(() => {
-                                inst.isReady = true;
-                                if (opt.checkAll) {
-                                    this.checkAll();
-                                }
-                            })["catch"](function(e){
-                                console.log(e); //jshint ignore:line
-                            });
+        inst.onReady    = Promise.resolve()
+            .then(() => {
+                if (opt.choiceList) {
+                    return opt.choiceList
+                }
+                return getChoices.call(this)
+            })
+            .then(addChoicesToUI.bind(this))
+            .then(() => {
+                if (opt.selected) {
+                    this.setSelected(opt.selected);
+                }
+                inst.isReady = true;
+                if (opt.checkAll) {
+                    this.checkAll();
+                }
+            })["catch"](function(e){
+                console.log(e); //jshint ignore:line
+            });
 
         if (opt.hideLabel) {
             domAddClass($ui, CSS_CLASS_NO_LABEL);
@@ -191,7 +205,7 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
     },
 
     // backwards compatible...
-    // deprecated.
+    // deprecated. Use setSelected()
     setValue: function(...args){
         return this.setSelected(...args);
     },
@@ -203,6 +217,17 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
      */
     getChoices: function(){
         return PRIVATE.get(this).choiceList;
+    },
+
+    /**
+     * Sets the list of choices available on the widget
+     *
+     * @param {Array<String>} choiceList
+     */
+    setChoices: function(choiceList){
+        let selected = this.getValue();
+        addChoicesToUI.call(this, choiceList);
+        this.setSelected(selected);
     },
 
     /**
@@ -229,8 +254,6 @@ function getChoices() {
         column  = inst.opt.column,
         type    = column.Type;
 
-    inst.choices.innerHTML = "";
-
     if (type === "Choice" || type === "MultiChoice") {
         return column.getColumnValues();
     }
@@ -240,37 +263,25 @@ function getChoices() {
 
 function addChoicesToUI(choiceList) {
     var inst        = PRIVATE.get(this),
-        defVal      = inst.opt.selected,
         groupName   = inst.groupName,
         inputType   = inst.isMulti ? "checkbox" : "radio",
-        defId       = "",
         listUI;
 
-    choiceList = inst.choiceList = choiceList.map(function(choice){
-        var id = uuid.generate();
+    inst.choices.innerHTML = "";
 
-        if (choice === defVal) {
-            defId = id;
-        }
+    choiceList = inst.choiceList = choiceList.map(function(choice){
+        var isString  = typeof choice === "string";
 
         return {
             name:   groupName,
-            title:  choice,
-            value:  choice,
+            title:  isString ? choice : choice.title,
+            value:  isString ? choice : choice.value,
             type:   inputType,
-            id:     id
+            id:     uuid.generate()
         };
     });
 
     listUI = parseHTML( fillTemplate(choiceTemplate, choiceList) );
-
-    if (defId) {
-        defId = domFind(listUI, "#" + defId);
-        if (defId) {
-            defId.setAttribute(ATTR_CHECKED, ATTR_CHECKED);
-        }
-    }
-
     inst.choices.appendChild(listUI);
 
     return choiceList;
@@ -285,7 +296,8 @@ ChoiceField.defaults = {
     hideLabel:          false,
     hideDescription:    false,
     layout:             "",
-    isMulti:            null
+    isMulti:            null,
+    choiceList:         null
 };
 
 export default ChoiceField;
