@@ -1,14 +1,17 @@
-import Widget from "vendor/jsutils/Widget";
-import EventEmitter from "vendor/jsutils/EventEmitter";
-import dataStore from "vendor/jsutils/dataStore";
-import objectExtend from "vendor/jsutils/objectExtend";
-import fillTemplate from "vendor/jsutils/fillTemplate";
-import parseHTML from "vendor/jsutils/parseHTML";
-import domClosest from "vendor/domutils/domClosest";
-import domAddClass from "vendor/domutils/domAddClass";
-import domRemoveClass from "vendor/domutils/domRemoveClass";
-import PersonaTemplate from "./Persona.html";
+import Widget           from "vendor/jsutils/Widget";
+import EventEmitter     from "vendor/jsutils/EventEmitter";
+import dataStore        from "vendor/jsutils/dataStore";
+import objectExtend     from "vendor/jsutils/objectExtend";
+import fillTemplate     from "vendor/jsutils/fillTemplate";
+import parseHTML        from "vendor/jsutils/parseHTML";
+import domClosest       from "vendor/domutils/domClosest";
+import domAddClass      from "vendor/domutils/domAddClass";
+import domRemoveClass   from "vendor/domutils/domRemoveClass";
 
+import PersonaTemplate  from "./Persona.html";
+
+
+//----------------------------------------------------------------
 var PRIVATE                 = dataStore.create();
 var CSS_CLASS_MS_PERSONA    = 'ms-Persona';
 
