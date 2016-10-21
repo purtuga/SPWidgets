@@ -9,11 +9,14 @@ import domAddClass      from "vendor/domutils/domAddClass";
 import domRemoveClass   from "vendor/domutils/domRemoveClass";
 
 import PersonaTemplate  from "./Persona.html";
+import "./Persona.less";
 
 
 //----------------------------------------------------------------
 var PRIVATE                 = dataStore.create();
+var CSS_CLASS_BASE          = 'spwidgets-Persona';
 var CSS_CLASS_MS_PERSONA    = 'ms-Persona';
+var CSS_CLASS_NO_DETAILS    = `${CSS_CLASS_BASE}--noDetails`;
 
 /**
  * Widget description
@@ -37,11 +40,13 @@ var Persona = {
 
         PRIVATE.set(this, inst);
 
-        this._model = inst.opt.userProfile;
-        inst.presenceModifier = inst.opt.presence || 'offline';
+        let opt = inst.opt;
+
+        this._model = opt.userProfile;
+        inst.presenceModifier = opt.presence || 'offline';
 
         this.$ui = parseHTML(
-            fillTemplate(this.getTemplate(), inst.opt.userProfile)
+            fillTemplate(this.getTemplate(), opt.userProfile)
         ).firstChild;
 
         // Find the persona element, which might not be the top element,
@@ -51,6 +56,14 @@ var Persona = {
             this.$ui.querySelector("." + CSS_CLASS_MS_PERSONA + "-imageArea"),
             "." + CSS_CLASS_MS_PERSONA
         );
+
+        if (opt.size) {
+            this.setSize(opt.size);
+        }
+
+        if (opt.hideDetails) {
+            this.hideDetails();
+        }
 
         this.$ui.addEventListener("click", function(){
             /**
@@ -129,13 +142,44 @@ var Persona = {
             domAddClass($ui, CSS_CLASS_MS_PERSONA + "--" + state);
             inst.presenceModifier = state;
         }
+    },
+
+    /**
+     * Hides the details (show image only)
+     */
+    hideDetails: function(){
+        showHideDetails.call(this, true);
+    },
+
+    /**
+     * Shows the details
+     */
+    showDetails: function(){
+        showHideDetails.call(this)
     }
 };
 
+/**
+ * Show or hides the details area based on the input param
+ *
+ * @param {Boolean} hide
+ */
+function showHideDetails(hide) {
+    let $ui = this.getEle();
+
+    if (hide) {
+        domAddClass($ui, CSS_CLASS_NO_DETAILS);
+    } else {
+        domRemoveClass($ui, CSS_CLASS_NO_DETAILS);
+    }
+}
+
 Persona = EventEmitter.extend(Widget, Persona);
 Persona.defaults = {
-    userProfile: null,
-    presence: 'offline'
+    userProfile:    null,
+    presence:       'offline',
+    size:           null,
+    hideDetails:    false
 };
 
 export default Persona;
