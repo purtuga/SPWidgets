@@ -43,7 +43,7 @@ var UserProfileModel = Compose.extend(/** @lends UserProfile.prototype */{
                 "UserName": "",
                 "UserInfoID": "",           // Should be the same as ID. returned by SearchPrincipals service
                 "UserProfile_GUID": "",
-                "UserPhoto": "",            // Will be set to use userphoto.aspx
+                "UserPhoto": "",            // Will be set to use {fullURL}/userphoto.aspx
                 "WebSite": "",
                 "WorkEmail": "",
                 "WorkPhone": ""

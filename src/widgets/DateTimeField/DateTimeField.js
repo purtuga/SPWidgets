@@ -56,7 +56,7 @@ var DateTimeField = /** @lends DateTimeField.prototype */{
         PRIVATE.set(this, inst);
 
         var $ui = this.$ui = parseHTML(
-            fillTemplate(DateTimeFieldTemplate, inst.opt)
+            fillTemplate(this.getTemplate(), inst.opt)
         ).firstChild;
 
         var uiFind          = this.$ui.querySelector.bind($ui);
@@ -127,6 +127,10 @@ var DateTimeField = /** @lends DateTimeField.prototype */{
             });
             PRIVATE.delete(this);
         }.bind(this));
+    },
+
+    getTemplate() {
+        return DateTimeFieldTemplate;
     },
 
     /**
