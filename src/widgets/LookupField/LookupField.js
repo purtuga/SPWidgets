@@ -1,26 +1,30 @@
-import Widget from "vendor/jsutils/Widget";
-import EventEmitter from "vendor/jsutils/EventEmitter";
-import dataStore from "vendor/jsutils/dataStore";
-import objectExtend from "vendor/jsutils/objectExtend";
-import fillTemplate from "vendor/jsutils/fillTemplate";
-import parseHTML from "vendor/jsutils/parseHTML";
-import uuid from "vendor/jsutils/uuid";
-import Map from "vendor/jsutils/es6-Map";
-import Promise from "vendor/jsutils/es6-promise";
-import domAddEventListener from "vendor/domutils/domAddEventListener";
-import domAddClass from "vendor/domutils/domAddClass";
-import domRemoveClass from "vendor/domutils/domRemoveClass";
-import domHasClass from "vendor/domutils/domHasClass";
-import domPosition from "vendor/domutils/domPosition";
-import DomKeyboardInteraction from "vendor/domutils/DomKeyboardInteraction";
-import SelectedItem from "./SelectedItem/SelectedItem";
-import List from "../List/List";
-import getListItems from "../../spapi/getListItems";
-import getCamlLogical from "../../sputils/getCamlLogical";
-import xmlEscape from "../../sputils/xmlEscape";
-import LookupFieldTemplate from "./LookupField.html";
-import "./LookupField.less";
+import Widget                   from "common-micro-libs/src/jsutils/Widget"
+import EventEmitter             from "common-micro-libs/src/jsutils/EventEmitter"
+import dataStore                from "common-micro-libs/src/jsutils/dataStore"
+import objectExtend             from "common-micro-libs/src/jsutils/objectExtend"
+import fillTemplate             from "common-micro-libs/src/jsutils/fillTemplate"
+import parseHTML                from "common-micro-libs/src/jsutils/parseHTML"
+import uuid                     from "common-micro-libs/src/jsutils/uuid"
+import Map                      from "common-micro-libs/src/jsutils/es6-Map"
+import Promise                  from "common-micro-libs/src/jsutils/es6-promise"
+import domAddEventListener      from "common-micro-libs/src/domutils/domAddEventListener"
+import domAddClass              from "common-micro-libs/src/domutils/domAddClass"
+import domRemoveClass           from "common-micro-libs/src/domutils/domRemoveClass"
+import domHasClass              from "common-micro-libs/src/domutils/domHasClass"
+import domPosition              from "common-micro-libs/src/domutils/domPosition"
+import DomKeyboardInteraction   from "common-micro-libs/src/domutils/DomKeyboardInteraction"
 
+import SelectedItem             from "./SelectedItem/SelectedItem"
+import List                     from "../List/List"
+import getListItems             from "../../spapi/getListItems"
+import getCamlLogical           from "../../sputils/getCamlLogical"
+import xmlEscape                from "../../sputils/xmlEscape"
+
+import LookupFieldTemplate      from "./LookupField.html"
+import "./LookupField.less"
+
+
+//---------------------------------------------------------------------
 var
 PRIVATE             = dataStore.create(),
 WINDOW_NAVIGATOR    = window.navigator,

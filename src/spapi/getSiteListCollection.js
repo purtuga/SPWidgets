@@ -52,6 +52,17 @@ import domFind from "vendor/domutils/domFind";
             opt.cacheKey    = opt.webURL + "?" + [opt.filter].join("|");
             opt.isCached    = cache.isCached(opt.cacheKey);
 
+            let convertXmlToArrayOfObjects = function(response){
+                var $siteLists  = domFind(response.content, "_sList");
+
+                return $siteLists.map(function(listHtml){
+                    return Array.prototype.reduce.call(listHtml.childNodes, function(listObj, listProp){
+                        listObj[listProp.nodeName] = listProp.textContent;
+                        return listObj;
+                    }, {});
+                });
+            };
+
             // Backward compatibility
             if (typeof opt.cacheXML !== "undefined") {
                 try {
@@ -67,8 +78,7 @@ import domFind from "vendor/domutils/domFind";
 
             // If cache is true and we have a cached version, return it.
             if (opt.cache && opt.isCached) {
-                reqPromise =  cache(opt.cacheKey);
-                return reqPromise;
+                cache(opt.cacheKey).then(convertXmlToArrayOfObjects);
             }
 
             // If cache is FALSE, and we have a cached version of this key,
@@ -84,17 +94,6 @@ import domFind from "vendor/domutils/domFind";
                 '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
                 '<soap:Body><GetListCollection xmlns="http://schemas.microsoft.com/sharepoint/soap/">' +
                 '</GetListCollection></soap:Body></soap:Envelope>'
-
-            }).then(function(response){
-                var $siteLists  = domFind(response.content, "_sList"),
-                    lists       = $siteLists.map(function(listHtml){
-                        return Array.prototype.reduce.call(listHtml.childNodes, function(listObj, listProp){
-                            listObj[listProp.nodeName] = listProp.textContent;
-                            return listObj;
-                        }, {});
-                    });
-
-                return lists;
             });
 
             //-------------------------------------------------------------------
@@ -131,7 +130,7 @@ import domFind from "vendor/domutils/domFind";
                 cache(opt.cacheKey, reqPromise);
             }
 
-            return reqPromise;
+            return reqPromise.then(convertXmlToArrayOfObjects);
         });
     };
 

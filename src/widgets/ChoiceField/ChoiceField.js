@@ -77,6 +77,7 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
             opt:        objectExtend({}, ChoiceField.defaults, options),
             groupName:  uuid.generate(),
             isMulti:    null,
+            allowMultiples: null,
             onReady:    null,
             isReady:    false,
             choices:    null,
@@ -94,8 +95,11 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
         ).firstChild;
         var uiFind  = inst.uiFind = $ui.querySelector.bind($ui);
 
-        if (typeof inst.opt.isMulti === "boolean") {
+        if (typeof inst.opt.isMulti === "boolean") { // FIXME: remove this after refacor
             inst.isMulti = inst.opt.isMulti;
+
+        } else if (typeof inst.opt.allowMultiples === "boolean") {
+            inst.isMulti = inst.opt.allowMultiples;
 
         } else {
             inst.isMulti = inst.opt.column.Type === "MultiChoice";
@@ -296,7 +300,8 @@ ChoiceField.defaults = {
     hideLabel:          false,
     hideDescription:    false,
     layout:             "",
-    isMulti:            null,
+    isMulti:            null, // FIXME: Deprecated!!!
+    allowMultiples:     null,
     choiceList:         null
 };
 

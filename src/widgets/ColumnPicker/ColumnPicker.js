@@ -17,6 +17,9 @@ const PickerPrototype   = Picker.prototype;
  * @extends Picker
  *
  * @param {Object} options
+ *
+ * @fires ColumnPicker#item-selected
+ * @fires ColumnPicker#selection-cleared
  */
 const ColumnPicker = Picker.extend(/** @lends ColumnPicker.prototype */{
     init: function (options) {
@@ -50,6 +53,10 @@ const ColumnPicker = Picker.extend(/** @lends ColumnPicker.prototype */{
         inst.ready = loadListColumns.call(this).then(() => {
             return this;
         });
+
+        if (inst.opt.selected) {
+            this.setSelected(inst.opt.selected);
+        }
 
         this.onDestroy(function() {
 
@@ -152,6 +159,7 @@ function loadListColumns() {
 ColumnPicker.defaults = {
     listName:   "",
     webURL:     "",
+    selected:   "",
     filter:     null,               // function. Given array of columns. Must return array.
     title:      "Select Column..."
 };

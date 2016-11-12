@@ -1,26 +1,32 @@
-import Widget from "vendor/jsutils/Widget";
-import EventEmitter from "vendor/jsutils/EventEmitter";
-import dataStore from "vendor/jsutils/dataStore";
-import objectExtend from "vendor/jsutils/objectExtend";
-import parseHTML from "vendor/jsutils/parseHTML";
-import fillTemplate from "vendor/jsutils/fillTemplate";
-import Promise from "vendor/jsutils/es6-promise";
-import domAddEventListener from "vendor/domutils/domAddEventListener";
-import domAddClass from "vendor/domutils/domAddClass";
-import domRemoveClass from "vendor/domutils/domRemoveClass";
-import domClosest from "vendor/domutils/domClosest";
-import domFind from "vendor/domutils/domFind";
-import domTriggerEvent from "vendor/domutils/domTriggerEvent";
-import domChildren from "vendor/domutils/domChildren";
-import domPosition from "vendor/domutils/domPosition";
-import domSetStyle from "vendor/domutils/domSetStyle";
-import DomKeyboardInteraction from "vendor/domutils/DomKeyboardInteraction";
-import searchPrincipals from "../../spapi/searchPrincipals";
-import resolvePrincipals from "../../spapi/resolvePrincipals";
-import ResultGroup from "./ResultGroup/ResultGroup";
-import PeoplePickerPersona from "./PeoplePickerPersona/PeoplePickerPersona";
-import SPPeoplePickerTemplate from "./PeoplePicker.html";
-import "./PeoplePicker.less";
+import Widget                   from "common-micro-libs/src/jsutils/Widget"
+import EventEmitter             from "common-micro-libs/src/jsutils/EventEmitter"
+import dataStore                from "common-micro-libs/src/jsutils/dataStore"
+import objectExtend             from "common-micro-libs/src/jsutils/objectExtend"
+import parseHTML                from "common-micro-libs/src/jsutils/parseHTML"
+import fillTemplate             from "common-micro-libs/src/jsutils/fillTemplate"
+import Promise                  from "common-micro-libs/src/jsutils/es6-promise"
+import domAddEventListener      from "common-micro-libs/src/domutils/domAddEventListener"
+import domAddClass              from "common-micro-libs/src/domutils/domAddClass"
+import domRemoveClass           from "common-micro-libs/src/domutils/domRemoveClass"
+import domClosest               from "common-micro-libs/src/domutils/domClosest"
+import domFind                  from "common-micro-libs/src/domutils/domFind"
+import domTriggerEvent          from "common-micro-libs/src/domutils/domTriggerEvent"
+import domChildren              from "common-micro-libs/src/domutils/domChildren"
+import domPosition              from "common-micro-libs/src/domutils/domPosition"
+import domSetStyle              from "common-micro-libs/src/domutils/domSetStyle"
+import DomKeyboardInteraction   from "common-micro-libs/src/domutils/DomKeyboardInteraction"
+
+import searchPrincipals         from "../../spapi/searchPrincipals"
+import resolvePrincipals        from "../../spapi/resolvePrincipals"
+import parsePeopleField         from "../../sputils/parsePeopleField"
+
+import ResultGroup              from "./ResultGroup/ResultGroup"
+import PeoplePickerPersona      from "./PeoplePickerPersona/PeoplePickerPersona"
+import SPPeoplePickerTemplate   from "./PeoplePicker.html"
+
+import "./PeoplePicker.less"
+
+//-----------------------------------------------------------------------------------------
 
 // FIXME: support for 'Suggested' grouping
 
@@ -50,6 +56,9 @@ SELECTOR_BASE = "." + CSS_CLASS_BASE,
  * @extends Widget
  *
  * @param {Object} [options]
+ *
+ * @param {Array|Array<Object>|String} [options.selected=""]
+ *  The selected people.
  *
  * @param {Boolean} [options.allowMultiples=true]
  *  Determine whether multiple users can be selected.
@@ -151,7 +160,6 @@ PeoplePicker = {
         if (opt.resultsZIndex) {
             domSetStyle($suggestions, {zIndex: opt.resultsZIndex});
         }
-
 
         // Add keyboard interaction to the Input field
         var keyboardInteraction = inst.keyboardInteraction = DomKeyboardInteraction.create({
@@ -280,7 +288,18 @@ PeoplePicker = {
             domAddClass($ui, CSS_CLASS_SUGGESTIONS_RIGHT_ALIGN);
         }
 
+        // If selected people were defined on input, call add()
+        if (inst.opt.selected) {
+            this.add(inst.opt.selected);
+        }
+
         this.onDestroy(function(){
+            // Since the suggestion UI was detached from the widget, need to
+            // ensure it is also destroyed.
+            if ($suggestions.parentNode) {
+                $suggestions.parentNode.removeChild($suggestions);
+            }
+
             inst.selected.forEach(function(wdg){
                 if (wdg) {
                     wdg.destroy();
@@ -305,12 +324,14 @@ PeoplePicker = {
     /**
      * Adds a User to the list of selected items.
      *
-     * @param {Object|Array<Object>} people
+     * @param {Object|Array<Object>|String} people
      *  The object defined with the person to be added should have
      *  at least two attributes: `ID` and `AccountName`. If no `ID`
-     *  is defined, however, but `AccountName` or DisplayName is, an
+     *  is defined but `AccountName` or DisplayName is, an
      *  API call will be made attempting to identify the person's ID
      *  on the site.
+     *  A `String` can also be used, in which case it is assume to be one
+     *  in the format normally returned by the SOAP API (ex. ID;#name).
      *  Example of person definition:
      *
      *      {
@@ -322,7 +343,11 @@ PeoplePicker = {
      */
     add: function(people){
         if (!Array.isArray(people)) {
-            people = [people];
+            if (typeof people === "string") {
+                people = parsePeopleField(people);
+            } else {
+                people = [people];
+            }
         }
 
         return Promise.all(
@@ -721,6 +746,7 @@ function clearSuggestions(){
 PeoplePicker = EventEmitter.extend(Widget, PeoplePicker);
 
 PeoplePicker.defaults = {
+    selected:               "",
     allowMultiples:         true,
     maxSearchResults:       50,
     webURL:                 null,
