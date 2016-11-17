@@ -1,12 +1,13 @@
-import Widget           from "vendor/jsutils/Widget";
-import EventEmitter     from "vendor/jsutils/EventEmitter";
-import dataStore        from "vendor/jsutils/dataStore";
-import objectExtend     from "vendor/jsutils/objectExtend";
-import fillTemplate     from "vendor/jsutils/fillTemplate";
-import parseHTML        from "vendor/jsutils/parseHTML";
-import domClosest       from "vendor/domutils/domClosest";
-import domAddClass      from "vendor/domutils/domAddClass";
-import domRemoveClass   from "vendor/domutils/domRemoveClass";
+import Widget               from "common-micro-libs/src/jsutils/Widget";
+import EventEmitter         from "common-micro-libs/src/jsutils/EventEmitter";
+import dataStore            from "common-micro-libs/src/jsutils/dataStore";
+import objectExtend         from "common-micro-libs/src/jsutils/objectExtend";
+import fillTemplate         from "common-micro-libs/src/jsutils/fillTemplate";
+import parseHTML            from "common-micro-libs/src/jsutils/parseHTML";
+import domClosest           from "common-micro-libs/src/domutils/domClosest";
+import domAddClass          from "common-micro-libs/src/domutils/domAddClass";
+import domRemoveClass       from "common-micro-libs/src/domutils/domRemoveClass";
+import domAddEventListener  from "common-micro-libs/src/domutils/domAddEventListener"
 
 import PersonaTemplate  from "./Persona.html";
 import "./Persona.less";
@@ -29,6 +30,7 @@ var CSS_CLASS_NO_DETAILS    = `${CSS_CLASS_BASE}--noDetails`;
  * @param {String} [options.presence='offline']
  *
  * @fires Persona#click
+ * @fires Persona#photo-load-failed
  */
 var Persona = {
     init: function (options) {
@@ -45,17 +47,19 @@ var Persona = {
         this._model = opt.userProfile;
         inst.presenceModifier = opt.presence || 'offline';
 
-        this.$ui = parseHTML(
+        let $ui = this.$ui = parseHTML(
             fillTemplate(this.getTemplate(), opt.userProfile)
         ).firstChild;
+        let uiFind = $ui.querySelector.bind($ui);
+
+        inst.$imgArea = uiFind("." + CSS_CLASS_MS_PERSONA + "-imageArea");
+        let $userPhotoImg = uiFind(`.${CSS_CLASS_MS_PERSONA}-imageArea img`);
+        domAddEventListener($userPhotoImg, "error", handleUserPhotoLoadFailure.bind(this, $userPhotoImg));
 
         // Find the persona element, which might not be the top element,
         // since this widget could have been extended and UI might be wrapped
         // in other elements (ex. people picker)
-        inst.$persona = domClosest(
-            this.$ui.querySelector("." + CSS_CLASS_MS_PERSONA + "-imageArea"),
-            "." + CSS_CLASS_MS_PERSONA
-        );
+        inst.$persona = domClosest(inst.$imgArea, `.${CSS_CLASS_MS_PERSONA}`);
 
         if (opt.size) {
             this.setSize(opt.size);
@@ -145,6 +149,22 @@ var Persona = {
     },
 
     /**
+     * Replaces the Personal user photo with a new one
+     *
+     * @param {String} url
+     */
+    setUserPhoto: function(url){
+        let inst        = PRIVATE.get(this);
+        let $currentImg = inst.$imgArea.querySelector("img");
+        let $imgParent  = $currentImg.parentNode;
+        let $newImg     = parseHTML('<img class="ms-Persona-image" src="' + url + '" onerror="this.__loadErrorNotify()">').firstChild;
+
+        domAddEventListener($userPhotoImg, "error", handleUserPhotoLoadFailure.bind(this, $userPhotoImg));
+        $imgParent.insertBefore($newImg, $currentImg);
+        $imgParent.removeChild($currentImg);
+    },
+
+    /**
      * Hides the details (show image only)
      */
     hideDetails: function(){
@@ -173,6 +193,23 @@ function showHideDetails(hide) {
         domRemoveClass($ui, CSS_CLASS_NO_DETAILS);
     }
 }
+
+/**
+ * Handle failure of user photo
+ *
+ * @param {DOMElement} $img
+ */
+function handleUserPhotoLoadFailure($img) {
+    $img.style.display = "none";
+
+    /**
+     * The user's profile photo failed to load.
+     *
+     * @event Persona#photo-load-failed
+     */
+    this.emit("photo-load-failed");
+}
+
 
 Persona = EventEmitter.extend(Widget, Persona);
 Persona.defaults = {

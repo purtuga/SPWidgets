@@ -65,7 +65,7 @@ var UserProfileModel = Compose.extend(/** @lends UserProfile.prototype */{
             this.Name = this.DisplayName;
         }
 
-        if (!this.UserPhoto) {
+        if (!this.UserPhoto && this.AccountName) {
             this.UserPhoto = (opt.webURL || "/") +
                 "_layouts/userphoto.aspx?size=M&accountname=" +
                 encodeURIComponent(this.AccountName);
