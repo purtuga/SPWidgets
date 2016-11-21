@@ -1,18 +1,20 @@
-<div class="ms-PeoplePicker spwidgets-PeoplePicker ms-font-m">
+<div class="ms-PeoplePicker spwidgets-PeoplePicker">
     <div class="ms-PeoplePicker-searchBox">
-        <div class="spwidgets-PeoplePicker-searchFieldCntr">
-            <input name="search" class="ms-PeoplePicker-searchField" autocomplete="off" type="text" placeholder="{{inputPlaceholder}}">
-            <div class="ms-PeoplePicker-results spwidgets-PeoplePicker-suggestions ms-u-slideDownIn20 ms-font-m">
-                <div class="ms-PeoplePicker-resultGroups spwidgets-PeoplePicker-suggestions-groups"></div>
-                <div class="spwidgets-PeoplePicker-searchInfo">
-                    <div class="spwidgets-PeoplePicker-searchInfo-iconHolder">
-                        <i class="ms-Icon ms-Icon--search"></i>
-                        <i class="ms-Icon ms-Icon--refresh spwidgets-PeoplePicker-busy"></i>
-                    </div>
-                    <p class="spwidgets-PeoplePicker-searchInfo-msg ms-fontColor-neutralSecondary .ms-fontSize-m">{{searchInfoMsg}}</p>
-                    <p class="spwidgets-PeoplePicker-searchInfo-searchingMsg ms-fontColor-neutralSecondary .ms-fontSize-m">{{searchingMsg}}</p>
-                </div>
+        <div class="ms-TextField ms-TextField--textFieldUnderlined spwidgets-PeoplePicker-searchFieldCntr">
+            <input class="ms-TextField-field" name="search" type="text" value="" autocomplete="off" placeholder="{{inputPlaceholder}}">
+        </div>
+    </div>
+
+    <div class="spwidgets-PeoplePicker-suggestions ms-PeoplePicker-results ms-font-m">
+        <div class="spwidgets-PeoplePicker-suggestions-groups"></div>
+
+        <div class="spwidgets-PeoplePicker-searchInfo">
+            <div class="spwidgets-PeoplePicker-searchInfo-iconHolder">
+                <i class="ms-Icon ms-Icon--Search"></i>
+                <i class="ms-Icon ms-Icon--Sync spwidgets-PeoplePicker-busy"></i>
             </div>
+            <p class="spwidgets-PeoplePicker-searchInfo-msg ms-fontColor-neutralSecondary .ms-fontSize-m">{{searchInfoMsg}}</p>
+            <p class="spwidgets-PeoplePicker-searchInfo-searchingMsg ms-fontColor-neutralSecondary .ms-fontSize-m">{{searchingMsg}}</p>
         </div>
     </div>
 </div>

@@ -31,13 +31,15 @@ var CSS_CLASS_NO_DETAILS    = `${CSS_CLASS_BASE}--noDetails`;
  *
  * @fires Persona#click
  * @fires Persona#photo-load-failed
+ * @fires Persona#action-click
  */
 var Persona = {
     init: function (options) {
         var inst = {
-            opt:            objectExtend({}, Persona.defaults, options),
-            sizeModifier:    "",
-            presenceModifier:""
+            opt:                objectExtend({}, Persona.defaults, options),
+            sizeModifier:       "",
+            presenceModifier:   "",
+            variant:            ""
         };
 
         PRIVATE.set(this, inst);
@@ -53,13 +55,14 @@ var Persona = {
         let uiFind = $ui.querySelector.bind($ui);
 
         inst.$imgArea = uiFind("." + CSS_CLASS_MS_PERSONA + "-imageArea");
-        let $userPhotoImg = uiFind(`.${CSS_CLASS_MS_PERSONA}-imageArea img`);
-        domAddEventListener($userPhotoImg, "error", handleUserPhotoLoadFailure.bind(this, $userPhotoImg));
-
         // Find the persona element, which might not be the top element,
         // since this widget could have been extended and UI might be wrapped
         // in other elements (ex. people picker)
         inst.$persona = domClosest(inst.$imgArea, `.${CSS_CLASS_MS_PERSONA}`);
+
+        let $userPhotoImg = uiFind(`.${CSS_CLASS_MS_PERSONA}-imageArea img`);
+        domAddEventListener($userPhotoImg, "error", handleUserPhotoLoadFailure.bind(this, $userPhotoImg));
+
 
         if (opt.size) {
             this.setSize(opt.size);
@@ -69,16 +72,54 @@ var Persona = {
             this.hideDetails();
         }
 
-        this.$ui.addEventListener("click", function(){
+        if (opt.variant) {
+            this.setVariant(opt.variant);
+        }
+
+        if (opt.hideAction) {
+            domAddClass($ui, `${CSS_CLASS_BASE}--noAction`);
+        }
+
+        domAddEventListener(uiFind(`.${CSS_CLASS_MS_PERSONA}-actionIcon`), "click", (ev) => {
+            /**
+             * User clicked on the Persona's action button
+             *
+             * @event Persona#action-click
+             */
+            this.emit("action-click");
+            ev.stopPropagation();
+        });
+
+        domAddEventListener($ui, "click", () => {
             /**
              * Persona Element was clicked on by user
              *
              * @event Persona#click
              */
             this.emit("click");
-        }.bind(this));
+        });
 
         this.onDestroy(function(){
+            // Destroy all Compose object
+            Object.keys(inst).forEach(function (prop) {
+                if (inst[prop]) {
+                    // Widgets
+                    if (inst[prop].destroy) {
+                        inst[prop].destroy();
+
+                    // DOM events
+                    } else if (inst[prop].remove) {
+                        inst[prop].remove();
+
+                    // EventEmitter events
+                    } else if (inst[prop].off) {
+                        inst[prop].off();
+                    }
+
+                    inst[prop] = undefined;
+                }
+            });
+
             PRIVATE['delete'](this);
         }.bind(this));
     },
@@ -99,6 +140,27 @@ var Persona = {
      */
     getUserProfile: function(){
         return this._model;
+    },
+
+    /**
+     * Sets the Persona style that should be shown.
+     *
+     * @param {String} variant
+     *  A string with the variant that should be shown. Valid values are:
+     *  `circle` (Default), `initials`, `token` and `facePile`
+     */
+    setVariant: function(variant) {
+        const inst = PRIVATE.get(this);
+        const $ui = inst.$persona;
+
+        if (inst.variant) {
+            domRemoveClass($ui, `${CSS_CLASS_MS_PERSONA}--${inst.variant}`);
+        }
+
+        if (variant) {
+            domAddClass($ui, `${CSS_CLASS_MS_PERSONA}--${variant}`);
+            inst.variant = variant;
+        }
     },
 
     /**
@@ -129,12 +191,11 @@ var Persona = {
      *
      * @param {String} state
      *  The state to set on the Persona. Possible values are:
-     *  `available`, `away`, `blocked`, `busy`,
-     *  `dnd` (do not disturb) and `offline`
+     *  `noPresence`, `available`, `away`, `blocked`, `busy`, `dnd` (do not disturb) and `offline` (default).
      */
     setPresence: function(state){
         var inst = PRIVATE.get(this),
-            $ui = this.getEle();
+            $ui = inst.$persona;
 
         if (inst.presenceModifier) {
             domRemoveClass($ui, CSS_CLASS_MS_PERSONA + "--" + inst.presenceModifier);
@@ -214,9 +275,11 @@ function handleUserPhotoLoadFailure($img) {
 Persona = EventEmitter.extend(Widget, Persona);
 Persona.defaults = {
     userProfile:    null,
-    presence:       'offline',
+    presence:       "offline",
+    variant:        "circle",
     size:           null,
-    hideDetails:    false
+    hideDetails:    false,
+    hideAction:     true
 };
 
 export default Persona;

@@ -66,6 +66,7 @@
     "less": "^2.7.1",
     "less-loader": "^2.2.3",
     "opener": "^1.4.1",
+    "page": "^1.7.1",
     "raw-loader": "^0.5.1",
     "style-loader": "^0.13.1",
     "webpack": "^1.12.14",

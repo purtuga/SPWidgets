@@ -8,21 +8,21 @@
         font-size:      initial;
     }
 
-    &-searchFieldCntr {
-        display:    inline-block;
-        position:   relative;
-        float:      left;
-
-        input {
-            padding-left:   8px;
-            border:         none;
-        }
-    }
+    //&-searchFieldCntr {
+    //    display:    inline-block;
+    //    position:   relative;
+    //    float:      left;
+    //
+    //    input {
+    //        padding-left:   8px;
+    //        border:         none;
+    //    }
+    //}
 
 
     &-suggestions {
         min-width:  250px;
-        top:        100%;
+        position:   absolute;
         z-index:    5;
 
         &-groups {
@@ -66,16 +66,19 @@
 
     // Override UI Fabric so that each persona card has
     // a max-width of 190px instead of fixed width
-    .ms-Persona-details > * {
-        width:      auto;
-        max-width:  190px;
+    .ms-Persona {
+        &-details > * {
+            width:      auto;
+            max-width:  190px;
+        }
     }
+
 
 
     //-----------------------------------------
     //  MODIFIERS
     //-----------------------------------------
-    &-suggestions.is-searching .ms-Icon--search {
+    &-suggestions.is-searching .ms-Icon--Search {
         display: none;
     }
     &-suggestions.is-searching &-searchInfo-msg {

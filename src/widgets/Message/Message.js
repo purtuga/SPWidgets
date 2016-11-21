@@ -10,10 +10,10 @@ import "./Message.less";
     PRIVATE = dataStore.create(),
 
     CSS_CLASS_MS_ICON           = "ms-Icon",
-    CSS_CLASS_MS_ICON_INFO      = CSS_CLASS_MS_ICON + "--circleInfo",
-    CSS_CLASS_MS_ICON_ALERT     = CSS_CLASS_MS_ICON + "--alertOutline",
-    CSS_CLASS_MS_ICON_ERROR     = CSS_CLASS_MS_ICON + "--x",
-    CSS_CLASS_MS_ICON_SUCCESS   = CSS_CLASS_MS_ICON + "--check",
+    CSS_CLASS_MS_ICON_INFO      = CSS_CLASS_MS_ICON + "--Info",
+    CSS_CLASS_MS_ICON_ALERT     = CSS_CLASS_MS_ICON + "--Warning",
+    CSS_CLASS_MS_ICON_ERROR     = CSS_CLASS_MS_ICON + "--ErrorBadge",
+    CSS_CLASS_MS_ICON_SUCCESS   = CSS_CLASS_MS_ICON + "--Completed",
 
     /**
      * Widget description

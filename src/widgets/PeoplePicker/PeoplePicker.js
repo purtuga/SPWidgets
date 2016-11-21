@@ -30,22 +30,17 @@ import "./PeoplePicker.less"
 
 // FIXME: support for 'Suggested' grouping
 
-var
-PRIVATE = dataStore.create(),
 
-BODY = document.body,
-
-CURRENT_USER_ID = '<UserID/>',
-
-CSS_CLASS_BASE                      = "spwidgets-PeoplePicker",
-CSS_CLASS_SUGGESTIONS_RIGHT_ALIGN   = CSS_CLASS_BASE + "--suggestionsRight",
-CSS_CLASS_IS_ACTIVE                 = "is-active",
-CSS_CLASS_IS_SEARCHING              = "is-searching",
-
-CSS_CLASS_MS_PICKER_BASE        = "ms-PeoplePicker",
-CSS_CLASS_MS_PICKER_SEARCHBOX   = CSS_CLASS_MS_PICKER_BASE + '-searchBox',
-
-SELECTOR_BASE = "." + CSS_CLASS_BASE,
+const PRIVATE                             = dataStore.create();
+const BODY                                = document.body;
+const CURRENT_USER_ID                     = '<UserID/>';
+const CSS_CLASS_BASE                      = "spwidgets-PeoplePicker";
+const CSS_CLASS_SUGGESTIONS_RIGHT_ALIGN   = CSS_CLASS_BASE + "--suggestionsRight";
+const CSS_CLASS_IS_ACTIVE                 = "is-active";
+const CSS_CLASS_IS_SEARCHING              = "is-searching";
+const CSS_CLASS_MS_PICKER_BASE            = "ms-PeoplePicker";
+const CSS_CLASS_MS_PICKER_SEARCHBOX       = CSS_CLASS_MS_PICKER_BASE + '-searchBox';
+const SELECTOR_BASE                       = "." + CSS_CLASS_BASE;
 
 /**
  * SharePoint People Picker widget.
@@ -127,13 +122,14 @@ SELECTOR_BASE = "." + CSS_CLASS_BASE,
  * @fires PeoplePicker#select
  * @fires PeoplePicker#remove
  */
-PeoplePicker = {
+let PeoplePicker = /** @lends PeoplePicker.prototype */{
     init: function (options) {
         var inst = {
             opt:            objectExtend({}, PeoplePicker.defaults, options),
             resultGroup:    null,
             bodyClickEv:    null,
             lastSearchInput:"",
+            suppressFocus:  false,
             selected:       [] // array of Persona widgets
         };
 
@@ -165,13 +161,16 @@ PeoplePicker = {
         var keyboardInteraction = inst.keyboardInteraction = DomKeyboardInteraction.create({
             input:          $input,
             eleGroup:       inst.$groups,
-            eleSelector:    "." + CSS_CLASS_MS_PICKER_BASE + '-result',
-            focusClass:     CSS_CLASS_MS_PICKER_BASE + '-result--focus'
+            eleSelector:    `.${CSS_CLASS_BASE}-Result`,
+            focusClass:     `${CSS_CLASS_BASE}-Result--focus`
         });
 
         keyboardInteraction.on("keyEnter", function(){
             if (inst.resultGroup) {
                 inst.resultGroup.selectCurrent();
+                requestAnimationFrame(function(){
+                    $input.value = "";
+                });
             }
         });
 
@@ -244,7 +243,7 @@ PeoplePicker = {
             }, 250);
         }.bind(this));
 
-        // Clicking inside of this widget, but no on a selected element or
+        // Clicking inside of this widget, but not on a selected element or
         // the input element, places focus on the input
         domAddEventListener($searchBox, "click", function(ev){
             if (ev.target === $searchBox) {
@@ -270,7 +269,7 @@ PeoplePicker = {
                 inst.selected.splice(selectedIndex, 1);
             }
 
-            domPosition(inst.$suggestions, inst.$inputCntr);
+            positionResultsPopup.call(this);
             domTriggerEvent($input, "keyup");
 
             /**
@@ -480,16 +479,11 @@ PeoplePicker = {
         var inst            = PRIVATE.get(this);
         var $input          = inst.$input;
         var $suggestions    = inst.$suggestions;
-        var $inputCntr      = inst.$inputCntr;
         var $ui             = this.getEle();
 
         domAddClass($ui, CSS_CLASS_IS_ACTIVE);
         BODY.appendChild($suggestions);
-        domPosition($suggestions, $inputCntr);
-        domSetStyle($suggestions, {
-            width:      $inputCntr.clientWidth + "px",
-            display:    "block"
-        });
+        positionResultsPopup.call(this);
 
         domTriggerEvent($input, "keyup");
 
@@ -595,6 +589,16 @@ PeoplePickerUserProfileModel = searchPrincipals.defaults.UserProfileModel.extend
     }
 });
 
+function positionResultsPopup() {
+    let { $suggestions, $input } = PRIVATE.get(this);
+
+    domSetStyle($suggestions, {
+        width:      $input.clientWidth + "px",
+        display:    "block"
+    });
+    domPosition($suggestions, $input);
+}
+
 /**
  * Fetches the suggestion for the text entered by the user
  *
@@ -683,7 +687,7 @@ function showSuggestions(peopleList) {
             addPersonToSelectedList.call(this, resultModel);
         }
 
-        domPosition(inst.$suggestions, inst.$inputCntr);
+        positionResultsPopup.call(this);
 
         /**
          * A suggestion was selected.
@@ -719,6 +723,8 @@ function addPersonToSelectedList(personModel){
 
         $inputCntr.parentNode.insertBefore(newSelectedPerson.getEle(), $inputCntr);
         inst.selected.push(newSelectedPerson);
+
+        positionResultsPopup.call(this);
     }
 }
 

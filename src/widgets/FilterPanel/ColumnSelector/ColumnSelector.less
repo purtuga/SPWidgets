@@ -1,5 +1,9 @@
 .spwidgets-FilterPanel-ColumnSelector {
 
+    @class-name-ms-icon-checkmark: ms-Icon--CheckMark;
+
+    //-----------------------------------------------------------
+
     box-sizing: border-box;
     position:   absolute;
     top:        0;
@@ -68,7 +72,7 @@
             padding:    0.5em;
             text-align: center;
 
-            .ms-Icon--check {
+            .@{class-name-ms-icon-checkmark} {
                 display: none;
             }
         }
@@ -85,7 +89,7 @@
         &--selected {
             color: #0078d7; // same as ms-Link
         }
-        &--selected &-icon .ms-Icon--check {
+        &--selected &-icon .@{class-name-ms-icon-checkmark} {
             display: inline-block;
         }
     }

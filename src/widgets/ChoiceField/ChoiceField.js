@@ -7,8 +7,12 @@ import parseHTML            from "common-micro-libs/src/jsutils/parseHTML"
 import Promise              from "common-micro-libs/src/jsutils/es6-promise"
 import uuid                 from "common-micro-libs/src/jsutils/uuid"
 import domAddClass          from "common-micro-libs/src/domutils/domAddClass"
+import domRemoveClass       from "common-micro-libs/src/domutils/domRemoveClass"
+import domHasClass          from "common-micro-libs/src/domutils/domHasClass"
 import domAddEventListener  from "common-micro-libs/src/domutils/domAddEventListener"
 import domFind              from "common-micro-libs/src/domutils/domFind"
+import domClosest           from "common-micro-libs/src/domutils/domClosest"
+
 import ChoiceFieldTemplate  from "./ChoiceField.html"
 import choiceTemplate       from "./choice.html"
 import "./ChoiceField.less"
@@ -21,9 +25,9 @@ var CSS_CLASS_BASE              = 'spwidgets-ChoiceField';
 var CSS_CLASS_CHOICES           = CSS_CLASS_BASE + "-choices";
 var CSS_CLASS_NO_LABEL          = CSS_CLASS_BASE + "--noLabel";
 var CSS_CLASS_NO_DESCRIPTION    = CSS_CLASS_BASE + "--noDescription";
-
-var CSS_CLASS_MS_INPUT          = 'ms-ChoiceField-input';
-
+var CSS_CLASS_CHOICE_INPUT      = 'spwidgets-ChoiceField-choice-input';
+var CSS_CLASS_CHOICE_LABEL      = 'spwidgets-ChoiceField-choice-label';
+var CSS_MS_IS_CHECKED           = "is-checked";
 var ATTR_CHECKED                = "checked";
 
 /**
@@ -143,16 +147,23 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
             inst.choices.style.maxHeight = opt.maxHeight;
         }
 
-        domAddEventListener($ui, "change", function(){
+        domAddEventListener($ui, "change", (ev) => {
+            if (!inst.isMulti) {
+                markAllChoiceFields.call(this)
+
+            } else {
+                markChoiceField.call(this, ev.target);
+            }
+
             /**
-             * Text field input was changed.
+             * Input field (checkbox or radio button) was changed.
              *
              * @event ChoiceField#change
              *
              * @type {String}
              */
             this.emit("change");
-        }.bind(this));
+        });
 
         this.onDestroy(function () {
             PRIVATE.delete(this);
@@ -168,7 +179,7 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
      */
     getValue: function(){
         var inst = PRIVATE.get(this);
-        return domFind(inst.choices, "." + CSS_CLASS_MS_INPUT)
+        return domFind(inst.choices, "." + CSS_CLASS_CHOICE_INPUT)
             .filter(function(input){
                 return input.checked;
             })
@@ -178,32 +189,29 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
     },
 
     /**
-     * Sets the selected value(s)
+     * Sets the selected value(s), by looking at the list of choices
+     * and setting their state to "selected" if they match the value
+     * passed on input.
      *
      * @param {String|Array<String>} newValue
-     *  The new value that should be selected.
+     *  The new value(s) that should be marked selected.
      *
      * @returns {Promise}
      */
     setSelected: function(newValue){
         var inst = PRIVATE.get(this);
-        var setValueOnWidget = function(){
-            var newVals     = Array.isArray(newValue) ? newValue : [newValue],
-                choiceEles  = domFind(inst.choices, "." + CSS_CLASS_MS_INPUT);
+        var setValueOnWidget = () => {
+            var newVals = Array.isArray(newValue) ? newValue : [newValue],
+                choiceEles = domFind(inst.choices, "." + CSS_CLASS_CHOICE_INPUT);
 
-            choiceEles.forEach(function(input){
-                var isNewVal = false;
-
-                newVals.some(function(newVal){
-                    if (input.value === newVal) {
-                        isNewVal = true;
-                        return true;
-                    }
-                });
-
-                input.checked = isNewVal;
+            // Loop through the choices inputs (radio or checkbox) and
+            // if their value matches one the values that was provided on
+            // input, then mark input "checked" - else - unchecked
+            choiceEles.forEach((input) => {
+                input.checked = newVals.indexOf(input.value) !== -1;
+                markChoiceField.call(this, input);
             });
-        }.bind(this);
+        };
 
         return inst.onReady.then(setValueOnWidget);
     },
@@ -227,28 +235,42 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
      * Sets the list of choices available on the widget
      *
      * @param {Array<String>} choiceList
+     *
+     * @return {Promise}
      */
     setChoices: function(choiceList){
-        let selected = this.getValue();
-        addChoicesToUI.call(this, choiceList);
-        this.setSelected(selected);
+        return PRIVATE.get(this).onReady.then(() => {
+            let selected = this.getValue();
+            addChoicesToUI.call(this, choiceList);
+            this.setSelected(selected);
+        });
     },
 
     /**
      * Checks all choices in the list.
+     *
+     * @return {Promise}
      */
     checkAll: function(){
-        domFind(this.getEle(), `.${CSS_CLASS_MS_INPUT}`).forEach(function(inputEle){
-            inputEle.setAttribute(ATTR_CHECKED, ATTR_CHECKED);
+        return PRIVATE.get(this).onReady.then(() => {
+            domFind(this.getEle(), `.${CSS_CLASS_CHOICE_INPUT}`).forEach((inputEle) => {
+                inputEle.checked = true;
+                markChoiceField.call(this, inputEle);
+            });
         });
     },
 
     /**
      * Unchecks all choices
+     *
+     * @return {Promise}
      */
     unCheckAll: function(){
-        domFind(this.getEle(), `.${CSS_CLASS_MS_INPUT}`).forEach(function(inputEle){
-            inputEle.removeAttribute(ATTR_CHECKED, ATTR_CHECKED);
+        return PRIVATE.get(this).onReady.then(() => {
+            domFind(this.getEle(), `.${CSS_CLASS_CHOICE_INPUT}`).forEach((inputEle) => {
+                inputEle.checked = false;
+                markChoiceField.call(this, inputEle);
+            });
         });
     }
 };
@@ -266,10 +288,11 @@ function getChoices() {
 }
 
 function addChoicesToUI(choiceList) {
-    var inst        = PRIVATE.get(this),
-        groupName   = inst.groupName,
-        inputType   = inst.isMulti ? "checkbox" : "radio",
-        listUI;
+    let inst        = PRIVATE.get(this);
+    let { isMulti, groupName } = inst;
+    let inputType   = isMulti ? "checkbox" : "radio";
+    let msType      = isMulti ? "CheckBox" : "RadioButton";
+    var listUI;
 
     inst.choices.innerHTML = "";
 
@@ -281,7 +304,8 @@ function addChoicesToUI(choiceList) {
             title:  isString ? choice : choice.title,
             value:  isString ? choice : choice.value,
             type:   inputType,
-            id:     uuid.generate()
+            id:     uuid.generate(),
+            msType: msType
         };
     });
 
@@ -289,6 +313,28 @@ function addChoicesToUI(choiceList) {
     inst.choices.appendChild(listUI);
 
     return choiceList;
+}
+
+function markChoiceField($ele) {
+    let $choice = domClosest($ele, `.${CSS_CLASS_BASE}-choice`);
+    
+    if (!$choice) {
+        return;
+    }
+    
+    let $choiceInput    = domFind($choice, `.${CSS_CLASS_CHOICE_INPUT}`)[0];
+    let $choiceLabel    = domFind($choice, `.${CSS_CLASS_CHOICE_LABEL}`)[0];
+
+    if ($choiceInput.checked) {
+        domAddClass($choiceLabel, CSS_MS_IS_CHECKED);
+
+    } else {
+        domRemoveClass($choiceLabel, CSS_MS_IS_CHECKED);
+    }
+}
+
+function markAllChoiceFields() {
+    domFind(this.getEle(), `.${CSS_CLASS_CHOICE_INPUT}`).forEach((input) => markChoiceField.call(this, input));
 }
 
 ChoiceField = EventEmitter.extend(Widget, ChoiceField);

@@ -626,7 +626,7 @@ LookupField.defaults = {
     queryOptions:       {
         CAMLRowLimit: 100
     },
-    allowMultiples:     false,
+    allowMultiples:     null, // Only looked at when its set to a boolean
     searchColumns:      null,
     choicesZIndex:      0,  // Default to 5 via css file
     ListWidget:         List,

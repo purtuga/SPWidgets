@@ -1,9 +1,26 @@
 .spwidgets-Persona {
 
+    .ms-Image-image {
+        width: 100%;
+    }
+
     //--------------------------
     //   MODIFIERS
     //--------------------------
     &--noDetails .ms-Persona-details {
+        display: none;
+    }
+
+    &--noAction .ms-Persona-actionIcon {
+        display: none;
+    }
+
+    // hide image if forced to initials
+    &--initials .ms-Persona-image {
+        display: none;
+    }
+
+    &.ms-Persona--nopresence .ms-Persona-presence {
         display: none;
     }
 }

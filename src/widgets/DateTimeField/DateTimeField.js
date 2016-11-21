@@ -1,18 +1,17 @@
-import Widget from "vendor/jsutils/Widget";
-import EventEmitter from "vendor/jsutils/EventEmitter";
-import dataStore from "vendor/jsutils/dataStore";
-import objectExtend from "vendor/jsutils/objectExtend";
-import fillTemplate from "vendor/jsutils/fillTemplate";
-import parseHTML from "vendor/jsutils/parseHTML";
-import domAddClass from "vendor/domutils/domAddClass";
-import domAddEventListener from "vendor/domutils/domAddEventListener";
+import Widget               from "common-micro-libs/src/jsutils/Widget"
+import EventEmitter         from "common-micro-libs/src/jsutils/EventEmitter"
+import dataStore            from "common-micro-libs/src/jsutils/dataStore"
+import objectExtend         from "common-micro-libs/src/jsutils/objectExtend"
+import fillTemplate         from "common-micro-libs/src/jsutils/fillTemplate"
+import parseHTML            from "common-micro-libs/src/jsutils/parseHTML"
+import domAddClass          from "common-micro-libs/src/domutils/domAddClass"
+import domAddEventListener  from "common-micro-libs/src/domutils/domAddEventListener"
 
+import flatpickr from "flatpickr"
+import "flatpickr/dist/flatpickr.min.css"
 
-// FIXME: remove this reference and replace with node-modules reference
-import flatpickr from "../3pp/flatpickr/flatpickr";
 import DateTimeFieldTemplate from "./DateTimeField.html";
 import "./DateTimeField.less";
-
 
 //--------------------------------------------------------
 var PRIVATE = dataStore.create();
@@ -83,8 +82,8 @@ var DateTimeField = /** @lends DateTimeField.prototype */{
             dateFormat: inst.isDateOnly ? opt.dateFormat : opt.dateTimeFormat,
             enableTime: !inst.isDateOnly,
             inline:     opt.inline,
-            prevArrow:  '<i class="ms-Icon ms-Icon--chevronThickLeft" />',
-            nextArrow:  '<i class="ms-Icon ms-Icon--chevronThickRight" />',
+            prevArrow:  '<i class="ms-Icon ms-Icon--ChevronLeft" />',
+            nextArrow:  '<i class="ms-Icon ms-Icon--ChevronRight" />',
             onChange:   function(dtObj, dtStr){
                 /**
                  * Date and/or time was changed
