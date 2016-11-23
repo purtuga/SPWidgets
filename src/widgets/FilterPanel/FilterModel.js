@@ -166,12 +166,8 @@ FilterModel = {
         var sortOrder = this.sortOrder;
 
         return sortOrder ?
-            "<FieldRef Name='" +
-                this.column +
-                "' Ascending='" +
-                sortOrder === "Des" ?
-                    "FALSE" :
-                    "TRUE" +
+            "<FieldRef Name='" + this.column + "' Ascending='" +
+            (sortOrder === "Des" ? "FALSE" : "TRUE") +
             "'/>" :
             '';
     },
