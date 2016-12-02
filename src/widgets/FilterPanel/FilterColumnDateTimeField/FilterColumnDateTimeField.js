@@ -18,7 +18,7 @@ import Promise from "vendor/jsutils/es6-promise";
     FilterColumnDateTimeField = /** @lends FilterColumnDateTimeField.prototype */{
         init: function (options) {
             FilterColumn.prototype.init.call(this,
-                objectExtend({}, FilterColumnDateTimeField.defaults, options)
+                objectExtend({}, this.getFactory().defaults, options)
             );
 
             var

@@ -17,7 +17,7 @@ import dataStore from "vendor/jsutils/dataStore";
     FilterColumnLookupField = /** @lends FilterColumnLookupField.prototype */{
         init: function (options) {
             FilterColumn.prototype.init.call(this,
-                objectExtend({}, FilterColumnLookupField.defaults, options)
+                objectExtend({}, this.getFactory().defaults, options)
             );
 
             var

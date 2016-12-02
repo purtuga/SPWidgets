@@ -36,7 +36,7 @@ import "./Message.less";
     Message = /** @lends Message.prototype */{
         init: function (options) {
             var inst = {
-                opt: objectExtend({}, Message.defaults, options)
+                opt: objectExtend({}, this.getFactory().defaults, options)
             };
 
             PRIVATE.set(this, inst);

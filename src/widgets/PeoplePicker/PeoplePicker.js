@@ -125,7 +125,7 @@ const SELECTOR_BASE                       = "." + CSS_CLASS_BASE;
 let PeoplePicker = /** @lends PeoplePicker.prototype */{
     init: function (options) {
         var inst = {
-            opt:            objectExtend({}, PeoplePicker.defaults, options),
+            opt:            objectExtend({}, this.getFactory().defaults, options),
             resultGroup:    null,
             bodyClickEv:    null,
             lastSearchInput:"",
@@ -349,6 +349,8 @@ let PeoplePicker = /** @lends PeoplePicker.prototype */{
             }
         }
 
+        let UserProfileModel = PRIVATE.get(this).opt.UserProfileModel;
+
         return Promise.all(
             people.map(function(person){
                 // If we already have ID and Account Name on input, then
@@ -358,11 +360,11 @@ let PeoplePicker = /** @lends PeoplePicker.prototype */{
                         person.Name = person.DisplayName || person.AccountName;
                     }
 
-                    if (PeoplePickerUserProfileModel.isInstanceOf(person)) {
+                    if (UserProfileModel.isInstanceOf(person)) {
                         return person;
                     }
 
-                    return PeoplePickerUserProfileModel.create(person);
+                    return UserProfileModel.create(person);
                 }
 
                 if (person.AccountName || person.DisplayName || person.Name) {
@@ -669,7 +671,7 @@ function showSuggestions(peopleList) {
 
     clearSuggestions.call(this);
 
-    inst.resultGroup = ResultGroup.create({
+    inst.resultGroup = inst.opt.ResultGroupWidget.create({
         results: peopleList
     });
 
@@ -717,7 +719,7 @@ function addPersonToSelectedList(personModel){
             this.clear();
         }
 
-        newSelectedPerson = PeoplePickerPersona.create({userProfile: personModel});
+        newSelectedPerson = inst.opt.PersonaWidget.create({userProfile: personModel});
         newSelectedPerson.setSize("xs");
         newSelectedPerson.pipe(this, "selected-");
 
@@ -766,6 +768,8 @@ PeoplePicker.defaults = {
     meKeywordLabel:         "Current User",
     filterSuggestions:      null,
     UserProfileModel:       PeoplePickerUserProfileModel,
+    PersonaWidget:          PeoplePickerPersona,
+    ResultGroupWidget:      ResultGroup,
     suggestionsRightAlign:  false,
     searchInfoMsg:          "Type a value to see list of candidates. Use '[me]' for current user.",
     searchingMsg:           "Searching directory...",

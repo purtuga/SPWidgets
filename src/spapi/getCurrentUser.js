@@ -31,7 +31,7 @@ import domFind from "vendor/domutils/domFind";
     getCurrentUser = function(options){
         var
         cacheId     = "getCurrentUserData",
-        opt         = objectExtend({}, getCurrentUser.options, options),
+        opt         = objectExtend({}, getCurrentUser.defaults, options),
         reqPromise  =  Promise.resolve()
             .then(function(){
                 if (cache.isCached(cacheId)) {

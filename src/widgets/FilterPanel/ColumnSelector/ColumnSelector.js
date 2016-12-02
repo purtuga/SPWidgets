@@ -43,7 +43,7 @@ import "./ColumnSelector.less";
     ColumnSelector = /** @lends ColumnSelector.prototype */{
         init: function (options) {
             var inst = {
-                opt:        objectExtend({}, ColumnSelector.defaults, options),
+                opt:        objectExtend({}, this.getFactory().defaults, options),
                 listCols:   null
             };
 

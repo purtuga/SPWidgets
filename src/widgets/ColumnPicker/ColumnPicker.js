@@ -24,7 +24,7 @@ const PickerPrototype   = Picker.prototype;
 const ColumnPicker = Picker.extend(/** @lends ColumnPicker.prototype */{
     init: function (options) {
         var inst = {
-            opt: objectExtend({}, ColumnPicker.defaults, options),
+            opt: objectExtend({}, this.getFactory().defaults, options),
             ready: null,
             choices: []
         };

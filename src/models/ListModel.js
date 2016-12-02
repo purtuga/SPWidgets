@@ -32,7 +32,7 @@ ListModel = /** @lends ListModel.prototype */{
 
         var
         me  = this,
-        opt = objectExtend({}, ListModel.defaults, options),
+        opt = objectExtend({}, this.getFactory().defaults, options),
         listObj;
 
         opt.type = opt.type.toLowerCase();

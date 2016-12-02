@@ -17,7 +17,7 @@ import dataStore from "vendor/jsutils/dataStore";
     FilterColumnUserField = /** @lends FilterColumnUserField.prototype */{
         init: function (options) {
             FilterColumn.prototype.init.call(this,
-                objectExtend({}, FilterColumnUserField.defaults, options)
+                objectExtend({}, this.getFactory().defaults, options)
             );
 
             var

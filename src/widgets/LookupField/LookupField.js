@@ -89,7 +89,7 @@ LookupField = /** @lends LookupField.prototype */{
     init: function (options) {
         var
         inst = {
-            opt:                    objectExtend({}, LookupField.defaults, options),
+            opt:                    objectExtend({}, this.getFactory().defaults, options),
             showChoicesListener:    null,
             list:                   '',
             webURL:                 '',

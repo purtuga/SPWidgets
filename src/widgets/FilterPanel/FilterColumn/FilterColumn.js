@@ -45,7 +45,7 @@ import "./FilterColumn.less";
     FilterColumn = /** @lends FilterColumn.prototype */{
         init: function (options) {
             var inst = {
-                opt:        objectExtend({}, FilterColumn.defaults, options),
+                opt:        objectExtend({}, this.getFactory().defaults, options),
                 inputWdg:   null, // should store the input widget being used by the filter panel
                 // Sets common filters... used with .setFilter()
                 setFieldCommonFilters: function(filter) {

@@ -18,7 +18,7 @@ import fillTemplate from "vendor/jsutils/fillTemplate";
     FilterColumnChoiceField = /** @lends FilterColumnChoiceField.prototype */{
         init: function (options) {
             FilterColumn.prototype.init.call(this,
-                objectExtend({}, FilterColumnChoiceField.defaults, options)
+                objectExtend({}, this.getFactory().defaults, options)
             );
 
             var

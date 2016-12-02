@@ -72,7 +72,7 @@ CSS_CLASS_MS_BUTTON_PRIMARY = "ms-Button--primary",
 FilterPanel = /** @lends FilterPanel.prototype */{
     init: function (options) {
         var inst = {
-            opt:        objectExtend({}, FilterPanel.defaults, options),
+            opt:        objectExtend({}, this.getFactory().defaults, options),
             uiFind:     null,
             body:       null,
             infoMsg:    null,

@@ -28,7 +28,7 @@ import "./SelectedItem.less";
     SelectedItem = /** @lends SelectedItem.prototype */{
         init: function (options) {
             var inst = {
-                opt: objectExtend({}, SelectedItem.defaults, options)
+                opt: objectExtend({}, this.getFactory().defaults, options)
             };
 
             PRIVATE.set(this, inst);

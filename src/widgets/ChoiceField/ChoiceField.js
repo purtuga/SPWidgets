@@ -78,7 +78,7 @@ var ATTR_CHECKED                = "checked";
 var ChoiceField = /** @lends ChoiceField.prototype */{
     init: function (options) {
         var inst = {
-            opt:        objectExtend({}, ChoiceField.defaults, options),
+            opt:        objectExtend({}, this.getFactory().defaults, options),
             groupName:  uuid.generate(),
             isMulti:    null,
             allowMultiples: null,

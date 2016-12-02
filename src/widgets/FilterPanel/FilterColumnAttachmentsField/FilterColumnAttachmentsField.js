@@ -24,7 +24,7 @@ const PRIVATE             = dataStore.stash;
 let FilterColumnAttachmentsField = /** @lends FilterColumnAttachmentsField.prototype */{
     init: function (options) {
         FilterColumn.prototype.init.call(this,
-            objectExtend({}, FilterColumnAttachmentsField.defaults, options)
+            objectExtend({}, this.getFactory().defaults, options)
         );
 
         var

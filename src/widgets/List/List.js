@@ -39,7 +39,7 @@ let PRIVATE = dataStore.create();
 let List = /** @lends List.prototype */{
     init: function (options) {
         var inst = {
-            opt:        objectExtend({}, List.defaults, options),
+            opt:        objectExtend({}, this.getFactory().defaults, options),
             listItems:  new Map() // ListItem Widgets: key === dataObj
         };
 

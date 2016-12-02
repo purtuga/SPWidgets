@@ -41,7 +41,7 @@ const CSS_CLASS_MS_PICKER_RESULT_LIST    = CSS_CLASS_MS_PICKER_BASE + "-resultLi
 let ResultGroup = /** @lends ResultGroup */{
     init: function (options) {
         var inst = {
-            opt:            objectExtend({}, ResultGroup.defaults, options),
+            opt:            objectExtend({}, this.getFactory().defaults, options),
             uiFind:         null,
             $resultList:    null,
             resultItems:    []
@@ -190,7 +190,7 @@ function setResultsToGroup(){
 
     resultItems.push.apply(resultItems,
         inst.opt.results.map(function(userProfile){
-            var resultInst = Result.create({ userProfile: userProfile });
+            var resultInst = inst.opt.ResultWidget.create({ userProfile: userProfile });
 
             resultInst.appendTo(listHolderEle);
             resultInst.pipe(this, "result-");
@@ -208,7 +208,8 @@ function setResultsToGroup(){
 ResultGroup = EventEmitter.extend(Widget, ResultGroup);
 ResultGroup.defaults = {
     groupTitle: "Search Results",
-    results:    []
+    results:    [],
+    ResultWidget: Result
 };
 
 export default ResultGroup;

@@ -36,7 +36,7 @@ import "./TextField.less";
     TextField = /** @lends TextField.prototype */{
         init: function (options) {
             var inst = {
-                opt: objectExtend({}, TextField.defaults, options)
+                opt: objectExtend({}, this.getFactory().defaults, options)
             };
 
             PRIVATE.set(this, inst);

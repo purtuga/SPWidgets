@@ -38,7 +38,7 @@ var CSS_CLASS_MS_PERSONA_INITIALS   = `${CSS_CLASS_MS_PERSONA}-initials`;
 var Persona = {
     init: function (options) {
         var inst = {
-            opt:                objectExtend({}, Persona.defaults, options),
+            opt:                objectExtend({}, this.getFactory().defaults, options),
             sizeModifier:       "",
             presenceModifier:   "",
             variant:            "",

@@ -47,7 +47,7 @@ var DateTimeField = /** @lends DateTimeField.prototype */{
     init: function (options) {
         var
         inst = {
-            opt: objectExtend({}, DateTimeField.defaults, options)
+            opt: objectExtend({}, this.getFactory().defaults, options)
         },
         opt     = inst.opt,
         column  = opt.column || {};

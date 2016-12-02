@@ -67,7 +67,7 @@ FilterModel = {
 
     init: function(filterData, options){
         var inst = {
-            opt: objectExtend({}, FilterModel.defaults, options)
+            opt: objectExtend({}, this.getFactory().defaults, options)
         };
         PRIVATE.set(this, inst);
 

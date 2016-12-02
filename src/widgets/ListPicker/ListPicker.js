@@ -26,7 +26,7 @@ const PickerPrototype   = Picker.prototype;
 var ListPicker = {
     init: function (options){
         var inst = {
-            opt:        objectExtend({}, ListPicker.defaults, options),
+            opt:        objectExtend({}, this.getFactory().defaults, options),
             ready:      null,
             lists:      null,
             selected:   null

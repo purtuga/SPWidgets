@@ -58,7 +58,7 @@ import getCamlLogical   from "../../sputils/getCamlLogical";
          * @returns {String}
          */
         toURLParams: function(options){
-            var opt = objectExtend({}, FiltersCollection.defaults.toUrlParamsOptions, options),
+            var opt = objectExtend({}, this.getFactory().defaults.toUrlParamsOptions, options),
                 filtersToStringify, onlySpecificProperties;
 
             if (!Array.isArray(opt.stringifyProperties)) {

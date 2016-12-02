@@ -14,7 +14,7 @@ import objectExtend from "vendor/jsutils/objectExtend"
 var UserProfileModel = Compose.extend(/** @lends UserProfile.prototype */{
     init: function(modelProperties, options){
 
-        var opt = objectExtend({}, UserProfileModel.defaults, options);
+        var opt = objectExtend({}, this.getFactory().defaults, options);
 
         objectExtend(
             this,

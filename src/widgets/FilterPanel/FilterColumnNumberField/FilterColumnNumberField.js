@@ -16,7 +16,7 @@ import dataStore from "vendor/jsutils/dataStore";
     FilterColumnNumberField = /** @lends FilterColumnNumberField.prototype */{
         init: function (options) {
             FilterColumnTextField.prototype.init.call(this,
-                objectExtend({}, FilterColumnNumberField.defaults, options)
+                objectExtend({}, this.getFactory().defaults, options)
             );
 
             var labels = PRIVATE.get(this).opt.labels;

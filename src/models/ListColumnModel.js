@@ -32,7 +32,7 @@ ListColumnModel = /** @lends ListColumnModel.prototype */{
 
     init: function(columnData, options){
 
-        var opt = objectExtend({}, ListColumnModel.defaults, options);
+        var opt = objectExtend({}, this.getFactory().defaults, options);
         objectExtend(this, {
             ID:             "",
             Type:           "",

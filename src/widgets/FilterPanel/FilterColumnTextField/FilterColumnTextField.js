@@ -22,7 +22,7 @@ import objectExtend from "vendor/jsutils/objectExtend";
     FilterColumnTextField = /** @lends FilterColumnTextField.prototype */{
         init: function (options) {
             FilterColumn.prototype.init.call(this,
-                objectExtend({}, FilterColumnTextField.defaults, options)
+                objectExtend({}, this.getFactory().defaults, options)
             );
 
             var inst    = PRIVATE.get(this),

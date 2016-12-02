@@ -58,7 +58,7 @@ let ListItem = /** @lends ListItem.prototype */{
     init: function (options) {
         var me      = this,
             inst    = {
-            opt: objectExtend({}, ListItem.defaults, options, {_ui: {}})
+            opt: objectExtend({}, this.getFactory().defaults, options, {_ui: {}})
         },
         opt     = inst.opt,
         item    = opt.item,

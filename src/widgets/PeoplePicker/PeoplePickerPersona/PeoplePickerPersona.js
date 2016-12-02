@@ -19,7 +19,7 @@ import "./PeoplePickerPersona.less";
  */
 let PeoplePickerPersona = /** @lends PeoplePickerPersona.prototype **/{
     init: function (options) {
-        let opt = objectExtend({}, PeoplePickerPersona.defaults, options);
+        let opt = objectExtend({}, this.getFactory().defaults, options);
 
         Persona.prototype.init.call(this, opt);
 
