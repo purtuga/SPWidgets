@@ -30,6 +30,7 @@ var UserProfileModel = Compose.extend(/** @lends UserProfile.prototype */{
                 "FirstName": "",
                 "HomePhone": "",
                 "ID": "",
+                "Initials": "",
                 "LastName": "",
                 "Manager": "",
                 "Name": "",

@@ -240,9 +240,11 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
      */
     setChoices: function(choiceList){
         return PRIVATE.get(this).onReady.then(() => {
-            let selected = this.getValue();
-            addChoicesToUI.call(this, choiceList);
-            this.setSelected(selected);
+            if (Array.isArray(choiceList)) {
+                let selected = this.getValue();
+                addChoicesToUI.call(this, choiceList);
+                this.setSelected(selected);
+            }
         });
     },
 

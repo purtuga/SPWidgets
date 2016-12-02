@@ -14,10 +14,12 @@ import "./Persona.less";
 
 
 //----------------------------------------------------------------
-var PRIVATE                 = dataStore.create();
-var CSS_CLASS_BASE          = 'spwidgets-Persona';
-var CSS_CLASS_MS_PERSONA    = 'ms-Persona';
-var CSS_CLASS_NO_DETAILS    = `${CSS_CLASS_BASE}--noDetails`;
+var PRIVATE                         = dataStore.create();
+var CSS_CLASS_BASE                  = 'spwidgets-Persona';
+var CSS_CLASS_MS_PERSONA            = 'ms-Persona';
+var CSS_CLASS_SHOW_INITIALS         = `${CSS_CLASS_BASE}--showInitials`;
+var CSS_CLASS_NO_DETAILS            = `${CSS_CLASS_BASE}--noDetails`;
+var CSS_CLASS_MS_PERSONA_INITIALS   = `${CSS_CLASS_MS_PERSONA}-initials`;
 
 /**
  * Widget description
@@ -39,7 +41,8 @@ var Persona = {
             opt:                objectExtend({}, Persona.defaults, options),
             sizeModifier:       "",
             presenceModifier:   "",
-            variant:            ""
+            variant:            "",
+            initialsColor:      ""
         };
 
         PRIVATE.set(this, inst);
@@ -55,6 +58,8 @@ var Persona = {
         let uiFind = $ui.querySelector.bind($ui);
 
         inst.$imgArea = uiFind("." + CSS_CLASS_MS_PERSONA + "-imageArea");
+        inst.$initials  = uiFind(`.${CSS_CLASS_MS_PERSONA}-initials`);
+
         // Find the persona element, which might not be the top element,
         // since this widget could have been extended and UI might be wrapped
         // in other elements (ex. people picker)
@@ -74,6 +79,14 @@ var Persona = {
 
         if (opt.variant) {
             this.setVariant(opt.variant);
+        }
+
+        if (opt.showInitials) {
+            this.showInitials();
+        }
+
+        if (opt.initialsColor) {
+            this.setInitialsColor(opt.initialsColor);
         }
 
         if (opt.hideAction) {
@@ -143,11 +156,47 @@ var Persona = {
     },
 
     /**
+     * Shows the initials instead of the user photo.
+     */
+    showInitials: function(){
+        domAddClass(this.getEle(), CSS_CLASS_SHOW_INITIALS);
+    },
+
+    /**
+     * Hides the user's initials and shows instead the user's photo (if any).
+     */
+    hideInitials: function(){
+        domRemoveClass(this.getEle(), CSS_CLASS_SHOW_INITIALS);
+    },
+
+    /**
+     * Sets the color for the initials.
+     *
+     * @param {Persona~InitialsColor} color
+     *  One of the colors supported by Office UI Fabric Personal widget:
+     *  `blueLight`, `blue`, `blueDark`, `teal`, `greenLight`, `green`, `greenDark`,
+     *  `magentaLight`, `magenta`, `purpleLight`, `purple`, `black`, `orange`,
+     *  `red`, `redDark`,
+     *
+     */
+    setInitialsColor: function(color){
+        let inst        = PRIVATE.get(this);
+        let $initials   = inst.$initials;
+
+        if (inst.initialsColor) {
+            domRemoveClass($initials, `${CSS_CLASS_MS_PERSONA_INITIALS}--${inst.initialsColor}`);
+        }
+
+        domAddClass($initials, `${CSS_CLASS_MS_PERSONA_INITIALS}--${color}`);
+        inst.initialsColor = color;
+    },
+
+    /**
      * Sets the Persona style that should be shown.
      *
      * @param {String} variant
      *  A string with the variant that should be shown. Valid values are:
-     *  `circle` (Default), `initials`, `token` and `facePile`
+     *  `circle` (Default), `token` and `facePile`
      */
     setVariant: function(variant) {
         const inst = PRIVATE.get(this);
@@ -215,13 +264,13 @@ var Persona = {
      * @param {String} url
      */
     setUserPhoto: function(url){
-        let inst        = PRIVATE.get(this);
-        let $currentImg = inst.$imgArea.querySelector("img");
-        let $imgParent  = $currentImg.parentNode;
-        let $newImg     = parseHTML('<img class="ms-Persona-image" src="' + url + '" onerror="this.__loadErrorNotify()">').firstChild;
+        let inst            = PRIVATE.get(this);
+        let $currentImg     = inst.$imgArea.querySelector("img");
+        let $imgParent      = $currentImg.parentNode;
+        let $userPhotoImg   = parseHTML(`<img class="ms-Persona-image" src="${url}" />`).firstChild;
 
         domAddEventListener($userPhotoImg, "error", handleUserPhotoLoadFailure.bind(this, $userPhotoImg));
-        $imgParent.insertBefore($newImg, $currentImg);
+        $imgParent.insertBefore($userPhotoImg, $currentImg);
         $imgParent.removeChild($currentImg);
     },
 
@@ -237,6 +286,15 @@ var Persona = {
      */
     showDetails: function(){
         showHideDetails.call(this)
+    },
+
+    /**
+     * Sets the profile initials
+     *
+     * @param {String} initials
+     */
+    setInitials: function(initials){
+        PRIVATE.get(this).$initials.textContent = initials || "";
     }
 };
 
@@ -279,7 +337,41 @@ Persona.defaults = {
     variant:        "circle",
     size:           null,
     hideDetails:    false,
-    hideAction:     true
+    hideAction:     true,
+    hideInitials:   true,
+    initialsColor:  "blue"
 };
 
 export default Persona;
+
+
+//===========================================
+//      JSDOCS
+//===========================================
+
+/**
+ * The colors available for Persona initials
+ *
+ * @name Persona~InitialsColor
+ *
+ * @readonly
+ * @enum {String}
+ *
+ * @property {String} blueLight
+ * @property {String} blue
+ * @property {String} blueDark
+ * @property {String} teal
+ * @property {String} greenLight
+ * @property {String} green
+ * @property {String} greenDark
+ * @property {String} magentaLight
+ * @property {String} magenta
+ * @property {String} purpleLight
+ * @property {String} purple
+ * @property {String} black
+ * @property {String} orange
+ * @property {String} red
+ * @property {String} redDark
+ */
+
+
