@@ -1,9 +1,9 @@
-import Picker       from "common-micro-libs/src/widgets/Picker/Picker"
-import dataStore    from "common-micro-libs/src/jsutils/dataStore"
-import objectExtend from "common-micro-libs/src/jsutils/objectExtend"
-import domAddClass  from "common-micro-libs/src/domutils/domAddClass"
+import Picker                   from "common-micro-libs/src/widgets/Picker/Picker"
+import dataStore                from "common-micro-libs/src/jsutils/dataStore"
+import objectExtend             from "common-micro-libs/src/jsutils/objectExtend"
+import domAddClass              from "common-micro-libs/src/domutils/domAddClass"
 
-import getListColumns   from "../../spapi/getListColumns"
+import getListColumns           from "../../spapi/getListColumns"
 
 //--------------------------------------------------
 
@@ -23,7 +23,7 @@ const PickerPrototype   = Picker.prototype;
  */
 const ColumnPicker = Picker.extend(/** @lends ColumnPicker.prototype */{
     init: function (options) {
-        var inst = {
+        var inst =  {
             opt: objectExtend({}, this.getFactory().defaults, options),
             ready: null,
             choices: []
@@ -42,13 +42,13 @@ const ColumnPicker = Picker.extend(/** @lends ColumnPicker.prototype */{
         domAddClass(this.getEle(), CSS_MS_FONT_M);
         domAddClass(this.getPopupWidget().getEle(), CSS_MS_FONT_M);
 
-        $ele = uiFind(`.${CSS_PICKER}-clear`);
-        $ele.textContent = "";
-        domAddClass($ele, `${CSS_MS_ICON}--x`);
+        $ele                = uiFind(`.${CSS_PICKER}-clear`);
+        $ele.textContent    = "";
+        domAddClass($ele, `${CSS_MS_ICON}--ChromeClose`);
 
         $ele = uiFind(`.${CSS_PICKER}-showMenu`);
         $ele.textContent = "";
-        domAddClass($ele, `${CSS_MS_ICON}--chevronThickDown`);
+        domAddClass($ele, `${CSS_MS_ICON}--ChevronDown`);
 
         inst.ready = loadListColumns.call(this).then(() => {
             return this;

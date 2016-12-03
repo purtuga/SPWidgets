@@ -157,6 +157,10 @@ let PeoplePicker = /** @lends PeoplePicker.prototype */{
             domSetStyle($suggestions, {zIndex: opt.resultsZIndex});
         }
 
+        if (opt.resultsMaxHeight) {
+            domSetStyle(inst.$groups, { maxHeight: opt.resultsMaxHeight });
+        }
+
         // Add keyboard interaction to the Input field
         var keyboardInteraction = inst.keyboardInteraction = DomKeyboardInteraction.create({
             input:          $input,
@@ -762,6 +766,7 @@ PeoplePicker.defaults = {
     inputPlaceholder:       "Type and Pick",
     minLength:              2,
     resultsZIndex:          0,
+    resultsMaxHeight:       "", // default: 20em
     showSelected:           true,
     resolvePrincipals:      true,
     meKeyword:              "[me]",

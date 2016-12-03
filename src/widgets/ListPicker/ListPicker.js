@@ -47,11 +47,11 @@ var ListPicker = {
 
         $ele = uiFind(`.${CSS_PICKER}-clear`);
         $ele.textContent = "";
-        domAddClass($ele, `${CSS_MS_ICON}--x`);
+        domAddClass($ele, `${CSS_MS_ICON}--ChromeClose`);
 
         $ele = uiFind(`.${CSS_PICKER}-showMenu`);
         $ele.textContent = "";
-        domAddClass($ele, `${CSS_MS_ICON}--chevronThickDown`);
+        domAddClass($ele, `${CSS_MS_ICON}--ChevronDown`);
 
         inst.ready = populateMenu.call(this)
             .then(() => {

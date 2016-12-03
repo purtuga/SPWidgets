@@ -40,7 +40,7 @@ var Persona = {
         var inst = {
             opt:                objectExtend({}, this.getFactory().defaults, options),
             sizeModifier:       "",
-            presenceModifier:   "",
+            presenceModifier:   "offline",
             variant:            "",
             initialsColor:      ""
         };
@@ -50,7 +50,6 @@ var Persona = {
         let opt = inst.opt;
 
         this._model = opt.userProfile;
-        inst.presenceModifier = opt.presence || 'offline';
 
         let $ui = this.$ui = parseHTML(
             fillTemplate(this.getTemplate(), opt.userProfile)
@@ -87,6 +86,10 @@ var Persona = {
 
         if (opt.initialsColor) {
             this.setInitialsColor(opt.initialsColor);
+        }
+
+        if (opt.presence) {
+            this.setPresence(opt.presence);
         }
 
         if (opt.hideAction) {
