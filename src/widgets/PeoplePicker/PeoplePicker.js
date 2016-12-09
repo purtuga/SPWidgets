@@ -309,6 +309,27 @@ let PeoplePicker = /** @lends PeoplePicker.prototype */{
                 }
             });
             inst.selected.splice(0);
+
+            // Destroy all Compose object
+            Object.keys(inst).forEach(function (prop) {
+                if (inst[prop]) {
+                    // Widgets
+                    if (inst[prop].destroy) {
+                        inst[prop].destroy();
+
+                        // DOM events
+                    } else if (inst[prop].remove) {
+                        inst[prop].remove();
+
+                        // EventEmitter events
+                    } else if (inst[prop].off) {
+                        inst[prop].off();
+                    }
+
+                    inst[prop] = undefined;
+                }
+            });
+
             PRIVATE['delete'](this);
         }.bind(this));
     },

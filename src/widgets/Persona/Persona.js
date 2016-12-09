@@ -328,8 +328,15 @@ function handleUserPhotoLoadFailure($img) {
      * The user's profile photo failed to load.
      *
      * @event Persona#photo-load-failed
+     *
+     * @type {Object}
+     * @property {DOMElement} $img
+     * @property {String} src
      */
-    this.emit("photo-load-failed");
+    this.emit("photo-load-failed", {
+        $img:   $img,
+        src:    $img.getAttribute("src")
+    });
 }
 
 
