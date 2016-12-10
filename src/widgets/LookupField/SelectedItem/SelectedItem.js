@@ -70,6 +70,15 @@ import "./SelectedItem.less";
          */
         remove: function(){
             PRIVATE.get(this).$removeBtn.click();
+        },
+
+        /**
+         * Returns the value for this selected item (default is the item passed on input)
+         *
+         * @return {Object}
+         */
+        getValue: function(){
+            return PRIVATE.get(this).opt.item;
         }
     };
 

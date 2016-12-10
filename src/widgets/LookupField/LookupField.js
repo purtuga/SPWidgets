@@ -59,6 +59,11 @@ isArray = Array.isArray,
  *  `options.queryOptions` (below) defines a `CAMLViewFields`, then that
  *  will take precedence and the value in the options will not be used.
  *
+ * @param {Array<Object|ListItemModel>|Object|ListItemModel} [options.selected]
+ *  The list of lookup items to be pre-selected when widget is initialized. Value
+ *  will be given to the `setSelected()` method, thus accepts any input by that
+ *  method.
+ *
  * @param {Array<String>} [options.searchColumns=[options.column.ShowField]
  *  A list of column internal names that will be used to search against
  *  when use types in a value in the input box. Defaults to the column
@@ -68,6 +73,8 @@ isArray = Array.isArray,
  *  The List widget to use for displaying the items.
  *
  * @param {Widget} [options.SelectedItemWidget=SelectedItem]
+ *  The widget to use for Selected items. Events from this widget will be piped
+ *  to the `LookupField`.
  *
  * @param {Boolean} [options.allowMultiples]
  *  Allow multiple values to be selected. If set, value will override
@@ -97,7 +104,8 @@ LookupField = /** @lends LookupField.prototype */{
             listWdg:                null,
             selected:               new Map(), // Keeps ListItemRow->Widget associations
             allowMultiples:         false,
-            currentData:            null        // Rows[] Array
+            currentData:            null,       // Rows[] Array
+            onReady:                null        // Promise
         },
         opt = inst.opt;
 
@@ -247,9 +255,15 @@ LookupField = /** @lends LookupField.prototype */{
         }.bind(this));
 
         // Load first page of data and add it to the list of selectable items.
-        retrieveListData.call(this).then(function(rows){
+        inst.onReady = retrieveListData.call(this).then(function(rows){
             addItemsToChoices.call(this, rows);
         }.bind(this));
+
+        if (opt.selected) {
+            inst.onReady.then(() => {
+                this.setSelected(opt.selected);
+            });
+        }
 
         this.onDestroy(function () {
             clearAllSelected.call(this);
@@ -276,6 +290,15 @@ LookupField = /** @lends LookupField.prototype */{
 
             PRIVATE.delete(this);
         }.bind(this));
+    },
+
+    /**
+     * Returns a promise that resolves when widget is ready (initialization done)
+     *
+     * @return {Promise}
+     */
+    onReady: function(){
+        return PRIVATE.get(this).onReady;
     },
 
     /**
@@ -329,12 +352,12 @@ LookupField = /** @lends LookupField.prototype */{
      * @return {Array<Object|ListItemModel>}
      */
     getSelected: function(){
-        var selectedKeys    = PRIVATE.get(this).selected.keys(),
+        var selectedKeys    = PRIVATE.get(this).selected.values(),
             response        = [],
             selectedItem;
 
         while (!(selectedItem = selectedKeys.next()).done) {
-            response.push(selectedItem.value);
+            response.push(selectedItem.value.getValue());
         }
 
         return response;
@@ -361,8 +384,7 @@ LookupField = /** @lends LookupField.prototype */{
             items = [items.pop()];
         }
 
-        return Promise.resolve()
-        .then(function(){
+        return Promise.resolve().then(function(){
             var loadDataIDs = [],
                 itemsData = items.map(function(item){
                     var itemData = getItemDataById.call(me, item.ID) ||
@@ -621,6 +643,7 @@ LookupField = EventEmitter.extend(Widget, LookupField);
 LookupField.defaults = {
     column:             null,
     fields:             null,
+    selected:           null,   // Any format accepted by setSelected
     hideLabel:          false,
     hideDescription:    false,
     queryOptions:       {
