@@ -5,7 +5,6 @@ import uuid             from "vendor/jsutils/uuid"
 import fillTemplate     from "vendor/jsutils/fillTemplate"
 import parseHTML        from "vendor/jsutils/parseHTML"
 import ChoiceField      from "../../ChoiceField/ChoiceField"
-import choiceTemplate   from "../../ChoiceField/choice.html"
 
 
 //====================================================================

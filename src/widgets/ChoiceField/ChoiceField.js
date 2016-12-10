@@ -6,15 +6,15 @@ import fillTemplate         from "common-micro-libs/src/jsutils/fillTemplate"
 import parseHTML            from "common-micro-libs/src/jsutils/parseHTML"
 import Promise              from "common-micro-libs/src/jsutils/es6-promise"
 import uuid                 from "common-micro-libs/src/jsutils/uuid"
+
 import domAddClass          from "common-micro-libs/src/domutils/domAddClass"
 import domRemoveClass       from "common-micro-libs/src/domutils/domRemoveClass"
 import domHasClass          from "common-micro-libs/src/domutils/domHasClass"
-import domAddEventListener  from "common-micro-libs/src/domutils/domAddEventListener"
 import domFind              from "common-micro-libs/src/domutils/domFind"
 import domClosest           from "common-micro-libs/src/domutils/domClosest"
 
+import ChoiceItem           from "./ChoiceItem/ChoiceItem"
 import ChoiceFieldTemplate  from "./ChoiceField.html"
-import choiceTemplate       from "./choice.html"
 import "./ChoiceField.less"
 
 //--------------------------------------------------------
@@ -25,10 +25,6 @@ var CSS_CLASS_BASE              = 'spwidgets-ChoiceField';
 var CSS_CLASS_CHOICES           = CSS_CLASS_BASE + "-choices";
 var CSS_CLASS_NO_LABEL          = CSS_CLASS_BASE + "--noLabel";
 var CSS_CLASS_NO_DESCRIPTION    = CSS_CLASS_BASE + "--noDescription";
-var CSS_CLASS_CHOICE_INPUT      = 'spwidgets-ChoiceField-choice-input';
-var CSS_CLASS_CHOICE_LABEL      = 'spwidgets-ChoiceField-choice-label';
-var CSS_MS_IS_CHECKED           = "is-checked";
-var ATTR_CHECKED                = "checked";
 
 /**
  * A choice field giving the user the ability to pick from a list
@@ -49,7 +45,7 @@ var ATTR_CHECKED                = "checked";
  *  The item in the list of choices that should be selected. Either the `value` or
  *  `title` can be used.
  *
- * @param {String} [options.maxHeight="10em"]
+ * @param {String} [options.maxHeight="15em"]
  *  A CSS dimension indicating the max height for the area that displays the
  *  choices.
  *
@@ -73,7 +69,11 @@ var ATTR_CHECKED                = "checked";
  *  in which case i twill be used as the title and the value, or an object
  *  containing both a `title` and `value` attributes.
  *
+ * @param {Widget} [options.ChoiceItemWidget]
+ *  The Widget to be used for each Choice displayed.
+ *
  * @fires ChoiceField#change
+ * @fires ChoiceField#item-change
  */
 var ChoiceField = /** @lends ChoiceField.prototype */{
     init: function (options) {
@@ -84,7 +84,7 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
             allowMultiples: null,
             onReady:    null,
             isReady:    false,
-            choices:    null,
+            choices:    null,   // FIXME: delete this?
             choiceList: []
         };
 
@@ -147,12 +147,9 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
             inst.choices.style.maxHeight = opt.maxHeight;
         }
 
-        domAddEventListener($ui, "change", (ev) => {
+        this.on("item-change", (/*ev*/) => {
             if (!inst.isMulti) {
                 markAllChoiceFields.call(this)
-
-            } else {
-                markChoiceField.call(this, ev.target);
             }
 
             /**
@@ -178,14 +175,9 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
      *  this array will contain only 1 item.
      */
     getValue: function(){
-        var inst = PRIVATE.get(this);
-        return domFind(inst.choices, "." + CSS_CLASS_CHOICE_INPUT)
-            .filter(function(input){
-                return input.checked;
-            })
-            .map(function(input){
-                return input.value;
-            });
+        return PRIVATE.get(this).choiceList
+            .filter(wdg => wdg.isChecked())
+            .map(wdg => wdg.getValue());
     },
 
     /**
@@ -199,21 +191,21 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
      * @returns {Promise}
      */
     setSelected: function(newValue){
-        var inst = PRIVATE.get(this);
-        var setValueOnWidget = () => {
-            var newVals = Array.isArray(newValue) ? newValue : [newValue],
-                choiceEles = domFind(inst.choices, "." + CSS_CLASS_CHOICE_INPUT);
+        let inst    = PRIVATE.get(this);
+        let newVals = Array.isArray(newValue) ? newValue : [newValue];
 
-            // Loop through the choices inputs (radio or checkbox) and
-            // if their value matches one the values that was provided on
-            // input, then mark input "checked" - else - unchecked
-            choiceEles.forEach((input) => {
-                input.checked = newVals.indexOf(input.value) !== -1;
-                markChoiceField.call(this, input);
+        return inst.onReady.then(() => {
+            inst.choiceList.forEach((choiceWdg) => {
+                if (newVals.indexOf(choiceWdg.getInputValue()) !== -1) {
+                    choiceWdg.check();
+
+                } else {
+                    choiceWdg.unCheck();
+                }
             });
-        };
 
-        return inst.onReady.then(setValueOnWidget);
+            markAllChoiceFields.call(this);
+        });
     },
 
     // backwards compatible...
@@ -228,13 +220,13 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
      * @return {Array}
      */
     getChoices: function(){
-        return PRIVATE.get(this).choiceList;
+        return PRIVATE.get(this).choiceList.map(wdg => wdg.getValue());
     },
 
     /**
      * Sets the list of choices available on the widget
      *
-     * @param {Array<String>} choiceList
+     * @param {Array<String|Object>} choiceList
      *
      * @return {Promise}
      */
@@ -254,11 +246,14 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
      * @return {Promise}
      */
     checkAll: function(){
-        return PRIVATE.get(this).onReady.then(() => {
-            domFind(this.getEle(), `.${CSS_CLASS_CHOICE_INPUT}`).forEach((inputEle) => {
-                inputEle.checked = true;
-                markChoiceField.call(this, inputEle);
-            });
+        let inst = PRIVATE.get(this);
+
+        return inst.onReady.then(() => {
+            inst.choiceList.forEach((choiceItemWdg) => choiceItemWdg.check());
+
+            if (!inst.isMulti) {
+                markAllChoiceFields.call(this);
+            }
         });
     },
 
@@ -268,11 +263,10 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
      * @return {Promise}
      */
     unCheckAll: function(){
-        return PRIVATE.get(this).onReady.then(() => {
-            domFind(this.getEle(), `.${CSS_CLASS_CHOICE_INPUT}`).forEach((inputEle) => {
-                inputEle.checked = false;
-                markChoiceField.call(this, inputEle);
-            });
+        let inst = PRIVATE.get(this);
+
+        return inst.onReady.then(() => {
+            inst.choiceList.forEach((choiceItemWdg) => choiceItemWdg.unCheck());
         });
     }
 };
@@ -290,53 +284,42 @@ function getChoices() {
 }
 
 function addChoicesToUI(choiceList) {
-    let inst        = PRIVATE.get(this);
-    let { isMulti, groupName } = inst;
-    let inputType   = isMulti ? "checkbox" : "radio";
-    let msType      = isMulti ? "CheckBox" : "RadioButton";
-    var listUI;
+    let inst                    = PRIVATE.get(this);
+    let ChoiceItemWidget        = inst.opt.ChoiceItemWidget;
+    let { isMulti, groupName }  = inst;
+    let $newChoices             = document.createDocumentFragment();
 
-    inst.choices.innerHTML = "";
 
-    choiceList = inst.choiceList = choiceList.map(function(choice){
-        var isString  = typeof choice === "string";
+    if (inst.choiceList.length) {
+        inst.choiceList.forEach((wdg) => wdg.destroy());
+        inst.choiceList.splice(0);
+    }
 
-        return {
+    inst.choiceList = choiceList.map((choice) => {
+        let isString    = typeof choice === "string";
+        let choiceWdg   = ChoiceItemWidget.create({
+            type:   isMulti ? "checkbox" : "radio",
             name:   groupName,
             title:  isString ? choice : choice.title,
-            value:  isString ? choice : choice.value,
-            type:   inputType,
-            id:     uuid.generate(),
-            msType: msType
-        };
+            value:  isString ? choice : choice.value
+        });
+
+        /**
+         * Change by specific Choice Item.
+         *
+         * @event ChoiceField#item-change
+         */
+        choiceWdg.pipe(this, "item-");
+        choiceWdg.appendTo($newChoices);
+        return choiceWdg
     });
 
-    listUI = parseHTML( fillTemplate(choiceTemplate, choiceList) );
-    inst.choices.appendChild(listUI);
-
-    return choiceList;
-}
-
-function markChoiceField($ele) {
-    let $choice = domClosest($ele, `.${CSS_CLASS_BASE}-choice`);
-    
-    if (!$choice) {
-        return;
-    }
-    
-    let $choiceInput    = domFind($choice, `.${CSS_CLASS_CHOICE_INPUT}`)[0];
-    let $choiceLabel    = domFind($choice, `.${CSS_CLASS_CHOICE_LABEL}`)[0];
-
-    if ($choiceInput.checked) {
-        domAddClass($choiceLabel, CSS_MS_IS_CHECKED);
-
-    } else {
-        domRemoveClass($choiceLabel, CSS_MS_IS_CHECKED);
-    }
+    inst.choices.appendChild($newChoices);
+    return inst.choiceList;
 }
 
 function markAllChoiceFields() {
-    domFind(this.getEle(), `.${CSS_CLASS_CHOICE_INPUT}`).forEach((input) => markChoiceField.call(this, input));
+    PRIVATE.get(this).choiceList.forEach(wdg => wdg.evalState());
 }
 
 ChoiceField = EventEmitter.extend(Widget, ChoiceField);
@@ -344,13 +327,14 @@ ChoiceField.defaults = {
     column:             {},
     selected:           "",
     checkAll:           false,
-    maxHeight:          "10em",
+    maxHeight:          "15em",
     hideLabel:          false,
     hideDescription:    false,
     layout:             "",
     isMulti:            null, // FIXME: Deprecated!!!
     allowMultiples:     null,
-    choiceList:         null
+    choiceList:         null,
+    ChoiceItemWidget:   ChoiceItem
 };
 
 export default ChoiceField;
