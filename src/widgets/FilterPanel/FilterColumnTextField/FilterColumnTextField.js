@@ -1,7 +1,7 @@
 import FilterColumn from "../FilterColumn/FilterColumn";
 import TextField from "../../TextField/TextField";
-import dataStore from "vendor/jsutils/dataStore";
-import objectExtend from "vendor/jsutils/objectExtend";
+import dataStore from "common-micro-libs/src/jsutils/dataStore";
+import objectExtend from "common-micro-libs/src/jsutils/objectExtend";
 
     var
     PRIVATE = dataStore.stash,

@@ -1,8 +1,8 @@
-import Widget                       from "vendor/jsutils/Widget";
-import dataStore                    from "vendor/jsutils/dataStore";
-import objectExtend                 from "vendor/jsutils/objectExtend";
-import fillTemplate                 from "vendor/jsutils/fillTemplate";
-import parseHTML                    from "vendor/jsutils/parseHTML";
+import Widget                       from "common-micro-libs/src/jsutils/Widget";
+import dataStore                    from "common-micro-libs/src/jsutils/dataStore";
+import objectExtend                 from "common-micro-libs/src/jsutils/objectExtend";
+import fillTemplate                 from "common-micro-libs/src/jsutils/fillTemplate";
+import parseHTML                    from "common-micro-libs/src/jsutils/parseHTML";
 import xmlEscape                    from "common-micro-libs/src/jsutils/xmlEscape"
 import FilterPanel                  from "../../../src/widgets/FilterPanel/FilterPanel";
 import SPFilterPanelDemoTemplate    from "./SPFilterPanelDemo.html";
@@ -39,7 +39,7 @@ var SPFilterPanelDemo = /** @lends SPFilterPanelDemo.prototype */{
 
 function setupDemo1(){
     var inst        = PRIVATE.get(this);
-    var filterPanel = FilterPanel.create({listName: "Tasks"});
+    var filterPanel = FilterPanel.create({listName: "Tasks", bodyHeight: `${window.innerHeight - 200}px`});
     var cntr        = inst.uiFind("#spfilterpaneldemo_1");
     var out         = inst.uiFind("#spfilterpaneldemo_1_out");
 
@@ -77,6 +77,13 @@ function setupDemo1(){
         }
     });
 
+    window.filterPanel1 = filterPanel;
+    console.info("window.filterPanel1 created");
+
+    this.onDestroy(function() {
+        filterPanel.destroy();
+        window.filterPanel1 = null;
+    });
 }
 
 SPFilterPanelDemo = Widget.extend(SPFilterPanelDemo);

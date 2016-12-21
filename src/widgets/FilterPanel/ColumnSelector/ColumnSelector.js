@@ -1,18 +1,18 @@
-import Widget from "vendor/jsutils/Widget";
-import EventEmitter from "vendor/jsutils/EventEmitter";
-import dataStore from "vendor/jsutils/dataStore";
-import objectExtend from "vendor/jsutils/objectExtend";
-import fillTemplate from "vendor/jsutils/fillTemplate";
-import parseHTML from "vendor/jsutils/parseHTML";
-import domAddEventListener from "vendor/domutils/domAddEventListener";
-import domFind from "vendor/domutils/domFind";
-import domClosest from "vendor/domutils/domClosest";
-import domAddClass from "vendor/domutils/domAddClass";
-import domRemoveClass from "vendor/domutils/domRemoveClass";
-import domHasClass from "vendor/domutils/domHasClass";
-import getListColumns from "../../../spapi/getListColumns";
-import ColumnSelectorTemplate from "./ColumnSelector.html";
-import columnTemplate from "./column.html";
+import Widget                   from "common-micro-libs/src/jsutils/Widget";
+import EventEmitter             from "common-micro-libs/src/jsutils/EventEmitter";
+import dataStore                from "common-micro-libs/src/jsutils/dataStore";
+import objectExtend             from "common-micro-libs/src/jsutils/objectExtend";
+import fillTemplate             from "common-micro-libs/src/jsutils/fillTemplate";
+import parseHTML                from "common-micro-libs/src/jsutils/parseHTML";
+import domAddEventListener      from "common-micro-libs/src/domutils/domAddEventListener";
+import domFind                  from "common-micro-libs/src/domutils/domFind";
+import domClosest               from "common-micro-libs/src/domutils/domClosest";
+import domAddClass              from "common-micro-libs/src/domutils/domAddClass";
+import domRemoveClass           from "common-micro-libs/src/domutils/domRemoveClass";
+import domHasClass              from "common-micro-libs/src/domutils/domHasClass";
+import getListColumns           from "../../../spapi/getListColumns";
+import ColumnSelectorTemplate   from "./ColumnSelector.html";
+import columnTemplate           from "./column.html";
 import "./ColumnSelector.less";
 
     var

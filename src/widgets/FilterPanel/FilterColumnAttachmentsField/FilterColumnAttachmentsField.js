@@ -1,9 +1,9 @@
 import FilterColumn     from "../FilterColumn/FilterColumn"
-import objectExtend     from "vendor/jsutils/objectExtend"
-import dataStore        from "vendor/jsutils/dataStore"
-import uuid             from "vendor/jsutils/uuid"
-import fillTemplate     from "vendor/jsutils/fillTemplate"
-import parseHTML        from "vendor/jsutils/parseHTML"
+import objectExtend     from "common-micro-libs/src/jsutils/objectExtend"
+import dataStore        from "common-micro-libs/src/jsutils/dataStore"
+import uuid             from "common-micro-libs/src/jsutils/uuid"
+import fillTemplate     from "common-micro-libs/src/jsutils/fillTemplate"
+import parseHTML        from "common-micro-libs/src/jsutils/parseHTML"
 import ChoiceField      from "../../ChoiceField/ChoiceField"
 
 
@@ -51,52 +51,6 @@ let FilterColumnAttachmentsField = /** @lends FilterColumnAttachmentsField.proto
         this.setKeywordInfo(opt.labels.attachmentsInfo);
     }
 };
-
-//
-//// Extends ChoiceField and displays pick list for Attachments
-//var AttachmentsField = ChoiceField.extend({
-//    init: function(options){
-//        options = objectExtend({}, options);
-//        ChoiceField.prototype.init.call(this, options);
-//
-//        var
-//        labels      = options.labels,
-//        groupName   = uuid.generate(),
-//        listUI      = parseHTML(
-//            fillTemplate(choiceTemplate, [
-//                {
-//                    name:   groupName,
-//                    title:  labels.any,
-//                    value:  "",
-//                    id:     uuid.generate(),
-//                    type:   "radio"
-//                },
-//                {
-//                    name:   groupName,
-//                    title:  labels.yes,
-//                    value:  "1",
-//                    id:     uuid.generate(),
-//                    type:   "radio"
-//                },
-//                {
-//                    name:   groupName,
-//                    title:  labels.no,
-//                    value:  "0",
-//                    id:     uuid.generate(),
-//                    type:   "radio"
-//                }
-//            ])
-//        );
-//
-//        this.getEle()
-//            .querySelector(".spwidgets-ChoiceField-choices")
-//            .appendChild(listUI);
-//
-//        if (typeof options.selected !== "undefined") {
-//            this.setValue(options.selected);
-//        }
-//    }
-//});
 
 FilterColumnAttachmentsField = FilterColumn.extend(FilterColumnAttachmentsField);
 FilterColumnAttachmentsField.defaults = {

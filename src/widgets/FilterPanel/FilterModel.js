@@ -1,8 +1,8 @@
-import Compose          from "vendor/jsutils/Compose";
-import objectExtend     from "vendor/jsutils/objectExtend";
-import dataStore        from "vendor/jsutils/dataStore";
-import toUrlParams      from "vendor/jsutils/toUrlParams";
-import fillTemplate     from "vendor/jsutils/fillTemplate";
+import Compose          from "common-micro-libs/src/jsutils/Compose";
+import objectExtend     from "common-micro-libs/src/jsutils/objectExtend";
+import dataStore        from "common-micro-libs/src/jsutils/dataStore";
+import toUrlParams      from "common-micro-libs/src/jsutils/toUrlParams";
+import fillTemplate     from "common-micro-libs/src/jsutils/fillTemplate";
 import getCamlLogical   from "../../sputils/getCamlLogical";
 import xmlEscape        from "../../sputils/xmlEscape";
 

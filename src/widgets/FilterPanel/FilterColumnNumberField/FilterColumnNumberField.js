@@ -1,6 +1,6 @@
 import FilterColumnTextField from "../FilterColumnTextField/FilterColumnTextField";
-import objectExtend from "vendor/jsutils/objectExtend";
-import dataStore from "vendor/jsutils/dataStore";
+import objectExtend from "common-micro-libs/src/jsutils/objectExtend";
+import dataStore from "common-micro-libs/src/jsutils/dataStore";
 
     var
     PRIVATE = dataStore.stash,

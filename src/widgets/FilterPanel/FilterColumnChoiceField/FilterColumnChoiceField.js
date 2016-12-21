@@ -1,8 +1,8 @@
 import FilterColumn from "../FilterColumn/FilterColumn";
-import ChoiceField from "../../ChoiceField/ChoiceField";
-import objectExtend from "vendor/jsutils/objectExtend";
-import dataStore from "vendor/jsutils/dataStore";
-import fillTemplate from "vendor/jsutils/fillTemplate";
+import ChoiceField  from "../../ChoiceField/ChoiceField";
+import objectExtend from "common-micro-libs/src/jsutils/objectExtend";
+import dataStore    from "common-micro-libs/src/jsutils/dataStore";
+import fillTemplate from "common-micro-libs/src/jsutils/fillTemplate";
 
     var
     PRIVATE = dataStore.stash,

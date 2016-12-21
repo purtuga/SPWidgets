@@ -1,8 +1,8 @@
-import FilterColumn from "../FilterColumn/FilterColumn";
-import DateTimeField from "../../DateTimeField/DateTimeField";
-import objectExtend from "vendor/jsutils/objectExtend";
-import dataStore from "vendor/jsutils/dataStore";
-import Promise from "vendor/jsutils/es6-promise";
+import FilterColumn     from "../FilterColumn/FilterColumn";
+import DateTimeField    from "../../DateTimeField/DateTimeField";
+import objectExtend     from "common-micro-libs/src/jsutils/objectExtend";
+import dataStore        from "common-micro-libs/src/jsutils/dataStore";
+import Promise          from "common-micro-libs/src/jsutils/es6-promise";
 
     var
     PRIVATE = dataStore.stash,

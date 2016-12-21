@@ -28,6 +28,8 @@ const CSS_MS_IS_CHECKED = "is-checked";
  * @extends Widget
  *
  * @param {Object} options
+ *
+ * @fires ChoiceItem#change
  */
 const ChoiceItem = EventEmitter.extend(Widget).extend(/** @lends ChoiceItem.prototype */{
     init(options) {
@@ -62,6 +64,12 @@ const ChoiceItem = EventEmitter.extend(Widget).extend(/** @lends ChoiceItem.prot
 
         inst.uiClickEv = domAddEventListener(inst.$input, "click", (/*ev*/) => {
             markChoiceField.call(this);
+
+            /**
+             * The state of the Choice item has changed
+             *
+             * @event ChoiceItem#change
+             */
             this.emit("change");
         });
 
