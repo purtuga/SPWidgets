@@ -1,4 +1,4 @@
-import Picker       from "common-micro-libs/src/widgets/Picker/Picker"
+import ItemPicker   from "../ItemPicker/ItemPicker"
 import dataStore    from "common-micro-libs/src/jsutils/dataStore"
 import objectExtend from "common-micro-libs/src/jsutils/objectExtend"
 import domAddClass  from "common-micro-libs/src/domutils/domAddClass"
@@ -9,7 +9,7 @@ import getSiteListCollection    from "../../spapi/getSiteListCollection";
 //-----------------------------------------------------------
 
 const PRIVATE           = dataStore.create();
-const PickerPrototype   = Picker.prototype;
+const PickerPrototype   = ItemPicker.prototype;
 
 /**
  * Display a picker to select a list from the site
@@ -34,24 +34,6 @@ var ListPicker = {
 
         PRIVATE.set(this, inst);
         PickerPrototype.init.call(this, inst.opt);
-
-        var CSS_MS_FONT_M   = "ms-font-m";
-        var CSS_MS_ICON     = "ms-Icon ms-Icon";
-        var CSS_PICKER      = "Picker";
-        var $ui             = this.getEle();
-        var uiFind          = $ui.querySelector.bind($ui);
-        var $ele;
-
-        domAddClass(this.getEle(), CSS_MS_FONT_M);
-        domAddClass(this.getPopupWidget().getEle(), CSS_MS_FONT_M);
-
-        $ele = uiFind(`.${CSS_PICKER}-clear`);
-        $ele.textContent = "";
-        domAddClass($ele, `${CSS_MS_ICON}--ChromeClose`);
-
-        $ele = uiFind(`.${CSS_PICKER}-showMenu`);
-        $ele.textContent = "";
-        domAddClass($ele, `${CSS_MS_ICON}--ChevronDown`);
 
         inst.ready = populateMenu.call(this)
             .then(() => {
@@ -98,10 +80,14 @@ var ListPicker = {
      * @returns {Promise}
      */
     setSelected: function (list){
-        return this.onReady().then(() => {
-            var listInfo = typeof list === "object" ? list : this.getListInfo(list) || {};
-            return PickerPrototype.setSelected.call(this, listInfo.Title);
-        });
+        let onReady = this.onReady();
+
+        if (onReady) {
+            return onReady.then(() => {
+                var listInfo = typeof list === "object" ? list : this.getListInfo(list) || {};
+                return PickerPrototype.setSelected.call(this, listInfo.Title);
+            });
+        }
     }
 };
 
@@ -159,7 +145,7 @@ var populateMenu = function(){
     });
 };
 
-ListPicker = Picker.extend(ListPicker);
+ListPicker = ItemPicker.extend(ListPicker);
 
 ListPicker.defaults = {
     webURL:         '',

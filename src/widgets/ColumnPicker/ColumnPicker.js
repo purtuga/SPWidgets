@@ -1,4 +1,4 @@
-import Picker                   from "common-micro-libs/src/widgets/Picker/Picker"
+import ItemPicker               from "../ItemPicker/ItemPicker"
 import dataStore                from "common-micro-libs/src/jsutils/dataStore"
 import objectExtend             from "common-micro-libs/src/jsutils/objectExtend"
 import domAddClass              from "common-micro-libs/src/domutils/domAddClass"
@@ -8,20 +8,20 @@ import getListColumns           from "../../spapi/getListColumns"
 //--------------------------------------------------
 
 const PRIVATE           = dataStore.create();
-const PickerPrototype   = Picker.prototype;
+const PickerPrototype   = ItemPicker.prototype;
 
 /**
  * ColumnPicker Widget
  *
  * @class ColumnPicker
- * @extends Picker
+ * @extends ItemPicker
  *
  * @param {Object} options
  *
  * @fires ColumnPicker#item-selected
  * @fires ColumnPicker#selection-cleared
  */
-const ColumnPicker = Picker.extend(/** @lends ColumnPicker.prototype */{
+const ColumnPicker = ItemPicker.extend(/** @lends ColumnPicker.prototype */{
     init: function (options) {
         var inst =  {
             opt: objectExtend({}, this.getFactory().defaults, options),
@@ -31,24 +31,6 @@ const ColumnPicker = Picker.extend(/** @lends ColumnPicker.prototype */{
 
         PRIVATE.set(this, inst);
         PickerPrototype.init.call(this, inst.opt);
-
-        var CSS_MS_FONT_M   = "ms-font-m";
-        var CSS_MS_ICON     = "ms-Icon ms-Icon";
-        var CSS_PICKER      = "Picker";
-        var $ui             = this.getEle();
-        var uiFind          = $ui.querySelector.bind($ui);
-        var $ele;
-
-        domAddClass(this.getEle(), CSS_MS_FONT_M);
-        domAddClass(this.getPopupWidget().getEle(), CSS_MS_FONT_M);
-
-        $ele                = uiFind(`.${CSS_PICKER}-clear`);
-        $ele.textContent    = "";
-        domAddClass($ele, `${CSS_MS_ICON}--ChromeClose`);
-
-        $ele = uiFind(`.${CSS_PICKER}-showMenu`);
-        $ele.textContent = "";
-        domAddClass($ele, `${CSS_MS_ICON}--ChevronDown`);
 
         inst.ready = loadListColumns.call(this).then(() => {
             return this;
@@ -123,10 +105,14 @@ const ColumnPicker = Picker.extend(/** @lends ColumnPicker.prototype */{
      * @returns {Promise}
      */
     setSelected: function (column){
-        return this.onReady().then(() => {
-            var colInfo = typeof column === "object" ? column : this.getColumnInfo(column) || {};
-            return PickerPrototype.setSelected.call(this, colInfo.DisplayName);
-        });
+        let onReady = this.onReady();
+
+        if (onReady){
+            return onReady.then(() => {
+                var colInfo = typeof column === "object" ? column : this.getColumnInfo(column) || {};
+                return PickerPrototype.setSelected.call(this, colInfo.DisplayName);
+            });
+        }
     }
 });
 

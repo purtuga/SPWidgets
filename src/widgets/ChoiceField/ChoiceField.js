@@ -85,7 +85,8 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
             onReady:    null,
             isReady:    false,
             choices:    null,   // FIXME: delete this?
-            choiceList: []
+            choiceList: [],
+            selectedCount:  0
         };
 
         PRIVATE.set(this, inst);
@@ -111,6 +112,7 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
 
         inst.title      = uiFind(".ms-ChoiceFieldGroup-title");
         inst.choices    = uiFind("." + CSS_CLASS_CHOICES);
+        inst.$count     = uiFind(`.${CSS_CLASS_BASE}-selectedCount`);
         inst.onReady    = Promise.resolve()
             .then(() => {
                 if (opt.choiceList) {
@@ -147,10 +149,23 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
             inst.choices.style.maxHeight = opt.maxHeight;
         }
 
-        this.on("item-change", (/*ev*/) => {
+        if (!opt.hideSelectedCount) {
+            domRemoveClass($ui, `${CSS_CLASS_BASE}--noSelectedCount`);
+        }
+
+        updateSelectedCount.call(this);
+
+        this.on("item-change", (itemWdg) => {
             if (!inst.isMulti) {
                 markAllChoiceFields.call(this)
             }
+
+            if (itemWdg.isChecked()) {
+                inst.selectedCount++;
+            } else {
+                --inst.selectedCount;
+            }
+            updateSelectedCount.call(this);
 
             /**
              * Input field (checkbox or radio button) was changed.
@@ -181,6 +196,15 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
     },
 
     /**
+     * Get selected values. (alias method for `getValue()`)
+     *
+     * @returns {Array<String>}
+     */
+    getSelected: function(){
+        return this.getValue();
+    },
+
+    /**
      * Sets the selected value(s), by looking at the list of choices
      * and setting their state to "selected" if they match the value
      * passed on input.
@@ -205,6 +229,8 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
             });
 
             markAllChoiceFields.call(this);
+            inst.selectedCount = this.getSelected().length;
+            updateSelectedCount.call(this);
         });
     },
 
@@ -233,9 +259,14 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
     setChoices: function(choiceList){
         return PRIVATE.get(this).onReady.then(() => {
             if (Array.isArray(choiceList)) {
-                let selected = this.getValue();
+                let inst        = PRIVATE.get(this);
+                let selected    = this.getValue();
+
                 addChoicesToUI.call(this, choiceList);
                 this.setSelected(selected);
+
+                inst.selectedCount = this.getSelected().length;
+                updateSelectedCount.call(this);
             }
         });
     },
@@ -254,6 +285,9 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
             if (!inst.isMulti) {
                 markAllChoiceFields.call(this);
             }
+
+            inst.selectedCount = this.getSelected().length;
+            updateSelectedCount.call(this);
         });
     },
 
@@ -270,6 +304,12 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
         });
     }
 };
+
+function updateSelectedCount(){
+    let { selectedCount, $count, opt } = PRIVATE.get(this);
+
+    $count.textContent = fillTemplate(opt.selectedLabel, { count: String(selectedCount) });
+}
 
 function getChoices() {
     var inst    = PRIVATE.get(this),
@@ -330,10 +370,12 @@ ChoiceField.defaults = {
     maxHeight:          "15em",
     hideLabel:          false,
     hideDescription:    false,
+    hideSelectedCount:  true,
     layout:             "",
     isMulti:            null, // FIXME: Deprecated!!!
     allowMultiples:     null,
     choiceList:         null,
+    selectedLabel:      "{{count}} Selected",
     ChoiceItemWidget:   ChoiceItem
 };
 
