@@ -117,6 +117,14 @@ const ChoiceItem = EventEmitter.extend(Widget).extend(/** @lends ChoiceItem.prot
     },
 
     /**
+     * Returns the data structure associated with this choice
+     * (same as `data` attribute passed on input to constructor)
+     */
+    getData() {
+        return PRIVATE.get(this).opt.data;
+    },
+
+    /**
      * returns the specific value in the Input (checkbox or radio) element `value` attribute
      *
      * @return {String}
@@ -195,7 +203,8 @@ ChoiceItem.defaults = {
     title:  "",
     value:  "",
     type:   "radio", // checkbox -or- radio
-    id:     ""
+    id:     "",
+    data:   null
 };
 
 export default ChoiceItem;

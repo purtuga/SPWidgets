@@ -196,12 +196,15 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
     },
 
     /**
-     * Get selected values. (alias method for `getValue()`)
+     * Unlike `getValue()`  which returns only the input value (a string), this
+     * method will return the object used on input to create the item widget.
      *
-     * @returns {Array<String>}
+     * @returns {Array<String|Object>}
      */
     getSelected: function(){
-        return this.getValue();
+        return PRIVATE.get(this).choiceList
+            .filter(wdg => wdg.isChecked())
+            .map(wdg => wdg.getData());
     },
 
     /**
@@ -341,7 +344,8 @@ function addChoicesToUI(choiceList) {
             type:   isMulti ? "checkbox" : "radio",
             name:   groupName,
             title:  isString ? choice : choice.title,
-            value:  isString ? choice : choice.value
+            value:  isString ? choice : choice.value,
+            data:   choice
         });
 
         /**
