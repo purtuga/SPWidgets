@@ -212,14 +212,29 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
      * and setting their state to "selected" if they match the value
      * passed on input.
      *
-     * @param {String|Array<String>} newValue
-     *  The new value(s) that should be marked selected.
+     * @param {String|Array<String>|Array<Object>} newValue
+     *  The new value(s) that should be marked selected. When using `Array<Object>`
+     *  format, ensure that each object has a property named `value`.
      *
      * @returns {Promise}
      */
     setSelected: function(newValue){
         let inst    = PRIVATE.get(this);
         let newVals = Array.isArray(newValue) ? newValue : [newValue];
+
+        // Ensure that array of new values to be selected are single value strings which
+        // are then compared against the input value of the choice field widget.
+        newVals = newVals.map(function(newVal){
+            if (typeof newVal === "string") {
+                return newVal;
+            }
+
+            if (newVal && newVal.hasOwnProperty("value")) {
+                return newVal.value;
+            }
+
+            return newVal;
+        });
 
         return inst.onReady.then(() => {
             inst.choiceList.forEach((choiceWdg) => {
