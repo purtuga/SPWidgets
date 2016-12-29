@@ -110,7 +110,7 @@ import objectExtend from "vendor/jsutils/objectExtend";
                             "</rowLimit><queryOptions>" +
                             (opt.CAMLQueryOptions || "<QueryOptions></QueryOptions>") +
                             "</queryOptions>" +
-                            (
+                            (   // Insert Change Token if operation is "GetListItemChangesSinceToken"
                                 opt.operation === "GetListItemChangesSinceToken" ?
                                     "<changeToken>" + (opt.changeToken || "") + "</changeToken>" :
                                     ""

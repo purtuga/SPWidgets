@@ -41,8 +41,25 @@ ListColumnModel = /** @lends ListColumnModel.prototype */{
             Sortable:       "",
             StaticName:     "",
             Required:       false,
-            ReadOnly:       false
+            ReadOnly:       false,
+            webURL:         "",         // SPWidgets inserted value if available
+            listID:         "",         // SPWigets inserted value if available
+            listName:       ""          // SPWigets inserted value if available
         }, columnData);
+
+        if (opt.list) {
+            if (opt.list.getWebUrl) {
+                this.webURL = opt.list.getWebUrl();
+            }
+
+            if (opt.list.ID) {
+                this.listID = opt.list.ID;
+            }
+
+            if (opt.list.Title) {
+                this.listName = opt.list.Name;
+            }
+        }
 
         instData.set(this, opt);
     },

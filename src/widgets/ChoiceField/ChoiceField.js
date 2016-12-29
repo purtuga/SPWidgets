@@ -13,6 +13,8 @@ import domHasClass          from "common-micro-libs/src/domutils/domHasClass"
 import domFind              from "common-micro-libs/src/domutils/domFind"
 import domClosest           from "common-micro-libs/src/domutils/domClosest"
 
+import getListColumns       from "../../spapi/getListColumns"
+
 import ChoiceItem           from "./ChoiceItem/ChoiceItem"
 import ChoiceFieldTemplate  from "./ChoiceField.html"
 import "./ChoiceField.less"
@@ -34,7 +36,7 @@ var CSS_CLASS_NO_DESCRIPTION    = CSS_CLASS_BASE + "--noDescription";
  * @extends Widget
  * @extends EventEmitter
  *
- * @param {Object} options
+ * @param {Object} [options]
  *
  * @param {ListColumnModel} [options.column={}]
  *  Although optional, it is strongly suggested this be passed in on input, since
@@ -335,7 +337,27 @@ function getChoices() {
         type    = column.Type;
 
     if (type === "Choice" || type === "MultiChoice") {
-        return column.getColumnValues();
+        // If the column object does not have a "getColumnValues()" method,
+        // then retrieve the column from the list definition and then use it.
+        if (!column.getColumnValues && (column.listID || column.listName)) {
+
+            return getListColumns({
+                listName:   column.listID || column.listName,
+                webURL:     column.webURL
+            }).then((cols) => {
+                let thisColumn = cols.getColumn(column.StaticName || column.DisplayName);
+
+                if (thisColumn) {
+                    return thisColumn.getColumnValues();
+                }
+
+                return [];
+            });
+
+        } else if (column.getColumnValues) {
+            return column.getColumnValues();
+        }
+
     }
 
     return Promise.resolve([]);
