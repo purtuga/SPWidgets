@@ -43,6 +43,11 @@ var CSS_CLASS_NO_DESCRIPTION    = CSS_CLASS_BASE + "--noDescription";
  *  some of display values are obtained from the list column definition - example
  *  the label (DisplayName) and field description if any.
  *
+ * @param {String} [options.listName]
+ *  The list name or UUID.
+ *
+ * @param {String} [options.webURL]
+ *
  * @param {String} [options.selected=""]
  *  The item in the list of choices that should be selected. Either the `value` or
  *  `title` can be used.
@@ -332,18 +337,19 @@ function updateSelectedCount(){
 }
 
 function getChoices() {
-    var inst    = PRIVATE.get(this),
-        column  = inst.opt.column,
-        type    = column.Type;
+    let inst                = PRIVATE.get(this);
+    let {listName, webURL}  = inst.opt;
+    let column  = inst.opt.column;
+    let type    = column.Type;
 
     if (type === "Choice" || type === "MultiChoice") {
         // If the column object does not have a "getColumnValues()" method,
         // then retrieve the column from the list definition and then use it.
-        if (!column.getColumnValues && (column.listID || column.listName)) {
+        if (!column.getColumnValues && listName) {
 
             return getListColumns({
-                listName:   column.listID || column.listName,
-                webURL:     column.webURL
+                listName:   listName,
+                webURL:     webURL
             }).then((cols) => {
                 let thisColumn = cols.getColumn(column.StaticName || column.DisplayName);
 
@@ -405,6 +411,8 @@ function markAllChoiceFields() {
 
 ChoiceField = EventEmitter.extend(Widget, ChoiceField);
 ChoiceField.defaults = {
+    listName:           "",
+    webURL:             "",
     column:             {},
     selected:           "",
     checkAll:           false,
