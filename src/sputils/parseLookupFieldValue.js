@@ -1,13 +1,13 @@
 /**
  * Parses a Sharepoint lookup values as returned by webservices
- * (id;#title;#id;#Title) into an array of objects.
+ * (SOAP, ex: `id;#title;#id;#Title`) into an array of objects.
  *
- * @param {String} v
+ * @param {String} lookupValue
  *  Lookup items string as returned by SP - usually in format of
  *  `id;#valueHere`.
  *
  * @return {Array<Object>}
- *  Array of objects. Each object has two keys; title and id
+ *  Array of objects. Each object has two keys; `Title` and `ID`
  *
  * @example
  *
@@ -15,44 +15,42 @@
  * // Returns:
  * [
  *      {
- *          id: "1",
- *          title: "item one title"
+ *          ID: "1",
+ *          Title: "item one title"
  *      },
  *      {
- *          id: "2",
- *          title: "item two title"
+ *          ID: "2",
+ *          Title: "item two title"
  *      }
  * ]
  */
-const parseLookupFieldValue = function(v) {
+const parseLookupFieldValue = function(lookupValue) {
+    var response    = [],
+        valueTokens = String(lookupValue).split(';#'),
+        total       = valueTokens.length,
+        i, vId, vTitle;
 
-    var r       = [],
-        a       = String(v).split(';#'),
-        total   = a.length,
-        i, n, t;
-
-    if (v === undefined) {
-
-        return r;
-
+    if (lookupValue === undefined) {
+        return response;
     }
 
     for (i=0; i<total; i++){
-
-        n = a[i];
+        vId = valueTokens[i];
         i++;
-        t = a[i];
+        vTitle = valueTokens[i];
 
-        if (n || t) {
-
-            r.push({ id: n, title: t });
-
+        if (vId || vTitle) {
+            response.push({
+                // FIXME: remove deprecated values
+                /* DEPRECATED */ id:     vId,
+                /* DEPRECATED */ title:  vTitle,
+                ID:     vId,
+                Title:  vTitle
+            });
         }
-
     }
 
-    return r;
-
+    return response;
 };
 
 export default parseLookupFieldValue;

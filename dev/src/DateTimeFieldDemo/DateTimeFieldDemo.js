@@ -1,8 +1,8 @@
-import Widget                       from "vendor/jsutils/Widget"
-import dataStore                    from "vendor/jsutils/dataStore"
-import objectExtend                 from "vendor/jsutils/objectExtend"
-import fillTemplate                 from "vendor/jsutils/fillTemplate"
-import parseHTML                    from "vendor/jsutils/parseHTML"
+import Widget                       from "common-micro-libs/src/jsutils/Widget"
+import dataStore                    from "common-micro-libs/src/jsutils/dataStore"
+import objectExtend                 from "common-micro-libs/src/jsutils/objectExtend"
+import fillTemplate                 from "common-micro-libs/src/jsutils/fillTemplate"
+import parseHTML                    from "common-micro-libs/src/jsutils/parseHTML"
 import DateTimeField                from "../../../src/widgets/DateTimeField/DateTimeField"
 import DateTimeFieldDemoTemplate    from "./DateTimeFieldDemo.html"
 

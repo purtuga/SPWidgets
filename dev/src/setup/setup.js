@@ -8,6 +8,7 @@ import ListPickerDemo       from '../ListPickerDemo/ListPickerDemo'
 import ColumnPickerDemo     from '../ColumnPickerDemo/ColumnPickerDemo'
 import DateTimeFieldDemo    from '../DateTimeFieldDemo/DateTimeFieldDemo'
 import ChoiceFieldDemo      from '../ChoiceFieldDemo/ChoiceFieldDemo'
+import PersonaCardDemo      from '../PersonaCardDemo/PersonaCardDemo'
 
 
 //==============================================================
@@ -23,7 +24,8 @@ let demoComponents  = {
     ListPickerDemo,
     ColumnPickerDemo,
     DateTimeFieldDemo,
-    ChoiceFieldDemo
+    ChoiceFieldDemo,
+    PersonaCardDemo
 };
 
 Object.keys(demoComponents).forEach((demoName) => {

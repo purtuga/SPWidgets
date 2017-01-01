@@ -1,6 +1,6 @@
-import Widget from "vendor/jsutils/Widget";
-import parseHTML from "vendor/jsutils/parseHTML";
-import domFind from "vendor/domutils/domFind";
+import Widget from "common-micro-libs/src/jsutils/Widget";
+import parseHTML from "common-micro-libs/src/jsutils/parseHTML";
+import domFind from "common-micro-libs/src/domutils/domFind";
 import SPPeoplePicker from "../../../src/widgets/PeoplePicker/PeoplePicker";
 import template from "./SPPeoplePickerDemo.html";
 

@@ -10,6 +10,8 @@ import objectExtend from "vendor/jsutils/objectExtend"
  * @extends Compose
  *
  * @param {Object} [modelProperties]
+ * @param {Object} [options]
+ * @param {String} [options.webURL]
  */
 var UserProfileModel = Compose.extend(/** @lends UserProfile.prototype */{
     init: function(modelProperties, options){
@@ -62,8 +64,15 @@ var UserProfileModel = Compose.extend(/** @lends UserProfile.prototype */{
         }
 
         // If there is a DisplayName but no Name, then set the name
-        if (this.DisplayName && !this.Name) {
+        if (
+            !this.Name &&
+            (this.DisplayName || this.FirstName || this.LastName)
+        ) {
             this.Name = this.DisplayName;
+
+            if (!this.Name) {
+                this.Name = `${this.FirstName} ${this.LastName}`
+            }
         }
 
         if (!this.UserPhoto && this.AccountName) {
