@@ -30,9 +30,9 @@ const CSS_CLASS_BASE            = "spwidgets-PersonaCard";
 const PersonaCard = EventEmitter.extend(Widget).extend(/** @lends PersonaCard.prototype */{
     init(options) {
         var inst = {
-            opt: objectExtend({}, this.getFactory().defaults, options),
-            activeDetails: null,
-            detailWidgets: {}
+            opt:            objectExtend({}, this.getFactory().defaults, options),
+            activeDetails:  null,
+            detailWidgets:  {}
         };
 
         PRIVATE.set(this, inst);
@@ -108,8 +108,7 @@ const PersonaCard = EventEmitter.extend(Widget).extend(/** @lends PersonaCard.pr
 
             if (actionSetup && actionSetup.details) {
                 if (actionSetup.details.appendTo) {
-                    actionSetup.details.appendTo($actionDetailBox);
-                    return;
+                    detailWidgets[id] = actionSetup.details;
                 }
 
                 if (!detailWidgets[id]) {
@@ -122,6 +121,11 @@ const PersonaCard = EventEmitter.extend(Widget).extend(/** @lends PersonaCard.pr
                 inst.activeDetails = detailWidgets[id];
             }
         });
+
+        let selectedAction = actionsWdg.getSelected();
+        if (selectedAction) {
+            actionsWdg.emit("click", selectedAction);
+        }
 
         /**
          * User clicked on an action

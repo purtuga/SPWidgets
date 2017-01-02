@@ -1,4 +1,5 @@
 import Widget       from "common-micro-libs/src/jsutils/Widget"
+import EventEmitter from "common-micro-libs/src/jsutils/EventEmitter"
 import dataStore    from "common-micro-libs/src/jsutils/dataStore"
 import objectExtend from "common-micro-libs/src/jsutils/objectExtend"
 import fillTemplate from "common-micro-libs/src/jsutils/fillTemplate"
@@ -17,6 +18,7 @@ const PRIVATE = dataStore.create();
  *
  * @class PersonaCardActionDetails
  * @extends Widget
+ * @extends EventEmitter
  *
  * @param {Object} options
  * @param {Array<Object>} options.details
@@ -26,7 +28,7 @@ const PRIVATE = dataStore.create();
  *  -   `value`: the value for detail item. Could be a string of HTML
  *
  */
-const PersonaCardActionDetails = Widget.extend(/** @lends PersonaCardActionDetails.prototype */{
+const PersonaCardActionDetails = EventEmitter.extend(Widget).extend(/** @lends PersonaCardActionDetails.prototype */{
     init(options) {
         var inst = {
             opt: objectExtend({}, this.getFactory().defaults, options)

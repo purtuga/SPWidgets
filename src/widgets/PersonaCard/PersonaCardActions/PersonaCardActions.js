@@ -15,7 +15,8 @@ import actionTemplate               from "./action.html"
 
 //==========================================================================
 const PRIVATE = dataStore.create();
-const CSS_CLASS_IS_ACTIVE       = "is-active";
+const CSS_CLASS_IS_ACTIVE               = "is-active";
+const CSS_CLASS_MS_PERSONA_CARD_ACTION  = "ms-PersonaCard-action";
 
 
 /**
@@ -29,21 +30,23 @@ const CSS_CLASS_IS_ACTIVE       = "is-active";
  * @param {Array<Object>} options.actions
  *  An array of actions. Each action can have the following properties:
  *
- *  -   `icon`:     A CSS class. (ex. `ms-Icon--Mail`)
- *  -   `title`:    The title for the item.
- *  -   `id`:       the action's id
+ *  -   `icon`:     `{String}` - A CSS class. (ex. `ms-Icon--Mail`)
+ *  -   `title`:    `{String}` - The title for the item.
+ *  -   `id`:       `{String}` - the action's id
+ *  -   `selected`: `{Boolean}` - If true, then item will be selected
  *
  * @fires PersonaCardActions#click
  */
 const PersonaCardActions = EventEmitter.extend(Widget).extend(/** @lends PersonaCardActions.prototype */{
     init(options) {
         var inst = {
-            opt: objectExtend({}, this.getFactory().defaults, options)
+            opt: objectExtend({}, this.getFactory().defaults, options),
+            selected: null
         };
 
         PRIVATE.set(this, inst);
 
-        let $ui = this.$ui = this.getTemplate();
+        let $ui         = this.$ui = this.getTemplate();
 
         if (typeof $ui === "string") {
             $ui = this.$ui = parseHTML(fillTemplate($ui, {
@@ -53,23 +56,33 @@ const PersonaCardActions = EventEmitter.extend(Widget).extend(/** @lends Persona
                         if (!action.id) {
                             action.id = uuid.generate();
                         }
+
+                        if (action.selected) {
+                            inst.selected = action;
+                        }
+
                         return action;
                     })
                 )
             })).firstChild;
         }
 
-        let uiFind = $ui.querySelector.bind($ui);
+        let uiFind = inst.uiFind = $ui.querySelector.bind($ui);
+
+        if (inst.selected) {
+            this.setSelected(inst.selected);
+        }
 
         inst.clickEv = domAddEventListener($ui, "click", (ev) => {
-            let $actionEle  = domClosest(ev.target, ".ms-PersonaCard-action");
-            let $active     = uiFind(`.${CSS_CLASS_IS_ACTIVE}`);
+            let $actionEle  = domClosest(ev.target, `.${ CSS_CLASS_MS_PERSONA_CARD_ACTION }`);
 
-            if ($actionEle && $active !== $actionEle) {
-                domToggleClass($active,  CSS_CLASS_IS_ACTIVE);
-                domToggleClass($actionEle, CSS_CLASS_IS_ACTIVE);
+            if ($actionEle) {
+                let actionId = $actionEle.getAttribute("data-action-id");
 
-                this.emit("click", { id: $actionEle.getAttribute("data-action-id")});
+                if (actionId) {
+                    this.setSelected(actionId);
+                    this.emit("click", { id: actionId });
+                }
             }
         });
 
@@ -111,6 +124,54 @@ const PersonaCardActions = EventEmitter.extend(Widget).extend(/** @lends Persona
      */
     getActionTemplate() {
         return actionTemplate;
+    },
+
+    /**
+     * Sets an action as Selected.
+     *
+     * @param {String|Object} selectAction
+     */
+    setSelected(selectAction) {
+        let inst    = PRIVATE.get(this);
+        let uiFind  = inst.uiFind;
+        let actions = inst.opt.actions;
+        let id      = typeof selectAction === "string" ? selectAction : "";
+
+        if (!id) {
+            actions.some((action) => {
+                if (
+                    action === selectAction ||
+                    (
+                        selectAction    &&
+                        selectAction.id &&
+                        selectAction.id === action.id
+                    )
+                ) {
+                    id              = action.id;
+                    inst.selected   = action;
+                    return true;
+                }
+            });
+        }
+
+        if (id) {
+            let $actionEle  = uiFind(`.${ CSS_CLASS_MS_PERSONA_CARD_ACTION }[data-action-id="${ id }"]`);
+            let $active     = uiFind(`.${CSS_CLASS_IS_ACTIVE}`);
+
+            if ($actionEle && $active !== $actionEle) {
+                domToggleClass($active,  CSS_CLASS_IS_ACTIVE);
+                domToggleClass($actionEle, CSS_CLASS_IS_ACTIVE);
+            }
+        }
+    },
+
+    /**
+     * Returns the object of the currently selected action.
+     *
+     * @return {Object|undefined}
+     */
+    getSelected() {
+        return PRIVATE.get(this).selected;
     }
 });
 

@@ -64,13 +64,10 @@ var UserProfileModel = Compose.extend(/** @lends UserProfile.prototype */{
         }
 
         // If there is a DisplayName but no Name, then set the name
-        if (
-            !this.Name &&
-            (this.DisplayName || this.FirstName || this.LastName)
-        ) {
-            this.Name = this.DisplayName;
+        if (!this.Name) {
+            this.Name = this.DisplayName || this.PreferredName;
 
-            if (!this.Name) {
+            if (!this.Name && (this.FirstName || this.LastName)) {
                 this.Name = `${this.FirstName} ${this.LastName}`
             }
         }
