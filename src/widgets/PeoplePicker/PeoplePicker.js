@@ -480,6 +480,31 @@ let PeoplePicker = /** @lends PeoplePicker.prototype */{
     },
 
     /**
+     * Removes all currently selected people and replaces them with new set.
+     *
+     * @param {Object|Array<Object>|String} people
+     *  The object defined with the new set of people. Should have
+     *  at least two attributes: `ID` and `AccountName`.
+     *  If no `ID` is defined but `AccountName` or DisplayName is, an
+     *  API call will be made attempting to identify the person's ID
+     *  on the site.
+     *  A `String` can also be used, in which case it is assume to be one
+     *  in the format normally returned by the SOAP API (ex. ID;#name).
+     *  Example of person definition:
+     *
+     *      {
+     *          ID: "123",
+     *          AccountName: "John Doe"
+     *      }
+     *
+     * @returns {Promise<Array<PeoplePickerUserProfileModel>, Error>}
+     */
+    setSelected(people) {
+        this.clear();
+        return this.add(people);
+    },
+
+    /**
      * Returns an array of `UserProfileModels` for those that are currently
      * selected.
      *
