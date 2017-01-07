@@ -447,7 +447,9 @@ define([
                         Inst.$ele.find("div.spwidget-type-lookup input")
                             .each(function(){
 
-                                var $field = $(this);
+                                var $field      = $(this);
+                                var colDef      = colsDef.getColumn($field.attr("name"));
+                                var showField   = colDef.ShowField;
 
                                 lookupFieldWidget(
                                     $field,
@@ -455,8 +457,10 @@ define([
                                         list:           $field
                                                             .closest("div.spwidget-column")
                                                             .data("spwidget_list"),
-                                        template:       '<div>{{Title}} <span class="spwidgets-item-remove">[x]</span></div>',
-                                        listTemplate:   '{{Title}}',
+                                        template:       '<div>{{' + showField + '}} <span class="spwidgets-item-remove">[x]</span></div>',
+                                        listTemplate:   '{{' + showField + '}}',
+                                        selectFields:   [showField],
+                                        filterFields:   [showField],
                                         allowMultiples: true,
                                         readOnly:       false,
                                         filter:         '',
