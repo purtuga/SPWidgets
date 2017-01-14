@@ -275,6 +275,27 @@ import "./FilterColumn.less";
         },
 
         /**
+         * Removes a list of compare operators from the list
+         *
+         * @param {Array<String>|String} operators
+         *  An array with the internal (`value`) value of the operators to be removed.
+         */
+        removeCompareOperators(operators) {
+            let compareOperator = PRIVATE.get(this).compareOperator;
+            let domSelector     = (Array.isArray(operators) ? operators : [operators]).reduce((selector, operator) => {
+                if (operator) {
+                    if (selector) {
+                        selector += ",";
+                    }
+                    selector += `option[value='${ operator }']`
+                }
+                return selector;
+            }, "");
+            let selectorOptionElements = domFind(compareOperator, domSelector);
+            selectorOptionElements.forEach( optionEle => optionEle.parentNode.removeChild(optionEle));
+        },
+
+        /**
          * Selects the given comparison operator on the widget.
          *
          * @param {String} internalOperatorName

@@ -480,7 +480,8 @@ let PeoplePicker = /** @lends PeoplePicker.prototype */{
     },
 
     /**
-     * Removes all currently selected people and replaces them with new set.
+     * Removes all currently selected people and replaces them with new set. `add` method
+     * is called after clearing all selected people.
      *
      * @param {Object|Array<Object>|String} people
      *  The object defined with the new set of people. Should have

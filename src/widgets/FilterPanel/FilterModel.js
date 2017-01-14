@@ -137,6 +137,10 @@ FilterModel = {
                     });
 
                     break;
+
+                case "DateTime":
+                    template = "<FieldRef Name='{{colName}}'/><Value Type='DateTime'>{{colValue}}</Value>";
+                    break;
             }
         }
 
