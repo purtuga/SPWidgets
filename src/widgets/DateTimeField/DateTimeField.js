@@ -181,7 +181,15 @@ var DateTimeField = /** @lends DateTimeField.prototype */{
         }
 
         if (date instanceof Date) {
-            PRIVATE.get(this).dateWdg.setDate(date);
+            let {dateWdg, isDateOnly}   = PRIVATE.get(this);
+            let hours                   = date.getHours();
+            let minutes                 = date.getMinutes();
+
+            dateWdg.setDate(date);
+
+            if (!isDateOnly) {
+                dateWdg.setTime(hours, minutes);
+            }
         }
     }
 };

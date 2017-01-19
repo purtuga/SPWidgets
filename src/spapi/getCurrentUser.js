@@ -1,12 +1,16 @@
-import apiFetch         from "../sputils/apiFetch"
-import cache            from "../sputils/cache"
-import getSiteWebUrl    from "./getSiteWebUrl"
-import searchPrincipals from "./searchPrincipals"
 import fetchPolyfill    from "vendor/jsutils/es7-fetch"
 import objectExtend     from "vendor/jsutils/objectExtend"
 import Promise          from "vendor/jsutils/es6-promise"
 import parseHTML        from "vendor/jsutils/parseHTML"
 import domFind          from "vendor/domutils/domFind"
+
+import apiFetch         from "../sputils/apiFetch"
+import cache            from "../sputils/cache"
+import getSiteWebUrl    from "./getSiteWebUrl"
+import searchPrincipals from "./searchPrincipals"
+import getUserProfile   from "./getUserProfile"
+import UserProfileModel from "../models/UserProfileModel"
+
 
 //-----------------------------------------------------------------------
 /* globals _spPageContextInfo  */
@@ -30,23 +34,25 @@ const consoleLog    = console.log.bind(console);  // jshint ignore:line
  *
  */
 const getCurrentUser = function(options){
-    var
-    cacheId     = "getCurrentUserData",
-    opt         = objectExtend({}, getCurrentUser.defaults, options),
-    reqPromise  =  Promise.resolve();
-
-    reqPromise.then(function(){
+    let cacheId             = "getCurrentUserData";
+    let opt                 = objectExtend({}, getCurrentUser.defaults, options);
+    let UserProfileModel    = opt.UserProfileModel;
+    let returnProfileClone  = profile => UserProfileModel.create(profile, opt);
+    let reqPromise          =  Promise.resolve().then(function(){
         if (cache.isCached(cacheId)) {
-            return cache.get(cacheId);
+            return cache.get(cacheId).then(returnProfileClone);
         }
 
         cache(cacheId, reqPromise);
-
         return searchUserPrincipals(opt);
-
     })[PROMISE_CATCH](function(e){
         consoleLog(e);
-        return scrapeUserDisplayPage(opt);
+        return scrapeUserDisplayPage(opt).then(userInfo => {
+            return getUserProfile({
+                accountName:    userInfo.AccountName || userInfo.UserName,
+                webURL:         opt.webURL
+            });
+        });
 
     // Unable to get current user
     })[PROMISE_CATCH](function(e){
@@ -54,7 +60,7 @@ const getCurrentUser = function(options){
         return Promise.reject(new Error("Unable to get current user info."));
     });
 
-    return reqPromise;
+    return reqPromise.then(returnProfileClone);
 };
 
 /**
@@ -198,9 +204,9 @@ function scrapeUserDisplayPage(opt) {
                     userInfo.AccountName = userInfo.Name;
                 }
 
-                if (userInfo.ID) {
-                    // FIXME: need to use getUserProfile now to get good profile
+                userInfo.Name = `${ userInfo.FirstName } ${ userInfo.LastName }`;
 
+                if (userInfo.ID) {
                     return userInfo;
                 }
 
@@ -238,7 +244,8 @@ function scrapeUserDisplayPage(opt) {
 
 
 getCurrentUser.defaults = {
-    webURL: null
+    webURL:             null,
+    UserProfileModel:   UserProfileModel
 };
 
 export default getCurrentUser;
