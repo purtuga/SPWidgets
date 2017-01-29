@@ -461,6 +461,7 @@ define([
                                         listTemplate:   '{{' + showField + '}}',
                                         selectFields:   [showField],
                                         filterFields:   [showField],
+                                        filterOrderBy:  '<OrderBy><FieldRef Name="' + showField + '" Ascending="TRUE"/></OrderBy>',
                                         allowMultiples: true,
                                         readOnly:       false,
                                         filter:         '',
