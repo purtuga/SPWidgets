@@ -1,13 +1,18 @@
-import Compose      from "../jsutils/Compose"
-import objectExtend from "../jsutils/objectExtend"
-import dataStore    from "../jsutils/dataStore"
+import Compose      from "common-micro-libs/src/jsutils/Compose"
+import objectExtend from "common-micro-libs/src/jsutils/objectExtend"
+import dataStore    from "common-micro-libs/src/jsutils/dataStore"
+import parseHTML    from "common-micro-libs/src/jsutils/parseHTML"
+import domFind      from "common-micro-libs/src/domutils/domFind"
 
 
 var PRIVATE = dataStore.stash;
 
 /**
- * Model for SharePoint List Items (rows). Object return will include all of
- * the properties that were given on input.
+ * Model for SharePoint List Items (rows). Object returned will include all of
+ * the properties that were given on input (row). In addition, if `options`
+ * are provided on input and those have a `CAMLViewFields`, then the model
+ * will have one attribute for each - even if those were not included in the
+ * `itemData` (SharePoint does not return empty attributes)
  *
  * @class ListItemModel
  * @extends Compose
@@ -28,6 +33,16 @@ const ListItemModel = Compose.extend(/** @lends ListItemModel.prototype */{
         if (itemData) {
             objectExtend(this, itemData);
         }
+
+        // If options has CAMLViewFields, then ensure the model has
+        // those fields defined as attributes
+        if (opt && opt.CAMLViewFields) {
+            domFind(parseHTML(opt.CAMLViewFields), "FieldRef").forEach(fieldEle => {
+                let fieldName = fieldEle.getAttribute("Name");
+                if (fieldName && !this.hasOwnProperty(fieldName)) {
+                    this[fieldName] = "";
+                }
+            });                                                                              }
 
         PRIVATE.set(this, opt);
 

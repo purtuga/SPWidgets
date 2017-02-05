@@ -129,7 +129,8 @@ let PeoplePicker = /** @lends PeoplePicker.prototype */{
             resultGroup:    null,
             bodyClickEv:    null,
             lastSearchInput:"",
-            suppressFocus:  false,
+            lastSearchId:   1,
+            isSilentFocus:  false,
             selected:       [] // array of Persona widgets
         };
 
@@ -151,6 +152,7 @@ let PeoplePicker = /** @lends PeoplePicker.prototype */{
         inst.$inputCntr     = uiFind(SELECTOR_BASE + "-searchFieldCntr");
 
         // Detach the Suggestions element
+        // FIXME: need to move this to a Popup widget
         $suggestions.parentNode.removeChild($suggestions);
 
         if (opt.resultsZIndex) {
@@ -186,10 +188,15 @@ let PeoplePicker = /** @lends PeoplePicker.prototype */{
             $input.value = "";
         });
 
+        // Cancel bubbling of mouse clicks inside the suggestions (results)
+        domAddEventListener($suggestions, "click", (ev) => ev.stopPropagation() && ev.preventDefault());
+
         // Focusing on the Input field, show the suggestions
         // and sets up the event to close it clicking outside of it.
         domAddEventListener($input, "focus", function(){
-            this.showResults();
+            if (!inst.isSilentFocus) {
+                this.showResults();
+            }
         }.bind(this));
 
         // On blur: we want to hide the results popup, but only if the user
@@ -212,6 +219,7 @@ let PeoplePicker = /** @lends PeoplePicker.prototype */{
             inst.lastSearchInput = searchInput;
 
             if (!searchInput) {
+                inst.lastSearchId++;
                 requestSuggestions = undefined;
                 clearSuggestions.call(this);
                 return;
@@ -219,17 +227,28 @@ let PeoplePicker = /** @lends PeoplePicker.prototype */{
 
             // If not min length, exit
             if (searchInput.length < inst.opt.minLength) {
+                inst.lastSearchId++;
                 clearSuggestions.call(this);
                 return;
             }
 
-            var exec = function(){
+            let exec = function(){
                 if (exec === requestSuggestions) {
+                    inst.lastSearchId++;
+                    let searchId = inst.lastSearchId;
+
                     domAddClass($ui, CSS_CLASS_IS_SEARCHING);
                     domAddClass($suggestions, CSS_CLASS_IS_SEARCHING);
 
                     getSuggestions.call(this)
                         .then(function(peopleList){
+                            // if already stale, then do nothing
+                            if (searchId !== inst.lastSearchId) {
+                                domRemoveClass($ui, CSS_CLASS_IS_SEARCHING);
+                                domRemoveClass($suggestions, CSS_CLASS_IS_SEARCHING);
+                                return;
+                            }
+
                             showSuggestions.call(this, peopleList);
                             domRemoveClass($ui, CSS_CLASS_IS_SEARCHING);
                             domRemoveClass($suggestions, CSS_CLASS_IS_SEARCHING);
@@ -520,9 +539,16 @@ let PeoplePicker = /** @lends PeoplePicker.prototype */{
 
     /**
      * Sets focus on the input search element
+     *
+     * @param {Boolean} [isSilent=false]
+     *  If true, then event associated with the input focus will not be executed and
+     *  the input will simply receive focus.
      */
-    setFocus: function(){
-        PRIVATE.get(this).$input.focus();
+    setFocus: function(isSilent){
+        let inst = PRIVATE.get(this);
+        inst.isSilentFocus = isSilent;
+        inst.$input.focus();
+        inst.isSilentFocus = false;
     },
 
     /**
@@ -658,10 +684,11 @@ function positionResultsPopup() {
  * @private
  *
  * @param {String} [searchString]
+ * @param {Number} [searchId]
  *
  * @return {Promise}
  */
-function getSuggestions(searchString) {
+function getSuggestions(searchString, searchId) {
     var inst        = PRIVATE.get(this),
         opt         = inst.opt,
         selected    = inst.selected;
@@ -677,6 +704,11 @@ function getSuggestions(searchString) {
         })
         // filter out those already selected
         .then(function(results){
+            // If not the last thing the user types, exit.
+            if (searchId && inst.lastSearchId !== searchId) {
+                return;
+            }
+
             var filteredResults = results.slice(0);
 
             // Insert the "ME" entry if that was the text the user entered
@@ -716,20 +748,19 @@ function getSuggestions(searchString) {
  * @private
  */
 function showSuggestions(peopleList) {
-    var inst        = PRIVATE.get(this);
+    let inst = PRIVATE.get(this);
 
     // FIXME: need to ensure that this set of results matches the last request made for data. Else, don't show it
 
     clearSuggestions.call(this);
 
-    inst.resultGroup = inst.opt.ResultGroupWidget.create({
+    let resultGroup = inst.resultGroup = inst.opt.ResultGroupWidget.create({
         results: peopleList
     });
 
-    inst.resultGroup.appendTo(inst.$groups);
-
-    inst.resultGroup.on("result-click", function(result){
-        var resultModel = result.getUserProfile();
+    resultGroup.appendTo(inst.$groups);
+    resultGroup.on("result-click", (result) => {
+        let resultModel = result.getUserProfile();
 
         if (String(resultModel.ID) === "-1") {
             resultModel.resolvePrincipal();
@@ -741,6 +772,8 @@ function showSuggestions(peopleList) {
         }
 
         positionResultsPopup.call(this);
+        inst.$input.value = "";
+        this.setFocus(true);
 
         /**
          * A suggestion was selected.
@@ -749,7 +782,7 @@ function showSuggestions(peopleList) {
          * @type {PeoplePickerUserProfileModel}
          */
         this.emit("select", resultModel);
-    }.bind(this));
+    });
 }
 
 /**
