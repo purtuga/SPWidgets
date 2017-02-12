@@ -1,4 +1,4 @@
-import objectExtend from "vendor/jsutils/objectExtend";
+import objectExtend from "common-micro-libs/src/jsutils/objectExtend";
 
     /**
      * Given an array of CAML matches, this method will wrap them all in a

@@ -1,4 +1,4 @@
-import objectExtend from "vendor/jsutils/objectExtend";
+import objectExtend from "common-micro-libs/src/jsutils/objectExtend";
 
     /**
      * Returns the requested nodes from the given xml document

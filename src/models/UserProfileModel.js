@@ -1,5 +1,5 @@
-import Compose      from "vendor/jsutils/Compose"
-import objectExtend from "vendor/jsutils/objectExtend"
+import Compose      from "common-micro-libs/src/jsutils/Compose"
+import objectExtend from "common-micro-libs/src/jsutils/objectExtend"
 
 /**
  * Model for a user profile. Accounts for attributes returned by

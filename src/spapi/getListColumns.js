@@ -1,4 +1,4 @@
-import objectExtend from "vendor/jsutils/objectExtend";
+import objectExtend from "common-micro-libs/src/jsutils/objectExtend";
 import getList from './getList';
 import cache from '../sputils/cache';
 import getNodesFromXml from '../sputils/getNodesFromXml';

@@ -4,7 +4,7 @@ import ListItemModel from "../models/ListItemModel";
 import ListItemsCollection from "../collections/ListItemsCollection";
 import apiFetch from "../sputils/apiFetch";
 import getSiteWebUrl from "../spapi/getSiteWebUrl";
-import objectExtend from "vendor/jsutils/objectExtend";
+import objectExtend from "common-micro-libs/src/jsutils/objectExtend";
 
     /**
      * Method to retrieve data from a SharePoint list using GetListItems or

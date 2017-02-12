@@ -1,8 +1,8 @@
 import apiFetch from "../sputils/apiFetch";
 import cache from "../sputils/cache";
 import getSiteWebUrl from "./getSiteWebUrl";
-import objectExtend from "vendor/jsutils/objectExtend";
-import domFind from "vendor/domutils/domFind";
+import objectExtend from "common-micro-libs/src/jsutils/objectExtend";
+import domFind from "common-micro-libs/src/domutils/domFind";
 
     /**
      * Returns a Deferred that is resolved with an Array of Objects containing

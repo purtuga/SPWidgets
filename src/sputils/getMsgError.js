@@ -1,5 +1,5 @@
-import domFind from "vendor/domutils/domFind";
-import parseXML from "vendor/jsutils/parseXML";
+import domFind from "common-micro-libs/src/domutils/domFind";
+import parseXML from "common-micro-libs/src/jsutils/parseXML";
 
     /**
      * Given a sharepoint webservices response, this method will

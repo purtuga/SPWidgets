@@ -2,7 +2,7 @@ import apiFetch from "../sputils/apiFetch";
 import cache from "../sputils/cache";
 import getSiteWebUrl from "./getSiteWebUrl";
 import ListModel from "../models/ListModel";
-import objectExtend from "vendor/jsutils/objectExtend";
+import objectExtend from "common-micro-libs/src/jsutils/objectExtend";
 
  /**
  * Get a list definition from sharepoint or return its cached version

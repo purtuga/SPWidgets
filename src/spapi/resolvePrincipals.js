@@ -1,8 +1,8 @@
 import apiFetch from "../sputils/apiFetch";
 import getSiteWebUrl from "./getSiteWebUrl";
 import UserProfileModel from "../models/UserProfileModel";
-import objectExtend from "vendor/jsutils/objectExtend";
-import domFind from "vendor/domutils/domFind";
+import objectExtend from "common-micro-libs/src/jsutils/objectExtend";
+import domFind from "common-micro-libs/src/domutils/domFind";
 
     /**
      * Given a list of users, this method will resolve those if they

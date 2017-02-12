@@ -1,9 +1,9 @@
-import Compose         from "../jsutils/Compose"
-import objectExtend    from "../jsutils/objectExtend"
-import dataStore       from "../jsutils/dataStore"
+import Compose         from "common-micro-libs/src/jsutils/Compose"
+import objectExtend    from "common-micro-libs/src/jsutils/objectExtend"
+import dataStore       from "common-micro-libs/src/jsutils/dataStore"
 import getNodesFromXml from "../sputils/getNodesFromXml"
 import getListItems    from "../spapi/getListItems"
-import Promise         from "vendor/jsutils/es6-promise"
+import Promise         from "common-micro-libs/src/jsutils/es6-promise"
 
 
 var

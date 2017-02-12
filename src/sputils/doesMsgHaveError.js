@@ -1,4 +1,4 @@
-import domFind from "vendor/domutils/domFind";
+import domFind from "common-micro-libs/src/domutils/domFind";
 
     /**
      * Checks if an xml message has an error. Taken from

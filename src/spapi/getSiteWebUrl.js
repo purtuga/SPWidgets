@@ -1,4 +1,4 @@
-import Promise  from "vendor/jsutils/es6-promise";
+import Promise  from "common-micro-libs/src/jsutils/es6-promise";
 import apiFetch from "../sputils/apiFetch";
 import cache    from "../sputils/cache";
 

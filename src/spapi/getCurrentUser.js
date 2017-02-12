@@ -1,8 +1,8 @@
-import fetchPolyfill    from "vendor/jsutils/es7-fetch"
-import objectExtend     from "vendor/jsutils/objectExtend"
-import Promise          from "vendor/jsutils/es6-promise"
-import parseHTML        from "vendor/jsutils/parseHTML"
-import domFind          from "vendor/domutils/domFind"
+import fetchPolyfill    from "common-micro-libs/src/jsutils/es7-fetch"
+import objectExtend     from "common-micro-libs/src/jsutils/objectExtend"
+import Promise          from "common-micro-libs/src/jsutils/es6-promise"
+import parseHTML        from "common-micro-libs/src/jsutils/parseHTML"
+import domFind          from "common-micro-libs/src/domutils/domFind"
 
 import apiFetch         from "../sputils/apiFetch"
 import cache            from "../sputils/cache"

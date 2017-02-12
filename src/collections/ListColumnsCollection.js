@@ -1,6 +1,6 @@
-import objectExtend from "vendor/jsutils/objectExtend"
-import Collection from "vendor/jsutils/Collection"
-import dataStore from "vendor/jsutils/dataStore"
+import objectExtend from "common-micro-libs/src/jsutils/objectExtend"
+import Collection   from "common-micro-libs/src/jsutils/Collection"
+import dataStore    from "common-micro-libs/src/jsutils/dataStore"
 
 
 var PRIVATE = dataStore.create();
