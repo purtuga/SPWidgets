@@ -47,7 +47,8 @@ var Persona = {
 
         PRIVATE.set(this, inst);
 
-        let opt = inst.opt;
+        let opt     = inst.opt;
+        let emit    = this.emit.bind(this);
 
         this._model = opt.userProfile;
 
@@ -67,6 +68,7 @@ var Persona = {
         let $userPhotoImg = uiFind(`.${CSS_CLASS_MS_PERSONA}-imageArea img`);
         domAddEventListener($userPhotoImg, "error", handleUserPhotoLoadFailure.bind(this, $userPhotoImg));
 
+        inst.imgFailedEv = this.once("photo-load-failed", this.showInitials.bind(this));
 
         if (opt.size) {
             this.setSize(opt.size);
@@ -102,7 +104,7 @@ var Persona = {
              *
              * @event Persona#action-click
              */
-            this.emit("action-click");
+            emit("action-click");
             ev.stopPropagation();
         });
 
@@ -112,7 +114,7 @@ var Persona = {
              *
              * @event Persona#click
              */
-            this.emit("click");
+            emit("click");
         });
 
         this.onDestroy(function(){
