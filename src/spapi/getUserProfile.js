@@ -15,7 +15,9 @@ import domFind from "common-micro-libs/src/domutils/domFind";
  *  The desired user account name. (ex. DOMAIN\userName).
  *
  * @param {Object} [options.otherAttr]
- *  Any other attribute that should be added to the user profile model
+ *  Any other attribute that should be added to the user profile model.
+ *  These are added prior to the ones retrieved from `getUserProfile`,
+ *  thus they may be overwritten.
  *
  * @param {String} [options.webURL=current site]
  *
@@ -64,6 +66,11 @@ var getUserProfile = function(options){
             .then(function(response){
                 var profile = {};
 
+                // If user passed in other Attributes, add it to the model
+                if (opt.otherAttr) {
+                    objectExtend(profile, opt.otherAttr);
+                }
+
                 domFind(response.content, "PropertyData").forEach(function($prop){
                     var nameEle     = domFind($prop, "Name")[0],
                         valueEle    = domFind($prop, "Value")[0],
@@ -72,11 +79,6 @@ var getUserProfile = function(options){
 
                     profile[propName] = propValue;
                 });
-
-                // If user passed in other Attributes, add it to the model
-                if (opt.otherAttr) {
-                    objectExtend(profile, opt.otherAttr);
-                }
 
                 if (typeof profile.DisplayName === "undefined") {
                     profile.DisplayName = profile.Name || "";

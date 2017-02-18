@@ -17,7 +17,6 @@ import UserProfileModel from "../models/UserProfileModel"
 
 let fetch           = fetchPolyfill.fetch;
 const PROMISE_CATCH = "catch";
-const consoleLog    = console.log.bind(console);  // jshint ignore:line
 
 /**
  * Returns a `UserProfileModel` that represents the currently logged in user.
@@ -45,18 +44,20 @@ const getCurrentUser = function(options){
 
         cache(cacheId, reqPromise);
         return searchUserPrincipals(opt);
+
+    // if getting user principals fails, try scraping user display page
     })[PROMISE_CATCH](function(e){
-        consoleLog(e);
         return scrapeUserDisplayPage(opt).then(userInfo => {
             return getUserProfile({
-                accountName:    userInfo.AccountName || userInfo.UserName,
-                webURL:         opt.webURL
+                accountName:        userInfo.AccountName || userInfo.UserName,
+                webURL:             opt.webURL,
+                otherAttr:          userInfo,
+                UserProfileModel:   UserProfileModel
             });
         });
 
     // Unable to get current user
     })[PROMISE_CATCH](function(e){
-        consoleLog(e); // jshint ignore:line
         return Promise.reject(new Error("Unable to get current user info."));
     });
 
