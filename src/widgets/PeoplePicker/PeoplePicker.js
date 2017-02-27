@@ -29,7 +29,7 @@ import "./PeoplePicker.less"
 //-----------------------------------------------------------------------------------------
 
 // FIXME: support for 'Suggested' grouping
-
+// FIXME: Support hidding input area when allowMultiples is false and a value is selected
 
 const PRIVATE                             = dataStore.create();
 const BODY                                = document.body;

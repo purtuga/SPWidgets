@@ -13,10 +13,10 @@ import objectExtend from "common-micro-libs/src/jsutils/objectExtend"
  * @param {Object} [options]
  * @param {String} [options.webURL]
  */
-var UserProfileModel = Compose.extend(/** @lends UserProfile.prototype */{
+const UserProfileModel = Compose.extend(/** @lends UserProfile.prototype */{
     init: function(modelProperties, options){
 
-        var opt = objectExtend({}, this.getFactory().defaults, options);
+        let opt = objectExtend({}, this.getFactory().defaults, options);
 
         objectExtend(
             this,
@@ -77,8 +77,34 @@ var UserProfileModel = Compose.extend(/** @lends UserProfile.prototype */{
                 "_layouts/userphoto.aspx?size=M&accountname=" +
                 encodeURIComponent(this.AccountName);
         }
+
+        if (!this.Initials) {
+            this.deriveInitials();
+        }
+    },
+
+    /**
+     * Derives the user's initials based on firstName, LastName or DisplayName.
+     * Calling this method will set the Model's `Initials` property
+     */
+    deriveInitials() {
+        let firstCharOf = function(stringValue){
+            return stringValue.trim().charAt(0);
+        };
+        let firstName   = this.FirstName;
+        let lastName    = this.LastName;
+        let displayName = this.DisplayName || this.Name;
+
+        // If no first or last name, but we have a display name (common with output
+        // from list queries), then parse that and use it.
+        if (!firstName && !lastName && displayName) {
+            [firstName, lastName ] = displayName.split(/\W/);
+        }
+
+        this.Initials = (firstCharOf(firstName) + firstCharOf(lastName)) || "?";
     }
 });
+
 
 UserProfileModel.defaults = {
     webURL: ""
