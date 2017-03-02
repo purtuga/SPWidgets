@@ -9,20 +9,18 @@ import domAddEventListener      from "common-micro-libs/src/domutils/domAddEvent
 import domAddClass              from "common-micro-libs/src/domutils/domAddClass"
 import domRemoveClass           from "common-micro-libs/src/domutils/domRemoveClass"
 import domClosest               from "common-micro-libs/src/domutils/domClosest"
-import domFind                  from "common-micro-libs/src/domutils/domFind"
 import domTriggerEvent          from "common-micro-libs/src/domutils/domTriggerEvent"
-import domChildren              from "common-micro-libs/src/domutils/domChildren"
 import domPosition              from "common-micro-libs/src/domutils/domPosition"
 import domSetStyle              from "common-micro-libs/src/domutils/domSetStyle"
 import DomKeyboardInteraction   from "common-micro-libs/src/domutils/DomKeyboardInteraction"
 
 import searchPrincipals         from "../../spapi/searchPrincipals"
-import resolvePrincipals        from "../../spapi/resolvePrincipals"
 import parsePeopleField         from "../../sputils/parsePeopleField"
 
-import ResultGroup              from "./ResultGroup/ResultGroup"
-import PeoplePickerPersona      from "./PeoplePickerPersona/PeoplePickerPersona"
-import SPPeoplePickerTemplate   from "./PeoplePicker.html"
+import PeoplePickerUserProfileModel from "./PeoplePickerUserProfileModel"
+import ResultGroup                  from "./ResultGroup/ResultGroup"
+import PeoplePickerPersona          from "./PeoplePickerPersona/PeoplePickerPersona"
+import SPPeoplePickerTemplate       from "./PeoplePicker.html"
 
 import "./PeoplePicker.less"
 
@@ -122,7 +120,7 @@ const SELECTOR_BASE                       = "." + CSS_CLASS_BASE;
  * @fires PeoplePicker#select
  * @fires PeoplePicker#remove
  */
-let PeoplePicker = /** @lends PeoplePicker.prototype */{
+const PeoplePicker = EventEmitter.extend(Widget).extend(/** @lends PeoplePicker.prototype */{
     init: function (options) {
         var inst = {
             opt:            objectExtend({}, this.getFactory().defaults, options),
@@ -601,71 +599,6 @@ let PeoplePicker = /** @lends PeoplePicker.prototype */{
         inst.lastSearchInput = "";
         clearSuggestions.call(this);
     }
-},
-
-/**
- * People picker user profile model used to model each user profile
- *
- * @class PeoplePickerUserProfileModel
- * @extends UserProfileModel
- */
-PeoplePickerUserProfileModel = searchPrincipals.defaults.UserProfileModel.extend(/** @lends PeoplePickerProfileModel.prototype */{
-    /**
-     * The web URL from where this user was retrieved. Used in resolved principal
-     * @type {String}
-     */
-    webURL: "",
-
-    /**
-     * Returns the AccountName url encoded.
-     *
-     * @returns {string}
-     */
-    getAccountNameUrlEncoded: function(){
-        return encodeURIComponent(this.AccountName);
-    },
-
-    /**
-     * Resolves the User in the current site by calling the `ResolvePrincipal` API
-     *
-     * @returns {Promise}
-     */
-    resolvePrincipal: function(){
-        resolvePrincipals({
-            webURL:         this.webURL,
-            principalKeys:  this.AccountName
-        }).then(function(userList){
-            // See Issue #42 for the possibility of the results returning
-            // multiples, even when only one principalKey was provided on
-            // input to the API.
-            // https://github.com/purtuga/SPWidgets/issues/42
-            userList.some(function(resolvedUser){
-                if (
-                    resolvedUser.ID &&
-                    String(resolvedUser.ID) !== "-1" &&
-                    (
-                        (
-                            resolvedUser.AccountName &&
-                            resolvedUser.AccountName === this.AccountName
-                        ) ||
-                        (
-                            resolvedUser.Email &&
-                            resolvedUser.Email === this.Email
-                        ) ||
-                        (
-                            resolvedUser.DisplayName &&
-                            resolvedUser.DisplayName  === this.DisplayName
-                        )
-
-                    )
-                ) {
-                    this.UserInfoID = this.ID = resolvedUser.ID;
-                    return true;
-                }
-
-            }.bind(this));
-        }.bind(this));
-    }
 });
 
 function positionResultsPopup() {
@@ -835,8 +768,11 @@ function clearSuggestions(){
     }
 }
 
-PeoplePicker = EventEmitter.extend(Widget, PeoplePicker);
-
+/**
+ * Defaults for the widget
+ *
+ * @type Object
+ */
 PeoplePicker.defaults = {
     selected:               "",
     allowMultiples:         true,
