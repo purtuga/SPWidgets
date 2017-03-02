@@ -34,14 +34,15 @@ let PeoplePickerUserProfileModel = UserProfileModel.extend(/** @lends PeoplePick
      * Resolves the person against the site (`webURL`) by calling
      * the `ResolvePrincipal` API. API is only called if `ID` is `-1`
      *
-     * @returns {Promise}
+     * @returns {Promise<PeoplePickerUserProfileModel, Error>}
      */
     resolvePrincipal: function(){
         if (this.ID && this.ID !== "-1") {
-            return Promise.resolve();
+            return Promise.resolve(this);
         }
 
         let inst;
+
         if (PRIVATE.has(this)) {
             inst = PRIVATE.get(this);
         } else {
@@ -86,6 +87,8 @@ let PeoplePickerUserProfileModel = UserProfileModel.extend(/** @lends PeoplePick
                 }
 
             }.bind(this));
+
+            return this;
         }.bind(this));
 
         return inst.resolvePromise
