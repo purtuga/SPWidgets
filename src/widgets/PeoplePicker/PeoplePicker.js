@@ -237,7 +237,7 @@ const PeoplePicker = EventEmitter.extend(Widget).extend(/** @lends PeoplePicker.
 
                     domAddClass($ui, CSS_CLASS_IS_SEARCHING);
                     domAddClass($suggestions, CSS_CLASS_IS_SEARCHING);
-
+                    clearSuggestions.call(this);
                     getSuggestions.call(this)
                         .then(function(peopleList){
                             // if already stale, then do nothing
