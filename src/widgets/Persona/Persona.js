@@ -88,6 +88,9 @@ var Persona = {
 
         if (opt.initialsColor) {
             this.setInitialsColor(opt.initialsColor);
+
+        } else if (opt.initialsColor === null && opt.userProfile && opt.userProfile.Color) {
+            this.setInitialsColor(opt.userProfile.Color);
         }
 
         if (opt.presence) {
@@ -351,7 +354,7 @@ Persona.defaults = {
     hideDetails:    false,
     hideAction:     true,
     hideInitials:   true,
-    initialsColor:  "blue"
+    initialsColor:  null
 };
 
 export default Persona;

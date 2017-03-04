@@ -1,6 +1,28 @@
 import Compose      from "common-micro-libs/src/jsutils/Compose"
 import objectExtend from "common-micro-libs/src/jsutils/objectExtend"
 
+//================================================================
+const COLORS = [
+    "blueLight",
+    "blue",
+    "blueDark",
+    "teal",
+    "greenLight",
+    "green",
+    "greenDark",
+    "magentaLight",
+    "magenta",
+    "purpleLight",
+    "purple",
+    "black",
+    "orange",
+    "red",
+    "redDark"
+];
+
+let nextColorIndex  = 0;
+let assignedColor   = {};   // Timed cache?
+
 /**
  * Model for a user profile. Accounts for attributes returned by
  * the UserProfile service, as well as the Search Principals and
@@ -13,7 +35,7 @@ import objectExtend from "common-micro-libs/src/jsutils/objectExtend"
  * @param {Object} [options]
  * @param {String} [options.webURL]
  */
-const UserProfileModel = Compose.extend(/** @lends UserProfile.prototype */{
+const UserProfileModel = Compose.extend(/** @lends UserProfileModel.prototype */{
     init: function(modelProperties, options){
 
         let opt = objectExtend({}, this.getFactory().defaults, options);
@@ -33,6 +55,7 @@ const UserProfileModel = Compose.extend(/** @lends UserProfile.prototype */{
                 "HomePhone": "",
                 "ID": "",
                 "Initials": "",
+                "Color": "",
                 "LastName": "",
                 "Manager": "",
                 "Name": "",
@@ -81,6 +104,10 @@ const UserProfileModel = Compose.extend(/** @lends UserProfile.prototype */{
         if (!this.Initials) {
             this.deriveInitials();
         }
+
+        if (!this.Color) {
+            this.setRandomColor();
+        }
     },
 
     /**
@@ -102,6 +129,35 @@ const UserProfileModel = Compose.extend(/** @lends UserProfile.prototype */{
         }
 
         this.Initials = (firstCharOf(firstName) + firstCharOf(lastName)) || "?";
+    },
+
+    /**
+     * Sets a random color on the current model. Color is store in model attribute
+     * named `Color` and also returned.
+     *
+     * @returns {String}
+     */
+    setRandomColor() {
+        let accountName = this.AccountName;
+        let color       = COLORS[nextColorIndex];
+
+        if (accountName) {
+            if (assignedColor[accountName]) {
+                color = assignedColor[accountName];
+
+            } else {
+                assignedColor[accountName] = color;
+            }
+        }
+
+        if (nextColorIndex === (COLORS.length - 1)) {
+            nextColorIndex = 0;
+
+        } else {
+            nextColorIndex++;
+        }
+
+        return this.Color = color;
     }
 });
 
