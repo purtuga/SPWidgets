@@ -148,6 +148,8 @@ const Message = Widget.extend(/** @lends Message.prototype */{
      */
     setType: function(type){
         if (type) {
+            type = type.toLowerCase();
+
             let $ele    = this.getEle();
             let opt     = PRIVATE.get(this).opt;
 

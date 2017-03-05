@@ -177,12 +177,25 @@ ListModel = /** @lends ListModel.prototype */{
  * @return {Object}
  */
 getListDetailsFromXML = function(xmlDoc){
-
-    var listDef = getNodesFromXml({
+    let listDef = getNodesFromXml({
         xDoc:           xmlDoc,
         nodeName:       "List",
         convertTypes:   true
     }).shift();
+
+    if (!listDef) {
+        // Try to get the List properties from "ListProperties" - which is
+        // returned when an update to the list is done (updateList())
+        listDef = getNodesFromXml({
+            xDoc:           xmlDoc,
+            nodeName:       "ListProperties",
+            convertTypes:   true
+        }).shift();
+
+        if (!listDef) {
+            return {};
+        }
+    }
 
     delete listDef.Fields;
     delete listDef.RegionalSettings;
