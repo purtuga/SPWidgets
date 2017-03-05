@@ -9,7 +9,38 @@
         line-height:    1em;
     }
 
-    &-msg {
+    &-msgHolder {
         padding-left: 2em;
+
+        &-msg > * {
+            display: inline;
+
+        }
+
+    }
+
+    &-msg {
+        &-showMore {
+            display:    none;
+            cursor:     pointer;
+        }
+
+        &-more {
+            display: none;
+            white-space: pre-wrap;
+        }
+    }
+
+    //--------------------------------
+    //      modifiers
+    //--------------------------------
+
+    &--hasMore &-msg-showMore {
+        display: inline;
+
+    }
+
+    &--showMore &-msg-more {
+        display: block;
     }
 }

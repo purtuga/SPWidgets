@@ -1,6 +1,12 @@
-<div class="spwidgets-message ms-font-m ms-bgColor-{{type}} ms-fontColor-{{type}}">
+<div class="spwidgets-message">
     <span class="spwidgets-message-iconHolder">
         <i class="ms-Icon {{iconClass}}"></i>
     </span>
-    <div class="spwidgets-message-msg">{{message}}</div>
+    <div class="spwidgets-message-msgHolder">
+        <div class="spwidgets-message-msgHolder-msg">
+            <span class="spwidgets-message-msg">{{message}}</span>
+            <a class="spwidgets-message-msg-showMore">{{more}}</a>
+        </div>
+        <div class="spwidgets-message-msg-more"></div>
+    </div>
 </div>

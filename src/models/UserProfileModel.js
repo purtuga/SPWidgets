@@ -132,8 +132,10 @@ const UserProfileModel = Compose.extend(/** @lends UserProfileModel.prototype */
     },
 
     /**
-     * Sets a random color on the current model. Color is store in model attribute
-     * named `Color` and also returned.
+     * Sets a random color on the current user profile model.
+     * Color is store in model attribute named `Color` and also returned and
+     * represents one of the available color names (CSS modifiers) that the
+     * `Persona` widget supports.
      *
      * @returns {String}
      */
