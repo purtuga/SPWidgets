@@ -90,7 +90,7 @@ const ColumnPicker = ItemPicker.extend(/** @lends ColumnPicker.prototype */{
     getColumnInfo: function(columnName){
         var col;
         PRIVATE.get(this).choices.some((colObj) => {
-            if (colObj.StaticName === columnName || colObj.DisplayName === columnName) {
+            if (colObj.Name === columnName || colObj.DisplayName === columnName) {
                 col = colObj;
                 return true;
             }

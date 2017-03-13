@@ -134,7 +134,7 @@ const ColumnSelector = EventEmitter.extend(Widget).extend(/** @lends ColumnSelec
         }
 
         columns.forEach(function(colDef){
-            var ele = inst.uiFind("[data-name='" + colDef.StaticName + "']");
+            var ele = inst.uiFind("[data-name='" + colDef.Name + "']");
             if (ele) {
                 domAddClass(ele, CSS_CLASS_COL_SELECTED);
             }
@@ -178,7 +178,7 @@ function loadColumns() {
         .then(function(columns){
             inst.listCols = columns.filter(function(column){
                 return  !allowedCols.length ||
-                        allowedCols.indexOf(column.StaticName) !== -1 ||
+                        allowedCols.indexOf(column.Name) !== -1 ||
                         allowedCols.indexOf(column.DisplayName) !== -1;
             });
             return inst.listCols;

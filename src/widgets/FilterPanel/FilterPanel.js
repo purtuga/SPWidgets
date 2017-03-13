@@ -124,7 +124,7 @@ FilterPanel = /** @lends FilterPanel.prototype */{
         // Initialize event handlers
         //----------------------------------------
         domAddEventListener(uiFind(BASE_SELECTOR + "-footer-action-add"), "click", function(){
-            inst.columnSelector.appendTo(inst.main);
+            inst.columnSelector.appendTo($ui);
             inst.columnSelector.show();
         });
 
@@ -184,7 +184,7 @@ FilterPanel = /** @lends FilterPanel.prototype */{
         });
 
         me.on("columnSelector:unselect", function(colDef){
-            hideFilterColumn.call(me, colDef.StaticName);
+            hideFilterColumn.call(me, colDef.Name);
         });
 
         me.on("filterColumn:change", function(){
@@ -429,7 +429,7 @@ function addColumns(colList, colValues, append){
 
     if (colList.length) {
         colList.forEach(function(colDef){
-            var colName     = colDef.StaticName,
+            var colName     = colDef.Name,
                 colValue    = { values: []},
                 FilterColumnConstructor;
 

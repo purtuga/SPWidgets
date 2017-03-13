@@ -8,13 +8,15 @@ import parseLookupFieldValue    from "./parseLookupFieldValue";
  *
  * @see http://msdn.microsoft.com/en-us/library/cc264031%28v=office.14%29.aspx
  *
+ * @function parsePeopleField
+ *
  * @param {String} peopleString
  * @param {UserProfileModel} [PersonModel=UserProfileModel]
  *
  * @return {Array<UserProfileModel>}
  */
 const parsePeopleField = function(peopleString, PersonModel) {
-    PersonModel = PersonModel || UserProfileModel;
+    PersonModel = PersonModel || parsePeopleField.defaults.PersonModel;
 
     return parseLookupFieldValue(String(peopleString || "")).map(function(person){
         var personInfo = {
@@ -59,6 +61,16 @@ const parsePeopleField = function(peopleString, PersonModel) {
         // Create the model and populate with the attr. from above.
         return PersonModel.create(personInfo);
     });
+};
+
+/**
+ * Defaults for the function
+ *
+ * @name parsePeopleField.defaults
+ * @type {Object}
+ */
+parsePeopleField.defaults = {
+    PersonModel: UserProfileModel
 };
 
 export default parsePeopleField;

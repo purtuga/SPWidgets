@@ -351,7 +351,7 @@ function getChoices() {
                 listName:   listName,
                 webURL:     webURL
             }).then((cols) => {
-                let thisColumn = cols.getColumn(column.StaticName || column.DisplayName);
+                let thisColumn = cols.getColumn(column.Name || column.DisplayName);
 
                 if (thisColumn) {
                     return thisColumn.getColumnValues();
