@@ -329,6 +329,12 @@ function showHideDetails(hide) {
 function handleUserPhotoLoadFailure($img) {
     $img.style.display = "none";
 
+    // If image is no longer attached (ex. setUserPhoto() was called while
+    // this image was being loaded), then exit and don't notify.
+    if (!$img.parentNode) {
+        return;
+    }
+
     /**
      * The user's profile photo failed to load.
      *

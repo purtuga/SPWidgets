@@ -53,6 +53,17 @@ const getCurrentUser = function(options){
                 webURL:             opt.webURL,
                 otherAttr:          userInfo,
                 UserProfileModel:   UserProfileModel
+            })["catch"](e => {
+                // If getUserProfile failed, this could be because we're in
+                // a SP Foundation version which does not have a UserProfileService api,
+                // ajax calls returns a 404.
+                // In this case, if scrapping the user display page was OK, then return that.
+                if (userInfo && userInfo.ID) {
+                    return userInfo;
+
+                } else {
+                    return Promise.reject(e);
+                }
             });
         });
 
