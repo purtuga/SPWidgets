@@ -4,7 +4,6 @@ import Promise          from "common-micro-libs/src/jsutils/es6-promise"
 import parseHTML        from "common-micro-libs/src/jsutils/parseHTML"
 import domFind          from "common-micro-libs/src/domutils/domFind"
 
-import apiFetch         from "../sputils/apiFetch"
 import cache            from "../sputils/cache"
 import getSiteWebUrl    from "./getSiteWebUrl"
 import searchPrincipals from "./searchPrincipals"
@@ -14,15 +13,20 @@ import UserProfileModel from "../models/UserProfileModel"
 
 //-----------------------------------------------------------------------
 /* globals _spPageContextInfo  */
-
-let fetch           = fetchPolyfill.fetch;
-const PROMISE_CATCH = "catch";
+const fetch                             = fetchPolyfill.fetch;
+const UNABLE_TO_GET_USER_FROM_SCRAPING  = "Unable to get ID from scraping userdisp.aspx.";
+const PROMISE_CATCH                     = "catch";
 
 /**
  * Returns a `UserProfileModel` that represents the currently logged in user.
+ * A few attempts are done to determine the current user, including using
+ * information normally available in SP pages (`_spPageContextInfo`), and the
+ * resorting to screen scrapping the user's profile page and then (if needed)
+ * doing a few more searches to try and find the user.
  *
  * @param {Object} [options]
  * @param {String} [options.webURL=Current_Site]
+ * @param {Object} [options.UserProfileModel=UserProfileModel]
  *
  * @return {Promise<UserProfileModel, Error>}
  *  Promise is resolved with an UserProfileModel.
@@ -43,7 +47,7 @@ const getCurrentUser = function(options){
         }
 
         cache(cacheId, reqPromise);
-        return searchUserPrincipals(opt);
+        return searchUsingSPPageInfo(opt);
 
     // if getting user principals fails, try scraping user display page
     })[PROMISE_CATCH](function(e){
@@ -85,7 +89,7 @@ const getCurrentUser = function(options){
  *
  * @returns {Promise<UserProfileModel, Error>}
  */
-function searchUserPrincipals(opt) {
+function searchUsingSPPageInfo(opt) {
 
     // Possible second approach?: use 'GetUserInfo' service which accepts a loginName?
     //      API: https://msdn.microsoft.com/en-us/library/ms774637.aspx
@@ -222,12 +226,54 @@ function scrapeUserDisplayPage(opt) {
                     return userInfo;
                 }
 
-                return Promise.reject(new Error("Unable to get ID from scraping userdisp.aspx."));
+                // If we have an account name, lets try to find user that way using the
+                // search principals api (since UserProfileService is not available in foundation
+                if (userInfo.AccountName) {
+                    return searchPrincipals({
+                        searchText: userInfo.AccountName,
+                        webUrl:     webURL
+                    }).then(results => {
+                        // Ok... let's try to match up a good response
+                        if (results.some(function(user){
+                                if (String(user.AccountName) === userInfo.AccountName) {
+                                    objectExtend(userInfo, user);
+                                    return true;
+                                }
+                            })
+                        ) {
+                            return userInfo;
+                        }
+
+                        // Else... was not able to find a good match (or no results)
+                        // Let try to find by EMail
+                        if (userInfo.EMail) {
+                            return searchPrincipals({
+                                searchText: userInfo.EMail,
+                                webUrl:     webURL
+                            }).then(results => {
+                                // Ok... let's try to match up a good response
+                                if (results.some(function(user){
+                                        if (String(user.EMail) === userInfo.EMail) {
+                                            objectExtend(userInfo, user);
+                                            return true;
+                                        }
+                                    })
+                                ) {
+                                    return userInfo;
+                                }
+
+                                return Promise.reject(new Error(UNABLE_TO_GET_USER_FROM_SCRAPING));
+                            });
+                        }
+                    });
+                }
+
+                return Promise.reject(new Error(UNABLE_TO_GET_USER_FROM_SCRAPING));
 
                 // EXAMPLE OF DATA RETRIEVED FROM SCRAPE:
                 //{
                 //    "Name": "i:0#.f|membership|joe.doe@sharepoint.com",
-                //    "AccountName": "Joe Doe", // Set from "title"
+                //    "AccountName": "domain\login", // Set from "title"
                 //    "Title": "Joe Doe",
                 //    "EMail": "joedoe@sharepoint.com",
                 //    "MobilePhone": "",
@@ -239,7 +285,7 @@ function scrapeUserDisplayPage(opt) {
                 //    "FirstName": "joe",
                 //    "LastName": "doe",
                 //    "WorkPhone": "",
-                //    "UserName": "joe.doe@sympraxisconsulting.com",
+                //    "UserName": "joe.doe@sharepoint.com",
                 //    "WebSite": "",
                 //    "SPSResponsibility": "",
                 //    "Office": "",
@@ -249,7 +295,6 @@ function scrapeUserDisplayPage(opt) {
                 //    "Attachments": "",
                 //    "ID": "11"
                 //}
-
             });
     });
 }
@@ -268,11 +313,11 @@ export default getCurrentUser;
     // SP 2013: end point:      /_api/web/currentuser
     //   NOT SURE IF THIS WORKS ON PREM....
     // returns:
-    //      <?xml version="1.0" encoding="utf-8"?><entry xml:base="https://mytenant.sharepoint.com/sites/PT2013/_api/" xmlns="http://www.w3.org/2005/Atom" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:georss="http://www.georss.org/georss" xmlns:gml="http://www.opengis.net/gml"><id>https://mytenant.sharepoint.com/sites/PT2013/_api/Web/GetUserById(11)</id><category term="SP.User" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" /><link rel="edit" href="Web/GetUserById(11)" /><link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Groups" type="application/atom+xml;type=feed" title="Groups" href="Web/GetUserById(11)/Groups" /><title /><updated>2016-06-05T15:33:18Z</updated><author><name /></author><content type="application/xml"><m:properties><d:Id m:type="Edm.Int32">11</d:Id><d:IsHiddenInUI m:type="Edm.Boolean">false</d:IsHiddenInUI><d:LoginName>i:0#.f|membership|paul.tavares@sympraxisconsulting.com</d:LoginName><d:Title>Paul Tavares</d:Title><d:PrincipalType m:type="Edm.Int32">1</d:PrincipalType><d:Email>paultavares1@gmail.com</d:Email><d:IsShareByEmailGuestUser m:type="Edm.Boolean">false</d:IsShareByEmailGuestUser><d:IsSiteAdmin m:type="Edm.Boolean">true</d:IsSiteAdmin><d:UserId m:type="SP.UserIdInfo"><d:NameId>10033fff8524baa1</d:NameId><d:NameIdIssuer>urn:federation:microsoftonline</d:NameIdIssuer></d:UserId></m:properties></content></entry>
+    //      <?xml version="1.0" encoding="utf-8"?><entry xml:base="https://mytenant.sharepoint.com/sites/PT2013/_api/" xmlns="http://www.w3.org/2005/Atom" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:georss="http://www.georss.org/georss" xmlns:gml="http://www.opengis.net/gml"><id>https://mytenant.sharepoint.com/sites/PT2013/_api/Web/GetUserById(11)</id><category term="SP.User" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" /><link rel="edit" href="Web/GetUserById(11)" /><link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Groups" type="application/atom+xml;type=feed" title="Groups" href="Web/GetUserById(11)/Groups" /><title /><updated>2016-06-05T15:33:18Z</updated><author><name /></author><content type="application/xml"><m:properties><d:Id m:type="Edm.Int32">11</d:Id><d:IsHiddenInUI m:type="Edm.Boolean">false</d:IsHiddenInUI><d:LoginName>i:0#.f|membership|paul.tavares@sharepoint.com</d:LoginName><d:Title>Paul Tavares</d:Title><d:PrincipalType m:type="Edm.Int32">1</d:PrincipalType><d:Email>paultavares1@gmail.com</d:Email><d:IsShareByEmailGuestUser m:type="Edm.Boolean">false</d:IsShareByEmailGuestUser><d:IsSiteAdmin m:type="Edm.Boolean">true</d:IsSiteAdmin><d:UserId m:type="SP.UserIdInfo"><d:NameId>10033fff8524baa1</d:NameId><d:NameIdIssuer>urn:federation:microsoftonline</d:NameIdIssuer></d:UserId></m:properties></content></entry>
     // THEN:
     //     Call end point: https://mytenant.sharepoint.com/sites/PT2013/_api/Web/GetUserById(11)
     // Returns:
-    // <?xml version="1.0" encoding="utf-8"?><entry xml:base="https://mytenant.sharepoint.com/sites/PT2013/_api/" xmlns="http://www.w3.org/2005/Atom" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:georss="http://www.georss.org/georss" xmlns:gml="http://www.opengis.net/gml"><id>https://mytenant.sharepoint.com/sites/PT2013/_api/Web/GetUserById(11)</id><category term="SP.User" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" /><link rel="edit" href="Web/GetUserById(11)" /><link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Groups" type="application/atom+xml;type=feed" title="Groups" href="Web/GetUserById(11)/Groups" /><title /><updated>2016-06-05T15:54:23Z</updated><author><name /></author><content type="application/xml"><m:properties><d:Id m:type="Edm.Int32">11</d:Id><d:IsHiddenInUI m:type="Edm.Boolean">false</d:IsHiddenInUI><d:LoginName>i:0#.f|membership|paul.tavares@sympraxisconsulting.com</d:LoginName><d:Title>Paul Tavares</d:Title><d:PrincipalType m:type="Edm.Int32">1</d:PrincipalType><d:Email>paultavares1@gmail.com</d:Email><d:IsShareByEmailGuestUser m:type="Edm.Boolean">false</d:IsShareByEmailGuestUser><d:IsSiteAdmin m:type="Edm.Boolean">true</d:IsSiteAdmin><d:UserId m:type="SP.UserIdInfo"><d:NameId>10033fff8524baa1</d:NameId><d:NameIdIssuer>urn:federation:microsoftonline</d:NameIdIssuer></d:UserId></m:properties></content></entry>
+    // <?xml version="1.0" encoding="utf-8"?><entry xml:base="https://mytenant.sharepoint.com/sites/PT2013/_api/" xmlns="http://www.w3.org/2005/Atom" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:georss="http://www.georss.org/georss" xmlns:gml="http://www.opengis.net/gml"><id>https://mytenant.sharepoint.com/sites/PT2013/_api/Web/GetUserById(11)</id><category term="SP.User" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" /><link rel="edit" href="Web/GetUserById(11)" /><link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Groups" type="application/atom+xml;type=feed" title="Groups" href="Web/GetUserById(11)/Groups" /><title /><updated>2016-06-05T15:54:23Z</updated><author><name /></author><content type="application/xml"><m:properties><d:Id m:type="Edm.Int32">11</d:Id><d:IsHiddenInUI m:type="Edm.Boolean">false</d:IsHiddenInUI><d:LoginName>i:0#.f|membership|paul.tavares@sharepoint.com</d:LoginName><d:Title>Paul Tavares</d:Title><d:PrincipalType m:type="Edm.Int32">1</d:PrincipalType><d:Email>paultavares1@gmail.com</d:Email><d:IsShareByEmailGuestUser m:type="Edm.Boolean">false</d:IsShareByEmailGuestUser><d:IsSiteAdmin m:type="Edm.Boolean">true</d:IsSiteAdmin><d:UserId m:type="SP.UserIdInfo"><d:NameId>10033fff8524baa1</d:NameId><d:NameIdIssuer>urn:federation:microsoftonline</d:NameIdIssuer></d:UserId></m:properties></content></entry>
 
 
 
