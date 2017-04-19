@@ -116,45 +116,58 @@ FilterModel = {
         var compareOperator = me.compareOperator || 'Eq';
         var colName         = xmlEscape.escape(me.column);
         var filterValues    = me.values;
-        var template        = "<FieldRef Name='{{colName}}'/><Value Type='Text'>{{colValue}}</Value>";
+        var fieldRefXml     = "<FieldRef Name='{{colName}}'/>";
+        var valueXml        = "<Value Type='Text'>{{colValue}}</Value>";
+        var template        = `${fieldRefXml}${valueXml}`;
 
         // If we have a column Setup object, then adjust the template for
         // the given type of column
         if (columnType) {
-            switch (columnType) {
-                // Lookup type of fields. We use only the ID to query along
-                // with LookupId=True in the CAMl definition
-                case "User":
-                case "UserMulti":
-                case "Lookup":
-                case "LookupMulti":
-                    template        = "<FieldRef Name='{{colName}}' LookupId='True'/><Value Type='Lookup'>{{colValue}}</Value>";
-                    filterValues    = filterValues.map(function(filter){
-                        if (filter && filter.ID) {
-                            return filter.ID;
-                        }
-                        return filter;
-                    });
 
-                    break;
+            // These special CAML compare operator take no values - we only need
+            // the Field reference.
+            if (/IsNull|IsNotNull/.test(compareOperator)) {
+                template        = fieldRefXml;
+                filterValues    = [1]; // Ensure getCamlLogical below runs
 
-                case "DateTime":
-                    template = "<FieldRef Name='{{colName}}'/><Value Type='DateTime'>{{colValue}}</Value>";
-                    break;
+            } else {
+                switch (columnType) {
+                    // Lookup type of fields. We use only the ID to query along
+                    // with LookupId=True in the CAMl definition
+                    case "User":
+                    case "UserMulti":
+                    case "Lookup":
+                    case "LookupMulti":
+                        template        = `${ fieldRefXml.replace(/\/>/, "") } LookupId='True'/><Value Type='Lookup'>{{colValue}}</Value>`;
+                        filterValues    = filterValues.map(function(filter){
+                            if (filter && filter.ID) {
+                                return filter.ID;
+                            }
+                            return filter;
+                        });
+
+                        break;
+
+                    case "DateTime":
+                        template = `${ fieldRefXml }<Value Type='DateTime'>{{colValue}}</Value>`;
+                        break;
+                }
             }
         }
 
         template = "<{{cOP}}>" + template + "</{{cOP}}>";
 
+        // Now that we have our Template for each value defined,
         return getCamlLogical({
             type:           me.logicalOperator,
             values:         filterValues,
             onEachValue:    function(filterVal){
-                var isXMLTag = (/<userid\/>/i).test(filterVal);
+                var isValidCamlXMLTag = (/<userid\/>/i).test(filterVal);
+
                 return fillTemplate(template, {
                     colName:    colName,
                     cOP:        compareOperator,
-                    colValue:   isXMLTag ? filterVal : xmlEscape.escape(filterVal)
+                    colValue:   isValidCamlXMLTag ? filterVal : xmlEscape.escape(filterVal)
                 });
             }
         });

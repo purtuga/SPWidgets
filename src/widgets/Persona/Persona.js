@@ -30,6 +30,12 @@ var CSS_CLASS_MS_PERSONA_INITIALS   = `${CSS_CLASS_MS_PERSONA}-initials`;
  * @param {Object} options
  * @param {UserProfileModel} options.userProfile
  * @param {String} [options.presence='offline']
+ * @param {String} [options.variant="circle"]
+ * @param {String} [options.size=null]
+ * @param {Boolean} [options.hideDetails=false]
+ * @param {Boolean} [options.hideAction=true]
+ * @param {Boolean} [options.hideInitials=true]
+ * @param {String} [options.initialsColor=nul]
  *
  * @fires Persona#click
  * @fires Persona#photo-load-failed
