@@ -386,9 +386,11 @@ const PeoplePicker = EventEmitter.extend(Widget).extend(/** @lends PeoplePicker.
         if (!Array.isArray(people)) {
             if (typeof people === "string") {
                 people = parsePeopleField(people);
-            } else {
-                people = [people];
+
+            } else if (!people) {
+                return Promise.resolve([]);
             }
+            people = [people];
         }
 
         let UserProfileModel = PRIVATE.get(this).opt.UserProfileModel;
