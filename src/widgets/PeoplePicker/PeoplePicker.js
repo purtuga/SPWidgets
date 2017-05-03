@@ -389,8 +389,10 @@ const PeoplePicker = EventEmitter.extend(Widget).extend(/** @lends PeoplePicker.
 
             } else if (!people) {
                 return Promise.resolve([]);
+
+            } else {
+                people = [people];
             }
-            people = [people];
         }
 
         let UserProfileModel = PRIVATE.get(this).opt.UserProfileModel;
