@@ -71,10 +71,6 @@ const SELECTOR_BASE                       = "." + CSS_CLASS_BASE;
  *  The minimum number of characters the user must type before
  *  suggestions are retrieved.
  *
- * @param {String} [options.inputPlaceholder="Type and Pick"]
- *  The text to appear in the HTML5 placeholder attribute
- *  of the input field.
- *
  * @param {String} [options.showSelected=true]
  *  If `true` (default), the selected users by this widget will be shown
  *  on the screen and remembered by the widget.
@@ -104,25 +100,32 @@ const SELECTOR_BASE                       = "." + CSS_CLASS_BASE;
  *  If true, the search suggestion element is right aligned with the search input
  *  box. good for when widget is close to the right edge of the viewport
  *
- * @param {String} [options.meKeyword="[me]"]
+ * @param {Object} [options.labels]
+ *  The labels used by the people picker.
+ *
+ * @param {String} [options.labels.inputPlaceholder="Type and Pick"]
+ *  The text to appear in the HTML5 placeholder attribute
+ *  of the input field.
+ *
+ * @param {String} [options.labels.meKeyword="[me]"]
  *  The keyword that will trigger the special entry that represents the currently
  *  logged in user into the list of suggestions. From an API standpoint, this
  *  special entry translates into `<userid/>`. To turn this feature off, just
  *  set this value to an empty string.
  *
- * @param {String} [options.meKeywordLabel="Current User"]
+ * @param {String} [options.labels.meKeywordLabel="Current User"]
  *  The label that will be shown when the user selects the special entry from the
  *  suggestions.
  *
- * @param {String} [options.searchInfoMsg="Type a value to see list of candidates."]
- * @param {String} [options.searchingMsg="Searching directory..."]
+ * @param {String} [options.labels.searchInfoMsg="Type a value to see list of candidates."]
+ * @param {String} [options.labels.searchingMsg="Searching directory..."]
  *
  * @fires PeoplePicker#select
  * @fires PeoplePicker#remove
  */
 const PeoplePicker = EventEmitter.extend(Widget).extend(/** @lends PeoplePicker.prototype */{
     init: function (options) {
-        var inst = {
+        let inst = {
             opt:            objectExtend({}, this.getFactory().defaults, options),
             resultGroup:    null,
             bodyClickEv:    null,
@@ -135,16 +138,13 @@ const PeoplePicker = EventEmitter.extend(Widget).extend(/** @lends PeoplePicker.
         inst.opt.UserProfileModel = inst.opt.UserProfileModel.extend({webURL: inst.opt.webURL});
         PRIVATE.set(this, inst);
 
-        var
-        opt         = inst.opt,
-        $ui         = this.$ui = parseHTML(
-                        fillTemplate(SPPeoplePickerTemplate, opt)
-                    ).firstChild,
-        uiFind      = $ui.querySelector.bind($ui),
-        $input      = inst.$input = uiFind("input[name='search']"),
-        $searchBox  = inst.$searchBox = uiFind("." + CSS_CLASS_MS_PICKER_SEARCHBOX),
-        $suggestions= inst.$suggestions   = uiFind(SELECTOR_BASE + "-suggestions"),
-        requestSuggestions;
+        let opt         = inst.opt;
+        let $ui         = this.$ui = parseHTML(fillTemplate(SPPeoplePickerTemplate, opt)).firstChild;
+        let uiFind      = $ui.querySelector.bind($ui);
+        let $input      = inst.$input = uiFind("input[name='search']");
+        let $searchBox  = inst.$searchBox = uiFind("." + CSS_CLASS_MS_PICKER_SEARCHBOX);
+        let $suggestions= inst.$suggestions   = uiFind(SELECTOR_BASE + "-suggestions");
+        let requestSuggestions;
 
         inst.$groups        = uiFind(SELECTOR_BASE + "-suggestions-groups");
         inst.$inputCntr     = uiFind(SELECTOR_BASE + "-searchFieldCntr");
@@ -162,7 +162,7 @@ const PeoplePicker = EventEmitter.extend(Widget).extend(/** @lends PeoplePicker.
         }
 
         // Add keyboard interaction to the Input field
-        var keyboardInteraction = inst.keyboardInteraction = DomKeyboardInteraction.create({
+        let keyboardInteraction = inst.keyboardInteraction = DomKeyboardInteraction.create({
             input:          $input,
             eleGroup:       inst.$groups,
             eleSelector:    `.${CSS_CLASS_BASE}-Result`,
@@ -650,11 +650,11 @@ function getSuggestions(searchString, searchId) {
             var filteredResults = results.slice(0);
 
             // Insert the "ME" entry if that was the text the user entered
-            if (opt.meKeyword && searchString === opt.meKeyword) {
+            if (opt.lables.meKeyword && searchString === opt.labels.meKeyword) {
                 filteredResults.unshift(
                     opt.UserProfileModel.create({
                         UserInfoID:     CURRENT_USER_ID,
-                        DisplayName:    opt.meKeywordLabel
+                        DisplayName:    opt.labels.meKeywordLabel
                     })
                 );
             }
@@ -784,31 +784,22 @@ PeoplePicker.defaults = {
     maxSearchResults:       50,
     webURL:                 null,
     type:                   'User',
-    inputPlaceholder:       "Type and Pick",
     minLength:              2,
     resultsZIndex:          0,
     resultsMaxHeight:       "", // default: 20em
     showSelected:           true,
     resolvePrincipals:      true,
-    meKeyword:              "[me]",
-    meKeywordLabel:         "Current User",
     filterSuggestions:      null,
     UserProfileModel:       PeoplePickerUserProfileModel,
     PersonaWidget:          PeoplePickerPersona,
     ResultGroupWidget:      ResultGroup,
     suggestionsRightAlign:  false,
-    searchInfoMsg:          "Type a value to see list of candidates. Use '[me]' for current user.",
-    searchingMsg:           "Searching directory...",
-
-// FIXME: complete structure for i18n
-    i18n: {
-        "en-us": {
-            inputPlaceholder:   "Type and Pick",
-            meKeyword:          "[me]",
-            meKeywordLabel:     "Current User",
-            searchInfoMsg:      "Type a value to see list of candidates. Use '[me]' for current user.",
-            searchingMsg:       "Searching directory..."
-        }
+    labels: {
+        inputPlaceholder:   "Type and Pick",
+        meKeyword:          "[me]",
+        meKeywordLabel:     "Current User",
+        searchInfoMsg:      "Type a value to see list of candidates. Use '[me]' for current user.",
+        searchingMsg:       "Searching directory..."
     }
 };
 

@@ -75,9 +75,6 @@ var DateTimeField = /** @lends DateTimeField.prototype */{
             domAddClass($ui, CSS_BASE_CLASS + "--inlinePicker");
         }
 
-        opt.lang    = opt.lang || String(WINDOW_NAVIGATOR.language || WINDOW_NAVIGATOR.userLanguage || "en-US");
-        opt.labels  = opt.i18n[opt.lang] || opt.i18n["en-US"];
-
         var dateWdg = inst.dateWdg = flatpickr(uiFind("input"), {
             dateFormat: inst.isDateOnly ? opt.dateFormat : opt.dateTimeFormat,
             enableTime: !inst.isDateOnly,
@@ -205,10 +202,8 @@ DateTimeField.defaults = {
     inline:             false,
     allowMultiples:     false,          // FIXME: implement
 
-    i18n: {
-        'en-US': {
-            placeholder: "Click to select..."
-        }
+    labels: {
+        placeholder: "Click to select..."
     }
 };
 

@@ -32,9 +32,10 @@ const CSS_CLASS_MS_PICKER_RESULT_LIST    = CSS_CLASS_MS_PICKER_BASE + "-resultLi
  * @extends Widget
  * @extends EventEmitter
  *
- * @params {Object} options
- * @params {Array<PeoplePickerUserProfileModel>} options.results
- * @params {String} [options.groupTitle="Search Results"]
+ * @param {Object} options
+ * @param {Array<PeoplePickerUserProfileModel>} options.results
+ * @param {Object} [options.labels]
+ * @param {String} [options.labels.groupTitle="Search Results"]
  *
  * @fires ResultGroup#result-click
  */
@@ -50,7 +51,7 @@ let ResultGroup = /** @lends ResultGroup */{
         PRIVATE.set(this, inst);
 
         var $ui = this.$ui = parseHTML(
-            fillTemplate(ResultGroupTemplate, {groupTitle: inst.opt.groupTitle})
+            fillTemplate(ResultGroupTemplate, {groupTitle: inst.opt.labels.groupTitle})
         ).firstChild;
 
         inst.uiFind         = $ui.querySelector.bind($ui);
@@ -207,9 +208,11 @@ function setResultsToGroup(){
 
 ResultGroup = EventEmitter.extend(Widget, ResultGroup);
 ResultGroup.defaults = {
-    groupTitle: "Search Results",
     results:    [],
-    ResultWidget: Result
+    ResultWidget: Result,
+    labels: {
+        groupTitle: "Search Results"
+    }
 };
 
 export default ResultGroup;

@@ -57,14 +57,6 @@ CSS_CLASS_MS_BUTTON_PRIMARY = "ms-Button--primary",
  *  are shown. The column names defined in this option must be the `StaticName`
  *  of the list column.
  *
- * @param {Object} [options.i18n]
- * @param {Object} [options.i18n.en-US]
- * @param {String} [options.i18n.en-US.title]
- * @param {String} [options.i18n.en-US.find]
- * @param {String} [options.i18n.en-US.clear]
- * @param {String} [options.i18n.en-US.close]
- * @param {String} [options.i18n.en-US.add]
- *
  * @fires FilterPanel#clear
  * @fires FilterPanel#find
  * @fires FilterPanel#close
@@ -81,9 +73,6 @@ FilterPanel = /** @lends FilterPanel.prototype */{
         opt = inst.opt;
 
         PRIVATE.set(this, inst);
-
-        opt.lang    = opt.lang || String(WINDOW_NAVIGATOR.language || WINDOW_NAVIGATOR.userLanguage || "en-US");
-        opt.labels  = opt.i18n[opt.lang] || opt.i18n["en-US"];
 
         var me  = this,
             $ui = me.$ui = parseHTML(
@@ -557,47 +546,44 @@ FilterPanel.defaults = {
     hideHeader:         false,
     hideFindButton:     false,
     selectFieldsLayout: '3-col',    // 1, 2 or 3 -col
-    lang:               '',
-    i18n: {
-        "en-US": {
-            title:          "Filter",
-            find:           "Find",
-            clear:          "Clear",
-            close:          "Close",
-            cancel:         "Cancel",
-            add:            "Add Field",
-            msg:            "Click the Add button below to add a list field.",
-            select:         "Select Fields",
-            ok:             "Ok",
-            options:        "options",
-            inputKeywords:  "Enter Keywords",
-            keywordsInfo:   "Use a semicolon to delimiter multiple keywords.",
-            attachmentsInfo:"Match items that include attachments.",
-            totalSelected:  "{{total}} selected.",
-            moveUp:         "Move Up",
-            moveDown:       "Move Down",
-            // Comparison operators
-            contains:       "Contains",
-            equal:          "Equal",
-            notEqual:       "Not Equal",
-            isBlank:        "Is Blank",
-            isNotBlank:     "Is Not Blank",
-            lessThan:       "Less Than",
-            greaterThan:    "Greater Than",
-            after:          "After",
-            before:         "Before",
-            // Logical Operators
-            any:             "Any",
-            all:             "All",
-            // Sort Order
-            sort:           "Sort",
-            asc:            "Ascending",
-            des:            "Descending",
+    labels: {
+        title:          "Filter",
+        find:           "Find",
+        clear:          "Clear",
+        close:          "Close",
+        cancel:         "Cancel",
+        add:            "Add Field",
+        msg:            "Click the Add button below to add a list field.",
+        select:         "Select Fields",
+        ok:             "Ok",
+        options:        "options",
+        inputKeywords:  "Enter Keywords",
+        keywordsInfo:   "Use a semicolon to delimiter multiple keywords.",
+        attachmentsInfo:"Match items that include attachments.",
+        totalSelected:  "{{total}} selected.",
+        moveUp:         "Move Up",
+        moveDown:       "Move Down",
+        // Comparison operators
+        contains:       "Contains",
+        equal:          "Equal",
+        notEqual:       "Not Equal",
+        isBlank:        "Is Blank",
+        isNotBlank:     "Is Not Blank",
+        lessThan:       "Less Than",
+        greaterThan:    "Greater Than",
+        after:          "After",
+        before:         "Before",
+        // Logical Operators
+        any:             "Any",
+        all:             "All",
+        // Sort Order
+        sort:           "Sort",
+        asc:            "Ascending",
+        des:            "Descending",
 
-            // Attachments
-            "yes": "Yes",
-            "no":  "No"
-        }
+        // Attachments
+        "yes": "Yes",
+        "no":  "No"
     }
 };
 

@@ -4,13 +4,10 @@ import dataStore                from "common-micro-libs/src/jsutils/dataStore"
 import objectExtend             from "common-micro-libs/src/jsutils/objectExtend"
 import fillTemplate             from "common-micro-libs/src/jsutils/fillTemplate"
 import parseHTML                from "common-micro-libs/src/jsutils/parseHTML"
-import uuid                     from "common-micro-libs/src/jsutils/uuid"
 import Map                      from "common-micro-libs/src/jsutils/es6-Map"
 import Promise                  from "common-micro-libs/src/jsutils/es6-promise"
 import domAddEventListener      from "common-micro-libs/src/domutils/domAddEventListener"
 import domAddClass              from "common-micro-libs/src/domutils/domAddClass"
-import domRemoveClass           from "common-micro-libs/src/domutils/domRemoveClass"
-import domHasClass              from "common-micro-libs/src/domutils/domHasClass"
 import domPosition              from "common-micro-libs/src/domutils/domPosition"
 import DomKeyboardInteraction   from "common-micro-libs/src/domutils/DomKeyboardInteraction"
 
@@ -27,7 +24,6 @@ import "./LookupField.less"
 //---------------------------------------------------------------------
 var
 PRIVATE             = dataStore.create(),
-WINDOW_NAVIGATOR    = window.navigator,
 DOCUMENT            = document,
 BODY                = DOCUMENT.body,
 
@@ -111,8 +107,6 @@ LookupField = /** @lends LookupField.prototype */{
 
         PRIVATE.set(this, inst);
 
-        opt.lang    = opt.lang || String(WINDOW_NAVIGATOR.language || WINDOW_NAVIGATOR.userLanguage || "en-US");
-        opt.labels  = opt.i18n[opt.lang] || opt.i18n["en-US"];
 
         opt._selectedCountUI = fillTemplate(opt.labels.selectedCount, {
             count: '<span class="' + CSS_CLASS_BASE + '-selectedCount-number"></span>'
@@ -654,13 +648,10 @@ LookupField.defaults = {
     choicesZIndex:      0,  // Default to 5 via css file
     ListWidget:         List,
     SelectedItemWidget: SelectedItem,
-    lang:               '',
-    i18n:               {
-        'en-US': {
-            placeholder:    "Choose...",
-            selectedCount:  "{{count}} Selected",
-            clear:          "Clear"
-        }
+    labels:             {
+        placeholder:    "Choose...",
+        selectedCount:  "{{count}} Selected",
+        clear:          "Clear"
     }
 };
 

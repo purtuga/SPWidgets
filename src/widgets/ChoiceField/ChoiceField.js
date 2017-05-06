@@ -333,7 +333,7 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
 function updateSelectedCount(){
     let { selectedCount, $count, opt } = PRIVATE.get(this);
 
-    $count.textContent = fillTemplate(opt.selectedLabel, { count: String(selectedCount) });
+    $count.textContent = fillTemplate(opt.labels.selectedLabel, { count: String(selectedCount) });
 }
 
 function getChoices() {
@@ -424,7 +424,9 @@ ChoiceField.defaults = {
     isMulti:            null, // FIXME: Deprecated!!!
     allowMultiples:     null,
     choiceList:         null,
-    selectedLabel:      "{{count}} Selected",
+    labels:             {
+        selectedLabel: "{{count}} Selected"
+    },
     ChoiceItemWidget:   ChoiceItem
 };
 

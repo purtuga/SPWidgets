@@ -1,7 +1,6 @@
 import ItemPicker   from "../ItemPicker/ItemPicker"
 import dataStore    from "common-micro-libs/src/jsutils/dataStore"
 import objectExtend from "common-micro-libs/src/jsutils/objectExtend"
-import domAddClass  from "common-micro-libs/src/domutils/domAddClass"
 
 import getSiteListCollection    from "../../spapi/getSiteListCollection";
 
@@ -151,7 +150,9 @@ ListPicker.defaults = {
     webURL:         '',
     showLists:      true,
     showLibraries:  true,
-    title:          "Select..."
+    labels:         {
+        title: "Select..."
+    }
 };
 
 export default ListPicker;

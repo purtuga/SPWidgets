@@ -1,7 +1,6 @@
 import ItemPicker               from "../ItemPicker/ItemPicker"
 import dataStore                from "common-micro-libs/src/jsutils/dataStore"
 import objectExtend             from "common-micro-libs/src/jsutils/objectExtend"
-import domAddClass              from "common-micro-libs/src/domutils/domAddClass"
 
 import getListColumns           from "../../spapi/getListColumns"
 
@@ -147,7 +146,9 @@ ColumnPicker.defaults = {
     webURL:     "",
     selected:   "",
     filter:     null,               // function. Given array of columns. Must return array.
-    title:      "Select Column..."
+    labels:     {
+        title: "Select Column..."
+    }
 };
 
 export default ColumnPicker;
