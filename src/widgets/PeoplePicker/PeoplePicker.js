@@ -650,7 +650,7 @@ function getSuggestions(searchString, searchId) {
             var filteredResults = results.slice(0);
 
             // Insert the "ME" entry if that was the text the user entered
-            if (opt.lables.meKeyword && searchString === opt.labels.meKeyword) {
+            if (opt.labels.meKeyword && searchString === opt.labels.meKeyword) {
                 filteredResults.unshift(
                     opt.UserProfileModel.create({
                         UserInfoID:     CURRENT_USER_ID,
