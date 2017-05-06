@@ -383,9 +383,11 @@ const PeoplePicker = EventEmitter.extend(Widget).extend(/** @lends PeoplePicker.
      * @returns {Promise<Array<PeoplePickerUserProfileModel>, Error>}
      */
     add: function(people){
+        let UserProfileModel = PRIVATE.get(this).opt.UserProfileModel;
+
         if (!Array.isArray(people)) {
             if (typeof people === "string") {
-                people = parsePeopleField(people);
+                people = parsePeopleField(people, UserProfileModel);
 
             } else if (!people) {
                 return Promise.resolve([]);
@@ -395,7 +397,6 @@ const PeoplePicker = EventEmitter.extend(Widget).extend(/** @lends PeoplePicker.
             }
         }
 
-        let UserProfileModel = PRIVATE.get(this).opt.UserProfileModel;
 
         return Promise.all(
             people.map(function(person){
