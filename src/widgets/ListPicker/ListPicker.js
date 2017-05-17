@@ -1,6 +1,7 @@
 import ItemPicker   from "../ItemPicker/ItemPicker"
 import dataStore    from "common-micro-libs/src/jsutils/dataStore"
 import objectExtend from "common-micro-libs/src/jsutils/objectExtend"
+import sortBy       from "common-micro-libs/src/jsutils/sortBy"
 
 import getSiteListCollection    from "../../spapi/getSiteListCollection";
 
@@ -97,22 +98,15 @@ var ListPicker = {
  * @return {Promise}
  */
 var populateMenu = function(){
-    var inst    = PRIVATE.get(this);
-    var {webURL, showLists, showLibraries} = inst.opt;
+    let inst = PRIVATE.get(this);
+    let {
+        webURL,
+        showLists,
+        showLibraries,
+        filter: filterListResults  } = inst.opt;
 
     return getSiteListCollection({webURL: webURL}).then((lists) => {
-        lists.sort(function(a, b){
-            var aTitle = a.Title.toUpperCase();
-            var bTitle = b.Title.toUpperCase();
-
-            if (aTitle < bTitle) {
-                return -1;
-            }
-            if (aTitle > bTitle) {
-                return 1;
-            }
-            return 0;
-        });
+        sortBy(lists, "Title");
 
         if (!showLibraries || !showLists) {
             inst.lists = lists.filter(function(list){
@@ -133,6 +127,10 @@ var populateMenu = function(){
             inst.lists = lists;
         }
 
+        if (filterListResults) {
+            inst.lists = inst.lists.filter(filterListResults);
+        }
+
         this.setChoices(
             inst.lists.map((list) => {
                 list.title = list.Title;
@@ -150,6 +148,7 @@ ListPicker.defaults = {
     webURL:         '',
     showLists:      true,
     showLibraries:  true,
+    filter:         null,
     labels:         {
         title: "Select..."
     }
