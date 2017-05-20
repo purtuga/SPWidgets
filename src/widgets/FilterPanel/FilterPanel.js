@@ -546,7 +546,7 @@ FilterPanel.defaults = {
     hideHeader:         false,
     hideFindButton:     false,
     selectFieldsLayout: '3-col',    // 1, 2 or 3 -col
-    labels: {
+    labels: {                       // All possible labels used by all widgets
         title:          "Filter",
         find:           "Find",
         clear:          "Clear",
@@ -563,6 +563,7 @@ FilterPanel.defaults = {
         totalSelected:  "{{total}} selected.",
         moveUp:         "Move Up",
         moveDown:       "Move Down",
+        selectedLabel:  "{{count}} Selected",
         // Comparison operators
         contains:       "Contains",
         equal:          "Equal",
