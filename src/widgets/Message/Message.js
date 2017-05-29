@@ -52,36 +52,25 @@ const Message = Widget.extend(/** @lends Message.prototype */{
             return;
         }
 
+        let opt = objectExtend({}, this.getFactory().defaults, options);
         let inst = {
-            opt: objectExtend({}, this.getFactory().defaults, options)
+            opt,
+            iconClass: opt.iconClass,
+            $icon: null
         };
 
         PRIVATE.set(this, inst);
 
-        let opt = inst.opt;
 
         opt.type = opt.type.toLowerCase();
 
-        if (!opt.iconClass) {
-            switch (opt.type){
-                case "error":
-                    opt.iconClass = CSS_CLASS_MS_ICON_ERROR;
-                    break;
-
-                case "alert":
-                    opt.iconClass = CSS_CLASS_MS_ICON_ALERT;
-                    break;
-
-                case "success":
-                    opt.iconClass = CSS_CLASS_MS_ICON_SUCCESS;
-                    break;
-
-                default:
-                    opt.iconClass = CSS_CLASS_MS_ICON_INFO;
-            }
+        if (!inst.iconClass) {
+            inst.iconClass = getIconForMsgType(opt.type);
         }
 
-        let $ui = this.$ui = parseHTML(fillTemplate(MessageTemplate, inst.opt)).firstChild;
+        let $ui = this.$ui = parseHTML(fillTemplate(MessageTemplate, inst)).firstChild;
+
+        inst.$icon = $ui.querySelector(".ms-Icon");
 
         inst.moreEv = domAddEventHandler($ui.querySelector(`.${ CSS_CLASS_MESSAGE_MSG }-showMore`), "click", () => {
             domToggleClass($ui, CSS_CLASS_MESSAGE_MSG_SHOW_MORE);
@@ -150,17 +139,50 @@ const Message = Widget.extend(/** @lends Message.prototype */{
         if (type) {
             type = type.toLowerCase();
 
-            let $ele    = this.getEle();
-            let opt     = PRIVATE.get(this).opt;
+            let $ele            = this.getEle();
+            let inst            = PRIVATE.get(this);
+            let {
+                opt,
+                $icon,
+                iconClass }     = inst;
 
             domRemoveClass($ele, `${ CSS_CLASS_PREFIX_MS_BG_COLOR + opt.type }`);
             domRemoveClass($ele, `${ CSS_CLASS_PREFIX_MS_FONT_COLOR + opt.type }`);
 
             domAddClass($ele, `${ CSS_CLASS_PREFIX_MS_BG_COLOR + type }`);
             domAddClass($ele, `${ CSS_CLASS_PREFIX_MS_FONT_COLOR + type }`);
+
+            // If user did not define a custom icon, then also change the
+            // message icon.
+            if (!opt.iconClass) {
+                domRemoveClass($icon, iconClass);
+                iconClass = inst.iconClass = getIconForMsgType(type);
+                domAddClass($icon, iconClass);
+            }
+
+            opt.type = type;
         }
     }
 });
+
+function getIconForMsgType(type) {
+    switch (type.toLowerCase()){
+        case "error":
+            return CSS_CLASS_MS_ICON_ERROR;
+            break;
+
+        case "alert":
+            return CSS_CLASS_MS_ICON_ALERT;
+            break;
+
+        case "success":
+            return CSS_CLASS_MS_ICON_SUCCESS;
+            break;
+
+        default:
+            return CSS_CLASS_MS_ICON_INFO;
+    }
+}
 
 
 Message.defaults = {
