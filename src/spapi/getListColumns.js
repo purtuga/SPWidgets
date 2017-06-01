@@ -98,10 +98,7 @@ import ListColumnsCollection from '../collections/ListColumnsCollection';
                     //      -   Has to have a Display attribute
                     //      -   No AuthoringInfo attribute (these are used on the edit buttons)
                     if (
-                            (
-                                columns[i].Hidden === undefined ||
-                                columns[i].Hidden === "FALSE"
-                            ) &&
+                            !columns[i].Hidden &&
                             (
                                 columns[i].List === undefined ||
                                 (
