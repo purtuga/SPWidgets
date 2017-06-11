@@ -107,6 +107,9 @@ instData = dataStore.stash,
 ListModel = /** @lends ListModel.prototype */{
 
     init: function(source, options){
+        if (instData.has(this)) {
+            return;
+        }
 
         var
         me  = this,
@@ -126,6 +129,28 @@ ListModel = /** @lends ListModel.prototype */{
         }
 
         objectExtend(me, listObj);
+
+        this.onDestroy(() => {
+            // Destroy all Compose object
+            Object.keys(opt).forEach(function (prop) {
+                if (opt[prop]) {
+                    [
+                        "destroy",      // Compose
+                        "remove",       // DOM Events Listeners
+                        "off"           // EventEmitter Listeners
+                    ].some((method) => {
+                        if (opt[prop][method]) {
+                            opt[prop][method]();
+                            return true;
+                        }
+                    });
+
+                    opt[prop] = undefined;
+                }
+            });
+
+            instData['delete'](this);
+        });
     },
 
     /**

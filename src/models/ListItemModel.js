@@ -25,6 +25,10 @@ var PRIVATE = dataStore.stash;
  */
 const ListItemModel = Compose.extend(/** @lends ListItemModel.prototype */{
     init: function(itemData, options){
+        if (PRIVATE.has(this)) {
+            return;
+        }
+
         var opt = objectExtend({}, {
             listName:   "",
             webURL:     ""

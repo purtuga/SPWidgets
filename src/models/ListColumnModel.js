@@ -31,6 +31,9 @@ instData = dataStore.stash,
 ListColumnModel = /** @lends ListColumnModel.prototype */{
 
     init: function(columnData, options){
+        if (instData.has(this)) {
+            return;
+        }
 
         var opt = objectExtend({}, this.getFactory().defaults, options);
         objectExtend(this, {
@@ -62,6 +65,29 @@ ListColumnModel = /** @lends ListColumnModel.prototype */{
         }
 
         instData.set(this, opt);
+
+
+        this.onDestroy(() => {
+            // Destroy all Compose object
+            Object.keys(opt).forEach(function (prop) {
+                if (opt[prop]) {
+                    [
+                        "destroy",      // Compose
+                        "remove",       // DOM Events Listeners
+                        "off"           // EventEmitter Listeners
+                    ].some((method) => {
+                        if (opt[prop][method]) {
+                            opt[prop][method]();
+                            return true;
+                        }
+                    });
+
+                    opt[prop] = undefined;
+                }
+            });
+
+            instData['delete'](this);
+        });
     },
 
     /**

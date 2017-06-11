@@ -1,7 +1,10 @@
 import Compose      from "common-micro-libs/src/jsutils/Compose"
 import objectExtend from "common-micro-libs/src/jsutils/objectExtend"
+import dataStore    from "common-micro-libs/src/jsutils/dataStore"
 
 //================================================================
+const PRIVATE = dataStore.create();
+
 const COLORS = [
     "blueLight",
     "blue",
@@ -37,8 +40,13 @@ let assignedColor   = {};   // Timed cache?
  */
 const UserProfileModel = Compose.extend(/** @lends UserProfileModel.prototype */{
     init: function(modelProperties, options){
+        if (PRIVATE.has(this)) {
+            return;
+        }
 
         let opt = objectExtend({}, this.getFactory().defaults, options);
+
+        PRIVATE.set(this, opt);
 
         objectExtend(
             this,
@@ -108,6 +116,28 @@ const UserProfileModel = Compose.extend(/** @lends UserProfileModel.prototype */
         if (!this.Color) {
             this.setRandomColor();
         }
+
+        this.onDestroy(() => {
+            // Destroy all Compose object
+            Object.keys(opt).forEach(function (prop) {
+                if (opt[prop]) {
+                    [
+                        "destroy",      // Compose
+                        "remove",       // DOM Events Listeners
+                        "off"           // EventEmitter Listeners
+                    ].some((method) => {
+                        if (opt[prop][method]) {
+                            opt[prop][method]();
+                            return true;
+                        }
+                    });
+
+                    opt[prop] = undefined;
+                }
+            });
+
+            PRIVATE['delete'](this);
+        });
     },
 
     /**
