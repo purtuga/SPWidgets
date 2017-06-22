@@ -65,29 +65,7 @@ ListColumnModel = /** @lends ListColumnModel.prototype */{
         }
 
         instData.set(this, opt);
-
-
-        this.onDestroy(() => {
-            // Destroy all Compose object
-            Object.keys(opt).forEach(function (prop) {
-                if (opt[prop]) {
-                    [
-                        "destroy",      // Compose
-                        "remove",       // DOM Events Listeners
-                        "off"           // EventEmitter Listeners
-                    ].some((method) => {
-                        if (opt[prop][method]) {
-                            opt[prop][method]();
-                            return true;
-                        }
-                    });
-
-                    opt[prop] = undefined;
-                }
-            });
-
-            instData['delete'](this);
-        });
+        this.onDestroy(() => instData['delete'](this));
     },
 
     /**

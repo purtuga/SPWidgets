@@ -49,10 +49,7 @@ const ListItemModel = Compose.extend(/** @lends ListItemModel.prototype */{
             });                                                                              }
 
         PRIVATE.set(this, opt);
-
-        this.onDestroy(function(){
-            PRIVATE["delete"](this);
-        }.bind(this));
+        this.onDestroy(() => PRIVATE["delete"](this));
     },
 
     /**
