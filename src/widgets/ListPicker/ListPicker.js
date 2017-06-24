@@ -144,7 +144,7 @@ var populateMenu = function(){
 
 ListPicker = ItemPicker.extend(ListPicker);
 
-ListPicker.defaults = {
+ListPicker.defaults = objectExtend(true, {}, ItemPicker.defaults, {
     webURL:         '',
     showLists:      true,
     showLibraries:  true,
@@ -152,6 +152,6 @@ ListPicker.defaults = {
     labels:         {
         title: "Select..."
     }
-};
+});
 
 export default ListPicker;

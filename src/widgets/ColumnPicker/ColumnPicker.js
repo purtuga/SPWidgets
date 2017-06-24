@@ -141,7 +141,7 @@ function loadListColumns() {
         });
 }
 
-ColumnPicker.defaults = objectExtend({}, ItemPicker.defaults, {
+ColumnPicker.defaults = objectExtend(true, {}, ItemPicker.defaults, {
     listName:   "",
     webURL:     "",
     selected:   "",
