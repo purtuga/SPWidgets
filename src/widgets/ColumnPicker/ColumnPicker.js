@@ -141,7 +141,7 @@ function loadListColumns() {
         });
 }
 
-ColumnPicker.defaults = {
+ColumnPicker.defaults = objectExtend({}, ItemPicker.defaults, {
     listName:   "",
     webURL:     "",
     selected:   "",
@@ -149,6 +149,6 @@ ColumnPicker.defaults = {
     labels:     {
         title: "Select Column..."
     }
-};
+});
 
 export default ColumnPicker;
