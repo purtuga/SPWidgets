@@ -17,14 +17,30 @@ var FiltersCollection = {
      * Returns a CAML strings of all the Filters contained
      * in the collection using an `And` logical operator.
      *
+     * @param {Function} [onEach]
+     *  If defined, callback will be executed on each filter. Callback is
+     *  given an object with the `filter` model and the `filterString`, which
+     *  is what is returned back. This can be manipulated by the callback.
+     *
      * @returns {String}
+     *
+     * @example
      */
-    toCAMLQuery: function(){
+    toCAMLQuery: function(onEach){
         return getCamlLogical({
             values: this
                 .filter(isFilterDefined)
                 .map(function(filter){
-                    return filter.toCAMLQuery();
+                    let filterInfo = {
+                        filter,
+                        filterString: filter.toCAMLQuery()
+                    };
+
+                    if (onEach) {
+                        onEach(filterInfo);
+                    }
+
+                    return filterInfo.filterString;
                 })
         });
     },
