@@ -20,8 +20,8 @@ const parsePeopleField = function(peopleString, PersonModel) {
 
     return parseLookupFieldValue(String(peopleString || "")).map(function(person){
         var personInfo = {
-            ID: person.id,
-            Name: person.title
+            ID:     person.id       || "",
+            Name:   person.title    || ""
         };
 
         // If the Name field seems to have data that is returned when you
