@@ -1,6 +1,7 @@
 import ItemPicker               from "../ItemPicker/ItemPicker"
 import dataStore                from "common-micro-libs/src/jsutils/dataStore"
 import objectExtend             from "common-micro-libs/src/jsutils/objectExtend"
+import sortBy                   from "common-micro-libs/src/jsutils/sortBy"
 
 import getListColumns           from "../../spapi/getListColumns"
 
@@ -129,6 +130,8 @@ function loadListColumns() {
             if (filter) {
                 columns = filter(columns);
             }
+
+            sortBy(columns, "DisplayName");
 
             PRIVATE.get(this).choices = columns = columns.map(column => {
                 column.title = column.DisplayName;
