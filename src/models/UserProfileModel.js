@@ -170,6 +170,38 @@ const UserProfileModel = Compose.extend(/** @lends UserProfileModel.prototype */
         }
 
         return this.Color = color;
+    },
+
+    /**
+     * Returns a string value with the user information in the format normally
+     * received in SOAP responses (ex. `ID;#VisibleValue`)
+     *
+     * @param {Boolean} [expanded=false]
+     *  If true, then the format returned is the `expanded` one (normally received in
+     *  queries when `ExpandUserField` is used)
+     *
+     * @return {String}
+     *
+     * @example
+     *
+     *  // non-expanded: 11;#Paul Tavares
+     *  // Expanded: 11;#Paul Tavares,#i:0#.f|membership|paul.tavares@sharepoint.com,#paul.tavares@sharepoint.com,#,#Paul Tavares
+     */
+    toCamlResponseString(expanded) {
+        // Examples:
+        let response = `${ this.ID };#${ this.Name }`;
+
+        if (expanded) {
+            response += [
+                "Name",
+                "AccountName",
+                "Email",
+                "SIP",
+                "DisplayName"
+            ].map(attr => this[attr]).join(",#")
+        }
+
+        return response;
     }
 });
 
