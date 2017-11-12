@@ -151,6 +151,10 @@ FilterModel = {
                     case "DateTime":
                         template = `${ fieldRefXml }<Value Type='DateTime' IncludeTimeValue='True' StorageTZ='True'>{{colValue}}</Value>`;
                         break;
+
+                    case "Computed":
+                        template = `${ fieldRefXml }<Value Type='Computed'>{{colValue}}</Value>`;
+                        break;
                 }
             }
         }

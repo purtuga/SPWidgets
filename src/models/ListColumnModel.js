@@ -1,13 +1,12 @@
 import Compose         from "common-micro-libs/src/jsutils/Compose"
 import objectExtend    from "common-micro-libs/src/jsutils/objectExtend"
 import dataStore       from "common-micro-libs/src/jsutils/dataStore"
-import getNodesFromXml from "../sputils/getNodesFromXml"
 import getListItems    from "../spapi/getListItems"
 import Promise         from "common-micro-libs/src/jsutils/es6-promise"
 
-
-var
-instData = dataStore.stash,
+//============================================================================
+const instData              = dataStore.stash;
+const FIELD_CONTENT_TYPE_ID = "ContentTypeID";
 
 /**
  * list Column Model.
@@ -28,7 +27,7 @@ instData = dataStore.stash,
  *     JSON response object)
  *
  */
-ListColumnModel = /** @lends ListColumnModel.prototype */{
+const ListColumnModel = Compose.extend(/** @lends ListColumnModel.prototype */{
 
     init: function(columnData, options){
         if (instData.has(this)) {
@@ -45,10 +44,17 @@ ListColumnModel = /** @lends ListColumnModel.prototype */{
             StaticName:     "",
             Required:       false,
             ReadOnly:       false,
+
+            // Calculated fields -------------------------------------------------
             webURL:         "",         // SPWidgets inserted value if available
             listID:         "",         // SPWigets inserted value if available
-            listName:       ""          // SPWigets inserted value if available
+            listName:       "",         // SPWigets inserted value if available
+
+            isContentType:  false
         }, columnData);
+
+        // Calcualted fields
+        this.isContentType = isContentType(this);
 
         if (opt.list) {
             if (opt.list.getWebUrl) {
@@ -134,9 +140,21 @@ ListColumnModel = /** @lends ListColumnModel.prototype */{
     getList: function(){
         return instData.get(this).list;
     }
-};
+});
 
-ListColumnModel = Compose.extend(ListColumnModel);
+/**
+ * Is column the Content Type field
+ *
+ * @param {ListColumnModel} column
+ *
+ * @return {Boolean}
+ */
+export function isContentType(column) {
+    return column.Name === FIELD_CONTENT_TYPE_ID ||
+        column.Name === "ContentType" ||
+        (column.Type === "Computed" && column.PIAttribute === FIELD_CONTENT_TYPE_ID);
+}
+
 
 ListColumnModel.defaults = {
     list:   null,
