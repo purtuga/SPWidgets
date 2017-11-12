@@ -435,12 +435,14 @@ LookupField = /** @lends LookupField.prototype */{
 };
 
 function retrieveListData(query) {
-    var me              = this,
-        inst            = PRIVATE.get(me),
-        queryOptions    = getQueryOptions.call(me);
+    const me            = this;
+    const inst          = PRIVATE.get(me);
+    const queryOptions  = getQueryOptions.call(me);
+    const showField     = inst.opt.column.ShowField;
+    let queryCaml       = "";
 
     if (query) {
-        queryOptions.CAMLQuery = "<Query><Where>" +
+        queryCaml += "<Where>" +
             getCamlLogical({
                 type:   'OR',
                 values: inst.opt.searchColumns.map(function(colName){
@@ -450,7 +452,16 @@ function retrieveListData(query) {
                         '</Value></Contains>';
                 })
             }) +
-            "</Where></Query>";
+            "</Where>";
+    }
+
+    // Sort by `ShowField`
+    if (showField) {
+        queryCaml += `<OrderBy><FieldRef Name="${ showField }" Ascending="True" /></OrderBy>`;
+    }
+
+    if (queryCaml) {
+        queryOptions.CAMLQuery = `<Query>${ queryCaml }</Query>`;
     }
 
     return getListItems(queryOptions);
