@@ -190,6 +190,16 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
     },
 
     /**
+     * Returns a promise that resolves once the widget is ready to user
+     * interaction (aka: fully loaded)
+     *
+     * @return {Promise}
+     */
+    onReady() {
+        return PRIVATE.get(this).onReady;
+    },
+
+    /**
      * Gets the value of the input.
      *
      * @returns {Array<String>}
@@ -243,7 +253,7 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
             return newVal;
         });
 
-        return inst.onReady.then(() => {
+        return this.onReady().then(() => {
             inst.choiceList.forEach((choiceWdg) => {
                 if (newVals.indexOf(choiceWdg.getInputValue()) !== -1) {
                     choiceWdg.check();
@@ -282,7 +292,7 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
      * @return {Promise}
      */
     setChoices: function(choiceList){
-        return PRIVATE.get(this).onReady.then(() => {
+        return this.onReady().then(() => {
             if (Array.isArray(choiceList)) {
                 let inst        = PRIVATE.get(this);
                 let selected    = this.getValue();
@@ -304,7 +314,7 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
     checkAll: function(){
         let inst = PRIVATE.get(this);
 
-        return inst.onReady.then(() => {
+        return this.onReady().then(() => {
             inst.choiceList.forEach((choiceItemWdg) => choiceItemWdg.check());
 
             if (!inst.isMulti) {
@@ -324,7 +334,7 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
     unCheckAll: function(){
         let inst = PRIVATE.get(this);
 
-        return inst.onReady.then(() => {
+        return this.onReady().then(() => {
             inst.choiceList.forEach((choiceItemWdg) => choiceItemWdg.unCheck());
         });
     }

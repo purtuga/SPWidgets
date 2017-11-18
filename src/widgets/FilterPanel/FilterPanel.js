@@ -23,6 +23,7 @@ import FilterColumnLookupField      from "./FilterColumnLookupField/FilterColumn
 import FilterColumnNumberField      from "./FilterColumnNumberField/FilterColumnNumberField"
 import FilterColumnUserField        from "./FilterColumnUserField/FilterColumnUserField"
 import FilterColumnDateTimeField    from "./FilterColumnDateTimeField/FilterColumnDateTimeField"
+import FilterColumnContentTypeField from "./FilterColumnContentTypeField/FilterColumnContentTypeField"
 import FiltersCollection            from "./FiltersCollection"
 import FilterModel                  from "./FilterModel"
 
@@ -439,14 +440,14 @@ function addColumns(colList, colValues, append){
                         FilterColumnConstructor = opt.NumberWidget;
                         break;
 
-        // FIXME: check for Content Type field
-        //    Content Type Attribute:
-        //      Name: "ContentType"
-        //      PIAttribute:"ContentTypeID"
-        //      StaticName:"ContentType"
                     case "Computed":
-
-                        FilterColumnConstructor = opt.TextWidget;
+                        // Is contentType?
+                        if (colDef.PIAttribute === "ContentTypeID" || colDef.Name === "ContentType") {
+                            FilterColumnConstructor = opt.ContentTypeWidget;
+                        }
+                        else {
+                            FilterColumnConstructor = opt.TextWidget;
+                        }
                         break;
 
                     case "DateTime":
@@ -540,6 +541,7 @@ FilterPanel.defaults = {
     NumberWidget:       FilterColumnNumberField,
     UserWidget:         FilterColumnUserField,
     DateTimeWidget:     FilterColumnDateTimeField,
+    ContentTypeWidget:  FilterColumnContentTypeField,
 
     // FIXME: add all other modules, like collection, model, and internal widgets here as well.
 
