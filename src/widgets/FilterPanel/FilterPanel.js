@@ -24,6 +24,7 @@ import FilterColumnNumberField      from "./FilterColumnNumberField/FilterColumn
 import FilterColumnUserField        from "./FilterColumnUserField/FilterColumnUserField"
 import FilterColumnDateTimeField    from "./FilterColumnDateTimeField/FilterColumnDateTimeField"
 import FilterColumnContentTypeField from "./FilterColumnContentTypeField/FilterColumnContentTypeField"
+import FilterColumnBooleanField     from "./FilterColumnBooleanField/FilterColumnBooleanField"
 import FiltersCollection            from "./FiltersCollection"
 import FilterModel                  from "./FilterModel"
 
@@ -464,6 +465,10 @@ function addColumns(colList, colValues, append){
                         FilterColumnConstructor = opt.LookupWidget;
                         break;
 
+                    case "Boolean":
+                        FilterColumnConstructor = opt.BooleanWidget;
+                        break;
+
                     case "Attachments":
                         FilterColumnConstructor = opt.AttachmentsWidget;
                         break;
@@ -542,6 +547,7 @@ FilterPanel.defaults = {
     UserWidget:         FilterColumnUserField,
     DateTimeWidget:     FilterColumnDateTimeField,
     ContentTypeWidget:  FilterColumnContentTypeField,
+    BooleanWidget:      FilterColumnBooleanField,
 
     // FIXME: add all other modules, like collection, model, and internal widgets here as well.
 

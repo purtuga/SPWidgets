@@ -155,6 +155,10 @@ FilterModel = {
                     case "Computed":
                         template = `${ fieldRefXml }<Value Type='Computed'>{{colValue}}</Value>`;
                         break;
+
+                    case "Boolean":
+                        template = `${ fieldRefXml }<Value Type='Boolean'>{{colValue}}</Value>`;
+                        break;
                 }
             }
         }
