@@ -36,6 +36,12 @@ const FilterColumnBooleanField = FilterColumn.extend(/** @lends FilterColumnBool
         inputWdg.appendTo(inst.inputHolder);
         this.removeCompareOperators("Contains");
         this.setCompareOperatorDefault("Eq");
+        this.setKeywordInfo("");
+        this.evalDirtyState();
+    },
+
+    appendTo(ele) {
+        FilterColumn.prototype.appendTo.call(this, ele);
         this.evalDirtyState();
     }
 });

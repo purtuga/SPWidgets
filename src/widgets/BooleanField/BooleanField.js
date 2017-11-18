@@ -60,10 +60,6 @@ const BooleanField = EventEmitter.extend(Widget).extend(/** @lends BooleanField.
             } else {
                 domRemoveClass($label, CSS_CLASS_IS_SELECTED);
             }
-        };
-
-        inst.clickEv = domAddEventListener($input, "change", () => {
-            setSelected();
             /**
              * the value of the Boolean field widget has changed
              *
@@ -72,7 +68,9 @@ const BooleanField = EventEmitter.extend(Widget).extend(/** @lends BooleanField.
              * @property {String} value
              */
             this.emit("change", { value: this.getValue() });
-        });
+        };
+
+        inst.clickEv = domAddEventListener($input, "change", () => setSelected());
         setSelected();
 
         if (opt.hideLabel) {
