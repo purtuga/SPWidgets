@@ -162,7 +162,7 @@ getListColumns.defaults = {
     columnName:             '',
     cache:                  true,
     webURL:                 null,
-    whiteList:              ["ParentID"],
+    whiteList:              ["ParentID", "FileLeafRef"],
     ListColumnModel:        ListColumnModel,
     ListColumnsCollection:  ListColumnsCollection
 };
