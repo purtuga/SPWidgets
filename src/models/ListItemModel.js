@@ -1,8 +1,8 @@
-import Compose      from "common-micro-libs/src/jsutils/Compose"
-import objectExtend from "common-micro-libs/src/jsutils/objectExtend"
-import dataStore    from "common-micro-libs/src/jsutils/dataStore"
-import parseHTML    from "common-micro-libs/src/jsutils/parseHTML"
-import domFind      from "common-micro-libs/src/domutils/domFind"
+import ObservableObject from "common-micro-libs/src/jsutils/ObservableObject"
+import objectExtend     from "common-micro-libs/src/jsutils/objectExtend"
+import dataStore        from "common-micro-libs/src/jsutils/dataStore"
+import parseHTML        from "common-micro-libs/src/jsutils/parseHTML"
+import domFind          from "common-micro-libs/src/domutils/domFind"
 
 
 var PRIVATE = dataStore.stash;
@@ -15,7 +15,7 @@ var PRIVATE = dataStore.stash;
  * `itemData` (SharePoint does not return empty attributes)
  *
  * @class ListItemModel
- * @extends Compose
+ * @extends ObservableObject
  *
  * @param {Object} itemData
  *      An object with the properties for the model
@@ -23,20 +23,18 @@ var PRIVATE = dataStore.stash;
  *  An object with the options used to get the row from SP
  *
  */
-const ListItemModel = Compose.extend(/** @lends ListItemModel.prototype */{
+const ListItemModel = ObservableObject.extend(/** @lends ListItemModel.prototype */{
     init: function(itemData, options){
         if (PRIVATE.has(this)) {
             return;
         }
 
+        ObservableObject.prototype.init.call(this, itemData, options);
+
         var opt = objectExtend({}, {
             listName:   "",
             webURL:     ""
         }, options);
-
-        if (itemData) {
-            objectExtend(this, itemData);
-        }
 
         // If options has CAMLViewFields, then ensure the model has
         // those fields defined as attributes
