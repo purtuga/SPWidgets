@@ -58,6 +58,9 @@ CSS_CLASS_MS_BUTTON_PRIMARY = "ms-Button--primary",
  *  the filter panel. By default, all exposed columns of the given List
  *  are shown. The column names defined in this option must be the `StaticName`
  *  of the list column.
+ * @param {Array<Object>|FiltersCollection} [options.filters]
+ *  A list of defined filters to show in the filter panel. See [setFilters()]{@link FilterPanel#setFilters}
+ *  for more on the format of this parameter
  *
  * @fires FilterPanel#clear
  * @fires FilterPanel#find
@@ -101,6 +104,7 @@ FilterPanel = /** @lends FilterPanel.prototype */{
             this.setBodyHeight(opt.bodyHeight);
         }
 
+
         // Info widget
         inst.infoMsg = Widget.extend({$ui: parseHTML('<div style="padding: 2em 5%;"/>').firstChild}).create();
         Message.create({ message: opt.labels.msg }).appendTo(inst.infoMsg.getEle());
@@ -110,6 +114,9 @@ FilterPanel = /** @lends FilterPanel.prototype */{
         inst.columnSelector = ColumnSelector.create(opt);
         inst.columnSelector.pipe(this, "columnSelector:");
 
+        if (opt.filters && opt.filters.length) {
+            this.setFilters(opt.filters);
+        }
 
         //----------------------------------------
         // Initialize event handlers
@@ -533,6 +540,7 @@ FilterPanel.defaults = {
     listName:           "",
     webURL:             "",
     columns:            null,
+    filters:            null,
     ignoreKeywords:     /^(of|and|a|an|to|by|the|or|from)$/i,
     delimiter:          ';',
     zIndex:             15,
