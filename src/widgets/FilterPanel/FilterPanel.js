@@ -48,6 +48,11 @@ CSS_CLASS_MS_BUTTON_PRIMARY = "ms-Button--primary",
  * criteria for data in a List or Document Library using the
  * columns of that list or library.
  *
+ * __About Events__
+ *
+ * All Filter Column widget events are piped to the Filter panel with prefix of `filterColumn:`.
+ * To capture all column changes, use `filterColumn:change` event
+ *
  * @class FilterPanel
  * @extends Widget
  *

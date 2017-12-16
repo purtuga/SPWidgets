@@ -2,41 +2,64 @@ import FilterColumnTextField from "../FilterColumnTextField/FilterColumnTextFiel
 import objectExtend from "common-micro-libs/src/jsutils/objectExtend";
 import dataStore from "common-micro-libs/src/jsutils/dataStore";
 
-    var
-    PRIVATE = dataStore.stash,
+const PRIVATE = dataStore.stash;
+const FilterColumnTextFieldPrototype = FilterColumnTextField.prototype;
+const toPrct = value => String(Number(value) * 100);
+const toDecimal = value => String(Number(value) / 100);
 
-    /**
-     * Widget description
-     *
-     * @class FilterColumnNumberField
-     * @extends FilterColumnTextField
-     *
-     * @param {Object} options
-     */
-    FilterColumnNumberField = /** @lends FilterColumnNumberField.prototype */{
-        init: function (options) {
-            FilterColumnTextField.prototype.init.call(this,
-                objectExtend({}, this.getFactory().defaults, options)
-            );
-
-            var labels = PRIVATE.get(this).opt.labels;
-
-            this.addCompareOperators([
-                {
-                    value: "Gt",
-                    title: labels.greaterThan
-                },
-                {
-                    value: "Lt",
-                    title: labels.lessThan
-                }
-            ]);
-
-            this.setCompareOperatorDefault("Eq");
+/**
+ * Widget description
+ *
+ * @class FilterColumnNumberField
+ * @extends FilterColumnTextField
+ *
+ * @param {Object} options
+ */
+const FilterColumnNumberField = FilterColumnTextField.extend(/** @lends FilterColumnNumberField.prototype */{
+    init: function (options) {
+        if (options && options.value) {
+            options.value = toPrct(options.value);
         }
-    };
 
-    FilterColumnNumberField = FilterColumnTextField.extend(FilterColumnNumberField);
-    FilterColumnNumberField.defaults = {};
+        FilterColumnTextFieldPrototype.init.call(this,
+            objectExtend({}, this.getFactory().defaults, options)
+        );
 
-    export default FilterColumnNumberField;
+        const labels = PRIVATE.get(this).opt.labels;
+
+        this.addCompareOperators([
+            {
+                value: "Gt",
+                title: labels.greaterThan
+            },
+            {
+                value: "Lt",
+                title: labels.lessThan
+            }
+        ]);
+
+        this.setCompareOperatorDefault("Eq");
+    },
+
+    isPercent() {
+        return !!(PRIVATE.get(this).opt.column || {}).Percentage;
+    },
+
+    setFilter(filter) {
+        if (this.isPercent()){
+            if (filter && filter.values) {
+                filter.values.forEach((decimalValue, i) => filter.values[i] = toPrct(decimalValue));
+            }
+        }
+        FilterColumnTextFieldPrototype.setFilter.call(this, filter);
+    },
+
+    getValue() {
+        const response = FilterColumnTextFieldPrototype.getValue.call(this);
+        return this.isPercent() ? toDecimal(response) : response;
+    }
+});
+
+FilterColumnNumberField.defaults = {};
+
+export default FilterColumnNumberField;
