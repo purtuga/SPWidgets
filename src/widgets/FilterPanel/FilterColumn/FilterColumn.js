@@ -111,6 +111,7 @@ import "./FilterColumn.less";
 
             domAddEventListener(inst.compareOperator,   "change", evalDirtyState);
             domAddEventListener(inst.sortOrder,         "change", evalDirtyState);
+            domAddEventListener(inst.logicalOperator,   "change", evalDirtyState);
 
             this.onDestroy(function () {
                 Object.keys(inst, function(instProp){
