@@ -113,6 +113,16 @@ const ColumnPicker = ItemPicker.extend(/** @lends ColumnPicker.prototype */{
                 return PickerPrototype.setSelected.call(this, colInfo.DisplayName);
             });
         }
+    },
+
+    /**
+     * Reloads the list of columns by running the result set again through any
+     * `filter` callback that was defined during initialation.
+     *
+     * @returns {Promise}
+     */
+    reloadChoices() {
+        return this.onReady().then(loadListColumns.bind(this));
     }
 });
 
