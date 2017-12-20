@@ -1,4 +1,4 @@
-import getSiteWebUrl        from "../getSiteWebUrl"
+import getWebUrlFromPageUrl from "./getWebUrlFromPageUrl"
 import apiFetch             from "../../sputils/apiFetch"
 import cache                from "../../sputils/cache"
 import { getRestHeaders }   from "../../sputils/restUtils"
@@ -9,7 +9,12 @@ import { getRestHeaders }   from "../../sputils/restUtils"
  * Gets the SharePoint (2013 or above) context by calling the associated api.
  *
  * @param {String} [webURL]
+ *  The Web site URL for the requested Context. Default is get get current page's
+ *  web site URL.
+ *
  * @param {Boolean} [noCache]
+ *  By default, context data is cached for the amount of time as reported valid in the
+ *  api response. Set this param to false, to not return cached result.
  *
  * @return {Promise<ContextWebInformation, Error>}
  */
@@ -17,7 +22,7 @@ export default function getContextInfo (webURL, noCache) {
     // FIXME: should we try to get it from here:  $("#__REQUESTDIGEST").val() if available
     // FIXME: should we get it from _spPageContextInfo.formDigestValue if available?
 
-    return getSiteWebUrl(webURL).then(siteWebURL => {
+    return getWebUrlFromPageUrl(webURL).then(siteWebURL => {
         const apiUrl = `${ siteWebURL }_api/contextinfo`;
         let apiResponse;
 

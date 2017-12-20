@@ -1,6 +1,7 @@
-import Promise  from "common-micro-libs/src/jsutils/es6-promise";
-import apiFetch from "../sputils/apiFetch";
-import cache    from "../sputils/cache";
+import Promise      from "common-micro-libs/src/jsutils/es6-promise";
+import apiFetch     from "../sputils/apiFetch";
+import cache        from "../sputils/cache";
+import getFullUrl   from "../sputils/getFullUrl";
 
 /* global _spPageContextInfo, L_Menu_BaseUrl */
 
@@ -133,40 +134,6 @@ var getSiteUrl = function(pageUrl) {
     }
 
     return siteUrlResponse;
-};
-
-/**
- * Takes a relative URL (ex. /you/page.aspx) and returns the full
- * url starting wtih http...
- *
- * @param {String} pageAddress
- * @param {Boolean} [noEndSlash=false]
- *
- * @private
- */
-var getFullUrl = function (pageAddress, noEndSlash) {
-
-    // if URL does not end with "/" then insert it
-    if (pageAddress && !noEndSlash && pageAddress.charAt(pageAddress.length - 1) !== "/") {
-        pageAddress += "/";
-    }
-
-    if (pageAddress.toLowerCase().indexOf("http") > -1) {
-        return pageAddress;
-    }
-
-    var docLocation = document.location;
-
-    pageAddress = docLocation.protocol + "//" +
-        docLocation.hostname +
-        (   Number(docLocation.port) !== 80 &&
-            Number(docLocation.port) > 0 ?
-            ":" + docLocation.port :
-                ""
-        ) +
-        pageAddress;
-
-    return pageAddress;
 };
 
 export default getSiteUrl;
