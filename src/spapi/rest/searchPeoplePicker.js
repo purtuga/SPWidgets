@@ -6,6 +6,25 @@ import cache                from "../../sputils/cache"
 import UserProfileModel     from "../../models/UserProfileModel"
 
 //==============================================================================
+const freeze = Object.freeze;
+
+export const PRINCIPAL_TYPES = freeze({
+    USER:               1,
+    NONE:               0,
+    DISTRIBUTIONLIST:   2,
+    SECURITYGROUP:      4,
+    SHAREPOINTGROUP:    8,
+    ALL:                15
+});
+
+export const PRINCIPAL_SOURCES = freeze({
+    ALL:                    15,
+    MEMBERSHIPPROVIDER:     4,
+    NONE:                   0,
+    ROLEPROVIDER:           8,
+    USERINFOLIST:           1,
+    WINDOWS:                2
+});
 
 /**
  * Searches for People based on a query string
@@ -16,6 +35,8 @@ import UserProfileModel     from "../../models/UserProfileModel"
  * @param {Object} [options.principalType='All']
  *      Default is User. Others include: None, DistributionList,
  *      SecurityGroup, SharePointGroup, All
+ * @param {Object} [options.principalSource='All']
+ *  Possible values: `All`, `MembershipProvider`, `None`, `RoleProvider`, `UserInfoList`, `Windows`
  * @param {Object} [options.webURL='currentSiteUrl']
  * @param {Object} [options.cache=true]
  * @param {UserProfileModel} [options.UserProfileModel=UserProfileModel]
@@ -23,6 +44,8 @@ import UserProfileModel     from "../../models/UserProfileModel"
  * @return {Promise<Array<UserProfileModel>, Error>}
  */
 export default function searchPeoplePicker(options) {
+    // FIXME: support for SharePointGroupID of peoplePicker API
+
     const opt       = objectExtend({}, searchPeoplePicker.defaults, options);
     const request   = getContextInfo(opt.webURL).then(contextInfo => {
         opt.webURL = contextInfo.WebFullUrl;
@@ -45,8 +68,8 @@ export default function searchPeoplePicker(options) {
                     MaximumEntitySuggestions:   opt.maxResults,
                     AllowEmailAddresses:        true,
                     AllowOnlyEmailAddresses:    false,
-                    PrincipalSource:            15,
-                    PrincipalType:              15,
+                    PrincipalSource:            PRINCIPAL_SOURCES[String(opt.principalSource || "ALL").toUpperCase()],
+                    PrincipalType:              PRINCIPAL_TYPES[String(opt.principalType || "ALL").toUpperCase()],
                     SharePointGroupID:          0
                 }
             })
@@ -78,6 +101,7 @@ searchPeoplePicker.defaults = {
     searchText:         '',
     maxResults:         50,
     principalType:      'All',
+    principalSource:    'All',
     webURL:             '',
     cache:              true,
     UserProfileModel:   UserProfileModel
