@@ -48,7 +48,7 @@ export default function searchPeoplePicker(options) {
 
     const opt       = objectExtend({}, searchPeoplePicker.defaults, options);
     const request   = getContextInfo(opt.webURL).then(contextInfo => {
-        opt.webURL = contextInfo.WebFullUrl;
+        opt.webURL = contextInfo.WebFullUrl + "/";
 
         const cacheKey = opt.webURL + "?" + [ opt.searchText, opt.maxResults, opt.principalType ].join("|");
 

@@ -100,6 +100,10 @@ const SELECTOR_BASE                       = "." + CSS_CLASS_BASE;
  *  If true, the search suggestion element is right aligned with the search input
  *  box. good for when widget is close to the right edge of the viewport
  *
+ * @param {Function} [options.apiSearch=searchPrincipals]
+ *  The API function that will be called to get search results. See `searchPrincipals`
+ *  or `searchPeoplePicker` for supported argument signature
+ *
  * @param {Object} [options.labels]
  *  The labels used by the people picker.
  *
@@ -633,7 +637,7 @@ function getSuggestions(searchString, searchId) {
 
     searchString = searchString || inst.$input.value;
 
-    return searchPrincipals({
+    return opt.apiSearch({
             webURL:             opt.webURL,
             searchText:         searchString,
             maxResults:         opt.maxSearchResults,
@@ -793,6 +797,7 @@ PeoplePicker.defaults = {
     UserProfileModel:       PeoplePickerUserProfileModel,
     PersonaWidget:          PeoplePickerPersona,
     ResultGroupWidget:      ResultGroup,
+    apiSearch:              searchPrincipals,
     suggestionsRightAlign:  false,
     labels: {
         inputPlaceholder:   "Type and Pick",
