@@ -32,7 +32,7 @@ export default function ensureUser (options) {
 
     return getContextInfo(opt.webURL)
         .then(contextInfo => {
-            opt.webURL = contextInfo.WebFullUrl = "/";
+            opt.webURL = contextInfo.WebFullUrl + "/";
             const cacheKey = `${opt.webURL}?${ opt.logonName }`;
 
             if (opt.cache && cache.get(cacheKey)) {

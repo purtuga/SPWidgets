@@ -704,7 +704,7 @@ function showSuggestions(peopleList) {
     resultGroup.on("result-click", (result) => {
         let resultModel = result.getUserProfile();
 
-        if (String(resultModel.ID) === "-1") {
+        if (inst.opt.resolvePrincipals && !resultModel.ID || String(resultModel.ID) === "-1") {
             resultModel.resolvePrincipal();
         }
 
