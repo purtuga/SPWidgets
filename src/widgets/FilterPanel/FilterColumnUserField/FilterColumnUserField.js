@@ -3,8 +3,8 @@ import PeoplePicker from "../../PeoplePicker/PeoplePicker";
 import objectExtend from "common-micro-libs/src/jsutils/objectExtend";
 import dataStore from "common-micro-libs/src/jsutils/dataStore";
 
-var
-PRIVATE = dataStore.stash,
+//============================================================================
+const PRIVATE = dataStore.stash;
 
 /**
  * Filter Panel User field.
@@ -14,15 +14,13 @@ PRIVATE = dataStore.stash,
  *
  * @param {Object} options
  */
-FilterColumnUserField = /** @lends FilterColumnUserField.prototype */{
+const FilterColumnUserField = FilterColumn.extend(/** @lends FilterColumnUserField.prototype */{
     init: function (options) {
-        FilterColumn.prototype.init.call(this,
-            objectExtend({}, this.getFactory().defaults, options)
-        );
+        const opt = objectExtend({}, this.getFactory().defaults, options);
+        FilterColumn.prototype.init.call(this, opt);
 
-        var
-        inst            = PRIVATE.get(this),
-        peoplePicker    = inst.inputWdg = PeoplePicker.create({
+        const inst            = PRIVATE.get(this);
+        const peoplePicker    = inst.inputWdg = opt.PeoplePickerWidget.create({
             resultsZIndex: inst.opt.zIndex
         });
 
@@ -49,9 +47,10 @@ FilterColumnUserField = /** @lends FilterColumnUserField.prototype */{
                 this.evalDirtyState();
             }.bind(this));
     }
-};
+});
 
-FilterColumnUserField = FilterColumn.extend(FilterColumnUserField);
-FilterColumnUserField.defaults = {};
+FilterColumnUserField.defaults = {
+    PeoplePickerWidget: PeoplePicker
+};
 
 export default FilterColumnUserField;
