@@ -64,6 +64,15 @@ checkForHttpErrors = function(response) {
  * @returns {*}
  */
 parseApiResponse = function(response){
+    // If the message return is JSON, then parse that.
+    if (response.headers.map["content-type"].join("").toLowerCase().indexOf("application/json") !== -1) {
+        return response.json().then(content => ({
+            content,
+            msgType:    'json',
+            response:   response
+        }));
+    }
+
     // Get the response text and then parse it.
     return response.text().then(function(responseString){
 

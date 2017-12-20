@@ -52,7 +52,7 @@ const UserProfileModel = Compose.extend(/** @lends UserProfileModel.prototype */
             this,
             {
                 "AboutMe": "",
-                "AccountName": "",
+                "AccountName": "",  // Should be same as LoginName
                 "CellPhone": "",
                 "Department": "",
                 "DisplayName": "", // Should be the same as 'Name'
@@ -62,9 +62,11 @@ const UserProfileModel = Compose.extend(/** @lends UserProfileModel.prototype */
                 "FirstName": "",
                 "HomePhone": "",
                 "ID": "",
+                "Id": "",           // SP2013 and above. Should be same as ID
                 "Initials": "",
                 "Color": "",
                 "LastName": "",
+                "LoginName": "",    // Should be same as AccountName
                 "Manager": "",
                 "Name": "",
                 "Office": "",
@@ -89,10 +91,16 @@ const UserProfileModel = Compose.extend(/** @lends UserProfileModel.prototype */
         // Handle data differences from SearchPrincipals output
         //------------------------------------------------------
 
+        if (!this.ID && this.Id) {
+            this.ID = this.Id;
+        }
+
         // If there is a UserInfoID, then make sure ID is also set
-        if (this.UserInfoID && !this.ID) {
+        if (!this.ID && this.UserInfoID) {
             this.ID = this.UserInfoID;
         }
+
+        this.UserInfoID = this.Id = this.ID;
 
         // If there is a DisplayName but no Name, then set the name
         if (!this.Name) {
@@ -101,6 +109,14 @@ const UserProfileModel = Compose.extend(/** @lends UserProfileModel.prototype */
             if (!this.Name && (this.FirstName || this.LastName)) {
                 this.Name = `${this.FirstName} ${this.LastName}`
             }
+        }
+
+        if (!this.AccountName && this.LoginName) {
+            this.AccountName = this.LoginName;
+        }
+
+        if (!this.LoginName && this.AccountName) {
+            this.LoginName = this.AccountName;
         }
 
         if (!this.UserPhoto && this.AccountName) {
