@@ -1,7 +1,9 @@
 import objectExtend         from "common-micro-libs/src/jsutils/objectExtend"
 import getContextInfo       from "./getContextInfo"
 import apiFetch             from "../../sputils/apiFetch"
-import { getRestHeaders }   from "../../sputils/restUtils"
+import {
+    getRestHeaders,
+    processUserInfo }       from "../../sputils/restUtils"
 import cache                from "../../sputils/cache"
 import UserProfileModel     from "../../models/UserProfileModel"
 
@@ -42,13 +44,10 @@ export default function ensureUser (options) {
                 cache.clear(cacheKey);
             }
 
-
             const apiRequest = apiFetch(`${ contextInfo.WebFullUrl }/_api/web/ensureuser`, {
                 method:     "POST",
                 headers:    getRestHeaders(contextInfo),
-                body:       JSON.stringify({
-                    logonName: opt.logonName
-                })
+                body:       JSON.stringify({ logonName: opt.logonName })
             });
 
             if (opt.cache) {
@@ -65,15 +64,8 @@ export default function ensureUser (options) {
 }
 
 function processApiResponse(response, opt) {
-    const user = response.content.d;
-
-    if (user.Title && !user.FirstName) {
-        [ user.FirstName, user.LastName ] = user.Title.split(" ");
-    }
-
-    return opt.UserProfileModel.create(user, opt);
+    return opt.UserProfileModel.create(processUserInfo(response.content.d), opt);
 }
-
 
 // SAMPLE RESPONSE:
 //
