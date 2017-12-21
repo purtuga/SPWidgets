@@ -1,4 +1,5 @@
 import Promise              from "common-micro-libs/src/jsutils/es6-promise"
+import objectExtend         from "common-micro-libs/src/jsutils/objectExtend"
 import cache                from "../../sputils/cache"
 import apiFetch             from "../../sputils/apiFetch"
 import getContextInfo       from "./getContextInfo"
@@ -14,14 +15,18 @@ const logIt = console.log.bind(console); // eslint-disable-line
 /**
  * Get current user profile using SP REST interface.
  *
+ * @param {Object} [options]
+ * @param {String} [options.webURL=Current_Site]
+ * @param {Object} [options.UserProfileModel=UserProfileModel]
+ *
  * @return {Promise<UserProfileModel, Error>}
  */
-export function getCurrentUser() {
+export function getCurrentUser(options) {
     if (cache.get(currentUserCachekey)) {
         return cache.get(currentUserCachekey);
     }
-
-    const response = getContextInfo().then(contextInfo => {
+    const opt       = objectExtend({}, getCurrentUser.defaults, options);
+    const response  = getContextInfo(opt.webURL).then(contextInfo => {
         let webURL = contextInfo.WebFullUrl;
 
         // Because User Profile service is not available in Foundation, we ignore failures from that api call
@@ -31,9 +36,9 @@ export function getCurrentUser() {
         ]).then(([currentUser, userProfile]) => {
             if (userProfile) {
                 userProfile.ID = userProfile.Id = userProfile.UserInfoID = currentUser.ID;
-                return userProfile;
+                return opt.UserProfileModel.create(userProfile);
             }
-            return currentUser;
+            return opt.UserProfileModel.create(currentUser);
         });
     });
 
@@ -46,6 +51,16 @@ export function getCurrentUser() {
     return response;
 }
 
+/**
+ * Defaults input options for getCurrentUser
+ *
+ * @type {Object}
+ */
+getCurrentUser.defaults = {
+    webURL:             null,
+    UserProfileModel:   UserProfileModel
+};
+
 
 function getMyPropertiesFromUserProfile (webURL) {
     return apiFetch(`${ webURL }/_api/SP.UserProfiles.PeopleManager/GetMyProperties`, {
@@ -57,7 +72,7 @@ function getMyPropertiesFromUserProfile (webURL) {
         user.UserProfileProperties.results.forEach(userProp => user[userProp.Key] = userProp.Value);
         delete user.UserProfileProperties;
 
-        return UserProfileModel.create(user, { webURL });
+        return user;
     }).catch(e => {
         logIt(e);
         return Promise.reject(e);
@@ -115,7 +130,7 @@ function getWebCurrentUser(webURL) {
         method: "GET",
         headers: getRestHeaders()
     }).then(response => {
-        return UserProfileModel.create(processUserInfo(response.content.d), { webURL });
+        return processUserInfo(response.content.d);
     });
 
     // RESPONSE EXAMPLE:
