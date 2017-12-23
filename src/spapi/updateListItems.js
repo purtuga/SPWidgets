@@ -355,10 +355,14 @@ function getUpdateArray(options){
 
     // If options.updates is a string, then just add it as is to
     // the array
-    } else if (ofType === "string"){
+    }
+    else if (ofType === "string"){
         updates.push(opt.updates);
-
-    } else if (Array.isArray(opt.updates) && opt.updates.length) {
+    }
+    else if (ofType === "object") {
+        processArrayOfObjects([ opt.updates ]);
+    }
+    else if (Array.isArray(opt.updates) && opt.updates.length) {
         ofType = typeof opt.updates[0];
 
         // Array<Object>
