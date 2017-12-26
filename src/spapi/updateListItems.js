@@ -359,9 +359,6 @@ function getUpdateArray(options){
     else if (ofType === "string"){
         updates.push(opt.updates);
     }
-    else if (ofType === "object") {
-        processArrayOfObjects([ opt.updates ]);
-    }
     else if (Array.isArray(opt.updates) && opt.updates.length) {
         ofType = typeof opt.updates[0];
 
@@ -377,6 +374,9 @@ function getUpdateArray(options){
         } else if (Array.isArray(opt.updates[0])) {
             processArrayOfArrays(opt.updates);
         }
+    }
+    else if (ofType === "object") {
+        processArrayOfObjects([ opt.updates ]);
     }
 
     return updates;
