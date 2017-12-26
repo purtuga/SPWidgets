@@ -353,9 +353,9 @@ function getUpdateArray(options){
         opt.valuepairs.push(["ID", opt.ID]);
         processArrayOfArrays(opt.valuepairs);
 
+    }
     // If options.updates is a string, then just add it as is to
     // the array
-    }
     else if (ofType === "string"){
         updates.push(opt.updates);
     }
@@ -365,13 +365,13 @@ function getUpdateArray(options){
         // Array<Object>
         if (ofType === "object") {
             processArrayOfObjects(opt.updates);
-
+        }
         // Array<String>
-        } else if (ofType === "string") {
+        else if (ofType === "string") {
             updates.push.apply(updates, opt.updates);
-
+        }
         // Array<Array>
-        } else if (Array.isArray(opt.updates[0])) {
+        else if (Array.isArray(opt.updates[0])) {
             processArrayOfArrays(opt.updates);
         }
     }
