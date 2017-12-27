@@ -5,9 +5,14 @@ import cache                from "../../sputils/cache"
 import apiFetch             from "../../sputils/apiFetch"
 
 /**
- * Returns the Site Web url for a given page url
+ * Returns the Site Web url for a given page url.
+ * Url returned will end with a forward slash (`/`).
+ * Example:
+ *
+ *      https://yourtenant.sharepoint.com/sites/A/
  *
  * @param {String} [pageUrl=location.href]
+ *  current serving page will be used if left empty
  *
  * @return {Promise<String, Error>}
  */
@@ -65,7 +70,7 @@ export default function getWebUrlFromPageUrl(pageUrl) {
                 headers: getRestHeaders()
             }
         )
-        .then(response => response.content.d.GetWebUrlFromPageUrl);
+        .then(response => getFullUrl(response.content.d.GetWebUrlFromPageUrl));
 
     cache.set(cacheKey, apiRequest);
     apiRequest.catch(e => {
