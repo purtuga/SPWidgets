@@ -33,6 +33,9 @@ let PRIVATE = dataStore.create();
  * @param {Object} [options.listItemOptions]
  *  Options to be passed along to each initialization of a ListItem widget.
  *
+ * @param {Object} [options.allowMultiples = true]
+ *  If selection of multiples items is allowed. Default is true.
+ *
  * @fires ListItem#item:selected
  * @fires ListItem#item:unselected
  */
@@ -81,13 +84,21 @@ let List = /** @lends List.prototype */{
             return;
         }
 
-        items.forEach(function(itemData){
+        items.forEach(itemData => {
             var itemWidget = ListItemWidget.create({
                 item: itemData
             });
 
             itemWidget.appendTo($newItemSet);
             itemWidget.pipe(me, "item:");
+
+            // if single selection, then ensure that when an item is selected, that we unSelect all others
+            if (!inst.opt.allowMultiples) {
+                itemWidget.on("selected", selectedItem => {
+                    this.unselectAll();
+                    listItems.get(selectedItem).select();
+                });
+            }
 
             listItems.set(itemData, itemWidget);
         });
@@ -140,6 +151,30 @@ let List = /** @lends List.prototype */{
         if (itemData && listItems.has(itemData)) {
             listItems.get(itemData).unselect();
         }
+    },
+
+    /**
+     * Un-selects all items from the list
+     */
+    unselectAll() {
+        PRIVATE.get(this).listItems.forEach(itemWdg => itemWdg.unselect());
+    },
+
+    /**
+     * Returns an array (possibly empty) of all selected items in the list
+     *
+     * @return {Array}
+     */
+    getSelected() {
+        const response = [];
+
+        PRIVATE.get(this).listItems.forEach((itemWdg, itemData) => {
+            if (itemWdg.isSelected()) {
+                response.push(itemData);
+            }
+        });
+
+        return response;
     }
 };
 
@@ -147,7 +182,8 @@ List = EventEmitter.extend(Widget, List);
 List.defaults = {
     items:              null,
     ListItemWidget:     ListItem,
-    listItemOptions:    null
+    listItemOptions:    null,
+    allowMultiples:     true
 };
 
 export default List;

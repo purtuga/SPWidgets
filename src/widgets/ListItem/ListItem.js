@@ -152,6 +152,15 @@ let ListItem = /** @lends ListItem.prototype */{
     },
 
     /**
+     * Returns a boolean indicating if the item is currently selected in the list
+     *
+     * @return {Boolean}
+     */
+    isSelected() {
+        return domHasClass(this.getEle(), CSS_CLASS_SELECTED);
+    },
+
+    /**
      * Returns the template for the widget.
      *
      * @return {String}
