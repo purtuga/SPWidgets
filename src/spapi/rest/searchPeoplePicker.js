@@ -8,13 +8,16 @@ import UserProfileModel     from "../../models/UserProfileModel"
 //==============================================================================
 const freeze = Object.freeze;
 
+// According to SP Docs, these can be combined into bitwise values
+//https://msdn.microsoft.com/en-us/library/microsoft.sharepoint.client.utilities.principaltype.aspx?f=255&MSPPError=-2147217396
 export const PRINCIPAL_TYPES = freeze({
     USER:               1,
     NONE:               0,
     DISTRIBUTIONLIST:   2,
     SECURITYGROUP:      4,
     SHAREPOINTGROUP:    8,
-    ALL:                15
+    ALL:                15,
+    USERANDGROUP:       13  // BITWISE: 1|4|8
 });
 
 export const PRINCIPAL_SOURCES = freeze({
@@ -33,17 +36,18 @@ export const PRINCIPAL_SOURCES = freeze({
  * @param {Object} options.searchText
  * @param {Object} [options.maxResults=50]
  * @param {Object} [options.principalType='All']
- *      Default is User. Others include: None, DistributionList,
- *      SecurityGroup, SharePointGroup, All
+ *  Default is `User`. Others include: `None`, `DistributionList`,
+ *  `SecurityGroup`, `SharePointGroup`, `All`, , `UserAndGroup`
  * @param {Object} [options.principalSource='All']
- *  Possible values: `All`, `MembershipProvider`, `None`, `RoleProvider`, `UserInfoList`, `Windows`
+ *  Possible values: `All`, `MembershipProvider`, `None`, `RoleProvider`,
+ *  `UserInfoList`, `Windows`
  * @param {Object} [options.webURL='currentSiteUrl']
  * @param {Object} [options.cache=true]
  * @param {UserProfileModel} [options.UserProfileModel=UserProfileModel]
  *
  * @return {Promise<Array<UserProfileModel>, Error>}
  */
-export default function searchPeoplePicker(options) {
+export function searchPeoplePicker(options) {
     // FIXME: support for SharePointGroupID of peoplePicker API
 
     const opt       = objectExtend({}, searchPeoplePicker.defaults, options);
@@ -88,6 +92,8 @@ export default function searchPeoplePicker(options) {
 
     return request;
 }
+
+export default searchPeoplePicker;
 
 /**
  * Default options

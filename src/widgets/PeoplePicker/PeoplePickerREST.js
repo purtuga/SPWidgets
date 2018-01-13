@@ -34,6 +34,7 @@ PeoplePickerREST.defaults = objectExtend({}, PeoplePickerREST.defaults, {
                 logonName: this.AccountName || this.LoginName
             }).then(response => {
                 this.ID = response.ID;
+                return this;
             });
 
             return inst.resolvePromise
