@@ -20,8 +20,10 @@ const FilterColumnUserField = FilterColumn.extend(/** @lends FilterColumnUserFie
         FilterColumn.prototype.init.call(this, opt);
 
         const inst            = PRIVATE.get(this);
+        const userSelectionMode = opt.column ? opt.column.UserSelectionMode : null;
         const peoplePicker    = inst.inputWdg = opt.PeoplePickerWidget.create({
-            resultsZIndex: inst.opt.zIndex
+            resultsZIndex: inst.opt.zIndex,
+            type: userSelectionMode && (userSelectionMode === "PeopleOnly" || String(userSelectionMode) === "0") ? "User" : "All"
         });
 
         ['remove', 'select'].forEach(function(evName){
