@@ -1,4 +1,4 @@
-import Collection       from "common-micro-libs/src/jsutils/Collection";
+import Collection       from "observable-data/src/ObservableArray";
 import objectExtend     from "common-micro-libs/src/jsutils/objectExtend";
 import toUrlParams      from "common-micro-libs/src/jsutils/toUrlParams";
 import getCamlLogical   from "../../sputils/getCamlLogical";

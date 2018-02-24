@@ -1,5 +1,5 @@
 import objectExtend from "common-micro-libs/src/jsutils/objectExtend"
-import Collection   from "common-micro-libs/src/jsutils/Collection"
+import Collection   from "observable-data/src/ObservableArray"
 import dataStore    from "common-micro-libs/src/jsutils/dataStore"
 
 

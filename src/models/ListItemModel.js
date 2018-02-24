@@ -1,4 +1,4 @@
-import ObservableObject from "common-micro-libs/src/jsutils/ObservableObject"
+import ObservableObject from "observable-data/src/ObservableObject"
 import objectExtend     from "common-micro-libs/src/jsutils/objectExtend"
 import dataStore        from "common-micro-libs/src/jsutils/dataStore"
 import parseHTML        from "common-micro-libs/src/jsutils/parseHTML"
