@@ -433,13 +433,18 @@ function addColumns(colList, colValues, append){
     if (colList.length) {
         colList.forEach(function(colDef){
             var colName     = colDef.Name,
+                colType     = colDef.Type,
                 colValue    = { values: []},
                 FilterColumnConstructor;
 
             if (!colsWdg[colName]){
+                if (colType === "Calculated" && colDef.ResultType) {
+                    colType = colDef.Type = colDef.ResultType;
+                }
+
 
                 // Get the constructor based on type
-                switch (colDef.Type) {
+                switch (colType) {
                     case "User":
                     case "UserMulti":
                         FilterColumnConstructor = opt.UserWidget;

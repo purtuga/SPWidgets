@@ -53,7 +53,7 @@ const BooleanField = EventEmitter.extend(Widget).extend(/** @lends BooleanField.
         }
 
         const $input = inst.$input = $ui.querySelector("input");
-        const $label = $ui.querySelector("label");
+        const $label = inst.$label = $ui.querySelector("label");
         const setSelected = () => {
             if ($input.checked) {
                 domAddClass($label, CSS_CLASS_IS_SELECTED);
@@ -100,8 +100,28 @@ const BooleanField = EventEmitter.extend(Widget).extend(/** @lends BooleanField.
      */
     getValue() {
         return PRIVATE.get(this).$input.checked ? "1" : "0";
+    },
+
+    /**
+     * Sets the value of the widget - whether it is selected or not.
+     *
+     * @param {String} [value]
+     *  The value to be set. `"1"` for selected or `"0"` for not selected. Default is "0"
+     */
+    setValue(value) {
+        const { $input, $label } = PRIVATE.get(this);
+
+        $input.checked = Boolean(Number(value) || 0);
+
+        if ($input.checked) {
+            domAddClass($label, CSS_CLASS_IS_SELECTED);
+        } else {
+            domRemoveClass($label, CSS_CLASS_IS_SELECTED);
+        }
     }
 });
+
+
 
 /**
  * Global default options for BooleanField

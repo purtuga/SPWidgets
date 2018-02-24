@@ -71,7 +71,7 @@ FilterModel = {
         };
         PRIVATE.set(this, inst);
 
-        var col = inst.opt.column || {};
+            var col = inst.opt.column || {};
 
         objectExtend(
             this,
@@ -150,6 +150,10 @@ FilterModel = {
 
                     case "DateTime":
                         template = `${ fieldRefXml }<Value Type='DateTime' IncludeTimeValue='True' StorageTZ='True'>{{colValue}}</Value>`;
+                        break;
+
+                    case "Number":
+                        template = `${ fieldRefXml }<Value Type='Number'>{{colValue}}</Value>`;
                         break;
 
                     case "Computed":

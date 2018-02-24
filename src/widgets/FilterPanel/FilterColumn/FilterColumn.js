@@ -210,8 +210,12 @@ import "./FilterColumn.less";
 
             // If the actual input widget has a `setValue` method and values
             // were provided on input, then call it.
-            if (filter && Array.isArray(filter.values) && inst.inputWdg.setValue) {
-                response = response.then(inst.inputWdg.setValue(filter.values.join(inst.opt.delimiter)));
+            if (filter && inst.inputWdg.setValue) {
+                response = response.then(
+                    inst.inputWdg.setValue(
+                        Array.isArray(filter.values) ? filter.values.join(inst.opt.delimiter) : filter.values
+                    )
+                );
                 this.evalDirtyState();
             }
 
