@@ -4,6 +4,7 @@ import dataStore                from "common-micro-libs/src/jsutils/dataStore";
 import objectExtend             from "common-micro-libs/src/jsutils/objectExtend";
 import fillTemplate             from "common-micro-libs/src/jsutils/fillTemplate";
 import parseHTML                from "common-micro-libs/src/jsutils/parseHTML";
+import sortBy                   from "common-micro-libs/src/jsutils/sortBy";
 import domAddEventListener      from "common-micro-libs/src/domutils/domAddEventListener";
 import domFind                  from "common-micro-libs/src/domutils/domFind";
 import domClosest               from "common-micro-libs/src/domutils/domClosest";
@@ -193,19 +194,8 @@ function showColumns() {
     var inst = PRIVATE.get(this),
         cols    = inst.listCols.slice();
 
-    cols.sort(function(a, b){
-        var aName   = a.DisplayName,
-            bName   = b.DisplayName;
 
-        if (aName < bName) {
-            return -1;
-        }
-        if (aName > bName) {
-            return 1;
-        }
-        return 0;
-    });
-
+    sortBy(cols, "DisplayName");
     inst.bodyContent.innerHTML = "";
     inst.bodyContent.appendChild(
         parseHTML(
