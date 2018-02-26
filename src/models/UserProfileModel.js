@@ -151,7 +151,7 @@ const UserProfileModel = Compose.extend(/** @lends UserProfileModel.prototype */
         // If no first or last name, but we have a display name (common with output
         // from list queries), then parse that and use it.
         if (!firstName && !lastName && displayName) {
-            [firstName, lastName ] = displayName.split(/\W/);
+            [ firstName = "", lastName = "" ] = displayName.split(/\W/);
         }
 
         this.Initials = (firstCharOf(firstName) + firstCharOf(lastName)) || "?";
