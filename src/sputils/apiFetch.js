@@ -49,7 +49,7 @@ checkForHttpErrors = function(response) {
         return response;
 
     } else {
-        var error = new Error(res.statusText);
+        var error = new Error(`HTTP ${ res.status }: ${ res.statusText } (${ res.url })`);
         error.response = response;
         return Promise.reject(error);
     }
@@ -75,9 +75,6 @@ parseApiResponse = function(response){
 
     // Get the response text and then parse it.
     return response.text().then(function(responseString){
-
-        // TODO: start handing JSON responses from SP2013
-
         /**
          * A sharepoint API response
          *
@@ -91,7 +88,7 @@ parseApiResponse = function(response){
          */
         return {
             content:    parseXML(responseString),
-            msgType:    'xml',
+            msgType:    responseString ? "xml" : "",    // responseString could be empty - example: HTTP 403
             response:   response
         };
     });

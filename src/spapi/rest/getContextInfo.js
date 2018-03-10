@@ -80,7 +80,7 @@ export default function getContextInfo (webURL, noCache) {
 
         // Cache the request
         cache.set(apiUrl, apiResponse);
-        apiResponse.catch(e => console.log.bind(console)); // eslint-disable-line
+        apiResponse.catch(e => console.log(e)); // eslint-disable-line
         return apiResponse.then(response => response);
     });
 }

@@ -30,7 +30,7 @@ const parseLookupFieldValue = function(lookupValue) {
         total       = valueTokens.length,
         i, vId, vTitle;
 
-    if (lookupValue === undefined) {
+    if (!lookupValue) {
         return response;
     }
 
