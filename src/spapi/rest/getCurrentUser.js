@@ -36,7 +36,12 @@ export function getCurrentUser(options) {
         ]).then(([currentUser, userProfile]) => {
             if (userProfile) {
                 objectExtend(userProfile, currentUser);
-                userProfile.ID = userProfile.Id = userProfile.UserInfoID = currentUser.ID || currentUser.Id;
+                // ID is coerced to a string for backward compatibility purposes
+                // Id however is a Number
+                userProfile.ID = userProfile.Id = userProfile.UserInfoID = String(currentUser.ID || currentUser.Id || "");
+                if (userProfile.Id) {
+                    userProfile.Id = Number(userProfile.Id);
+                }
                 return opt.UserProfileModel.create(userProfile);
             }
             return opt.UserProfileModel.create(currentUser);
