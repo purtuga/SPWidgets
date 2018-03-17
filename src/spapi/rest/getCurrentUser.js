@@ -35,7 +35,8 @@ export function getCurrentUser(options) {
             getMyPropertiesFromUserProfile(webURL).catch(() => null)
         ]).then(([currentUser, userProfile]) => {
             if (userProfile) {
-                userProfile.ID = userProfile.Id = userProfile.UserInfoID = currentUser.ID;
+                objectExtend(userProfile, currentUser);
+                userProfile.ID = userProfile.Id = userProfile.UserInfoID = currentUser.ID || currentUser.Id;
                 return opt.UserProfileModel.create(userProfile);
             }
             return opt.UserProfileModel.create(currentUser);
@@ -43,10 +44,16 @@ export function getCurrentUser(options) {
     });
 
     cache.set(currentUserCachekey, response);
-    response.catch(e => {
-        cache.clear(currentUserCachekey);
-        logIt(e);
-    });
+    response
+        .then(currentUser => {
+            if (!currentUser.ID) {
+                logIt(`WARNING: currentUser.ID is not set!`);
+            }
+        })
+        .catch(e => {
+            cache.clear(currentUserCachekey);
+            logIt(e);
+        });
     
     return response;
 }
