@@ -59,8 +59,6 @@ var ListPicker = {
      *
      * @param {String} listName
      *  The list name or internal UUID
-     *
-     * @return
      */
     getListInfo: function(listName){
         var list;

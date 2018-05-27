@@ -24,7 +24,6 @@ var FiltersCollection = {
      *
      * @returns {String}
      *
-     * @example
      */
     toCAMLQuery: function(onEach){
         return getCamlLogical({
