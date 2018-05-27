@@ -1,4 +1,4 @@
-define(["jquery", "src/SPWidgets"], function($){
+define(["jquery", "src/index"], function($){
 
     describe("SPWidgets as a jQuery Plugin", function(){
 

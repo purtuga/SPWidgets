@@ -1,56 +1,36 @@
 {
-  "name": "SPWidgets",
-  "version": "3.0.0",
-  "description": "SharePoint widgets and tools for custom client side web solutions",
-  "main": "dist/jquery.SPWidgets.js",
-  "_OLD______scripts": {
-    "test": "grunt test",
-    "server": "node tools/server.js"
-  },
-  "scripts": {
-    "start": "npm run open && npm run serve",
-    "serve": "webpack-dev-server --progress --hot --inline --colors --port 8184",
-    "open": "opener http://127.0.0.1:8184",
-    "spDev": "opener chrome.exe --user-data-dir=\"C:/chromeDevSession\" --disable-web-security http://127.0.0.1:8184 && npm run serve",
-    "build": "webpack",
-    "test": "babel-node test/*.js | faucet",
-    "docs": "jsdoc -c ./jsdoc.conf.json"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:purtuga/SPWidgets.git"
-  },
-  "author": {
-    "name": "Paul Tavares"
-  },
-  "homepage": "http://purtuga.github.io/SPWidgets",
-  "license": "MIT",
-  "devDependencies": {
-    "babel-core": "^6.7.4",
-    "babel-eslint": "^6.0.0",
-    "babel-loader": "^6.2.4",
-    "babel-preset-env": "^1.4.0",
-    "common-micro-libs": "purtuga/common-micro-libs#release/v2x",
-    "copy-webpack-plugin": "^1.1.1",
-    "css-loader": "^0.23.1",
-    "eslint": "^2.5.3",
-    "eslint-config-airbnb": "^6.0.2",
-    "eslint-loader": "^1.5.0",
-    "flatpickr": "^1.9.1",
-    "jsdoc": "^3.4.0",
-    "less": "^2.7.1",
-    "less-loader": "^2.2.3",
-    "observable-data": "github:purtuga/observable-data#release/v2x",
-    "opener": "^1.4.1",
-    "page": "^1.7.1",
-    "raw-loader": "^0.5.1",
-    "style-loader": "^0.13.1",
-    "webpack": "^1.12.14",
-    "webpack-dev-server": "^1.14.1"
-  },
-  "babel": {
-    "presets": [
-      "env"
-    ]
-  }
+    "name": "SPWidgets",
+    "version": "3.0.0",
+    "description": "SharePoint widgets and tools for custom client side web solutions",
+    "main": "src/index.js",
+    "scripts": {
+        "open": "opener http://127.0.0.1:8184",
+        "serve": "webpack-dev-server --config node_modules/project-base/configs/webpack.dev.js --progress --hot --color --port 8184 --entry ./dev/index.js",
+        "serve:sp": "opener chrome.exe --user-data-dir=\"C:/chromeDevSession\" --disable-web-security http://127.0.0.1:8184 && npm run serve",
+        "build": "webpack --config node_modules/project-base/configs/webpack.dev.js",
+        "build:ie": "webpack --config node_modules/project-base/configs/webpack.prod.js --entry ./dev/index.js --output-path ./dev --output-filename ie-test-bundle.js",
+        "build:prod": "webpack --config node_modules/project-base/configs/webpack.prod.js",
+        "build:prod:min": "webpack --config node_modules/project-base/configs/webpack.prod.uglify.js",
+        "build:apiDocs": "jsdoc -c node_modules/project-base/configs/jsdoc.conf.json",
+        "dist": "npm run build:prod&&npm run build:prod:min",
+        "setup:dev": "node node_modules/project-base/scripts/create-dev",
+        "test": "tape -r @std/esm test/**/*.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:purtuga/SPWidgets.git"
+    },
+    "author": {
+        "name": "Paul Tavares"
+    },
+    "homepage": "http://purtuga.github.io/SPWidgets",
+    "license": "MIT",
+    "devDependencies": {
+        "common-micro-libs": "purtuga/common-micro-libs#release/v2x",
+        "flatpickr": "^1.9.1",
+        "observable-data": "github:purtuga/observable-data#release/v2x",
+        "opener": "^1.4.1",
+        "page": "^1.7.1",
+        "project-base": "github:purtuga/project-base"
+    }
 }
