@@ -37,13 +37,8 @@ define([
                 CAMLQuery:  "<Query>auto_respond</Query>"
             }).then(function(rows, jqXHR, status){
                 expect(rows).toBeDefined();
-                expect(Array.isArray(rows)).toBe(true);
+                expect(typeof rows.forEach === "function").toBe(true);
                 expect(rows.length).toBe(1);
-
-                expect(jqXHR).toBeDefined();
-                expect(jqXHR.responseText).toBeDefined();
-
-                expect(status).toBe("success");
                 done();
             });
 
@@ -54,7 +49,7 @@ define([
                 listName:   "someList",
                 CAMLQuery:  "<Query>auto_respond</Query>"
             }).then(function(rows, jqXHR, status){
-                var row1 = rows[0];
+                var row1 = rows.item(0);
                 expect(row1).toBeDefined();
                 expect(row1.Status).toBe("Not Started");
                 done();
@@ -67,7 +62,7 @@ define([
                 CAMLQuery:  "<Query>auto_respond</Query>",
                 operation:  "GetListItemChangesSinceToken"
             }).then(function(rows, jqXHR, status){
-                var row1 = rows[0];
+                var row1 = rows.item(0);
                 expect(row1).toBeDefined();
                 expect(row1.Status).toBe("Not Started");
                 done();

@@ -1,4 +1,4 @@
-define(["jquery"], function($){
+import objectExtend from "common-micro-libs/src/jsutils/objectExtend";
 
     /**
      * Returns the requested nodes from the given xml document
@@ -57,10 +57,9 @@ define(["jquery"], function($){
      */
     var getNodesFromXml = function(options) {
 
-        var opt     = $.extend({}, {
+        var opt     = objectExtend({}, {
                         xDoc:               null,
                         nodeName:           '',
-                        asJQuery:           false,
                         cleanAttr:          true,
                         nodeModel:          null,
                         nodeModelOptions:   null,
@@ -70,21 +69,11 @@ define(["jquery"], function($){
             getNodeAsObj, nodeList, i, j;
 
         if (nodes.length === 0 && opt.nodeName === "z:row") {
-
             nodes = opt.xDoc.getElementsByTagName('row');
-
         }
 
         if (nodes.length === 0 && opt.nodeName === "rs:data") {
-
             nodes = opt.xDoc.getElementsByTagName('data');
-
-        }
-
-        if (opt.asJQuery === true) {
-
-            return $(nodes);
-
         }
 
         nodeList = [];
@@ -116,10 +105,14 @@ define(["jquery"], function($){
 
             // Also store the original xml node
             // FIXME: remove ___xmlNode from object
-            row.___xmlNode = ele;
+            // row.___xmlNode = ele;
+            Object.defineProperty(row, '___xmlNode', {
+                value:          ele,
+                configurable:   true
+            });
 
             if (opt.nodeModel && opt.nodeModel.create) {
-                return opt.nodeModel.create(row, $.extend({}, opt.nodeModelOptions, {source: ele}));
+                return opt.nodeModel.create(row, objectExtend({}, opt.nodeModelOptions, {source: ele}));
 
             } else {
                 return row;
@@ -128,9 +121,7 @@ define(["jquery"], function($){
         };
 
         for (i=0,j=nodes.length; i<j; i++){
-
             nodeList.push(getNodeAsObj(nodes[i]));
-
         }
 
         return nodeList;
@@ -164,6 +155,6 @@ define(["jquery"], function($){
 
     getNodesFromXml.getJsNativeFromString = getJsNativeFromString;
 
-    return getNodesFromXml;
+    export default getNodesFromXml;
 
-});
+

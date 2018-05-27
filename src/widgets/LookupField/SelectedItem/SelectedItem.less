@@ -1,0 +1,38 @@
+.spwidgets-LookupField-SelectedItem {
+    position:   relative;
+    margin:     4px;
+    padding:    0;
+    border:     1px solid transparent;
+
+    &:hover {
+        border-color: #C8C8C8;
+    }
+
+    &-info {
+        padding-right:      34px;
+        padding-left:       0.5em;
+        background-color:   #f4f4f4;
+        min-height:         32px;
+        line-height:        32px;
+        white-space:        nowrap;
+        text-overflow:      ellipsis;
+        overflow:           hidden;
+    }
+
+    &-remove {
+        position:   absolute;
+        height:     100%;
+        top:        0;
+        right:      0;
+        min-width:  0;
+
+        .ms-Button-icon {
+            display: inline-block;
+        }
+
+        &:hover {
+            background-color:   #eaeaea;
+            color:              #333;
+        }
+    }
+}

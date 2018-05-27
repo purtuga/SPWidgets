@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <soap:Body>
+        <CopyIntoItemsResponse xmlns="http://schemas.microsoft.com/sharepoint/soap/">
+            <CopyIntoItemsResult>0</CopyIntoItemsResult>
+            <Results>
+                <ErrorCode>0x85300000</ErrorCode>
+                <ErrorMessage>Some error message</ErrorMessage>
+            </Results>
+        </CopyIntoItemsResponse>
+    </soap:Body>
+</soap:Envelope>

@@ -1,61 +1,58 @@
-define([], function(){
+/**
+ * Parses a Sharepoint lookup values as returned by webservices
+ * (SOAP, ex: `id;#title;#id;#Title`) into an array of objects.
+ *
+ * @param {String} lookupValue
+ *  Lookup items string as returned by SP - usually in format of
+ *  `id;#valueHere`.
+ *
+ * @return {Array<Object>}
+ *  Array of objects. Each object has two keys; `Title` and `ID`
+ *
+ * @example
+ *
+ * parseLookupFieldValue("1;#item one title;#2;#item two title");
+ * // Returns:
+ * [
+ *      {
+ *          ID: "1",
+ *          Title: "item one title"
+ *      },
+ *      {
+ *          ID: "2",
+ *          Title: "item two title"
+ *      }
+ * ]
+ */
+const parseLookupFieldValue = function(lookupValue) {
+    var response    = [],
+        valueTokens = String(lookupValue).split(';#'),
+        total       = valueTokens.length,
+        i, vId, vTitle;
 
-    /**
-     * Parses a Sharepoint lookup values as returned by webservices
-     * (id;#title;#id;#Title) into an array of objects.
-     *
-     * @param {String} v
-     *          Lookup items string as returned by SP webservices.
-     *
-     * @return {Array}
-     *          Array of objects. Each object has two keys; title and id
-     *
-     * @example
-     *
-     * parseLookupFieldValue("1;#item one title;#2;#item two title");
-     * // Returns:
-     * [
-     *      {
-     *          id: "1",
-     *          title: "item one title"
-     *      },
-     *      {
-     *          id: "2",
-     *          title: "item two title"
-     *      }
-     * ]
-     */
-    var parseLookupFieldValue = function(v) {
+    if (!lookupValue) {
+        return response;
+    }
 
-        var r       = [],
-            a       = String(v).split(';#'),
-            total   = a.length,
-            i, n, t;
+    for (i=0; i<total; i++){
+        vId = valueTokens[i];
+        i++;
+        vTitle = valueTokens[i];
 
-        if (v === undefined) {
-
-            return r;
-
+        if (vId || vTitle) {
+            response.push({
+                // FIXME: remove deprecated values
+                /* DEPRECATED */ id:     vId,
+                /* DEPRECATED */ title:  vTitle,
+                ID:     vId,
+                Title:  vTitle
+            });
         }
+    }
 
-        for (i=0; i<total; i++){
+    return response;
+};
 
-            n = a[i];
-            i++;
-            t = a[i];
+export default parseLookupFieldValue;
 
-            if (n || t) {
 
-                r.push({ id: n, title: t });
-
-            }
-
-        }
-
-        return r;
-
-    }; //end: parseLookupFieldValue
-
-    return parseLookupFieldValue;
-
-});

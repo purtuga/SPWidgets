@@ -16,7 +16,8 @@ define([
                 status:         200,
                 statusText:     'HTTP/1.1 200 OK',
                 contentType:    'text/xml;charset=UTF-8',
-                responseText:   getListResponseSuccessXML
+                responseText:   getListResponseSuccessXML,
+                response:       getListResponseSuccessXML
             });
 
         },

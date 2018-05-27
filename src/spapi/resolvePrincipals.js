@@ -1,136 +1,131 @@
-define([
-    "jquery",
-    "./getSiteUrl",
-], function(
-    $,
-    getSiteUrl
-){
+import apiFetch from "../sputils/apiFetch";
+import getSiteWebUrl from "./getSiteWebUrl";
+import UserProfileModel from "../models/UserProfileModel";
+import objectExtend from "common-micro-libs/src/jsutils/objectExtend";
+import domFind from "common-micro-libs/src/domutils/domFind";
 
     /**
      * Given a list of users, this method will resolve those if they
      * are not part of the site collection user list info.
      *
      * @param {Object} options
+     *
      * @param {Array|String} options.principalKeys
-     *      The principal key (login name/Account Name/email) to be resolved.
-     *      An array of values can also be used on input.
+     *  The principal key (login name/Account Name/email) to be resolved.
+     *  An array of values can also be used on input.
+     *
+     * @param {String} [options.webURL="current_site"]
+     *
      * @param {String} [options.principalType='All']
-     *      The type of principal that is being resolved.
+     *  The type of principal that is being resolved. Possible values are
+     *  `All` (default), `Distribution List`, `None`, `SecurityGroup`,
+     *  `SharePointGroup` and `User`.
+     *   See https://msdn.microsoft.com/en-us/library/people.spprincipaltype(v=office.12).aspx
+     *
      * @param {Boolean} [options.addToUserInfoList=true]
-     *      If true, then principal will be added to the site collection
-     *      user info list.
-     * @param {Boolean} [options.async=true]
-     *      If true, call to the service will be made async.
+     *  If true, then principal will be added to the site collection
+     *  user info list.
      *
+     * @param {Compose} [options.UserProfileModel=UserProfileModel]
+     *  A Composable object that will be used to build each user profile.
      *
-     * @return {jQuery.Promise}
-     *      The jquery .ajax() Promise is returned.
+     * @return {Promise<Array<UserProfileModel>, Error>}
+     *  Promise is resolved with an array of UserProfileModels
+     *  or rejected with an error.
+     *
+     * @see https://msdn.microsoft.com/EN-US/library/office/websvcpeople.people.resolveprincipals.aspx
      *
      * @example
      *
-     *  SPAPI.resolvePrincipals({
+     *  resolvePrincipals({
      *      principalKeys: "domain\\userid"
      *  })
-     *  .then(function(xmlDoc, status){
-     *
-     *      var userSiteUID = $(xmlDoc)
-     *              .find("AccountName:contains('domain\\userid')")
-     *              .parent()
-     *              .find("UserInfoID")
-     *              .text();
-     *      alert("User was Resolved. His ID is: " + userSisteID);
+     *  .then(function(resolvedUsers){
+     *      // do something
      *  });
      */
-    var resolvePrincipals = (function() {
+    var resolvePrincipals = function(options) {
+        var opt = objectExtend({}, resolvePrincipals.defaults, options);
 
-        var getData     = null,
-            callerFn    = function(){
-                            return getData.apply(this, arguments);
-                        };
+        if (!Array.isArray(opt.principalKeys)) {
+            opt.principalKeys = [opt.principalKeys];
+        }
 
-        // Define defaults. User can change these on their function attachment.
-        callerFn.defaults = {
-            principalKeys:      [],
-            principalType:      'All',
-            addToUserInfoList:  true,
-            async:              true
-        };
+        return getSiteWebUrl(opt.webURL).then(function(webURL) {
+            opt.webURL = webURL + "/_vti_bin/People.asmx";
 
-        /**
-         * Retrieves the data from Sharepoint
-         */
-        getData = function(opt){
+            var principalXml = opt.principalKeys.map(function(principal){
+                return '<string>' + principal + '</string>';
+            }).join("");
 
-            var options = $.extend({}, callerFn.defaults, opt);
-
-            if (!options.webURL) {
-
-                options.webURL = getSiteUrl();
-
-            } else if (options.webURL.charAt(options.webURL.length - 1) !== "/") {
-
-                options.webURL += "/";
-
-            }
-
-            options.webURL += "/_vti_bin/People.asmx";
-
-
-            if (!$.isArray(options.principalKeys)) {
-
-                options.principalKeys = [options.principalKeys];
-
-            }
-
-            options.principalXml    = "";
-            var hasStringTag        = /<string>/i,
-                i,j;
-
-            for(i=0,j=options.principalKeys.length; i<j; i++){
-
-                if (!hasStringTag.test(options.principalKeys[i])) {
-
-                    options.principalXml += '<string>' + options.principalKeys[i] + '</string>';
-
-                } else {
-
-                    options.principalXml += options.principalKeys[i];
-
-                }
-
-            }
-
-            // Make ajax call and return pronise
-            return $.ajax({
-                type:           "POST",
-                cache:          false,
-                async:          options.async,
-                url:            options.webURL,
-                contentType:    "text/xml;charset=utf-8",
-                beforeSend:     function(xhr) {
-
-                    xhr.setRequestHeader(
-                        'SOAPAction',
-                        'http://schemas.microsoft.com/sharepoint/soap/ResolvePrincipals'
-                    );
-
+            return apiFetch(opt.webURL, {
+                method:     "POST",
+                headers:    {
+                    'Content-Type': 'text/xml;charset=UTF-8',
+                    'SOAPAction':   'http://schemas.microsoft.com/sharepoint/soap/ResolvePrincipals'
                 },
-                dataType:       "xml",
-                data:           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
+                body: '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
                     '<soap:Body><ResolvePrincipals xmlns="http://schemas.microsoft.com/sharepoint/soap/">' +
-                        '<principalKeys>' + options.principalXml + '</principalKeys>' +
-                        '<principalType>' + options.principalType + '</principalType>' +
-                        '<addToUserInfoList>' + options.addToUserInfoList + '</addToUserInfoList>' +
+                    '<principalKeys>' + principalXml + '</principalKeys>' +
+                    '<principalType>' + opt.principalType + '</principalType>' +
+                    '<addToUserInfoList>' + opt.addToUserInfoList + '</addToUserInfoList>' +
                     '</ResolvePrincipals></soap:Body></soap:Envelope>'
+            })
+            .then(function(response){
+                return domFind(response.content, "PrincipalInfo").map(function(principalInfo){
+                    return Array.prototype.slice.call(principalInfo.childNodes, 0).reduce(function(profile, attrNode){
+                        var attrName = attrNode.nodeName;
+
+                        if (attrNode.nodeType === 1) {
+                            profile[attrName] = attrNode.textContent;
+
+                            if (attrName === "DisplayName") {
+                                profile.Name = profile[attrName];
+                            }
+
+                            if (attrName === "UserInfoID") {
+                                profile.ID = profile[attrName];
+                            }
+                        }
+                        return profile;
+                    }, opt.UserProfileModel.create());
+                });
             });
+        });
+    };
 
-        }; //end: getData
+    resolvePrincipals.defaults = {
+        webURL:             '',
+        principalKeys:      [],
+        principalType:      'All',
+        addToUserInfoList:  true,
+        UserProfileModel:   UserProfileModel
+    };
 
-        return callerFn;
+    export default resolvePrincipals;
 
-    })();
 
-    return resolvePrincipals;
+    //------------------------
+    // Response example:
+    //------------------------
+    // <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    //  <soap:Body>
+    //      <ResolvePrincipalsResponse xmlns="http://schemas.microsoft.com/sharepoint/soap/">
+    //          <ResolvePrincipalsResult>
+    //              <PrincipalInfo>
+    //                  <AccountName>i:0#.f|membership|mark.smith@tenant.sharepoint.com</AccountName>
+    //                  <UserInfoID>1565</UserInfoID>
+    //                  <DisplayName>Mark Smith</DisplayName>
+    //                  <Email />
+    //                  <Department />
+    //                  <Title />
+    //                  <IsResolved>true</IsResolved>
+    //                  <PrincipalType>User</PrincipalType>
+    //              </PrincipalInfo>
+    //          </ResolvePrincipalsResult>
+    //      </ResolvePrincipalsResponse>
+    //  </soap:Body>
+    // </soap:Envelope>
 
-});
+
 

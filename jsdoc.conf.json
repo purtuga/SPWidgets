@@ -1,0 +1,16 @@
+{
+    "source": {
+        "include": [
+            "./src/models",
+            "./src/collections",
+            "./src/widgets",
+            "./node_modules/common-micro-libs/src"
+        ],
+        "includePattern": ".+\\.js(doc)?$",
+        "excludePattern": "(^|\\/|\\\\)_"
+    },
+    "opts": {
+        "recurse": true,
+        "destination": "./_DOCS/"
+    }
+}

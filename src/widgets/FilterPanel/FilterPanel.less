@@ -1,0 +1,75 @@
+.spwidgets-FilterPanel {
+
+    .border-1px-solid(@prop: border) {
+        @{prop}-width: 1px;
+        @{prop}-style: solid;
+    }
+
+    position: relative;
+    box-sizing: border-box;
+
+    button {
+        min-width: 0;
+    }
+
+    &-header {
+        padding: 0.5em;
+        position: relative;
+
+        &-title {
+            display: block;
+            padding-right: 4em;
+        }
+
+        &-close {
+            display:    block;
+            position:   absolute;
+            top:        0;
+            right:      0;
+            height:     100%;
+            border:     none;
+
+            .ms-Button-icon {
+                display: inline-block;
+            }
+        }
+    }
+
+    &-main {
+        box-sizing: border-box;
+        position:   relative;
+        .border-1px-solid()
+    }
+
+    &-body {
+        box-sizing:     border-box;
+        min-height:     15em;
+    }
+
+    &-footer {
+        box-sizing:     border-box;
+        position:       relative;
+        padding-top:    20px;
+
+        &-actions {
+            padding:    0.5em;
+            text-align: right;
+            .border-1px-solid(border-top);
+        }
+    }
+
+    // ==> No Header
+    &--noHeader &-header {
+        display: none;
+    }
+
+    // ==> Fixed height filter panel
+    &--fixHeight &-body {
+        overflow-y: auto;
+    }
+
+    // ==> No Find button
+    &--noFindButton &-footer-action-find {
+        display: none;
+    }
+}

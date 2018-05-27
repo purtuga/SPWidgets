@@ -1,0 +1,43 @@
+<div class="spwidgets-FilterPanel-FilterColumn ms-borderColor-neutralLight ms-u-scaleUpIn100 ms-font-m">
+    <h3 class="spwidgets-FilterPanel-FilterColumn-title ms-font-l">
+        <span class="spwidgets-FilterPanel-FilterColumn-dirtyIndicator">
+            <i class="ms-Icon ms-Icon--CircleFill"></i>
+        </span>
+        <span>{{column.DisplayName}}</span></h3>
+    <div class="spwidgets-FilterPanel-FilterColumn-options ms-u-slideDownIn20">
+        <select name="compareOperator" tabindex="-1">
+            <option value="Contains" selected="selected">{{labels.contains}}</option>
+            <option value="Eq">{{labels.equal}}</option>
+            <option value="Neq">{{labels.notEqual}}</option>
+            <option value="IsNull">{{labels.isBlank}}</option>
+            <option value="IsNotNull">{{labels.isNotBlank}}</option>
+        </select>
+        <select name="logicalOperator" tabindex="-1">
+            <option value="Or" selected="selected">{{labels.any}}</option>
+            <option value="And">{{labels.all}}</option>
+        </select>
+        <select name="sortOrder" tabindex="-1">
+            <option value="" selected="selected">{{labels.sort}}</option>
+            <option value="Asc">&#9650; {{labels.asc}}</option>
+            <option value="Des">&#9660; {{labels.des}}</option>
+        </select>
+    </div>
+    <div class="spwidgets-FilterPanel-FilterColumn-input">
+        <div class="spwidgets-FilterPanel-FilterColumn-input-holder">
+
+        </div>
+    </div>
+    <div class="spwidgets-FilterPanel-FilterColumn-info">
+        <div class="spwidgets-FilterPanel-FilterColumn-info-keywords ms-fontWeight-light ms-font-s">{{labels.keywordsInfo}}</div>
+        <a class="spwidgets-FilterPanel-FilterColumn-info-optLink ms-Link">{{labels.options}}</a>
+    </div>
+
+    <div class="spwidgets-FilterPanel-FilterColumn-move">
+        <a tabindex="-1" class="spwidgets-FilterPanel-FilterColumn-move-up ms-Link" title="{{labels.moveUp}}">
+            <i class="ms-Icon ms-Icon--ChevronUp"></i>
+        </a>
+        <a tabindex="-1" class="spwidgets-FilterPanel-FilterColumn-move-down ms-Link" title="{{labels.moveDown}}">
+            <i class="ms-Icon ms-Icon--ChevronDown"></i>
+        </a>
+    </div>
+</div>

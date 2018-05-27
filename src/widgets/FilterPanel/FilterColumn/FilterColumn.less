@@ -1,0 +1,133 @@
+.spwidgets-FilterPanel-FilterColumn {
+    box-sizing:             border-box;
+    padding:                0.5em 2.5em 1em 0.5em;
+    border-bottom-width:    1px;
+    border-bottom-style:    solid;
+    position:               relative;
+
+    &:last-child,
+    &:only-child {
+        margin-bottom: 0.5em;
+    }
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    &:only-child &-move {
+        display: none;
+    }
+
+    &:hover {
+        background-color:   #F4F4F4;
+        transition:         background-color 0.5s 0s;
+    }
+
+    &-title {
+        margin: 0;
+    }
+    &-title > * {
+        vertical-align: middle;
+    }
+
+    &-dirtyIndicator {
+        color:          #C8C8C8;
+        font-size:      8px;
+    }
+
+    &-options {
+        font-size:      0.8em;
+        opacity:        0.7;
+        display:        none;
+        padding-top:    0.5em;
+        text-align:     right;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    &-input {
+        margin-top: 0.5em;
+    }
+
+    &-info {
+        position:   relative;
+        min-height: 1.2em;
+
+        &-keywords {
+            width: 70%;
+        }
+
+        &-optLink {
+            position:   absolute;
+            right:      0;
+            top:        0;
+        }
+    }
+
+    &-move {
+        position:   absolute;
+        top:        0;
+        right:      0;
+        height:     100%;
+        width:      1.5em;
+        visibility: hidden;
+
+        > a {
+            display:        block;
+            height:         49.8%;
+            box-sizing:     border-box;
+            padding-top:    70%;
+            text-align:     center;
+            font-size:      1.3em;
+            cursor:         pointer;
+
+            &:hover {
+                background-color: #EAEAEA;
+            }
+        }
+
+    }
+    &:hover &-move {
+        visibility: visible;
+    }
+
+
+    // Choice fields: make Choices holder white
+    .spwidgets-ChoiceField-choices {
+        background-color: white;
+    }
+
+    //------------------------------
+    // MODIFIERS
+    //------------------------------
+
+    // ==> show the options for column
+    &--showOptions &-options {
+        display: block;
+    }
+    &--showOptions &-info-optLink {
+        color: #A6A6A6;
+    }
+
+    // ==> No Options Link
+    &--noOptionsToggle &-info-optLink {
+        display: none;
+    }
+
+
+    // ==> Hide the input
+    &--hideInput &-input-holder {
+        display: none;
+    }
+    &--hideInput &-info {
+        display: none;
+    }
+
+
+    // ==> Column is dirty (something was changed/entered)
+    &--isDirty &-dirtyIndicator  {
+        color: #107C10;
+    }
+}

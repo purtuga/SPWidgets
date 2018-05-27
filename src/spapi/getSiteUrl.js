@@ -1,22 +1,13 @@
-define(["jquery"], function($){
+import $ from "jquery";
     /* global _spPageContextInfo, L_Menu_BaseUrl */
 
-    /**
-     * Returns the current site URL. URL will end with a forward slash (/) and
-     * will always be a fully qualified url (starting with http...).
-     * If this function is unable to determine the SiteUrl from data already
-     * loaded, then it will call a webservice to retrieve it. That call to
-     * the webservice will be syncronous.
-     *
-     * @function
-     *
-     * @param {String} [pageUrl=document.location.href]
-     *
-     * @return {String}
-     *
-     * @throws Unable to determine site url
-     *
-     */
+
+    //******************************
+    //  THIS MODULE IS DEPRECATED
+    //******************************
+
+
+
     var getSiteUrl = (function() {
 
         // Cache of site urls
@@ -35,10 +26,8 @@ define(["jquery"], function($){
 
             }
 
-            if (pageAddress.indexOf("http") > -1) {
-
+            if (pageAddress.toLowerCase().indexOf("http") > -1) {
                 return pageAddress;
-
             }
 
             pageAddress = document.location.protocol + "//" +
@@ -164,8 +153,8 @@ define(["jquery"], function($){
 
     })(); // end: getSiteUrl()
 
-    return getSiteUrl;
+    export default getSiteUrl;
 
-});
+
 
 

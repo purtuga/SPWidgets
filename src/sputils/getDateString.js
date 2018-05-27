@@ -1,4 +1,4 @@
-define([], function(){
+
 
     /**
      * Returns a date string in the format expected by Sharepoint
@@ -51,5 +51,5 @@ define([], function(){
 
     }; //end: SPGetDateString()
 
-    return getDateString;
-});
+    export default getDateString;
+

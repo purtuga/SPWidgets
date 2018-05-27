@@ -1,0 +1,134 @@
+.spwidgets-PeoplePicker {
+
+    // Overrides needed due to sharepoint styles (in 2013)
+    button {
+        min-width:      0;
+        padding:        initial;
+        margin-left:    auto;
+        font-size:      initial;
+    }
+
+    &-searchFieldCntr {
+        min-width: 180px;
+
+        input {
+            min-width: 100%;
+        }
+    }
+
+    &-suggestions {
+        min-width:  250px;
+        position:   absolute;
+        z-index:    5;
+
+        &-groups {
+            padding:    1px; // needed to avoid unnecessary scroll bar
+            overflow-y: auto;
+            overflow-x: hidden;
+            max-height: 20em;
+
+            &::-webkit-scrollbar {
+                width:              0.5em;
+                background-color:   #F5F5F5;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+                background-color  : #555;
+            }
+        }
+    }
+
+    &-searchInfo {
+        border-top: 1px solid #eaeaea;
+        padding:    1em;
+
+        &-iconHolder {
+            position: absolute;
+        }
+
+        > p {
+            padding-left:   2em;
+            margin:         0;
+        }
+
+        &-searchingMsg {
+            display: none;
+        }
+    }
+
+    &-busy {
+        display: none;
+    }
+
+    // Override UI Fabric so that each persona card has
+    // a max-width of 190px instead of fixed width
+    .ms-Persona {
+        &-details > * {
+            width:      auto;
+            max-width:  190px;
+        }
+    }
+
+
+
+    //-----------------------------------------
+    //  MODIFIERS
+    //-----------------------------------------
+    &-suggestions.is-searching .ms-Icon--Search {
+        display: none;
+    }
+    &-suggestions.is-searching &-searchInfo-msg {
+        display: none;
+    }
+
+    &-suggestions.is-searching &-searchInfo-searchingMsg {
+        display: block;
+    }
+    &-suggestions.is-searching &-busy {
+        display:            inline-block;
+        -webkit-animation:  spwidgets-PeoplePicker-rotate 0.8s linear infinite;
+        animation:          spwidgets-PeoplePicker-rotate 0.8s linear infinite;
+    }
+
+
+    &--suggestionsRight &-suggestions {
+        right: 0;
+    }
+
+    //---------------------------------------
+    //    ANIMATIONS
+    //---------------------------------------
+    @-webkit-keyframes spwidgets-PeoplePicker-rotate {
+        from {
+            -ms-transform: rotate(0deg);
+            -moz-transform: rotate(0deg);
+            -webkit-transform: rotate(0deg);
+            -o-transform: rotate(0deg);
+            transform: rotate(0deg);
+        }
+        to {
+            -ms-transform: rotate(360deg);
+            -moz-transform: rotate(360deg);
+            -webkit-transform: rotate(360deg);
+            -o-transform: rotate(360deg);
+            transform: rotate(360deg);
+        }
+    }
+    @keyframes spwidgets-PeoplePicker-rotate {
+        from {
+            -ms-transform: rotate(0deg);
+            -moz-transform: rotate(0deg);
+            -webkit-transform: rotate(0deg);
+            -o-transform: rotate(0deg);
+            transform: rotate(0deg);
+        }
+        to {
+            -ms-transform: rotate(360deg);
+            -moz-transform: rotate(360deg);
+            -webkit-transform: rotate(360deg);
+            -o-transform: rotate(360deg);
+            transform: rotate(360deg);
+        }
+    }
+}

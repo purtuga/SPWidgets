@@ -1,0 +1,109 @@
+.spwidgets-FilterPanel-ColumnSelector {
+
+    @class-name-ms-icon-checkmark: ms-Icon--CheckMark;
+
+    //-----------------------------------------------------------
+
+    box-sizing:     border-box;
+    position:       absolute;
+    top:            0;
+    bottom:         0;
+    left:           0;
+    right:          0;
+    //width:          100%;
+    //height:         100%;
+    border-style:   solid;
+    border-width:   1px;
+
+    &-header {
+        padding:        0.5em;
+        border-width:   1px;
+        border-style:   solid;
+    }
+
+    &-body {
+        box-sizing: border-box;
+        position:   absolute;
+        height:     100%;
+        width:      100%;
+        top:        0;
+        left:       0;
+        padding:    3em 0.5em 3.5em;
+
+        &-content {
+            box-sizing: border-box;
+            height:     100%;
+            overflow:   auto;
+        }
+    }
+
+    &-footer {
+        box-sizing: border-box;
+        position:   absolute;
+        bottom:     0;
+        left:       0;
+        width:      100%;
+        padding:    0.5em;
+        text-align: right;
+    }
+
+    &-col {
+        box-sizing:     border-box;
+        display:        inline-block;
+        width:          ~"calc((100% / 3) - 1em)";
+        cursor:         pointer;
+        margin:         0.5em 0.5em 0em 0em;
+        position:       relative;
+
+        &:last-child {
+            margin-right: 0;
+        }
+
+        &-icon,
+        &-title {
+            padding:    0.5em;
+            box-sizing: border-box;
+        }
+
+        &-icon {
+            position:   absolute;
+            left:       0;
+            top:        0;
+            height:     100%;
+            width:      2.5em;
+            padding:    0.5em;
+            text-align: center;
+
+            .@{class-name-ms-icon-checkmark} {
+                display: none;
+            }
+        }
+
+        &-title {
+            width:          100%;
+            padding-left:   3em;
+            text-overflow:  ellipsis;
+            overflow:       hidden;
+            white-space:    nowrap;
+        }
+
+        // MODIFIER
+        &--selected {
+            color: #0078d7; // same as ms-Link
+        }
+        &--selected &-icon .@{class-name-ms-icon-checkmark} {
+            display: inline-block;
+        }
+    }
+
+
+    //---------------------
+    // MODIFIERS
+    //---------------------
+    &--1-col &-col {
+        width: ~"calc(100% - 1em)";
+    }
+    &--2-col &-col {
+        width: ~"calc(50% - 1em)";
+    }
+}

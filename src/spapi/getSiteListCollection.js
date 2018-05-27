@@ -1,213 +1,143 @@
-define([
-    "jquery",
-    "../sputils/cache",
-    "./getSiteUrl",
-    "../sputils/doesMsgHaveError"
-], function(
-    $,
-    cache,
-    getSiteUrl,
-    doesMsgHaveError
-){
+import apiFetch from "../sputils/apiFetch";
+import cache from "../sputils/cache";
+import getSiteWebUrl from "./getSiteWebUrl";
+import objectExtend from "common-micro-libs/src/jsutils/objectExtend";
+import domFind from "common-micro-libs/src/domutils/domFind";
 
     /**
      * Returns a Deferred that is resolved with an Array of Objects containing
      * the site list collection.
      *
-     * @param {Object} options
+     * @param {Object} [options]
      *
      * @param {String} [options.webURL=currentSite]
-     *          The site/sub-site for which the list collection
-     *          is to be retrieved.
-     * @param {Boolean} [options.cacheXML=false]
-     *          If true, the XML response returned is cached for
-     *          future calls.
-     * @param {String|Array|Function} [options.filter=null]
-     *          A string or array of strings with the list name or UID's
-     *          that should be returned when the deferred is resolved.
+     *  The site/sub-site for which the list collection
+     *  is to be retrieved.
      *
-     * @return {jQuery.Promise}
-     *          Promise is resolved with 3 input params:
-     *          lists - Array of objects for the list collection
-     *          xData - webservice Response XML Document
-     *          status - jQuery async request status
+     * @param {Boolean} [options.cache=true]
+     *  If true, the request will be cached.
+     *
+     * @return {Promise}
+     *  Promise is resolved with an Array of Objects.
+     *  Promise might be rejected with an `Error` object
      *
      * @see https://msdn.microsoft.com/en-us/library/ms774864(v=office.12).aspx
      *
+     * @example
+     *
+     * // Sample Object in response:
+     *
+     *  {
+     *      "InternalName": "{E0919C81-0B24-4FFC-A049-F289473ADE32}",
+     *      "Title": "App Survey",
+     *      "Description": "",
+     *      "BaseType": "Survey",
+     *      "BaseTemplate": "Survey",
+     *      "DefaultViewUrl": "/sites/PT2013/Lists/App Survey/overview.aspx",
+     *      "LastModified": "2015-12-15 17:32:11Z",
+     *      "InheritedSecurity": "true",
+     *      "AllowAnonymousAccess": "false",
+     *      "AnonymousViewListItems": "false",
+     *      "ReadSecurity": "1",
+     *      "title": "App Survey"
+     *  }
      */
-    var getSiteListCollection = (function(){
+    var getSiteListCollection = function(options){
+        var opt = objectExtend({}, getSiteListCollection.defaults, options),
+            reqPromise;
 
-        var getData     = null,
-            callerFn    = function getSiteListCollection(){
-                            return getData.apply(this, arguments);
-                        };
+        return getSiteWebUrl(opt.webURL).then(function(webURL){
+            opt.webURL     += webURL + "_vti_bin/SiteData.asmx";
+            // FIXME: cache key not correct below...
+            opt.cacheKey    = opt.webURL + "?" + [opt.filter].join("|");
+            opt.isCached    = cache.isCached(opt.cacheKey);
 
-        // Define defaults. User can change these on their function attachment.
-        callerFn.defaults = {
-            webURL:         '',
-            cacheXML:       false,
-            async:          true,
-            completefunc:   null,
-            filter:         null
-        };
+            let convertXmlToArrayOfObjects = function(response){
+                var $siteLists  = domFind(response.content, "_sList");
 
-        /**
-         * Retrieves the data from Sharepoint
-         */
-        getData = function(opt){
-
-            var options = $.extend({}, callerFn.defaults, opt),
-                reqPromise;
-
-            if (!options.webURL) {
-
-                options.webURL = getSiteUrl();
-
-            } else if (options.webURL.charAt(options.webURL.length - 1) !== "/") {
-
-                options.webURL += "/";
-
-            }
-
-            options.webURL += "_vti_bin/SiteData.asmx";
-
-            options.cacheKey = options.webURL + "?" + [options.filter].join("|");
-            options.isCached = cache.isCached(options.cacheKey);
-
-            // If cacheXML is true and we have a cached version, return it.
-            if (options.cacheXML && options.isCached) {
-
-                reqPromise =  cache(options.cacheKey);
-
-                // If a completefunc was defined on this call,
-                // execute it.
-                if ($.isFunction(options.completefunc)) {
-
-                    reqPromise.then(function(lists, xdata, status){
-
-                        options.completefunc.call($, xdata, status, lists);
-
-                    });
-
-                }
-
-                return reqPromise;
-
-            }
-
-            // Return a deferred.
-            reqPromise = $.Deferred(function(dfd){
-
-                // If cacheXML is FALSE, and we have a cached version of this key,
-                // then remove the cached version - basically reset
-                if (options.isCached) {
-
-                    cache.clear(options.cacheKey);
-
-                }
-
-                $.ajax({
-                    type:           "POST",
-                    cache:          false,
-                    async:          options.async,
-                    url:            options.webURL,
-                    contentType:    "text/xml;charset=utf-8",
-                    dataType:       "xml",
-                    data:           '<?xml version="1.0" encoding="utf-8"?>' +
-                        '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
-                        '<soap:Body><GetListCollection xmlns="http://schemas.microsoft.com/sharepoint/soap/">' +
-                        '</GetListCollection></soap:Body></soap:Envelope>',
-                    complete:       function(xdata, status) {
-
-                        // Process Error from status
-                        if (status === "error"|| doesMsgHaveError(xdata)) {
-
-                            // If cacheXML was true, then remove this from cache.
-                            // No point in caching failures.
-                            if (options.cacheXML) {
-
-                                cache.clear(options.cacheKey);
-
-                            }
-
-                            dfd.rejectWith( $, [null, xdata, status] );
-                            return;
-
-                        }
-
-                        var $siteLists  = $(xdata.responseXML).find("_sList"),
-                            lists       = [];
-
-                        // TODO: Enhance return object so that each one has a method to .getList()
-
-
-                        // FIXME: options.filter should support a Function as well.
-
-                        // if we hav a filter defined, then make sure its an array
-                        if (options.filter && !$.isArray(options.filter)) {
-
-                            options.filter = [options.filter];
-
-                        }
-
-                        $siteLists.each(function(){
-
-                            var $thisList   = $(this),
-                                listDef     = {};
-
-                            // if a filter was defined, then check to see
-                            // if this list matches that filter name
-                            if (
-                                options.filter &&
-                                $.isArray(options.filter) &&
-                                $.inArray($thisList.find("Title").text(), options.filter) === -1 &&
-                                $.inArray($thisList.find("InternalName").text(), options.filter) === -1
-                            ) {
-
-                                return;
-
-                            }
-
-                            $thisList.children().each(function(){
-
-                                listDef[this.nodeName] = $(this).text();
-
-                            });
-
-                            lists.push(listDef);
-
-                        });
-
-
-                        dfd.resolveWith($, [lists, xdata, status]);
-
-                        if ($.isFunction(options.completefunc)) {
-
-                            options.completefunc(xdata, status, lists);
-
-                        }
-
-                    }//end: $.ajax().success()
+                return $siteLists.map(function(listHtml){
+                    return Array.prototype.reduce.call(listHtml.childNodes, function(listObj, listProp){
+                        listObj[listProp.nodeName] = listProp.textContent;
+                        return listObj;
+                    }, {});
                 });
+            };
 
-            }).promise(); //end: return .promise()
-
-            // If cacheXML was true, then cache this promise
-            if (options.cacheXML) {
-
-                cache(options.cacheKey, reqPromise);
-
+            // Backward compatibility
+            if (typeof opt.cacheXML !== "undefined") {
+                try {
+                    console.warn("getSiteListCollection(): cacheXML option deprecated"); // jshint ignore:line
+                } catch(e){}
+                opt.cache = opt.cacheXML;
+            }
+            if (opt.filter || opt.completefunc) {
+                try {
+                    console.error("getSiteListCollection(): option.filter and option.completefunc not supported"); // jshint ignore:line
+                } catch(e){}
             }
 
-            return reqPromise;
+            // If cache is true and we have a cached version, return it.
+            if (opt.cache && opt.isCached) {
+                cache(opt.cacheKey).then(convertXmlToArrayOfObjects);
+            }
 
-        }; //end: getData
+            // If cache is FALSE, and we have a cached version of this key,
+            // then remove the cached version - basically reset
+            if (opt.isCached) {
+                cache.clear(opt.cacheKey);
+            }
 
+            reqPromise = apiFetch(opt.webURL, {
+                method:     "POST",
+                headers:    {'Content-Type': 'text/xml;charset=UTF-8'},
+                body:       '<?xml version="1.0" encoding="utf-8"?>' +
+                '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
+                '<soap:Body><GetListCollection xmlns="http://schemas.microsoft.com/sharepoint/soap/">' +
+                '</GetListCollection></soap:Body></soap:Envelope>'
+            });
 
-        return callerFn;
+            //-------------------------------------------------------------------
+            // RESPONSE EXAMPLE:
+            //-------------------------------------------------------------------
+            //<?xml version="1.0" encoding="utf-8"?>
+            //<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+            //xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+            //    <soap:Body>
+            //<GetListCollectionResponse xmlns="http://schemas.microsoft.com/sharepoint/soap/">
+            // <GetListCollectionResult>0</GetListCollectionResult>
+            //  <vLists>
+            //      <_sList>
+            //          <InternalName>{E0919C81-0B24-4FFC-A049-F289473ADE32}</InternalName>
+            //          <Title>App Survey</Title>
+            //          <Description/>
+            //          <BaseType>Survey</BaseType>
+            //          <BaseTemplate>Survey</BaseTemplate>
+            //          <DefaultViewUrl>/sites/PT2013/Lists/App Survey/overview.aspx</DefaultViewUrl>
+            //          <LastModified>2015-12-15 17:32:11Z</LastModified>
+            //          <InheritedSecurity>true</InheritedSecurity>
+            //          <AllowAnonymousAccess>false</AllowAnonymousAccess>
+            //          <AnonymousViewListItems>false</AnonymousViewListItems>
+            //          <ReadSecurity>1</ReadSecurity>
+            //      </_sList>
+            //  </vLists>
+            //</GetListCollectionResponse>
+            //</soap:Body>
+            //</soap:Envelope>
+            //-------------------------------------------------------------------
 
-    })(); //end: .getSiteListCollection
+            // If cache was true, then cache this promise
+            if (opt.cache) {
+                cache(opt.cacheKey, reqPromise);
+            }
 
-    return getSiteListCollection;
+            return reqPromise.then(convertXmlToArrayOfObjects);
+        });
+    };
 
-});
+    getSiteListCollection.defaults = {
+        webURL: '',
+        cache:  true
+    };
+
+    export default getSiteListCollection;
+

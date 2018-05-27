@@ -1,4 +1,4 @@
-define([], function(){
+
 
     /* global SP, _spPageContextInfo */
 
@@ -74,6 +74,6 @@ define([], function(){
 
     }; //end: getSPVersion();
 
-    return getSPVersion;
+    export default getSPVersion;
 
-});
+

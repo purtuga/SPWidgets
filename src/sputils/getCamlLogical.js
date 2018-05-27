@@ -1,8 +1,10 @@
-define(['jquery'], function($){
+import objectExtend from "common-micro-libs/src/jsutils/objectExtend";
 
     /**
      * Given an array of CAML matches, this method will wrap them all in a
      * Logical condition (<And></And> or a <Or></Or>).
+     *
+     * @function getCamlLogical
      *
      * @param {Object}  options
      *              Options for the call. See below.
@@ -10,7 +12,7 @@ define(['jquery'], function($){
      *              Static String. The type of logical condition that
      *              the 'values' should be wrapped in. Possible values
      *              are 'AND' or 'OR'.  Default is 'AND'.
-     * @param {Array options.values
+     * @param {Array} options.values
      *              The array of String elements that will be
      *              join into caml Logical condition.
      * @param {Function} [options.onEachValue=null]
@@ -62,7 +64,7 @@ define(['jquery'], function($){
      */
     var getCamlLogical = function getCamlLogical(options){
 
-        var o = $.extend(
+        var o = objectExtend(
                     {},
                     {   type:           "AND",
                         values:         [],
@@ -81,7 +83,7 @@ define(['jquery'], function($){
 
         o.type = String(o.type).toUpperCase();
 
-        if (!$.isArray(o.values)) {
+        if (!Array.isArray(o.values)) {
 
             o.values = [o.values];
 
@@ -97,7 +99,7 @@ define(['jquery'], function($){
         // logical = tagOpen;
         total   = o.values.length;
         last    = (total - 1);
-        haveFn  = $.isFunction(o.onEachValue);
+        haveFn  = typeof o.onEachValue === "function";
 
         // Loop through all query logical strings and build
         // the overall filter logical
@@ -126,7 +128,7 @@ define(['jquery'], function($){
                 if ((last - i) > 1){
 
                     newLogical = getCamlLogical(
-                                $.extend({}, o, {
+                                objectExtend({}, o, {
                                     values: o.values.slice((i + 1), (total - i))
                                 })
                             );
@@ -159,6 +161,6 @@ define(['jquery'], function($){
 
     };// getCamlLogical()
 
-    return getCamlLogical;
+    export default getCamlLogical;
 
-});
+

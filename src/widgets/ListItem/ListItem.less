@@ -1,0 +1,19 @@
+.spwidgets-ListItem {
+    @MS_PRIMARY_TEXT: ms-ListItem-primaryText;
+
+    &-simple {
+        .@{MS_PRIMARY_TEXT} {
+            padding-right: 0;
+        }
+    }
+
+    &--hover {
+        background-color:   #eaeaea;
+        cursor:             pointer;
+        outline:            1px solid transparent
+    }
+
+    &.is-selected .ms-ListItem-primaryText {
+        color: #0078d7;
+    }
+}

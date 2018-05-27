@@ -1,0 +1,31 @@
+.spwidgets-DateTimeField {
+    position:   relative;
+    box-sizing: border-box;
+
+    &-inputHolder {
+        position: relative;
+    }
+
+    &-calIcon,
+    &-clearIcon {
+        position:   absolute;
+        top:        0;
+        right:      54px;
+        border:     1px solid #c8c8c8;
+        min-width:  32px;
+    }
+
+    &-clearIcon {
+        right: 0;
+    }
+
+    &--noLabel .ms-Label {
+        display: none;
+    }
+    &--noDescription .ms-TextField-description {
+        display: none;
+    }
+    &--inlinePicker &-calIcon {
+        display: none;
+    }
+}

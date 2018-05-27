@@ -49,25 +49,18 @@ define([
                 expect(searchPrincipals.defaults.webURL).toBeDefined();
             });
 
-            it("has defaults.cacheXML", function(){
-                expect(searchPrincipals.defaults.cacheXML).toBeDefined();
+            it("has defaults.cache", function(){
+                expect(searchPrincipals.defaults.cache).toBeDefined();
             });
 
-            it("defaults.cacheXML is set to false", function(){
-                expect(searchPrincipals.defaults.cacheXML).toBe(false);
+            it("defaults.cache is set to false", function(){
+                expect(searchPrincipals.defaults.cache).toBe(true);
             });
 
-            it("has defaults.async", function(){
-                expect(searchPrincipals.defaults.async).toBeDefined();
+            it("has defaults.UserProfileModel", function(){
+                expect(searchPrincipals.defaults.UserProfileModel).toBeDefined();
             });
 
-            it("defaults.async is set to true", function(){
-                expect(searchPrincipals.defaults.async).toBe(true);
-            });
-
-            it("has defaults.completefunc", function(){
-                expect(searchPrincipals.defaults.completefunc).toBeDefined();
-            });
         });
 
         describe("DATA Retrieval", function(){
@@ -78,30 +71,20 @@ define([
                 });
             });
 
-            it("returns a promise", function(){
+            it("returns a promise", function(done){
                 expect(this.searchReq.then).toBeDefined();
-            });
-
-            it("Promise resolved with 2 arguments", function(done){
-                this.searchReq.then(function(xData, status){
-                    expect(xData).toBeDefined();
-                    expect(xData.responseXML).toBeDefined();
-                    expect(status).toBeDefined();
-                    expect(typeof status).toMatch("string");
+                this.searchReq.then(function(){
                     done();
                 });
             });
 
-            it("Results are XML", function(done){
-                this.searchReq.then(function(xData){
-                    expect(xData.responseXML instanceof XMLDocument).toBe(true);
-                    expect(xData.responseXML.querySelectorAll("PrincipalInfo").length).toBe(2);
+            it("Promise resolved with Array", function(done){
+                this.searchReq.then(function(results){
+                    expect(results).toBeDefined();
+                    expect(Array.isArray(results)).toBe(true);
                     done();
                 });
             });
-
         });
-
     });
-
 });

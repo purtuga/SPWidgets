@@ -1,4 +1,4 @@
-define(["jquery", "src/SPWidgets"], function($){
+define(["jquery", "src/index"], function($){
 
     describe("SPWidgets as a jQuery Plugin", function(){
 
@@ -8,7 +8,7 @@ define(["jquery", "src/SPWidgets"], function($){
                 // but forgot to update this file to include a test case for it.
                 var countUnderSPWidgtes = Object.keys($.SPWidgets).length;
                 var countUnderSPAPI     = Object.keys($.SPWidgets.SPAPI).length;
-                expect(countUnderSPWidgtes + countUnderSPAPI).toEqual(23);
+                expect(countUnderSPWidgtes + countUnderSPAPI).toEqual(24);
             });
             it("defines SPWidgets namespace in jQuery namespace", function(){
                 expect($.SPWidgets).toBeDefined();
@@ -94,7 +94,7 @@ define(["jquery", "src/SPWidgets"], function($){
             it("includes pickSPUser", function(){
                 expect($.fn.pickSPUser).toBeDefined();
             });
-            it("includes SPFilterPanel", function(){
+            it("includes FilterPanel", function(){
                 expect($.fn.SPFilterPanel).toBeDefined();
             });
             it("includes SPControlUpload", function(){

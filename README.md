@@ -1,104 +1,93 @@
 SPWidgets
 =========
 
-SharePoint Custom UI Widgets that make building custom User Interfaces easier.
+SharePoint Custom UI Widgets that make building custom User Interfaces easier. All widgets are self-contained and use the office-ui-fabric styling.
+
+## CURRENT STATUS
+
+**THIS VERSION (3.0.0) REMAINS IN **BETA** AS THE DOCUMENTATION HAS NOT BEEN CREATED AND THERE ARE NO TEST CASES. WIDGETS, HOWEVER, HAVE PROVEN (UNDER MY OWN PROJECTS) TO BE STABLE ENOUGH FOR USAGE.** 
+
+Version 3.0 was a large effort that removed jQuery and jQuery UI from the code base and instead adopted native JavaScript APIs and the new Office UI Fabric for styling. It also replaced the use of Grunt with npm script and Webpack. My goal with this project has always been to have a set of SharePoint widgets I can use in any context and independent of any framework. To that extent, v3.0 has proven to do that as I have used them directly within SharePoint as a "drop in" library as well as in a project that uses VueJS. 
+
+At this point, I'm still not unsure if I will dedicate any more time to the activities I believe are needed remove the `beta` indicator from v3.0. I'm leaning towards moving these widgets to Custom Elements and fully embrace the web platform in providing framework/library agnostic widgets.
+ 
+
+## example: 
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>SP Widgets</title>
+  <link rel="stylesheet" href="//spoprod-a.akamaihd.net/files/fabric/office-ui-fabric-core/5.0.1/css/fabric.min.css">
+  <link rel="stylesheet" href="//appsforoffice.microsoft.com/fabric/fabric-js/1.0.0/fabric.components.css">
+</head>
+<body>
+
+  <script src="https://cdn.rawgit.com/purtuga/SPWidgets/no-jquery/dist/SPWidgets.js"></script>
+  <script>
+    var message = SPWidgets.default.Message.create({ message: "hello"})
+    message.appendTo(document.body);
+</script>
+</body>
+</html>
+```
+
+To play with the available widgets, see this bin: 
+
+http://jsbin.com/sesayohecu/edit?html,js,output 
+
+__HOWEVER:__ note that several widgets will likely fail, since they require a SharePoint env. to access its APIs)
+
 
 Documentation
 -------------
 
-**See the [project page](http://purtuga.github.com/SPWidgets/) folder for full
-detail on the usage of each available plugins.**
+All widgets are built into the `dist/SPWidgets.js` bundle. When using this file directly on a page (as the example above shows), all widgets will be available under `window.SPWidgets.default`. This path is an object containing all of the exported utilities and widgets (see `src/index.js` for a full list)
 
+Full documentation is TBD... 
 
->   **NOTE: SPWidgets is undergoing a major change in the MASTER branch. Please**
->   **use one of the existing tagged releases instead of the code from MASTER.**
-
-
-Downloads
----------
-
-The compiled plugin can be found under the [_dist/_](https://github.com/purtuga/SPWidgets/tree/master/dist) folder.
-
+Currently, I mainly use this library as a dependency into some other projects, thus documentation (outside of the jsdocs in each widgets) has not been a focus.
+ 
 
 License
 -------
 
-Dual License support
-
 -   MIT http://www.opensource.org/licenses/mit-license.php
--   GPL http://www.opensource.org/licenses/gpl-license.php
-
-User can pick whichever one applies best for their project and doesn’t have to contact me.
 
 
 Contributions
 -------------
 
-Contributions are welcome. Just fork the project, make your changes (see below for notes on development environment) and send me a Pull Request.  Note that before committing your changes, a `grunt build-prod` must be run so that all files are compiled.
+Contributions are welcomed. 
+
 
 
 Developing
 ----------
 
-## Pre-requisites
+The `npm server:sp` task assists with running an environment that allows for connection to a real sharepoint instance to use its APIs. Note that this is achieve by staring a separate instance of Chrome with security turned off. 
 
-1.  `node` and `npm`
-2.  `grunt`
-3.  `bower`
+>   __IMPORTANT__: Do not use this version of chrome for regular internet browsing.
 
-## Getting Started
+Before staring development, create a file under `dev/` folder named `my.sp.dev.js`. In this file, add the following:
 
-Once the code has been forked and checked out, insure that following is run from inside the project root folder:
+```javascript
+window._spPageContextInfo = {
+    webServerRelativeUrl:   "/sites/your-site-name",
+    webAbsoluteUrl:         "https://my-sharepoint-site-here.sharepoint.com/sites/your-site-name"
+};
+```
 
--   `npm install`
--   `bower install`
+Change the above to include your SharePoint tenant information. Now run: 
 
-This will install both the build dependencies as well as the runtime dependencies.
+```bash
+npm run serve:sp
+```
 
-The source is broken up into modules using the AMD pattern. Any new modules created should follow the same pattern. A few guidelines:
-
-1.  New widgets should be created in a new folder under `src/`. Widgets should have a calling signature that accepts at least two input parameters: a dom element to act on and an object of options. Example:
-
-        define(['jquery'], function($){
-            return function myWidget(domElements, options){
-                // build widget on to domElements
-            };
-        });
-
-2.  Any new module that should be exposed via `$.SPWidgets` should be added to `src/SPWidgets.js`.
-
-3.  New widgets need to have a Markdown documentation file under `documentation/`. The file should be named as `SPWidgets._new_widget_name.md`.
-
-3.  All API modules should return a jQuery Promise.
-
-
-## Build
-
-SPWidgets is built using `grunt`. To find out what targets are available, run the following command:
-
-    grunt --help
-
-The first time `grunt` is run, a file called `me.build.json` will be created at the root of the project. This file contains build parameters that can be customized to the local env. (ex. set `buildLocation` to your computer's temp folder).
-
-To build the project, which will update the `dist` folder with the current changes, run the following:
-
-    grunt build-prod
-
-
-## Deployment and Testing in a Real SharePoint Site
-
-This project has a `deploy` build target (`grunt deploy`) that copies the built library along with a development version of the Demo to a SharePoint Document Library folder.  The location is set in a file called `me.build.json`, which is created at the root of the project the first time `grunt` is run, and should be the absolute path to the document library (ex. Office 365: `//myTestTenant.sharepoint.com@SSL/DavWWWRoot/sites/DevTest/Shared Documents/SPWidgets/`. Or if a drive was mapped, it could be set as `z:/Shared Documents/SPWidgets/`).
-
-Once deployed, browse to the deployment location on the SharePoint site and click on `demo/src/Dev.SPWidgets.aspx`. This version of the Demo loads all modules using requireJS, which facilitates development and testing.
-
-
-## Unit Tests
-
-Unit test cases are written under the `test` folder using Jasnime.  Test should be able to run without a real SharePoint Server by taking advantage of fakeServer. To run the test case locally run the following:
-
-    npm run server
-
-This will run an http server on port 8080 and try to open the test `index.html` file in the browser.
+All content is now being served from the `dev/` folder. Ensure that you access your sharepoint URL defined above from the same browser instance that is displaying the development content.
 
 
 ## Contributors

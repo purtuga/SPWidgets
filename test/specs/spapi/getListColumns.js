@@ -44,9 +44,10 @@ function(
                 });
             });
 
-            it("resolves with an array", function(done){
+            it("resolves with an array like object", function(done){
                 this.colPromise.then(function(cols){
-                    expect(Array.isArray(cols)).toBe(true);
+                    expect(typeof cols.forEach === "function").toBe(true);
+                    expect(typeof cols.slice === "function").toBe(true);
                     expect(cols.length).toBeGreaterThan(0);
                     done();
                 });
@@ -70,7 +71,7 @@ function(
 
             it("contains an object for each columns", function(done){
                 this.colPromise.then(function(cols){
-                    var col1 = cols[0];
+                    var col1 = cols.item(0);
                     expect(typeof col1).toMatch("object");
                     expect(col1.Name).toMatch("Title");
                     done();
@@ -79,7 +80,7 @@ function(
 
             it("each column exposes method getColumnValues()", function(done){
                 this.colPromise.then(function(cols){
-                    expect(cols[0].getColumnValues).toBeDefined();
+                    expect(cols.item(0).getColumnValues).toBeDefined();
                     done();
                 });
             });
@@ -100,7 +101,22 @@ function(
 
             it("does not have internal __xmlNode (legacy code)", function(done){
                 this.colPromise.then(function(cols){
-                    expect(cols[0].___xmlNode).not.toBeDefined();
+                    expect(cols.item(0).___xmlNode).not.toBeDefined();
+                    done();
+                });
+            });
+
+            it("Choice Column: getColumnValues() returns Promise", function(done){
+                this.colPromise.then(function(cols){
+                    var col;
+                    cols.some(function(c){
+                        if (c.Name === "Status") {
+                            col = c;
+                            return true;
+                        }
+                    });
+                    var colValuesPromise = col.getColumnValues();
+                    expect(colValuesPromise.then).toBeDefined();
                     done();
                 });
             });
@@ -114,10 +130,13 @@ function(
                             return true;
                         }
                     });
-                    expect(col.getColumnValues().length).toEqual(5);
-                    done();
+                    col.getColumnValues().then(function(values) {
+                        expect(values.length).toEqual(5);
+                        done();
+                    });
                 });
             });
+
 
             it("Lookup Column: getColumnValues() returns allowed values", function(done){
                 this.colPromise.then(function(cols){
@@ -128,8 +147,10 @@ function(
                             return true;
                         }
                     });
-                    expect(col.getColumnValues().length).toBeGreaterThan(0);
-                    done();
+                    col.getColumnValues().then(function(values){
+                        expect(values.length).toBeGreaterThan(0);
+                        done();
+                    });
                 });
             });
 
@@ -143,8 +164,8 @@ function(
 
             it("Each column definition .getList() returns a ListModel", function(done){
                 this.colPromise.then(function(cols){
-                    expect(cols[0].getList).toBeDefined();
-                    expect(ListModel.isInstanceOf(cols[0].getList())).toBe(true);
+                    expect(cols.item(0).getList).toBeDefined();
+                    expect(ListModel.isInstanceOf(cols.item(0).getList())).toBe(true);
                     done();
                 });
             });
