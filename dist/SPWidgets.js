@@ -656,27 +656,164 @@
     /***/
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
-        /* unused harmony export domAddClass */
+        /* unused harmony export parseHTML */
+        var DOCUMENT = document;
         /**
- * Adds class to an element
+ * Parses a string into native HTML element
  *
- * @function domAddClass
+ * @function parseHTML
  *
- * @param {HTMLElement} el
- * @param {String} cssClass
- *  Multiple classes can be set using spaces as a delimiter
+ * @param {String} htmlString
+ *
+ * @return {DocumentFragment}
+ *  A document fragmenet object with all of the HTMl in it.
+ *
+ * @example
+ *
+ * var myUI = parseHTML("<div>something</div>");
+ *  // myUI.firstChild === <div>something</div>
+ *
+ *
+ * @example
+ *
+ * var myUI = parseHTML("<!-- Comment here --> <div>Something</div>");
+ *  // myUI.firstChild === <!-- Comment here -->
+ *  // myUI..childNodes[0] === <div>Something</div>
+ *
  */
-        function domAddClass(el, cssClass) {
-            var classNameList = String(cssClass).trim().split(/\s+/).map(function(className) {
-                return className.trim();
+        function parseHTML(htmlString) {
+            var fragment = DOCUMENT.createDocumentFragment(), div = DOCUMENT.createElement("div");
+            // If fragment does not have a .children porperty, then create it by
+            // point it at childNodes
+            "children" in fragment || (fragment.children = fragment.childNodes);
+            div.innerHTML = htmlString;
+            div.childNodes.length && Array.prototype.slice.call(div.childNodes, 0).forEach(function(node) {
+                fragment.appendChild(node);
             });
-            el && classNameList.length && classNameList.forEach(function(cssClass) {
-                return el.classList.add(cssClass);
-            });
+            return fragment;
         }
         /* harmony default export */
-        __webpack_exports__.a = domAddClass;
+        __webpack_exports__.a = parseHTML;
     }, /* 5 */
+    /***/
+    function(module, __webpack_exports__, __webpack_require__) {
+        "use strict";
+        /* unused harmony export Widget */
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_0__Compose__ = __webpack_require__(16);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_1__domutils_domAddClass__ = __webpack_require__(8);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_2__domutils_domRemoveClass__ = __webpack_require__(11);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_3__domutils_domChildren__ = __webpack_require__(27);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_4__styles_widget_less__ = __webpack_require__(76);
+        /* harmony import */
+        __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__styles_widget_less__);
+        /**
+ * Base class for a Widget
+ *
+ * @class Widget
+ * @extends Compose
+ *
+ */
+        var Widget = __WEBPACK_IMPORTED_MODULE_0__Compose__.a.extend(/** @lends Widget.prototype */ {
+            init: function() {
+                var me = this;
+                me.onDestroy(function() {
+                    _destroy.call(me);
+                });
+            },
+            destroy: function() {
+                _destroy.call(this);
+                __WEBPACK_IMPORTED_MODULE_0__Compose__.a.prototype.destroy.call(this);
+            },
+            /**
+     * The widget HTML Element
+     *
+     * @type {HTMLElement}
+     */
+            $ui: null,
+            /**
+     * Returns the Widget DOM element.
+     * If current object instance has a property name `$ui`, that will be returned
+     * by this method. Should be implemented by specfic widget if this pattern
+     * is not implemented.
+     *
+     * @return {HTMLElement}
+     */
+            getEle: function() {
+                return this.$ui;
+            },
+            /**
+     * Checks if the Widget is visible.  Depends on `getEle` returning the widget's
+     * UI element.
+     *
+     * @return {Boolean}
+     */
+            isVisible: function() {
+                var $ui = this.getEle();
+                return !!($ui.offsetWidth || $ui.offsetHeight || $ui.getClientRects().length);
+            },
+            /**
+     * Checks the widget visibility (`isVisible`) and then updates it to
+     * the opposite state.
+     */
+            toggle: function() {
+                var me = this;
+                me.isVisible() ? me.hide() : me.show();
+            },
+            /**
+     * Makes widget UI visible
+     */
+            show: function() {
+                Object(__WEBPACK_IMPORTED_MODULE_2__domutils_domRemoveClass__.a)(this.getEle(), "my-widget-hide");
+            },
+            /**
+     * Hides the widget UI
+     */
+            hide: function() {
+                Object(__WEBPACK_IMPORTED_MODULE_1__domutils_domAddClass__.a)(this.getEle(), "my-widget-hide");
+            },
+            /**
+     * Appends the Widget to a given element.
+     *
+     * @param {HTMLElement|Widget} cntr
+     * @param {Number} [atPosition]
+     *  Position where element should be placed inside of the `cntr`.
+     *  Default is at the bottom (after last item). Zero based
+     */
+            appendTo: function(cntr, atPosition) {
+                if (!cntr) return;
+                var $ele = this.getEle();
+                var $cntrEle = cntr.appendChild ? cntr : cntr.getEle ? cntr.getEle() : null;
+                if (!$cntrEle) return;
+                if ("undefined" === typeof atPosition) {
+                    $cntrEle.appendChild($ele);
+                    return;
+                }
+                var cntrChildren = Object(__WEBPACK_IMPORTED_MODULE_3__domutils_domChildren__.a)($cntrEle);
+                cntrChildren[atPosition] ? $cntrEle.insertBefore($ele, cntrChildren[atPosition]) : $cntrEle.appendChild($ele);
+            },
+            /**
+     * Removes the Widget from it's parent (removes it from DOM)
+     */
+            detach: function() {
+                var ui = this.getEle();
+                ui && ui.parentNode && ui.parentNode.removeChild(ui);
+            }
+        });
+        /**
+ * @private
+ */
+        function _destroy() {
+            this.detach();
+            this.$ui = null;
+        }
+        /* harmony default export */
+        __webpack_exports__.a = Widget;
+    }, /* 6 */
     /***/
     function(module, exports) {
         /*
@@ -717,7 +854,7 @@
             };
             return list;
         };
-    }, /* 6 */
+    }, /* 7 */
     /***/
     function(module, exports, __webpack_require__) {
         /*
@@ -967,189 +1104,31 @@
             link.href = URL.createObjectURL(blob);
             oldSrc && URL.revokeObjectURL(oldSrc);
         }
-    }, /* 7 */
-    /***/
-    function(module, __webpack_exports__, __webpack_require__) {
-        "use strict";
-        /* unused harmony export parseHTML */
-        var DOCUMENT = document;
-        /**
- * Parses a string into native HTML element
- *
- * @function parseHTML
- *
- * @param {String} htmlString
- *
- * @return {DocumentFragment}
- *  A document fragmenet object with all of the HTMl in it.
- *
- * @example
- *
- * var myUI = parseHTML("<div>something</div>");
- *  // myUI.firstChild === <div>something</div>
- *
- *
- * @example
- *
- * var myUI = parseHTML("<!-- Comment here --> <div>Something</div>");
- *  // myUI.firstChild === <!-- Comment here -->
- *  // myUI..childNodes[0] === <div>Something</div>
- *
- */
-        function parseHTML(htmlString) {
-            var fragment = DOCUMENT.createDocumentFragment(), div = DOCUMENT.createElement("div");
-            // If fragment does not have a .children porperty, then create it by
-            // point it at childNodes
-            "children" in fragment || (fragment.children = fragment.childNodes);
-            div.innerHTML = htmlString;
-            div.childNodes.length && Array.prototype.slice.call(div.childNodes, 0).forEach(function(node) {
-                fragment.appendChild(node);
-            });
-            return fragment;
-        }
-        /* harmony default export */
-        __webpack_exports__.a = parseHTML;
     }, /* 8 */
     /***/
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
-        /* unused harmony export Widget */
-        /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_0__Compose__ = __webpack_require__(16);
-        /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_1__domutils_domAddClass__ = __webpack_require__(4);
-        /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_2__domutils_domRemoveClass__ = __webpack_require__(11);
-        /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_3__domutils_domChildren__ = __webpack_require__(25);
-        /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_4__styles_widget_less__ = __webpack_require__(76);
-        /* harmony import */
-        __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__styles_widget_less__);
+        /* unused harmony export domAddClass */
         /**
- * Base class for a Widget
+ * Adds class to an element
  *
- * @class Widget
- * @extends Compose
+ * @function domAddClass
  *
+ * @param {HTMLElement} el
+ * @param {String} cssClass
+ *  Multiple classes can be set using spaces as a delimiter
  */
-        var Widget = __WEBPACK_IMPORTED_MODULE_0__Compose__.a.extend(/** @lends Widget.prototype */ {
-            init: function() {
-                var me = this;
-                me.onDestroy(function() {
-                    _destroy.call(me);
-                });
-            },
-            destroy: function() {
-                _destroy.call(this);
-                __WEBPACK_IMPORTED_MODULE_0__Compose__.a.prototype.destroy.call(this);
-            },
-            /**
-     * The widget HTML Element
-     *
-     * @type {HTMLElement}
-     */
-            $ui: null,
-            /**
-     * Returns the Widget DOM element.
-     * If current object instance has a property name `$ui`, that will be returned
-     * by this method. Should be implemented by specfic widget if this pattern
-     * is not implemented.
-     *
-     * @return {HTMLElement}
-     */
-            getEle: function() {
-                return this.$ui;
-            },
-            /**
-     * Checks if the Widget is visible.  Depends on `getEle` returning the widget's
-     * UI element.
-     *
-     * @return {Boolean}
-     */
-            isVisible: function() {
-                var $ui = this.getEle();
-                return !!($ui.offsetWidth || $ui.offsetHeight || $ui.getClientRects().length);
-            },
-            /**
-     * Checks the widget visibility (`isVisible`) and then updates it to
-     * the opposite state.
-     */
-            toggle: function() {
-                var me = this;
-                me.isVisible() ? me.hide() : me.show();
-            },
-            /**
-     * Makes widget UI visible
-     */
-            show: function() {
-                Object(__WEBPACK_IMPORTED_MODULE_2__domutils_domRemoveClass__.a)(this.getEle(), "my-widget-hide");
-            },
-            /**
-     * Hides the widget UI
-     */
-            hide: function() {
-                Object(__WEBPACK_IMPORTED_MODULE_1__domutils_domAddClass__.a)(this.getEle(), "my-widget-hide");
-            },
-            /**
-     * Appends the Widget to a given element.
-     *
-     * @param {HTMLElement|Widget} cntr
-     * @param {Number} [atPosition]
-     *  Position where element should be placed inside of the `cntr`.
-     *  Default is at the bottom (after last item). Zero based
-     */
-            appendTo: function(cntr, atPosition) {
-                if (!cntr) return;
-                var $ele = this.getEle();
-                var $cntrEle = cntr.appendChild ? cntr : cntr.getEle ? cntr.getEle() : null;
-                if (!$cntrEle) return;
-                if ("undefined" === typeof atPosition) {
-                    $cntrEle.appendChild($ele);
-                    return;
-                }
-                var cntrChildren = Object(__WEBPACK_IMPORTED_MODULE_3__domutils_domChildren__.a)($cntrEle);
-                cntrChildren[atPosition] ? $cntrEle.insertBefore($ele, cntrChildren[atPosition]) : $cntrEle.appendChild($ele);
-            },
-            /**
-     * Removes the Widget from it's parent (removes it from DOM)
-     */
-            detach: function() {
-                var ui = this.getEle();
-                ui && ui.parentNode && ui.parentNode.removeChild(ui);
-            }
-        });
-        /**
- * @private
- */
-        function _destroy() {
-            this.detach();
-            this.$ui = null;
+        function domAddClass(el, cssClass) {
+            var classNameList = String(cssClass).trim().split(/\s+/).map(function(className) {
+                return className.trim();
+            });
+            el && classNameList.length && classNameList.forEach(function(cssClass) {
+                return el.classList.add(cssClass);
+            });
         }
         /* harmony default export */
-        __webpack_exports__.a = Widget;
+        __webpack_exports__.a = domAddClass;
     }, /* 9 */
-    /***/
-    function(module, __webpack_exports__, __webpack_require__) {
-        "use strict";
-        /* unused harmony export domFind */
-        /**
- * Finds Elements within a given HTML Element using `querySelectorAll` and
- * return an Array with those elements.
- *
- * @function domFind
- *
- * @param {HTMLElement} domEle
- * @param {String} selector
- *
- * @returns {Array<HTMLElement>}
- */
-        function domFind(domEle, selector) {
-            return Array.prototype.slice.call(domEle.querySelectorAll(selector));
-        }
-        /* harmony default export */
-        __webpack_exports__.a = domFind;
-    }, /* 10 */
     /***/
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
@@ -1207,6 +1186,27 @@
         }
         /* harmony default export */
         __webpack_exports__.a = domAddEventListener;
+    }, /* 10 */
+    /***/
+    function(module, __webpack_exports__, __webpack_require__) {
+        "use strict";
+        /* unused harmony export domFind */
+        /**
+ * Finds Elements within a given HTML Element using `querySelectorAll` and
+ * return an Array with those elements.
+ *
+ * @function domFind
+ *
+ * @param {HTMLElement} domEle
+ * @param {String} selector
+ *
+ * @returns {Array<HTMLElement>}
+ */
+        function domFind(domEle, selector) {
+            return Array.prototype.slice.call(domEle.querySelectorAll(selector));
+        }
+        /* harmony default export */
+        __webpack_exports__.a = domFind;
     }, /* 11 */
     /***/
     function(module, __webpack_exports__, __webpack_require__) {
@@ -1232,13 +1232,13 @@
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_es7_fetch__ = __webpack_require__(58);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_1_common_micro_libs_src_jsutils_parseXML__ = __webpack_require__(29);
+        var __WEBPACK_IMPORTED_MODULE_1_common_micro_libs_src_jsutils_parseXML__ = __webpack_require__(30);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_2_common_micro_libs_src_jsutils_es6_promise__ = __webpack_require__(13);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_3__doesMsgHaveError__ = __webpack_require__(30);
+        var __WEBPACK_IMPORTED_MODULE_3__doesMsgHaveError__ = __webpack_require__(31);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_4__getMsgError__ = __webpack_require__(28);
+        var __WEBPACK_IMPORTED_MODULE_4__getMsgError__ = __webpack_require__(29);
         var fetch = __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_es7_fetch__.a.fetch;
         /**
  * Handles API calls to SharePoint using the low level ES7 fetch() api,
@@ -2028,7 +2028,7 @@
             var Promise = polyfill.Promise;
             /* harmony default export */
             __webpack_exports__.a = Promise;
-        }).call(__webpack_exports__, __webpack_require__(59), __webpack_require__(35), __webpack_require__(60)(module));
+        }).call(__webpack_exports__, __webpack_require__(59), __webpack_require__(36), __webpack_require__(60)(module));
     }, /* 14 */
     /***/
     function(module, __webpack_exports__, __webpack_require__) {
@@ -2681,6 +2681,31 @@
     /***/
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
+        /* unused harmony export domClosest */
+        var body = document.body;
+        var matches = body.matches || body.matchesSelector || body.msMatchesSelector || body.mozMatchesSelector || body.webkitMatchesSelector || body.oMatchesSelector;
+        /**
+ * Finds the closest DOM element to another by walking up its ancestors.
+ *
+ * @function domClosest
+ *
+ * @param {HTMLElement} ele
+ * @param {String} selector
+ *
+ * @return {HTMLElement|undefined}
+ */
+        function domClosest(ele, selector) {
+            var parent = ele;
+            var response;
+            for (;!response && parent && "HTML" !== parent.nodeName.toUpperCase(); ) matches.call(parent, selector) ? response = parent : parent = parent.parentElement;
+            return response;
+        }
+        /* harmony default export */
+        __webpack_exports__.a = domClosest;
+    }, /* 21 */
+    /***/
+    function(module, __webpack_exports__, __webpack_require__) {
+        "use strict";
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_objectExtend__ = __webpack_require__(0);
         /**
@@ -2794,278 +2819,7 @@
         getNodesFromXml.getJsNativeFromString = getJsNativeFromString;
         /* harmony default export */
         __webpack_exports__.a = getNodesFromXml;
-    }, /* 21 */
-    /***/
-    function(module, __webpack_exports__, __webpack_require__) {
-        "use strict";
-        /* unused harmony export domClosest */
-        var body = document.body;
-        var matches = body.matches || body.matchesSelector || body.msMatchesSelector || body.mozMatchesSelector || body.webkitMatchesSelector || body.oMatchesSelector;
-        /**
- * Finds the closest DOM element to another by walking up its ancestors.
- *
- * @function domClosest
- *
- * @param {HTMLElement} ele
- * @param {String} selector
- *
- * @return {HTMLElement|undefined}
- */
-        function domClosest(ele, selector) {
-            var parent = ele;
-            var response;
-            for (;!response && parent && "HTML" !== parent.nodeName.toUpperCase(); ) matches.call(parent, selector) ? response = parent : parent = parent.parentElement;
-            return response;
-        }
-        /* harmony default export */
-        __webpack_exports__.a = domClosest;
     }, /* 22 */
-    /***/
-    function(module, __webpack_exports__, __webpack_require__) {
-        "use strict";
-        /* unused harmony export functionBind */
-        /* unused harmony export functionBindCall */
-        /* harmony export (binding) */
-        __webpack_require__.d(__webpack_exports__, "d", function() {
-            return objectDefineProperty;
-        });
-        /* harmony export (binding) */
-        __webpack_require__.d(__webpack_exports__, "c", function() {
-            return objectDefineProperties;
-        });
-        /* unused harmony export objectKeys */
-        /* unused harmony export isArray */
-        /* unused harmony export arrayForEach */
-        /* harmony export (binding) */
-        __webpack_require__.d(__webpack_exports__, "a", function() {
-            return arrayIndexOf;
-        });
-        /* harmony export (binding) */
-        __webpack_require__.d(__webpack_exports__, "b", function() {
-            return arraySplice;
-        });
-        /* unused harmony export consoleLog */
-        /* unused harmony export consoleError */
-        // Function
-        // functionBind(fn, fnParent)
-        var functionBind = Function.bind.call.bind(Function.bind);
-        // usage: functionBindCall(Array.prototype.forEach) // generates a bound function to Array.prototype.forEach.call
-        var functionBindCall = functionBind(Function.call.bind, Function.call);
-        // Object
-        var objectDefineProperty = Object.defineProperty;
-        var objectDefineProperties = Object.defineProperties;
-        Object.keys;
-        // Array
-        var arr = [];
-        Array.isArray;
-        functionBindCall(arr.forEach);
-        var arrayIndexOf = functionBindCall(arr.indexOf);
-        var arraySplice = functionBindCall(arr.splice);
-        // Logging
-        var consoleLog = console.log;
-        console.error;
-    }, /* 23 */
-    /***/
-    function(module, __webpack_exports__, __webpack_require__) {
-        "use strict";
-        /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_0__sputils_cache__ = __webpack_require__(15);
-        /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_1__sputils_getNodesFromXml__ = __webpack_require__(20);
-        /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_2__models_ListItemModel__ = __webpack_require__(67);
-        /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_3__collections_ListItemsCollection__ = __webpack_require__(69);
-        /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_4__sputils_apiFetch__ = __webpack_require__(12);
-        /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_5__spapi_getSiteWebUrl__ = __webpack_require__(14);
-        /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_6_common_micro_libs_src_jsutils_objectExtend__ = __webpack_require__(0);
-        /**
- * Method to retrieve data from a SharePoint list using GetListItems or
- * GetListItemChangesSinceToken operations of the List.axps webservice.
- * @function
- *
- * @param {Object} options
- *      Supports same input options as SPServices
- *
- * @param {Object} options.listName
- *
- * @param {String} [options.webURL="currentSiteWeb"]
- *
- * @param {String} [options.viewName=""]
- *
- * @param {String} [options.CAMLViewFields=""]
- *
- * @param {String} [options.CAMLQuery=""]
- *
- * @param {String} [options.CAMLQueryOptions=""]
- *
- * @param {String|Number} [options.CAMLRowLimit=""]
- *
- * @param {String} [options.operation="GetListItems"]
- *      Value Could also be set to "GetListItemChangesSinceToken".
- *
- * @param {Boolean} [options.changeToken=""]
- *      Used only when options.operation is "GetListItemChangesSinceToken"
- *
- * @param {Boolean} [options.cacheXML=false]
- *
- * @param {Boolean} [options.ListItemModel=ListItemModel]
- *  The model to be used for each row retrieved. Model constructor must
- *  support a .create() method.
- *
- * @return {Promise<ListItemsCollection>|Promise<Error>}
- *   Promise is resolved with a Collection, or rejected with an Error object
- *
- * @see https://msdn.microsoft.com/en-us/library/websvclists.lists.getlistitems(v=office.14).aspx
- * @see https://msdn.microsoft.com/en-us/library/office/ms467521.aspx
- *
- * @example
- *
- * getListItems({
- *   listName: "tasks",
- *   cacheXML: true,
- *   async: false,
- *   CAMLQuery: '<Query>' +
- *      '<Where>' +
- *      '<Eq>' +
- *          '<FieldRef Name="Author" LookupId="TRUE"/>" +
- *          '<Value Type="Integer"><UserID/></Value>' +
- *      '</Eq>' +
- *      '</Where>
- *      '<OrderBy><FieldRef Name="Title"/></OrderBy></Query>',
- *   CAMLViewFields: '<ViewFields><FieldRef Name="Title"/></ViewFields>'
- * })
- */
-        var getListItems = function getListItems(options) {
-            var reqPromise, opt = Object(__WEBPACK_IMPORTED_MODULE_6_common_micro_libs_src_jsutils_objectExtend__.a)({}, getListItems.defaults, options);
-            return Object(__WEBPACK_IMPORTED_MODULE_5__spapi_getSiteWebUrl__.a)(opt.webURL).then(function(webURL) {
-                opt.webURL = webURL;
-                opt.cacheKey = opt.webURL + "?" + [ opt.listName, opt.viewName, opt.CAMLViewFields, opt.CAMLQuery, opt.CAMLRowLimit, opt.CAMLQueryOptions, opt.operation, opt.changeToken ].join("|");
-                opt.isCached = __WEBPACK_IMPORTED_MODULE_0__sputils_cache__.a.isCached(opt.cacheKey);
-                // If cacheXML is true and we have a cached version, return it.
-                if (opt.cacheXML && opt.isCached) return Object(__WEBPACK_IMPORTED_MODULE_0__sputils_cache__.a)(opt.cacheKey);
-                // If cacheXML is FALSE, and we have a cached version of this key,
-                // then remove the cached version - basically reset
-                opt.isCached && __WEBPACK_IMPORTED_MODULE_0__sputils_cache__.a.clear(opt.cacheKey);
-                reqPromise = Object(__WEBPACK_IMPORTED_MODULE_4__sputils_apiFetch__.a)(opt.webURL + "_vti_bin/Lists.asmx", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "text/xml;charset=UTF-8"
-                    },
-                    body: '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><' + opt.operation + ' xmlns="http://schemas.microsoft.com/sharepoint/soap/"><listName>' + opt.listName + "</listName><viewName>" + (opt.viewName || "") + "</viewName><query>" + (opt.CAMLQuery || "<Query></Query>") + "</query><viewFields>" + (opt.CAMLViewFields || "<ViewFields></ViewFields>") + "</viewFields><rowLimit>" + (opt.CAMLRowLimit || 0) + "</rowLimit><queryOptions>" + (opt.CAMLQueryOptions || "<QueryOptions></QueryOptions>") + "</queryOptions>" + (// Insert Change Token if operation is "GetListItemChangesSinceToken"
-                    "GetListItemChangesSinceToken" === opt.operation ? "<changeToken>" + (opt.changeToken || "") + "</changeToken>" : "") + "</" + opt.operation + "></soap:Body></soap:Envelope>"
-                }).then(function(response) {
-                    return __WEBPACK_IMPORTED_MODULE_3__collections_ListItemsCollection__.a.create(Object(__WEBPACK_IMPORTED_MODULE_1__sputils_getNodesFromXml__.a)({
-                        xDoc: response.content,
-                        nodeName: "z:row",
-                        nodeModel: opt.ListItemModel || opt.listItemModel,
-                        // Lowercase "listItemModel" is for backward compatibiltiy
-                        nodeModelOptions: Object(__WEBPACK_IMPORTED_MODULE_6_common_micro_libs_src_jsutils_objectExtend__.a)({}, opt)
-                    }), {
-                        apiResponse: response,
-                        queryOptions: opt
-                    });
-                });
-                // If cacheXML was true, then cache this promise
-                opt.cacheXML && Object(__WEBPACK_IMPORTED_MODULE_0__sputils_cache__.a)(opt.cacheKey, reqPromise);
-                return reqPromise;
-            });
-        };
-        getListItems.defaults = {
-            listName: "",
-            webURL: "",
-            viewName: "",
-            CAMLViewFields: "",
-            CAMLQuery: "",
-            CAMLRowLimit: "",
-            CAMLQueryOptions: "",
-            operation: "GetListItems",
-            // Optionally: set it to = GetListItemChangesSinceToken
-            cacheXML: false,
-            async: true,
-            changeToken: "",
-            // GetListChangesSinceToken only
-            ListItemModel: __WEBPACK_IMPORTED_MODULE_2__models_ListItemModel__.a,
-            ListItemCollection: __WEBPACK_IMPORTED_MODULE_3__collections_ListItemsCollection__.a
-        };
-        /* harmony default export */
-        __webpack_exports__.a = getListItems;
-    }, /* 24 */
-    /***/
-    function(module, __webpack_exports__, __webpack_require__) {
-        "use strict";
-        /* unused harmony export nextTick */
-        var reIsNativeCode = /native code/i;
-        /**
- * Executes a function at the end of the current event Loop - during micro-task processing
- *
- * @param {Function} callback
- */
-        var nextTick = function() {
-            if ("undefined" !== typeof setImediate && reIsNativeCode.test(setImediate.toString())) return setImediate;
-            // Native Promsie? Use it.
-            if ("function" === typeof Promise && reIsNativeCode.test(Promise.toString())) {
-                var resolved = Promise.resolve();
-                return function(fn) {
-                    resolved.then(fn).catch(function(e) {
-                        return console.log(e);
-                    });
-                };
-            }
-            // fallback to setTimeout
-            // From: https://bugzilla.mozilla.org/show_bug.cgi?id=686201#c68
-            var immediates = [];
-            var processing = false;
-            function processPending() {
-                setTimeout(function() {
-                    immediates.shift()();
-                    immediates.length ? processPending() : processing = false;
-                }, 0);
-            }
-            return function(fn) {
-                immediates.push(fn);
-                if (!processing) {
-                    processing = true;
-                    processPending();
-                }
-            };
-        }();
-        /* harmony default export */
-        __webpack_exports__.a = nextTick;
-    }, /* 25 */
-    /***/
-    function(module, __webpack_exports__, __webpack_require__) {
-        "use strict";
-        /* unused harmony export domChildren */
-        /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_0__domMatches__ = __webpack_require__(41);
-        /**
- * Returns the children of a given element, but only those of
- * `nodeType` 1. The list of children can also be filter by
- * a given CSS Selector.
- *
- * @function domChildren
- *
- * @param {HTMLElement} ele
- * @param {String} [selector]
- *
- * @return [Array]
- */
-        function domChildren(ele, selector) {
-            var children = Array.prototype.slice.call(ele.childNodes || [], 0).filter(function(childNode) {
-                return 1 === childNode.nodeType;
-            });
-            selector && (children = children.filter(function(childNode) {
-                return Object(__WEBPACK_IMPORTED_MODULE_0__domMatches__.a)(childNode, selector);
-            }));
-            return children;
-        }
-        /* harmony default export */
-        __webpack_exports__.a = domChildren;
-    }, /* 26 */
     /***/
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
@@ -3083,12 +2837,12 @@
         }
         /* harmony default export */
         __webpack_exports__.a = domToggleClass;
-    }, /* 27 */
+    }, /* 23 */
     /***/
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_Widget__ = __webpack_require__(8);
+        var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_Widget__ = __webpack_require__(5);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_1_common_micro_libs_src_jsutils_EventEmitter__ = __webpack_require__(2);
         /* harmony import */
@@ -3098,15 +2852,15 @@
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_jsutils_fillTemplate__ = __webpack_require__(3);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_5_common_micro_libs_src_jsutils_parseHTML__ = __webpack_require__(7);
+        var __WEBPACK_IMPORTED_MODULE_5_common_micro_libs_src_jsutils_parseHTML__ = __webpack_require__(4);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_6_common_micro_libs_src_domutils_domClosest__ = __webpack_require__(21);
+        var __WEBPACK_IMPORTED_MODULE_6_common_micro_libs_src_domutils_domClosest__ = __webpack_require__(20);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_7_common_micro_libs_src_domutils_domAddClass__ = __webpack_require__(4);
+        var __WEBPACK_IMPORTED_MODULE_7_common_micro_libs_src_domutils_domAddClass__ = __webpack_require__(8);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_8_common_micro_libs_src_domutils_domRemoveClass__ = __webpack_require__(11);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_9_common_micro_libs_src_domutils_domAddEventListener__ = __webpack_require__(10);
+        var __WEBPACK_IMPORTED_MODULE_9_common_micro_libs_src_domutils_domAddEventListener__ = __webpack_require__(9);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_10__Persona_html__ = __webpack_require__(117);
         /* harmony import */
@@ -3131,7 +2885,6 @@
  * @param {String} [options.size=null]
  * @param {Boolean} [options.hideDetails=false]
  * @param {Boolean} [options.hideAction=true]
- * @param {Boolean} [options.hideInitials=true]
  * @param {String} [options.initialsColor=nul]
  *
  * @fires Persona#click
@@ -3367,21 +3120,300 @@
             size: null,
             hideDetails: false,
             hideAction: true,
-            hideInitials: true,
+            showInitials: false,
             initialsColor: null
         };
         /* harmony default export */
         __webpack_exports__.a = Persona;
+    }, /* 24 */
+    /***/
+    function(module, __webpack_exports__, __webpack_require__) {
+        "use strict";
+        /* unused harmony export functionBind */
+        /* unused harmony export functionBindCall */
+        /* harmony export (binding) */
+        __webpack_require__.d(__webpack_exports__, "d", function() {
+            return objectDefineProperty;
+        });
+        /* harmony export (binding) */
+        __webpack_require__.d(__webpack_exports__, "c", function() {
+            return objectDefineProperties;
+        });
+        /* unused harmony export objectKeys */
+        /* unused harmony export isArray */
+        /* unused harmony export arrayForEach */
+        /* harmony export (binding) */
+        __webpack_require__.d(__webpack_exports__, "a", function() {
+            return arrayIndexOf;
+        });
+        /* harmony export (binding) */
+        __webpack_require__.d(__webpack_exports__, "b", function() {
+            return arraySplice;
+        });
+        /* unused harmony export consoleLog */
+        /* unused harmony export consoleError */
+        // Function
+        // functionBind(fn, fnParent)
+        var functionBind = Function.bind.call.bind(Function.bind);
+        // usage: functionBindCall(Array.prototype.forEach) // generates a bound function to Array.prototype.forEach.call
+        var functionBindCall = functionBind(Function.call.bind, Function.call);
+        // Object
+        var objectDefineProperty = Object.defineProperty;
+        var objectDefineProperties = Object.defineProperties;
+        Object.keys;
+        // Array
+        var arr = [];
+        Array.isArray;
+        functionBindCall(arr.forEach);
+        var arrayIndexOf = functionBindCall(arr.indexOf);
+        var arraySplice = functionBindCall(arr.splice);
+        // Logging
+        var consoleLog = console.log;
+        console.error;
+    }, /* 25 */
+    /***/
+    function(module, __webpack_exports__, __webpack_require__) {
+        "use strict";
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_0__sputils_cache__ = __webpack_require__(15);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_1__sputils_getNodesFromXml__ = __webpack_require__(21);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_2__models_ListItemModel__ = __webpack_require__(67);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_3__collections_ListItemsCollection__ = __webpack_require__(69);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_4__sputils_apiFetch__ = __webpack_require__(12);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_5__spapi_getSiteWebUrl__ = __webpack_require__(14);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_6_common_micro_libs_src_jsutils_objectExtend__ = __webpack_require__(0);
+        /**
+ * Method to retrieve data from a SharePoint list using GetListItems or
+ * GetListItemChangesSinceToken operations of the List.axps webservice.
+ * @function
+ *
+ * @param {Object} options
+ *      Supports same input options as SPServices
+ *
+ * @param {Object} options.listName
+ *
+ * @param {String} [options.webURL="currentSiteWeb"]
+ *
+ * @param {String} [options.viewName=""]
+ *
+ * @param {String} [options.CAMLViewFields=""]
+ *
+ * @param {String} [options.CAMLQuery=""]
+ *
+ * @param {String} [options.CAMLQueryOptions=""]
+ *
+ * @param {String|Number} [options.CAMLRowLimit=""]
+ *
+ * @param {String} [options.operation="GetListItems"]
+ *      Value Could also be set to "GetListItemChangesSinceToken".
+ *
+ * @param {Boolean} [options.changeToken=""]
+ *      Used only when options.operation is "GetListItemChangesSinceToken"
+ *
+ * @param {Boolean} [options.cacheXML=false]
+ *
+ * @param {Boolean} [options.ListItemModel=ListItemModel]
+ *  The model to be used for each row retrieved. Model constructor must
+ *  support a .create() method.
+ *
+ * @return {Promise<ListItemsCollection>|Promise<Error>}
+ *   Promise is resolved with a Collection, or rejected with an Error object
+ *
+ * @see https://msdn.microsoft.com/en-us/library/websvclists.lists.getlistitems(v=office.14).aspx
+ * @see https://msdn.microsoft.com/en-us/library/office/ms467521.aspx
+ *
+ * @example
+ *
+ * getListItems({
+ *   listName: "tasks",
+ *   cacheXML: true,
+ *   async: false,
+ *   CAMLQuery: '<Query>' +
+ *      '<Where>' +
+ *      '<Eq>' +
+ *          '<FieldRef Name="Author" LookupId="TRUE"/>" +
+ *          '<Value Type="Integer"><UserID/></Value>' +
+ *      '</Eq>' +
+ *      '</Where>
+ *      '<OrderBy><FieldRef Name="Title"/></OrderBy></Query>',
+ *   CAMLViewFields: '<ViewFields><FieldRef Name="Title"/></ViewFields>'
+ * })
+ */
+        var getListItems = function getListItems(options) {
+            var reqPromise, opt = Object(__WEBPACK_IMPORTED_MODULE_6_common_micro_libs_src_jsutils_objectExtend__.a)({}, getListItems.defaults, options);
+            return Object(__WEBPACK_IMPORTED_MODULE_5__spapi_getSiteWebUrl__.a)(opt.webURL).then(function(webURL) {
+                opt.webURL = webURL;
+                opt.cacheKey = opt.webURL + "?" + [ opt.listName, opt.viewName, opt.CAMLViewFields, opt.CAMLQuery, opt.CAMLRowLimit, opt.CAMLQueryOptions, opt.operation, opt.changeToken ].join("|");
+                opt.isCached = __WEBPACK_IMPORTED_MODULE_0__sputils_cache__.a.isCached(opt.cacheKey);
+                // If cacheXML is true and we have a cached version, return it.
+                if (opt.cacheXML && opt.isCached) return Object(__WEBPACK_IMPORTED_MODULE_0__sputils_cache__.a)(opt.cacheKey);
+                // If cacheXML is FALSE, and we have a cached version of this key,
+                // then remove the cached version - basically reset
+                opt.isCached && __WEBPACK_IMPORTED_MODULE_0__sputils_cache__.a.clear(opt.cacheKey);
+                reqPromise = Object(__WEBPACK_IMPORTED_MODULE_4__sputils_apiFetch__.a)(opt.webURL + "_vti_bin/Lists.asmx", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "text/xml;charset=UTF-8"
+                    },
+                    body: '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><' + opt.operation + ' xmlns="http://schemas.microsoft.com/sharepoint/soap/"><listName>' + opt.listName + "</listName><viewName>" + (opt.viewName || "") + "</viewName><query>" + (opt.CAMLQuery || "<Query></Query>") + "</query><viewFields>" + (opt.CAMLViewFields || "<ViewFields></ViewFields>") + "</viewFields><rowLimit>" + (opt.CAMLRowLimit || 0) + "</rowLimit><queryOptions>" + (opt.CAMLQueryOptions || "<QueryOptions></QueryOptions>") + "</queryOptions>" + (// Insert Change Token if operation is "GetListItemChangesSinceToken"
+                    "GetListItemChangesSinceToken" === opt.operation ? "<changeToken>" + (opt.changeToken || "") + "</changeToken>" : "") + "</" + opt.operation + "></soap:Body></soap:Envelope>"
+                }).then(function(response) {
+                    return __WEBPACK_IMPORTED_MODULE_3__collections_ListItemsCollection__.a.create(Object(__WEBPACK_IMPORTED_MODULE_1__sputils_getNodesFromXml__.a)({
+                        xDoc: response.content,
+                        nodeName: "z:row",
+                        nodeModel: opt.ListItemModel || opt.listItemModel,
+                        // Lowercase "listItemModel" is for backward compatibiltiy
+                        nodeModelOptions: Object(__WEBPACK_IMPORTED_MODULE_6_common_micro_libs_src_jsutils_objectExtend__.a)({}, opt)
+                    }), {
+                        apiResponse: response,
+                        queryOptions: opt
+                    });
+                });
+                // If cacheXML was true, then cache this promise
+                opt.cacheXML && Object(__WEBPACK_IMPORTED_MODULE_0__sputils_cache__.a)(opt.cacheKey, reqPromise);
+                return reqPromise;
+            });
+        };
+        getListItems.defaults = {
+            listName: "",
+            webURL: "",
+            viewName: "",
+            CAMLViewFields: "",
+            CAMLQuery: "",
+            CAMLRowLimit: "",
+            CAMLQueryOptions: "",
+            operation: "GetListItems",
+            // Optionally: set it to = GetListItemChangesSinceToken
+            cacheXML: false,
+            async: true,
+            changeToken: "",
+            // GetListChangesSinceToken only
+            ListItemModel: __WEBPACK_IMPORTED_MODULE_2__models_ListItemModel__.a,
+            ListItemCollection: __WEBPACK_IMPORTED_MODULE_3__collections_ListItemsCollection__.a
+        };
+        /* harmony default export */
+        __webpack_exports__.a = getListItems;
+    }, /* 26 */
+    /***/
+    function(module, __webpack_exports__, __webpack_require__) {
+        "use strict";
+        /* unused harmony export nextTick */
+        var reIsNativeCode = /native code/i;
+        /**
+ * Executes a function at the end of the current event Loop - during micro-task processing
+ *
+ * @param {Function} callback
+ */
+        var nextTick = function() {
+            if ("undefined" !== typeof setImediate && reIsNativeCode.test(setImediate.toString())) return setImediate;
+            // Native Promsie? Use it.
+            if ("function" === typeof Promise && reIsNativeCode.test(Promise.toString())) {
+                var resolved = Promise.resolve();
+                return function(fn) {
+                    resolved.then(fn).catch(function(e) {
+                        return console.log(e);
+                    });
+                };
+            }
+            // fallback to setTimeout
+            // From: https://bugzilla.mozilla.org/show_bug.cgi?id=686201#c68
+            var immediates = [];
+            var processing = false;
+            function processPending() {
+                setTimeout(function() {
+                    immediates.shift()();
+                    immediates.length ? processPending() : processing = false;
+                }, 0);
+            }
+            return function(fn) {
+                immediates.push(fn);
+                if (!processing) {
+                    processing = true;
+                    processPending();
+                }
+            };
+        }();
+        /* harmony default export */
+        __webpack_exports__.a = nextTick;
+    }, /* 27 */
+    /***/
+    function(module, __webpack_exports__, __webpack_require__) {
+        "use strict";
+        /* unused harmony export domChildren */
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_0__domMatches__ = __webpack_require__(42);
+        /**
+ * Returns the children of a given element, but only those of
+ * `nodeType` 1. The list of children can also be filter by
+ * a given CSS Selector.
+ *
+ * @function domChildren
+ *
+ * @param {HTMLElement} ele
+ * @param {String} [selector]
+ *
+ * @return [Array]
+ */
+        function domChildren(ele, selector) {
+            var children = Array.prototype.slice.call(ele.childNodes || [], 0).filter(function(childNode) {
+                return 1 === childNode.nodeType;
+            });
+            selector && (children = children.filter(function(childNode) {
+                return Object(__WEBPACK_IMPORTED_MODULE_0__domMatches__.a)(childNode, selector);
+            }));
+            return children;
+        }
+        /* harmony default export */
+        __webpack_exports__.a = domChildren;
     }, /* 28 */
+    /***/
+    function(module, __webpack_exports__, __webpack_require__) {
+        "use strict";
+        /* unused harmony export uuid */
+        // Some of the code below was taken from from https://github.com/ericelliott/cuid/
+        /**
+ * Generates a unique id. This is really a CUID.
+ *
+ * @namespace uuid
+ */
+        var counter = 1, pad = function(num, size) {
+            var s = "000000000" + num;
+            return s.substr(s.length - size);
+        }, globalCount = function() {
+            var i, count = 0;
+            for (i in window) count++;
+            return count;
+        }(), fingerprint = function() {
+            return pad((navigator.mimeTypes.length + navigator.userAgent.length).toString(36) + globalCount.toString(36), 4);
+        }();
+        var uuid = Object.create(/** @lends uuid */ {
+            generate: function() {
+                var timestamp = new Date().getTime().toString(36), nextCounter = pad((counter++).toString(36), 4), random = "xxxxxxxx".replace(/[x]/g, function() {
+                    // This code from: http://stackoverflow.com/a/2117523/471188
+                    var v = 16 * Math.random() | 0;
+                    return v.toString(16);
+                });
+                return "c" + timestamp + nextCounter + fingerprint + random;
+            }
+        });
+        /* harmony default export */
+        __webpack_exports__.a = uuid;
+    }, /* 29 */
     /***/
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
         /* harmony export (immutable) */
         __webpack_exports__.a = getMsgError;
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_domutils_domFind__ = __webpack_require__(9);
+        var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_domutils_domFind__ = __webpack_require__(10);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_1_common_micro_libs_src_jsutils_parseXML__ = __webpack_require__(29);
+        var __WEBPACK_IMPORTED_MODULE_1_common_micro_libs_src_jsutils_parseXML__ = __webpack_require__(30);
         /**
  * Given a sharepoint webservices response, this method will
  * look to see if it contains an error and return that error
@@ -3425,7 +3457,7 @@
             error = count + " error(s) encountered! \n" + error;
             return error;
         }
-    }, /* 29 */
+    }, /* 30 */
     /***/
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
@@ -3464,12 +3496,12 @@
         };
         /* harmony default export */
         __webpack_exports__.a = parseXML;
-    }, /* 30 */
+    }, /* 31 */
     /***/
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_domutils_domFind__ = __webpack_require__(9);
+        var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_domutils_domFind__ = __webpack_require__(10);
         /**
  * Checks if an xml message has an error. Taken from
  * SPWidgets.
@@ -3504,7 +3536,7 @@
             });
             return response;
         };
-    }, /* 31 */
+    }, /* 32 */
     /***/
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
@@ -3513,7 +3545,7 @@
         // FIXME: remove references to this file and replace with 'common-micro-libs/src/jsutils/xmlEscape'
         /* harmony default export */
         __webpack_exports__.a = __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_xmlEscape__.a;
-    }, /* 32 */
+    }, /* 33 */
     /***/
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
@@ -3631,7 +3663,7 @@
         // getCamlLogical()
         /* harmony default export */
         __webpack_exports__.a = getCamlLogical;
-    }, /* 33 */
+    }, /* 34 */
     /***/
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
@@ -3682,7 +3714,7 @@
         };
         /* harmony default export */
         __webpack_exports__.a = parseLookupFieldValue;
-    }, /* 34 */
+    }, /* 35 */
     /***/
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
@@ -3767,7 +3799,7 @@
         };
         /* harmony default export */
         __webpack_exports__.a = getList;
-    }, /* 35 */
+    }, /* 36 */
     /***/
     function(module, exports) {
         var _typeof = "function" === typeof Symbol && "symbol" === typeof Symbol.iterator ? function(obj) {
@@ -3791,7 +3823,7 @@
         // We return undefined, instead of nothing here, so it's
         // easier to handle this case. if(!global) { ...}
         module.exports = g;
-    }, /* 36 */
+    }, /* 37 */
     /***/
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
@@ -3811,15 +3843,15 @@
             }
             /* harmony default export */
             __webpack_exports__.a = getGlobal;
-        }).call(__webpack_exports__, __webpack_require__(35));
-    }, /* 37 */
+        }).call(__webpack_exports__, __webpack_require__(36));
+    }, /* 38 */
     /***/
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
         /* harmony export (immutable) */
         __webpack_exports__.a = FakeIterator;
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_0__runtime_aliases__ = __webpack_require__(22);
+        var __WEBPACK_IMPORTED_MODULE_0__runtime_aliases__ = __webpack_require__(24);
         //-----------------------------------------------------------------------
         var $iterator$ = "undefined" !== typeof Symbol && Symbol.iterator ? Symbol.iterator : "@@iterator";
         // Great reference: http://2ality.com/2015/02/es6-iteration.html
@@ -3860,18 +3892,18 @@
                 return this;
             }
         });
-    }, /* 38 */
+    }, /* 39 */
     /***/
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_objectExtend__ = __webpack_require__(0);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_1__getList__ = __webpack_require__(34);
+        var __WEBPACK_IMPORTED_MODULE_1__getList__ = __webpack_require__(35);
         /* harmony import */
         __webpack_require__(15);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_3__sputils_getNodesFromXml__ = __webpack_require__(20);
+        var __WEBPACK_IMPORTED_MODULE_3__sputils_getNodesFromXml__ = __webpack_require__(21);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_4__models_ListColumnModel__ = __webpack_require__(66);
         /* harmony import */
@@ -3987,7 +4019,7 @@
         };
         /* harmony default export */
         __webpack_exports__.a = getListColumns;
-    }, /* 39 */
+    }, /* 40 */
     /***/
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
@@ -4057,7 +4089,7 @@
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_EventEmitter__ = __webpack_require__(2);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_1_common_micro_libs_src_jsutils_nextTick__ = __webpack_require__(24);
+        var __WEBPACK_IMPORTED_MODULE_1_common_micro_libs_src_jsutils_nextTick__ = __webpack_require__(26);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_2_common_micro_libs_src_jsutils_dataStore__ = __webpack_require__(1);
         /* harmony import */
@@ -4143,7 +4175,7 @@
                 return store.add(dependeeCallback);
             });
         }
-    }, /* 40 */
+    }, /* 41 */
     /***/
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
@@ -4152,11 +4184,11 @@
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_EventEmitter__ = __webpack_require__(2);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_1_common_micro_libs_src_jsutils_nextTick__ = __webpack_require__(24);
+        var __WEBPACK_IMPORTED_MODULE_1_common_micro_libs_src_jsutils_nextTick__ = __webpack_require__(26);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_2_common_micro_libs_src_jsutils_es6_Set__ = __webpack_require__(17);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_3__common__ = __webpack_require__(39);
+        var __WEBPACK_IMPORTED_MODULE_3__common__ = __webpack_require__(40);
         /* unused harmony reexport setDependencyTracker */
         /* unused harmony reexport unsetDependencyTracker */
         /* unused harmony reexport stopDependeeNotifications */
@@ -4410,7 +4442,7 @@
         }
         /* harmony default export */
         __webpack_exports__.a = ObservableArray;
-    }, /* 41 */
+    }, /* 42 */
     /***/
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
@@ -4432,7 +4464,7 @@
         }
         /* harmony default export */
         __webpack_exports__.a = domMatches;
-    }, /* 42 */
+    }, /* 43 */
     /***/
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
@@ -4445,7 +4477,7 @@
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_3_common_micro_libs_src_jsutils_objectExtend__ = __webpack_require__(0);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_domutils_domFind__ = __webpack_require__(9);
+        var __WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_domutils_domFind__ = __webpack_require__(10);
         /**
  * Given a list of users, this method will resolve those if they
  * are not part of the site collection user list info.
@@ -4525,7 +4557,7 @@
         };
         /* harmony default export */
         __webpack_exports__.a = resolvePrincipals;
-    }, /* 43 */
+    }, /* 44 */
     /***/
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
@@ -4540,7 +4572,7 @@
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_jsutils_objectExtend__ = __webpack_require__(0);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_5_common_micro_libs_src_domutils_domFind__ = __webpack_require__(9);
+        var __WEBPACK_IMPORTED_MODULE_5_common_micro_libs_src_domutils_domFind__ = __webpack_require__(10);
         /**
  * Given some text, the operation will search for user that match
  * that text.
@@ -4627,45 +4659,12 @@
         //  </soap:Envelope>
         /* harmony default export */
         __webpack_exports__.a = searchPrincipals;
-    }, /* 44 */
-    /***/
-    function(module, __webpack_exports__, __webpack_require__) {
-        "use strict";
-        /* unused harmony export uuid */
-        // Some of the code below was taken from from https://github.com/ericelliott/cuid/
-        /**
- * Generates a unique id. This is really a CUID.
- *
- * @namespace uuid
- */
-        var counter = 1, pad = function(num, size) {
-            var s = "000000000" + num;
-            return s.substr(s.length - size);
-        }, globalCount = function() {
-            var i, count = 0;
-            for (i in window) count++;
-            return count;
-        }(), fingerprint = function() {
-            return pad((navigator.mimeTypes.length + navigator.userAgent.length).toString(36) + globalCount.toString(36), 4);
-        }();
-        var uuid = Object.create(/** @lends uuid */ {
-            generate: function() {
-                var timestamp = new Date().getTime().toString(36), nextCounter = pad((counter++).toString(36), 4), random = "xxxxxxxx".replace(/[x]/g, function() {
-                    // This code from: http://stackoverflow.com/a/2117523/471188
-                    var v = 16 * Math.random() | 0;
-                    return v.toString(16);
-                });
-                return "c" + timestamp + nextCounter + fingerprint + random;
-            }
-        });
-        /* harmony default export */
-        __webpack_exports__.a = uuid;
     }, /* 45 */
     /***/
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_Widget__ = __webpack_require__(8);
+        var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_Widget__ = __webpack_require__(5);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_1_common_micro_libs_src_jsutils_EventEmitter__ = __webpack_require__(2);
         /* harmony import */
@@ -4675,7 +4674,7 @@
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_jsutils_fillTemplate__ = __webpack_require__(3);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_5_common_micro_libs_src_jsutils_parseHTML__ = __webpack_require__(7);
+        var __WEBPACK_IMPORTED_MODULE_5_common_micro_libs_src_jsutils_parseHTML__ = __webpack_require__(4);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_6_common_micro_libs_src_jsutils_es6_Map__ = __webpack_require__(46);
         /* harmony import */
@@ -4835,7 +4834,7 @@
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_Widget__ = __webpack_require__(8);
+        var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_Widget__ = __webpack_require__(5);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_1_common_micro_libs_src_jsutils_EventEmitter__ = __webpack_require__(2);
         /* harmony import */
@@ -4845,15 +4844,15 @@
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_jsutils_fillTemplate__ = __webpack_require__(3);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_5_common_micro_libs_src_jsutils_parseHTML__ = __webpack_require__(7);
+        var __WEBPACK_IMPORTED_MODULE_5_common_micro_libs_src_jsutils_parseHTML__ = __webpack_require__(4);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_6_common_micro_libs_src_domutils_domAddEventListener__ = __webpack_require__(10);
+        var __WEBPACK_IMPORTED_MODULE_6_common_micro_libs_src_domutils_domAddEventListener__ = __webpack_require__(9);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_7_common_micro_libs_src_domutils_domHasClass__ = __webpack_require__(19);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_8_common_micro_libs_src_domutils_domToggleClass__ = __webpack_require__(26);
+        var __WEBPACK_IMPORTED_MODULE_8_common_micro_libs_src_domutils_domToggleClass__ = __webpack_require__(22);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_9_common_micro_libs_src_domutils_domAddClass__ = __webpack_require__(4);
+        var __WEBPACK_IMPORTED_MODULE_9_common_micro_libs_src_domutils_domAddClass__ = __webpack_require__(8);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_10_common_micro_libs_src_domutils_domRemoveClass__ = __webpack_require__(11);
         /* harmony import */
@@ -5142,19 +5141,19 @@
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_2__jsutils_EventEmitter__ = __webpack_require__(2);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_3__domAddEventListener__ = __webpack_require__(10);
+        var __WEBPACK_IMPORTED_MODULE_3__domAddEventListener__ = __webpack_require__(9);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_4__domFind__ = __webpack_require__(9);
+        var __WEBPACK_IMPORTED_MODULE_4__domFind__ = __webpack_require__(10);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_5__domChildren__ = __webpack_require__(25);
+        var __WEBPACK_IMPORTED_MODULE_5__domChildren__ = __webpack_require__(27);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_6__domHasClass__ = __webpack_require__(19);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_7__domAddClass__ = __webpack_require__(4);
+        var __WEBPACK_IMPORTED_MODULE_7__domAddClass__ = __webpack_require__(8);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_8__domRemoveClass__ = __webpack_require__(11);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_9__domToggleClass__ = __webpack_require__(26);
+        var __WEBPACK_IMPORTED_MODULE_9__domToggleClass__ = __webpack_require__(22);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_10__scrollEleIntoView__ = __webpack_require__(99);
         var PRIVATE = __WEBPACK_IMPORTED_MODULE_1__jsutils_dataStore__.a.create();
@@ -5502,33 +5501,33 @@
             value: true
         });
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_0__sputils_getMsgError__ = __webpack_require__(28);
+        var __WEBPACK_IMPORTED_MODULE_0__sputils_getMsgError__ = __webpack_require__(29);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_1__sputils_doesMsgHaveError__ = __webpack_require__(30);
+        var __WEBPACK_IMPORTED_MODULE_1__sputils_doesMsgHaveError__ = __webpack_require__(31);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_2__sputils_xmlEscape__ = __webpack_require__(31);
+        var __WEBPACK_IMPORTED_MODULE_2__sputils_xmlEscape__ = __webpack_require__(32);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_3__sputils_fillTemplate__ = __webpack_require__(53);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_4__sputils_getCamlLogical__ = __webpack_require__(32);
+        var __WEBPACK_IMPORTED_MODULE_4__sputils_getCamlLogical__ = __webpack_require__(33);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_5__sputils_getSPVersion__ = __webpack_require__(55);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_6__sputils_parseDateString__ = __webpack_require__(56);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_7__sputils_parseLookupFieldValue__ = __webpack_require__(33);
+        var __WEBPACK_IMPORTED_MODULE_7__sputils_parseLookupFieldValue__ = __webpack_require__(34);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_8__sputils_getDateString__ = __webpack_require__(57);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_9__sputils_getNodesFromXml__ = __webpack_require__(20);
+        var __WEBPACK_IMPORTED_MODULE_9__sputils_getNodesFromXml__ = __webpack_require__(21);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_10__spapi_getList__ = __webpack_require__(34);
+        var __WEBPACK_IMPORTED_MODULE_10__spapi_getList__ = __webpack_require__(35);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_11__spapi_getListColumns__ = __webpack_require__(38);
+        var __WEBPACK_IMPORTED_MODULE_11__spapi_getListColumns__ = __webpack_require__(39);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_12__spapi_getListFormCollection__ = __webpack_require__(71);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_13__spapi_getListItems__ = __webpack_require__(23);
+        var __WEBPACK_IMPORTED_MODULE_13__spapi_getListItems__ = __webpack_require__(25);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_14__spapi_getSiteListCollection__ = __webpack_require__(72);
         /* harmony import */
@@ -5536,9 +5535,9 @@
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_16__spapi_getUserProfile__ = __webpack_require__(73);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_17__spapi_resolvePrincipals__ = __webpack_require__(42);
+        var __WEBPACK_IMPORTED_MODULE_17__spapi_resolvePrincipals__ = __webpack_require__(43);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_18__spapi_searchPrincipals__ = __webpack_require__(43);
+        var __WEBPACK_IMPORTED_MODULE_18__spapi_searchPrincipals__ = __webpack_require__(44);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_19__spapi_updateListItems__ = __webpack_require__(74);
         /* harmony import */
@@ -5556,9 +5555,11 @@
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_26__widgets_PeoplePicker_PeoplePicker__ = __webpack_require__(111);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_27__widgets_Persona_Persona__ = __webpack_require__(27);
+        var __WEBPACK_IMPORTED_MODULE_27__widgets_Persona_Persona__ = __webpack_require__(23);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_28__widgets_TextField_TextField__ = __webpack_require__(131);
+        var __WEBPACK_IMPORTED_MODULE_28__widgets_PersonaCard_PersonaCard__ = __webpack_require__(131);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_29__widgets_TextField_TextField__ = __webpack_require__(141);
         /* harmony default export */
         __webpack_exports__.default = {
             getMsgError: __WEBPACK_IMPORTED_MODULE_0__sputils_getMsgError__.a,
@@ -5589,7 +5590,8 @@
             Message: __WEBPACK_IMPORTED_MODULE_25__widgets_Message_Message__.a,
             PeoplePicker: __WEBPACK_IMPORTED_MODULE_26__widgets_PeoplePicker_PeoplePicker__.a,
             Persona: __WEBPACK_IMPORTED_MODULE_27__widgets_Persona_Persona__.a,
-            TextField: __WEBPACK_IMPORTED_MODULE_28__widgets_TextField_TextField__.a
+            PersonaCard: __WEBPACK_IMPORTED_MODULE_28__widgets_PersonaCard_PersonaCard__.a,
+            TextField: __WEBPACK_IMPORTED_MODULE_29__widgets_TextField_TextField__.a
         };
     }, /* 52 */
     /***/
@@ -6420,11 +6422,11 @@
         });
         /* unused harmony export FakeSet */
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_0__getGlobal__ = __webpack_require__(36);
+        var __WEBPACK_IMPORTED_MODULE_0__getGlobal__ = __webpack_require__(37);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_1__Iterator__ = __webpack_require__(37);
+        var __WEBPACK_IMPORTED_MODULE_1__Iterator__ = __webpack_require__(38);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_2__runtime_aliases__ = __webpack_require__(22);
+        var __WEBPACK_IMPORTED_MODULE_2__runtime_aliases__ = __webpack_require__(24);
         //============================================================
         var Set = Object(__WEBPACK_IMPORTED_MODULE_0__getGlobal__.a)().Set || FakeSet;
         function FakeSet() {}
@@ -6527,7 +6529,7 @@
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_2_common_micro_libs_src_jsutils_dataStore__ = __webpack_require__(1);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_3__sputils_getNodesFromXml__ = __webpack_require__(20);
+        var __WEBPACK_IMPORTED_MODULE_3__sputils_getNodesFromXml__ = __webpack_require__(21);
         var instData = __WEBPACK_IMPORTED_MODULE_2_common_micro_libs_src_jsutils_dataStore__.a.stash, /**
  * List model. Contains the List definition data.
  *
@@ -6718,7 +6720,7 @@
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_2_common_micro_libs_src_jsutils_dataStore__ = __webpack_require__(1);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_3__spapi_getListItems__ = __webpack_require__(23);
+        var __WEBPACK_IMPORTED_MODULE_3__spapi_getListItems__ = __webpack_require__(25);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_jsutils_es6_promise__ = __webpack_require__(13);
         //============================================================================
@@ -6857,9 +6859,9 @@
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_2_common_micro_libs_src_jsutils_dataStore__ = __webpack_require__(1);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_3_common_micro_libs_src_jsutils_parseHTML__ = __webpack_require__(7);
+        var __WEBPACK_IMPORTED_MODULE_3_common_micro_libs_src_jsutils_parseHTML__ = __webpack_require__(4);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_domutils_domFind__ = __webpack_require__(9);
+        var __WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_domutils_domFind__ = __webpack_require__(10);
         var PRIVATE = __WEBPACK_IMPORTED_MODULE_2_common_micro_libs_src_jsutils_dataStore__.a.stash;
         /**
  * Model for SharePoint List Items (rows). Object returned will include all of
@@ -6931,11 +6933,11 @@
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_2_common_micro_libs_src_jsutils_EventEmitter__ = __webpack_require__(2);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_3_common_micro_libs_src_jsutils_nextTick__ = __webpack_require__(24);
+        var __WEBPACK_IMPORTED_MODULE_3_common_micro_libs_src_jsutils_nextTick__ = __webpack_require__(26);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_jsutils_es6_Set__ = __webpack_require__(17);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_5__common__ = __webpack_require__(39);
+        var __WEBPACK_IMPORTED_MODULE_5__common__ = __webpack_require__(40);
         /* unused harmony reexport setDependencyTracker */
         /* unused harmony reexport unsetDependencyTracker */
         /* unused harmony reexport stopDependeeNotifications */
@@ -7484,11 +7486,11 @@
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_objectExtend__ = __webpack_require__(0);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_1_observable_data_src_ObservableArray__ = __webpack_require__(40);
+        var __WEBPACK_IMPORTED_MODULE_1_observable_data_src_ObservableArray__ = __webpack_require__(41);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_2_common_micro_libs_src_jsutils_dataStore__ = __webpack_require__(1);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_3_common_micro_libs_src_domutils_domChildren__ = __webpack_require__(25);
+        var __WEBPACK_IMPORTED_MODULE_3_common_micro_libs_src_domutils_domChildren__ = __webpack_require__(27);
         // FIXME: add method for getting rows removed from tracked data set (use of GetListItemChangesSinceToken)
         var PRIVATE = __WEBPACK_IMPORTED_MODULE_2_common_micro_libs_src_jsutils_dataStore__.a.create(), findEle = document.querySelector, /**
  * A collection (array) of list items (`ListItemModel`).
@@ -7601,7 +7603,7 @@
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_objectExtend__ = __webpack_require__(0);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_1_observable_data_src_ObservableArray__ = __webpack_require__(40);
+        var __WEBPACK_IMPORTED_MODULE_1_observable_data_src_ObservableArray__ = __webpack_require__(41);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_2_common_micro_libs_src_jsutils_dataStore__ = __webpack_require__(1);
         var PRIVATE = __WEBPACK_IMPORTED_MODULE_2_common_micro_libs_src_jsutils_dataStore__.a.create();
@@ -7661,7 +7663,7 @@
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_3_common_micro_libs_src_jsutils_objectExtend__ = __webpack_require__(0);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_domutils_domFind__ = __webpack_require__(9);
+        var __WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_domutils_domFind__ = __webpack_require__(10);
         /**
  * Given a list name, this method will query the SP service and retrieve
  * the list of forms for it.
@@ -7767,7 +7769,7 @@
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_3_common_micro_libs_src_jsutils_objectExtend__ = __webpack_require__(0);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_domutils_domFind__ = __webpack_require__(9);
+        var __WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_domutils_domFind__ = __webpack_require__(10);
         /**
  * Returns a Deferred that is resolved with an Array of Objects containing
  * the site list collection.
@@ -7898,7 +7900,7 @@
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_jsutils_objectExtend__ = __webpack_require__(0);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_5_common_micro_libs_src_domutils_domFind__ = __webpack_require__(9);
+        var __WEBPACK_IMPORTED_MODULE_5_common_micro_libs_src_domutils_domFind__ = __webpack_require__(10);
         /**
  * Retrieves a User's profile using the Login name (ex. DOMAIN\name).
  *
@@ -8271,7 +8273,7 @@
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_Widget__ = __webpack_require__(8);
+        var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_Widget__ = __webpack_require__(5);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_1_common_micro_libs_src_jsutils_EventEmitter__ = __webpack_require__(2);
         /* harmony import */
@@ -8281,23 +8283,23 @@
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_jsutils_fillTemplate__ = __webpack_require__(3);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_5_common_micro_libs_src_jsutils_parseHTML__ = __webpack_require__(7);
+        var __WEBPACK_IMPORTED_MODULE_5_common_micro_libs_src_jsutils_parseHTML__ = __webpack_require__(4);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_6_common_micro_libs_src_jsutils_es6_promise__ = __webpack_require__(13);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_7_common_micro_libs_src_jsutils_uuid__ = __webpack_require__(44);
+        var __WEBPACK_IMPORTED_MODULE_7_common_micro_libs_src_jsutils_uuid__ = __webpack_require__(28);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_8_common_micro_libs_src_domutils_domAddClass__ = __webpack_require__(4);
+        var __WEBPACK_IMPORTED_MODULE_8_common_micro_libs_src_domutils_domAddClass__ = __webpack_require__(8);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_9_common_micro_libs_src_domutils_domRemoveClass__ = __webpack_require__(11);
         /* harmony import */
         __webpack_require__(19);
         /* harmony import */
-        __webpack_require__(9);
+        __webpack_require__(10);
         /* harmony import */
-        __webpack_require__(21);
+        __webpack_require__(20);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_13__spapi_getListColumns__ = __webpack_require__(38);
+        var __WEBPACK_IMPORTED_MODULE_13__spapi_getListColumns__ = __webpack_require__(39);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_14__ChoiceItem_ChoiceItem__ = __webpack_require__(79);
         /* harmony import */
@@ -8653,12 +8655,12 @@
         };
         options.transform = void 0;
         options.insertInto = void 0;
-        __webpack_require__(6)(content, options);
+        __webpack_require__(7)(content, options);
         content.locals && (module.exports = content.locals);
     }, /* 77 */
     /***/
     function(module, exports, __webpack_require__) {
-        exports = module.exports = __webpack_require__(5)();
+        exports = module.exports = __webpack_require__(6)();
         // imports
         // module
         exports.push([ module.i, ".my-widget-hide {\n  display: none !important;\n}\n", "" ]);
@@ -8733,7 +8735,7 @@
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_Widget__ = __webpack_require__(8);
+        var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_Widget__ = __webpack_require__(5);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_1_common_micro_libs_src_jsutils_EventEmitter__ = __webpack_require__(2);
         /* harmony import */
@@ -8743,13 +8745,13 @@
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_jsutils_fillTemplate__ = __webpack_require__(3);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_5_common_micro_libs_src_jsutils_parseHTML__ = __webpack_require__(7);
+        var __WEBPACK_IMPORTED_MODULE_5_common_micro_libs_src_jsutils_parseHTML__ = __webpack_require__(4);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_6_common_micro_libs_src_jsutils_uuid__ = __webpack_require__(44);
+        var __WEBPACK_IMPORTED_MODULE_6_common_micro_libs_src_jsutils_uuid__ = __webpack_require__(28);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_7_common_micro_libs_src_domutils_domAddEventListener__ = __webpack_require__(10);
+        var __WEBPACK_IMPORTED_MODULE_7_common_micro_libs_src_domutils_domAddEventListener__ = __webpack_require__(9);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_8_common_micro_libs_src_domutils_domAddClass__ = __webpack_require__(4);
+        var __WEBPACK_IMPORTED_MODULE_8_common_micro_libs_src_domutils_domAddClass__ = __webpack_require__(8);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_9_common_micro_libs_src_domutils_domRemoveClass__ = __webpack_require__(11);
         /* harmony import */
@@ -8910,12 +8912,12 @@
         };
         options.transform = void 0;
         options.insertInto = void 0;
-        __webpack_require__(6)(content, options);
+        __webpack_require__(7)(content, options);
         content.locals && (module.exports = content.locals);
     }, /* 82 */
     /***/
     function(module, exports, __webpack_require__) {
-        exports = module.exports = __webpack_require__(5)();
+        exports = module.exports = __webpack_require__(6)();
         // imports
         // module
         exports.push([ module.i, ".spwidgets-ChoiceField-ChoiceItem {\n  padding-left: 0.5em;\n  padding-right: 0.5em;\n}\n.spwidgets-ChoiceField-ChoiceItem-label {\n  display: block;\n}\n", "" ]);
@@ -8933,12 +8935,12 @@
         };
         options.transform = void 0;
         options.insertInto = void 0;
-        __webpack_require__(6)(content, options);
+        __webpack_require__(7)(content, options);
         content.locals && (module.exports = content.locals);
     }, /* 85 */
     /***/
     function(module, exports, __webpack_require__) {
-        exports = module.exports = __webpack_require__(5)();
+        exports = module.exports = __webpack_require__(6)();
         // imports
         // module
         exports.push([ module.i, ".spwidgets-ChoiceField-choices {\n  padding: 0.5em;\n  overflow: auto;\n  border: 1px solid #eaeaea;\n  min-height: 5em;\n}\n.spwidgets-ChoiceField-choices::-webkit-scrollbar {\n  width: 0.5em;\n  background-color: #F5F5F5;\n}\n.spwidgets-ChoiceField-choices::-webkit-scrollbar-thumb {\n  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);\n  background-color: #555;\n}\n.spwidgets-ChoiceField--noLabel .ms-ChoiceFieldGroup-title {\n  display: none;\n}\n.spwidgets-ChoiceField--noDescription .spwidgets-ChoiceField-description {\n  display: none;\n}\n.spwidgets-ChoiceField--inline .spwidgets-ChoiceField-choices > * {\n  display: inline-block;\n  margin-right: 1em;\n  padding-right: 0.5em;\n}\n.spwidgets-ChoiceField--inline .spwidgets-ChoiceField-choices > *:last-child {\n  margin-right: 0;\n}\n.spwidgets-ChoiceField--noSelectedCount .spwidgets-ChoiceField-selectedCount {\n  display: none;\n}\n", "" ]);
@@ -8947,7 +8949,7 @@
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_Widget__ = __webpack_require__(8);
+        var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_Widget__ = __webpack_require__(5);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_1_common_micro_libs_src_jsutils_EventEmitter__ = __webpack_require__(2);
         /* harmony import */
@@ -8957,11 +8959,11 @@
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_jsutils_fillTemplate__ = __webpack_require__(3);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_5_common_micro_libs_src_jsutils_parseHTML__ = __webpack_require__(7);
+        var __WEBPACK_IMPORTED_MODULE_5_common_micro_libs_src_jsutils_parseHTML__ = __webpack_require__(4);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_6_common_micro_libs_src_domutils_domAddClass__ = __webpack_require__(4);
+        var __WEBPACK_IMPORTED_MODULE_6_common_micro_libs_src_domutils_domAddClass__ = __webpack_require__(8);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_7_common_micro_libs_src_domutils_domAddEventListener__ = __webpack_require__(10);
+        var __WEBPACK_IMPORTED_MODULE_7_common_micro_libs_src_domutils_domAddEventListener__ = __webpack_require__(9);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_8_flatpickr__ = __webpack_require__(87);
         /* harmony import */
@@ -9947,12 +9949,12 @@
         };
         options.transform = void 0;
         options.insertInto = void 0;
-        __webpack_require__(6)(content, options);
+        __webpack_require__(7)(content, options);
         content.locals && (module.exports = content.locals);
     }, /* 89 */
     /***/
     function(module, exports, __webpack_require__) {
-        exports = module.exports = __webpack_require__(5)();
+        exports = module.exports = __webpack_require__(6)();
         // imports
         // module
         exports.push([ module.i, ".flatpickr-input,.flatpickr-wrapper input{z-index:1;cursor:pointer}.flatpickr-wrapper{position:absolute;display:none}.flatpickr-wrapper.inline,.flatpickr-wrapper.inline .flatpickr-calendar,.flatpickr-wrapper.static{position:relative}.flatpickr-wrapper.static .flatpickr-calendar{position:absolute}.flatpickr-wrapper.inline,.flatpickr-wrapper.open{display:inline-block}.flatpickr-wrapper.inline .flatpickr-calendar,.flatpickr-wrapper.open .flatpickr-calendar{z-index:99999;visibility:visible}.flatpickr-calendar{background:#fff;border:1px solid #ddd;font-size:90%;border-radius:3px;position:absolute;top:100%;left:0;visibility:hidden;width:256px}.flatpickr-calendar.hasWeeks{width:288px}.flatpickr-calendar.hasWeeks .flatpickr-weekdays span{width:12.5%}.flatpickr-calendar:after,.flatpickr-calendar:before{position:absolute;display:block;pointer-events:none;border:solid transparent;content:'';height:0;width:0;left:22px}.flatpickr-calendar:before{border-width:5px;margin:0 -5px}.flatpickr-calendar:after{border-width:4px;margin:0 -4px}.flatpickr-calendar.arrowTop:after,.flatpickr-calendar.arrowTop:before{bottom:100%}.flatpickr-calendar.arrowTop:before{border-bottom-color:#ddd}.flatpickr-calendar.arrowTop:after{border-bottom-color:#fff}.flatpickr-calendar.arrowBottom:after,.flatpickr-calendar.arrowBottom:before{top:100%}.flatpickr-calendar.arrowBottom:before{border-top-color:#ddd}.flatpickr-calendar.arrowBottom:after{border-top-color:#fff}.flatpickr-month{background:0 0;color:#000;padding:4px 5px 2px;text-align:center;position:relative}.flatpickr-next-month,.flatpickr-prev-month{text-decoration:none;cursor:pointer;position:absolute;top:.5rem}.flatpickr-next-month i,.flatpickr-prev-month i{position:relative}.flatpickr-next-month:hover,.flatpickr-prev-month:hover{color:#f99595}.flatpickr-prev-month{float:left;left:.5rem}.flatpickr-next-month{float:right;right:.5rem}.flatpickr-current-month{font-size:135%;font-weight:300;color:rgba(0,0,0,.7);display:inline-block}.flatpickr-current-month .cur_month{font-weight:700;color:#000}.flatpickr-current-month .cur_year{background:0 0;box-sizing:border-box;color:inherit;cursor:default;padding:0 0 0 2px;margin:0;width:3.15em;display:inline;font-size:inherit;font-weight:300;line-height:inherit;height:initial;border:0}.flatpickr-current-month .cur_year:hover{background:rgba(0,0,0,.05)}.flatpickr-weekdays{font-size:90%;background:0 0;padding:2px 0 4px;text-align:center}.flatpickr-weekdays span{opacity:.54;text-align:center;display:inline-block;width:14.28%;font-weight:700}.flatpickr-weeks{width:32px;float:left}.flatpickr-days{padding-top:1px;outline:0}.flatpickr-days span,.flatpickr-weeks span{background:0 0;border:1px solid transparent;border-radius:150px;box-sizing:border-box;color:#393939;cursor:pointer;display:inline-block;font-weight:300;width:34px;height:34px;line-height:33px;margin:0 1px 1px;text-align:center}.flatpickr-days span.disabled,.flatpickr-days span.disabled:hover,.flatpickr-days span.nextMonthDay,.flatpickr-days span.prevMonthDay,.flatpickr-weeks span.disabled,.flatpickr-weeks span.disabled:hover,.flatpickr-weeks span.nextMonthDay,.flatpickr-weeks span.prevMonthDay{color:rgba(57,57,57,.3);background:0 0;border-color:transparent;cursor:default}.flatpickr-days span.nextMonthDay:focus,.flatpickr-days span.nextMonthDay:hover,.flatpickr-days span.prevMonthDay:focus,.flatpickr-days span.prevMonthDay:hover,.flatpickr-days span:focus,.flatpickr-days span:hover,.flatpickr-weeks span.nextMonthDay:focus,.flatpickr-weeks span.nextMonthDay:hover,.flatpickr-weeks span.prevMonthDay:focus,.flatpickr-weeks span.prevMonthDay:hover,.flatpickr-weeks span:focus,.flatpickr-weeks span:hover{cursor:pointer;outline:0;background:#e6e6e6;border-color:#e6e6e6}.flatpickr-days span.today,.flatpickr-weeks span.today{border-color:#f99595}.flatpickr-days span.today:focus,.flatpickr-days span.today:hover,.flatpickr-weeks span.today:focus,.flatpickr-weeks span.today:hover{border-color:#f99595;background:#f99595;color:#fff}.flatpickr-days span.selected,.flatpickr-days span.selected:focus,.flatpickr-days span.selected:hover,.flatpickr-weeks span.selected,.flatpickr-weeks span.selected:focus,.flatpickr-weeks span.selected:hover{background:#446cb3;color:#fff;border-color:#446cb3}.flatpickr-am-pm,.flatpickr-time input[type=number],.flatpickr-time-separator{height:38px;display:inline-block;line-height:38px;color:#393939}.flatpickr-time{overflow:auto;text-align:center;border-top:0;outline:0}.flatpickr-time input[type=number]{background:0 0;-webkit-appearance:none;-moz-appearance:textfield;box-shadow:none;border:0;border-radius:0;width:33%;min-width:33%;text-align:center;margin:0;padding:0;cursor:pointer;font-weight:700}.flatpickr-am-pm:focus,.flatpickr-am-pm:hover,.flatpickr-time input[type=number]:focus,.flatpickr-time input[type=number]:hover{background:#f0f0f0}.flatpickr-time input[type=number].flatpickr-minute{width:26%;font-weight:300}.flatpickr-time input[type=number].flatpickr-second{font-weight:300}.flatpickr-time input[type=number]:focus{outline:0;border:0}.flatpickr-time.has-seconds input[type=number]{width:25%;min-width:25%}.flatpickr-days+.flatpickr-time{border-top:1px solid #ddd}.flatpickr-am-pm{outline:0;width:21%;padding:0 2%;cursor:pointer;text-align:left;font-weight:300}@media all and (-ms-high-contrast:none){.flatpickr-month{padding:0}}", "" ]);
@@ -9970,12 +9972,12 @@
         };
         options.transform = void 0;
         options.insertInto = void 0;
-        __webpack_require__(6)(content, options);
+        __webpack_require__(7)(content, options);
         content.locals && (module.exports = content.locals);
     }, /* 92 */
     /***/
     function(module, exports, __webpack_require__) {
-        exports = module.exports = __webpack_require__(5)();
+        exports = module.exports = __webpack_require__(6)();
         // imports
         // module
         exports.push([ module.i, ".spwidgets-DateTimeField {\n  position: relative;\n  box-sizing: border-box;\n}\n.spwidgets-DateTimeField-inputHolder {\n  position: relative;\n}\n.spwidgets-DateTimeField-calIcon,\n.spwidgets-DateTimeField-clearIcon {\n  position: absolute;\n  top: 0;\n  right: 54px;\n  border: 1px solid #c8c8c8;\n  min-width: 32px;\n}\n.spwidgets-DateTimeField-clearIcon {\n  right: 0;\n}\n.spwidgets-DateTimeField--noLabel .ms-Label {\n  display: none;\n}\n.spwidgets-DateTimeField--noDescription .ms-TextField-description {\n  display: none;\n}\n.spwidgets-DateTimeField--inlinePicker .spwidgets-DateTimeField-calIcon {\n  display: none;\n}\n", "" ]);
@@ -9989,11 +9991,11 @@
         });
         /* unused harmony export FakeMap */
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_0__getGlobal__ = __webpack_require__(36);
+        var __WEBPACK_IMPORTED_MODULE_0__getGlobal__ = __webpack_require__(37);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_1__Iterator__ = __webpack_require__(37);
+        var __WEBPACK_IMPORTED_MODULE_1__Iterator__ = __webpack_require__(38);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_2__runtime_aliases__ = __webpack_require__(22);
+        var __WEBPACK_IMPORTED_MODULE_2__runtime_aliases__ = __webpack_require__(24);
         //======================================================
         var Map = Object(__WEBPACK_IMPORTED_MODULE_0__getGlobal__.a)().Map || FakeMap;
         function FakeMap() {}
@@ -10087,12 +10089,12 @@
         };
         options.transform = void 0;
         options.insertInto = void 0;
-        __webpack_require__(6)(content, options);
+        __webpack_require__(7)(content, options);
         content.locals && (module.exports = content.locals);
     }, /* 96 */
     /***/
     function(module, exports, __webpack_require__) {
-        exports = module.exports = __webpack_require__(5)();
+        exports = module.exports = __webpack_require__(6)();
         // imports
         // module
         exports.push([ module.i, ".spwidgets-ListItem-simple .ms-ListItem-primaryText {\n  padding-right: 0;\n}\n.spwidgets-ListItem--hover {\n  background-color: #eaeaea;\n  cursor: pointer;\n  outline: 1px solid transparent;\n}\n.spwidgets-ListItem.is-selected .ms-ListItem-primaryText {\n  color: #0078d7;\n}\n", "" ]);
@@ -10105,7 +10107,7 @@
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_Widget__ = __webpack_require__(8);
+        var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_Widget__ = __webpack_require__(5);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_1_common_micro_libs_src_jsutils_EventEmitter__ = __webpack_require__(2);
         /* harmony import */
@@ -10115,15 +10117,15 @@
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_jsutils_fillTemplate__ = __webpack_require__(3);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_5_common_micro_libs_src_jsutils_parseHTML__ = __webpack_require__(7);
+        var __WEBPACK_IMPORTED_MODULE_5_common_micro_libs_src_jsutils_parseHTML__ = __webpack_require__(4);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_6_common_micro_libs_src_jsutils_es6_Map__ = __webpack_require__(46);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_7_common_micro_libs_src_jsutils_es6_promise__ = __webpack_require__(13);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_8_common_micro_libs_src_domutils_domAddEventListener__ = __webpack_require__(10);
+        var __WEBPACK_IMPORTED_MODULE_8_common_micro_libs_src_domutils_domAddEventListener__ = __webpack_require__(9);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_9_common_micro_libs_src_domutils_domAddClass__ = __webpack_require__(4);
+        var __WEBPACK_IMPORTED_MODULE_9_common_micro_libs_src_domutils_domAddClass__ = __webpack_require__(8);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_10_common_micro_libs_src_domutils_domPosition__ = __webpack_require__(48);
         /* harmony import */
@@ -10133,11 +10135,11 @@
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_13__List_List__ = __webpack_require__(45);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_14__spapi_getListItems__ = __webpack_require__(23);
+        var __WEBPACK_IMPORTED_MODULE_14__spapi_getListItems__ = __webpack_require__(25);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_15__sputils_getCamlLogical__ = __webpack_require__(32);
+        var __WEBPACK_IMPORTED_MODULE_15__sputils_getCamlLogical__ = __webpack_require__(33);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_16__sputils_xmlEscape__ = __webpack_require__(31);
+        var __WEBPACK_IMPORTED_MODULE_16__sputils_xmlEscape__ = __webpack_require__(32);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_17__LookupField_html__ = __webpack_require__(104);
         /* harmony import */
@@ -10593,7 +10595,7 @@
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_Widget__ = __webpack_require__(8);
+        var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_Widget__ = __webpack_require__(5);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_1_common_micro_libs_src_jsutils_EventEmitter__ = __webpack_require__(2);
         /* harmony import */
@@ -10603,11 +10605,11 @@
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_jsutils_fillTemplate__ = __webpack_require__(3);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_5_common_micro_libs_src_jsutils_parseHTML__ = __webpack_require__(7);
+        var __WEBPACK_IMPORTED_MODULE_5_common_micro_libs_src_jsutils_parseHTML__ = __webpack_require__(4);
         /* harmony import */
-        __webpack_require__(41);
+        __webpack_require__(42);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_7_common_micro_libs_src_domutils_domAddEventListener__ = __webpack_require__(10);
+        var __WEBPACK_IMPORTED_MODULE_7_common_micro_libs_src_domutils_domAddEventListener__ = __webpack_require__(9);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_8__SelectedItem_html__ = __webpack_require__(101);
         /* harmony import */
@@ -10693,12 +10695,12 @@
         };
         options.transform = void 0;
         options.insertInto = void 0;
-        __webpack_require__(6)(content, options);
+        __webpack_require__(7)(content, options);
         content.locals && (module.exports = content.locals);
     }, /* 103 */
     /***/
     function(module, exports, __webpack_require__) {
-        exports = module.exports = __webpack_require__(5)();
+        exports = module.exports = __webpack_require__(6)();
         // imports
         // module
         exports.push([ module.i, ".spwidgets-LookupField-SelectedItem {\n  position: relative;\n  margin: 4px;\n  padding: 0;\n  border: 1px solid transparent;\n}\n.spwidgets-LookupField-SelectedItem:hover {\n  border-color: #C8C8C8;\n}\n.spwidgets-LookupField-SelectedItem-info {\n  padding-right: 34px;\n  padding-left: 0.5em;\n  background-color: #f4f4f4;\n  min-height: 32px;\n  line-height: 32px;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  overflow: hidden;\n}\n.spwidgets-LookupField-SelectedItem-remove {\n  position: absolute;\n  height: 100%;\n  top: 0;\n  right: 0;\n  min-width: 0;\n}\n.spwidgets-LookupField-SelectedItem-remove .ms-Button-icon {\n  display: inline-block;\n}\n.spwidgets-LookupField-SelectedItem-remove:hover {\n  background-color: #eaeaea;\n  color: #333;\n}\n", "" ]);
@@ -10716,12 +10718,12 @@
         };
         options.transform = void 0;
         options.insertInto = void 0;
-        __webpack_require__(6)(content, options);
+        __webpack_require__(7)(content, options);
         content.locals && (module.exports = content.locals);
     }, /* 106 */
     /***/
     function(module, exports, __webpack_require__) {
-        exports = module.exports = __webpack_require__(5)();
+        exports = module.exports = __webpack_require__(6)();
         // imports
         // module
         exports.push([ module.i, ".spwidgets-LookupField {\n  background-color: white;\n}\n.spwidgets-LookupField-items {\n  border: 1px solid #c8c8c8;\n  position: relative;\n  box-sizing: border-box;\n}\n.spwidgets-LookupField-items:hover {\n  border-color: #767676;\n}\n.spwidgets-LookupField-items-count {\n  display: inline-block;\n  vertical-align: middle;\n  padding: 0 1em;\n  font-style: italic;\n}\n.spwidgets-LookupField-items-clear {\n  vertical-align: middle;\n  display: inline-block;\n  cursor: pointer;\n}\n.spwidgets-LookupField-selected {\n  max-height: 15em;\n  overflow-y: auto;\n}\n.spwidgets-LookupField-selected::-webkit-scrollbar {\n  width: 0.5em;\n  background-color: #F5F5F5;\n}\n.spwidgets-LookupField-selected::-webkit-scrollbar-thumb {\n  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);\n  background-color: #555;\n}\n.spwidgets-LookupField-input {\n  position: relative;\n  box-sizing: border-box;\n}\n.spwidgets-LookupField-input > input {\n  box-sizing: border-box;\n  display: inline-block;\n  border: 0;\n  height: 38px;\n  outline: none;\n  padding-left: 8px;\n}\n.spwidgets-LookupField-input-choices {\n  box-sizing: border-box;\n  display: none;\n  position: absolute;\n  top: 100%;\n  left: 0;\n  min-height: 2em;\n  border: 1px solid #ababab;\n  border-top: none;\n  padding: 0.5em 1em;\n  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.4);\n  background-color: white;\n  z-index: 5;\n  max-width: 100%;\n  max-height: 20em;\n  overflow-y: auto;\n}\n.spwidgets-LookupField-input-choices::-webkit-scrollbar {\n  width: 0.5em;\n  background-color: #F5F5F5;\n}\n.spwidgets-LookupField-input-choices::-webkit-scrollbar-thumb {\n  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);\n  background-color: #555;\n}\n.spwidgets-LookupField--noLabel .spwidgets-LookupField-label {\n  display: none;\n}\n.spwidgets-LookupField--noDescription .spwidgets-LookupField-description {\n  display: none;\n}\n.spwidgets-LookupField--displayInline .spwidgets-LookupField-selected,\n.spwidgets-LookupField--displayInline .spwidgets-LookupField-selected > *,\n.spwidgets-LookupField--displayInline .spwidgets-LookupField-input {\n  display: inline-block;\n}\n.spwidgets-LookupField--displayInline .spwidgets-LookupField-selected {\n  max-height: none;\n}\n.spwidgets-LookupField--displayInline .spwidgets-LookupField-input-choices {\n  max-width: 450px;\n}\n", "" ]);
@@ -10730,7 +10732,7 @@
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_Widget__ = __webpack_require__(8);
+        var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_Widget__ = __webpack_require__(5);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_1_common_micro_libs_src_jsutils_dataStore__ = __webpack_require__(1);
         /* harmony import */
@@ -10738,15 +10740,15 @@
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_3_common_micro_libs_src_jsutils_fillTemplate__ = __webpack_require__(3);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_jsutils_parseHTML__ = __webpack_require__(7);
+        var __WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_jsutils_parseHTML__ = __webpack_require__(4);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_5_common_micro_libs_src_domutils_domRemoveClass__ = __webpack_require__(11);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_6_common_micro_libs_src_domutils_domAddClass__ = __webpack_require__(4);
+        var __WEBPACK_IMPORTED_MODULE_6_common_micro_libs_src_domutils_domAddClass__ = __webpack_require__(8);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_7_common_micro_libs_src_domutils_domToggleClass__ = __webpack_require__(26);
+        var __WEBPACK_IMPORTED_MODULE_7_common_micro_libs_src_domutils_domToggleClass__ = __webpack_require__(22);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_8_common_micro_libs_src_domutils_domAddEventListener__ = __webpack_require__(10);
+        var __WEBPACK_IMPORTED_MODULE_8_common_micro_libs_src_domutils_domAddEventListener__ = __webpack_require__(9);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_9__Message_html__ = __webpack_require__(108);
         /* harmony import */
@@ -10903,12 +10905,12 @@
         };
         options.transform = void 0;
         options.insertInto = void 0;
-        __webpack_require__(6)(content, options);
+        __webpack_require__(7)(content, options);
         content.locals && (module.exports = content.locals);
     }, /* 110 */
     /***/
     function(module, exports, __webpack_require__) {
-        exports = module.exports = __webpack_require__(5)();
+        exports = module.exports = __webpack_require__(6)();
         // imports
         // module
         exports.push([ module.i, ".spwidgets-message {\n  position: relative;\n  padding: 0.5em;\n}\n.spwidgets-message-iconHolder {\n  display: block;\n  position: absolute;\n  font-size: 1.5em;\n  line-height: 1em;\n}\n.spwidgets-message-msgHolder {\n  padding-left: 2em;\n  min-height: 2em;\n}\n.spwidgets-message-msgHolder-msg > * {\n  display: inline;\n}\n.spwidgets-message-msg-showMore {\n  display: none;\n  cursor: pointer;\n}\n.spwidgets-message-msg-more {\n  display: none;\n  white-space: pre-wrap;\n}\n.spwidgets-message--hasMore .spwidgets-message-msg-showMore {\n  display: inline;\n}\n.spwidgets-message--showMore .spwidgets-message-msg-more {\n  display: block;\n}\n", "" ]);
@@ -10917,7 +10919,7 @@
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_Widget__ = __webpack_require__(8);
+        var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_Widget__ = __webpack_require__(5);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_1_common_micro_libs_src_jsutils_EventEmitter__ = __webpack_require__(2);
         /* harmony import */
@@ -10925,19 +10927,19 @@
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_3_common_micro_libs_src_jsutils_objectExtend__ = __webpack_require__(0);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_jsutils_parseHTML__ = __webpack_require__(7);
+        var __WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_jsutils_parseHTML__ = __webpack_require__(4);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_5_common_micro_libs_src_jsutils_fillTemplate__ = __webpack_require__(3);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_6_common_micro_libs_src_jsutils_es6_promise__ = __webpack_require__(13);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_7_common_micro_libs_src_domutils_domAddEventListener__ = __webpack_require__(10);
+        var __WEBPACK_IMPORTED_MODULE_7_common_micro_libs_src_domutils_domAddEventListener__ = __webpack_require__(9);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_8_common_micro_libs_src_domutils_domAddClass__ = __webpack_require__(4);
+        var __WEBPACK_IMPORTED_MODULE_8_common_micro_libs_src_domutils_domAddClass__ = __webpack_require__(8);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_9_common_micro_libs_src_domutils_domRemoveClass__ = __webpack_require__(11);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_10_common_micro_libs_src_domutils_domClosest__ = __webpack_require__(21);
+        var __WEBPACK_IMPORTED_MODULE_10_common_micro_libs_src_domutils_domClosest__ = __webpack_require__(20);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_11_common_micro_libs_src_domutils_domTriggerEvent__ = __webpack_require__(50);
         /* harmony import */
@@ -10947,7 +10949,7 @@
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_14_common_micro_libs_src_domutils_DomKeyboardInteraction__ = __webpack_require__(49);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_15__spapi_searchPrincipals__ = __webpack_require__(43);
+        var __WEBPACK_IMPORTED_MODULE_15__spapi_searchPrincipals__ = __webpack_require__(44);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_16__sputils_parsePeopleField__ = __webpack_require__(113);
         /* harmony import */
@@ -11601,7 +11603,7 @@
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_1__models_UserProfileModel__ = __webpack_require__(18);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_2__parseLookupFieldValue__ = __webpack_require__(33);
+        var __WEBPACK_IMPORTED_MODULE_2__parseLookupFieldValue__ = __webpack_require__(34);
         /**
  * Parses a Person or Group value string returned by SharePoint webservices
  * into an array of object, each object representing a person or group.
@@ -11670,7 +11672,7 @@
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_2__models_UserProfileModel__ = __webpack_require__(18);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_3__spapi_resolvePrincipals__ = __webpack_require__(42);
+        var __WEBPACK_IMPORTED_MODULE_3__spapi_resolvePrincipals__ = __webpack_require__(43);
         //=======================================================================
         var PRIVATE = __WEBPACK_IMPORTED_MODULE_1_common_micro_libs_src_jsutils_dataStore__.a.create();
         /**
@@ -11735,7 +11737,7 @@
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_Widget__ = __webpack_require__(8);
+        var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_Widget__ = __webpack_require__(5);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_1_common_micro_libs_src_jsutils_EventEmitter__ = __webpack_require__(2);
         /* harmony import */
@@ -11745,17 +11747,17 @@
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_jsutils_fillTemplate__ = __webpack_require__(3);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_5_common_micro_libs_src_jsutils_parseHTML__ = __webpack_require__(7);
-        /* harmony import */
-        __webpack_require__(10);
-        /* harmony import */
-        __webpack_require__(21);
+        var __WEBPACK_IMPORTED_MODULE_5_common_micro_libs_src_jsutils_parseHTML__ = __webpack_require__(4);
         /* harmony import */
         __webpack_require__(9);
         /* harmony import */
+        __webpack_require__(20);
+        /* harmony import */
+        __webpack_require__(10);
+        /* harmony import */
         __webpack_require__(19);
         /* harmony import */
-        __webpack_require__(4);
+        __webpack_require__(8);
         /* harmony import */
         __webpack_require__(11);
         /* harmony import */
@@ -11920,13 +11922,13 @@
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_0__Persona_Persona__ = __webpack_require__(27);
+        var __WEBPACK_IMPORTED_MODULE_0__Persona_Persona__ = __webpack_require__(23);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_1_common_micro_libs_src_jsutils_fillTemplate__ = __webpack_require__(3);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_2_common_micro_libs_src_domutils_domHasClass__ = __webpack_require__(19);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_3_common_micro_libs_src_domutils_domAddClass__ = __webpack_require__(4);
+        var __WEBPACK_IMPORTED_MODULE_3_common_micro_libs_src_domutils_domAddClass__ = __webpack_require__(8);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_domutils_domRemoveClass__ = __webpack_require__(11);
         /* harmony import */
@@ -12001,12 +12003,12 @@
         };
         options.transform = void 0;
         options.insertInto = void 0;
-        __webpack_require__(6)(content, options);
+        __webpack_require__(7)(content, options);
         content.locals && (module.exports = content.locals);
     }, /* 119 */
     /***/
     function(module, exports, __webpack_require__) {
-        exports = module.exports = __webpack_require__(5)();
+        exports = module.exports = __webpack_require__(6)();
         // imports
         // module
         exports.push([ module.i, '.spwidgets-Persona .ms-Image-image {\n  width: 100%;\n}\n.spwidgets-Persona .ms-Persona-initials:empty:before {\n  content: "?";\n}\n.spwidgets-Persona--noDetails .ms-Persona-details {\n  display: none;\n}\n.spwidgets-Persona--noAction .ms-Persona-actionIcon {\n  display: none;\n}\n.spwidgets-Persona--showInitials .ms-Persona-image {\n  display: none;\n}\n.spwidgets-Persona.ms-Persona--nopresence .ms-Persona-presence {\n  display: none;\n}\n', "" ]);
@@ -12024,12 +12026,12 @@
         };
         options.transform = void 0;
         options.insertInto = void 0;
-        __webpack_require__(6)(content, options);
+        __webpack_require__(7)(content, options);
         content.locals && (module.exports = content.locals);
     }, /* 122 */
     /***/
     function(module, exports, __webpack_require__) {
-        exports = module.exports = __webpack_require__(5)();
+        exports = module.exports = __webpack_require__(6)();
         // imports
         // module
         exports.push([ module.i, ".spwidgets-PeoplePicker-Result.is-currentUserEntry .ms-Persona-primaryText {\n  color: #005A9E;\n  font-style: italic;\n}\n.spwidgets-PeoplePicker-Result--focus {\n  background-color: #eaeaea;\n  outline: 1px solid transparent;\n}\n", "" ]);
@@ -12042,11 +12044,11 @@
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_0__Persona_Persona__ = __webpack_require__(27);
+        var __WEBPACK_IMPORTED_MODULE_0__Persona_Persona__ = __webpack_require__(23);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_1_common_micro_libs_src_jsutils_fillTemplate__ = __webpack_require__(3);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_2_common_micro_libs_src_domutils_domAddClass__ = __webpack_require__(4);
+        var __WEBPACK_IMPORTED_MODULE_2_common_micro_libs_src_domutils_domAddClass__ = __webpack_require__(8);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_3_common_micro_libs_src_jsutils_objectExtend__ = __webpack_require__(0);
         /* harmony import */
@@ -12122,12 +12124,12 @@
         };
         options.transform = void 0;
         options.insertInto = void 0;
-        __webpack_require__(6)(content, options);
+        __webpack_require__(7)(content, options);
         content.locals && (module.exports = content.locals);
     }, /* 127 */
     /***/
     function(module, exports, __webpack_require__) {
-        exports = module.exports = __webpack_require__(5)();
+        exports = module.exports = __webpack_require__(6)();
         // imports
         // module
         exports.push([ module.i, ".spwidgets-PeoplePicker-persona {\n  display: inline-block;\n}\n.spwidgets-PeoplePicker-persona.is-currentUserEntry .ms-Persona-primaryText {\n  color: #005A9E;\n  font-style: italic;\n  padding-right: 0.5em;\n}\n", "" ]);
@@ -12145,12 +12147,12 @@
         };
         options.transform = void 0;
         options.insertInto = void 0;
-        __webpack_require__(6)(content, options);
+        __webpack_require__(7)(content, options);
         content.locals && (module.exports = content.locals);
     }, /* 130 */
     /***/
     function(module, exports, __webpack_require__) {
-        exports = module.exports = __webpack_require__(5)();
+        exports = module.exports = __webpack_require__(6)();
         // imports
         // module
         exports.push([ module.i, ".spwidgets-PeoplePicker button {\n  min-width: 0;\n  padding: initial;\n  margin-left: auto;\n  font-size: initial;\n}\n.spwidgets-PeoplePicker-searchFieldCntr {\n  min-width: 180px;\n}\n.spwidgets-PeoplePicker-searchFieldCntr input {\n  min-width: 100%;\n}\n.spwidgets-PeoplePicker-suggestions {\n  min-width: 250px;\n  position: absolute;\n  z-index: 5;\n}\n.spwidgets-PeoplePicker-suggestions-groups {\n  padding: 1px;\n  overflow-y: auto;\n  overflow-x: hidden;\n  max-height: 20em;\n}\n.spwidgets-PeoplePicker-suggestions-groups::-webkit-scrollbar {\n  width: 0.5em;\n  background-color: #F5F5F5;\n}\n.spwidgets-PeoplePicker-suggestions-groups::-webkit-scrollbar-thumb {\n  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);\n  background-color: #555;\n}\n.spwidgets-PeoplePicker-searchInfo {\n  border-top: 1px solid #eaeaea;\n  padding: 1em;\n}\n.spwidgets-PeoplePicker-searchInfo-iconHolder {\n  position: absolute;\n}\n.spwidgets-PeoplePicker-searchInfo > p {\n  padding-left: 2em;\n  margin: 0;\n}\n.spwidgets-PeoplePicker-searchInfo-searchingMsg {\n  display: none;\n}\n.spwidgets-PeoplePicker-busy {\n  display: none;\n}\n.spwidgets-PeoplePicker .ms-Persona-details > * {\n  width: auto;\n  max-width: 190px;\n}\n.spwidgets-PeoplePicker-suggestions.is-searching .ms-Icon--Search {\n  display: none;\n}\n.spwidgets-PeoplePicker-suggestions.is-searching .spwidgets-PeoplePicker-searchInfo-msg {\n  display: none;\n}\n.spwidgets-PeoplePicker-suggestions.is-searching .spwidgets-PeoplePicker-searchInfo-searchingMsg {\n  display: block;\n}\n.spwidgets-PeoplePicker-suggestions.is-searching .spwidgets-PeoplePicker-busy {\n  display: inline-block;\n  -webkit-animation: spwidgets-PeoplePicker-rotate 0.8s linear infinite;\n  animation: spwidgets-PeoplePicker-rotate 0.8s linear infinite;\n}\n.spwidgets-PeoplePicker--suggestionsRight .spwidgets-PeoplePicker-suggestions {\n  right: 0;\n}\n@-webkit-keyframes spwidgets-PeoplePicker-rotate {\n  from {\n    -ms-transform: rotate(0deg);\n    -moz-transform: rotate(0deg);\n    -webkit-transform: rotate(0deg);\n    -o-transform: rotate(0deg);\n    transform: rotate(0deg);\n  }\n  to {\n    -ms-transform: rotate(360deg);\n    -moz-transform: rotate(360deg);\n    -webkit-transform: rotate(360deg);\n    -o-transform: rotate(360deg);\n    transform: rotate(360deg);\n  }\n}\n@keyframes spwidgets-PeoplePicker-rotate {\n  from {\n    -ms-transform: rotate(0deg);\n    -moz-transform: rotate(0deg);\n    -webkit-transform: rotate(0deg);\n    -o-transform: rotate(0deg);\n    transform: rotate(0deg);\n  }\n  to {\n    -ms-transform: rotate(360deg);\n    -moz-transform: rotate(360deg);\n    -webkit-transform: rotate(360deg);\n    -o-transform: rotate(360deg);\n    transform: rotate(360deg);\n  }\n}\n", "" ]);
@@ -12159,7 +12161,7 @@
     function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_Widget__ = __webpack_require__(8);
+        var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_Widget__ = __webpack_require__(5);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_1_common_micro_libs_src_jsutils_EventEmitter__ = __webpack_require__(2);
         /* harmony import */
@@ -12169,17 +12171,467 @@
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_jsutils_fillTemplate__ = __webpack_require__(3);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_5_common_micro_libs_src_jsutils_parseHTML__ = __webpack_require__(7);
+        var __WEBPACK_IMPORTED_MODULE_5_common_micro_libs_src_jsutils_parseHTML__ = __webpack_require__(4);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_6_common_micro_libs_src_domutils_domAddClass__ = __webpack_require__(4);
+        var __WEBPACK_IMPORTED_MODULE_6__Persona_Persona__ = __webpack_require__(23);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_7_common_micro_libs_src_domutils_domAddEventListener__ = __webpack_require__(10);
+        var __WEBPACK_IMPORTED_MODULE_7__PersonaCardActions_PersonaCardActions__ = __webpack_require__(132);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_8__TextField_html__ = __webpack_require__(132);
+        var __WEBPACK_IMPORTED_MODULE_8__PersonaCardActionDetails_PersonaCardActionDetails__ = __webpack_require__(135);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_9__PersonaCard_html__ = __webpack_require__(138);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_9__PersonaCard_html___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9__PersonaCard_html__);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_10__PersonaCard_less__ = __webpack_require__(139);
+        /* harmony import */
+        __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_10__PersonaCard_less__);
+        //==========================================================================
+        var PRIVATE = __WEBPACK_IMPORTED_MODULE_2_common_micro_libs_src_jsutils_dataStore__.a.create();
+        /**
+ * PersonaCard Widget
+ *
+ * @class PersonaCard
+ * @extends Widget
+ *
+ * @param {Object} options
+ *
+ * @fires PersonaCard#action-click
+ */
+        var PersonaCard = __WEBPACK_IMPORTED_MODULE_1_common_micro_libs_src_jsutils_EventEmitter__.a.extend(__WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_Widget__.a).extend(/** @lends PersonaCard.prototype */ {
+            init: function(options) {
+                var _this = this;
+                var inst = {
+                    opt: Object(__WEBPACK_IMPORTED_MODULE_3_common_micro_libs_src_jsutils_objectExtend__.a)({}, this.getFactory().defaults, options),
+                    activeDetails: null,
+                    detailWidgets: {}
+                };
+                PRIVATE.set(this, inst);
+                var opt = inst.opt;
+                var $ui = this.$ui = this.getTemplate();
+                "string" === typeof $ui && ($ui = this.$ui = Object(__WEBPACK_IMPORTED_MODULE_5_common_micro_libs_src_jsutils_parseHTML__.a)(Object(__WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_jsutils_fillTemplate__.a)($ui, inst)).firstChild);
+                var uiFind = $ui.querySelector.bind($ui);
+                var userProfile = opt.userProfile;
+                var $actionDetailBox = uiFind(".ms-PersonaCard-actionDetailBox");
+                inst.personaWdg = opt.PersonaWidget.create(opt);
+                inst.personaWdg.appendTo(uiFind(".ms-PersonaCard-persona"));
+                // Create actions
+                Array.isArray(opt.actions) || (opt.actions = []);
+                if (opt.showDefaultActions) {
+                    var _opt$actions;
+                    (_opt$actions = opt.actions).push.apply(_opt$actions, [ {
+                        icon: "ms-Icon--Phone",
+                        details: [ "WorkPhone", "CellPhone", "HomePhone" ].map(function(attr) {
+                            if (userProfile[attr]) return {
+                                label: attr,
+                                value: userProfile[attr]
+                            };
+                            return null;
+                        }).filter(function(item) {
+                            return !!item;
+                        })
+                    }, {
+                        icon: "ms-Icon--Mail",
+                        details: [ "Email", "WorkEmail" ].map(function(attr) {
+                            if (userProfile[attr]) return {
+                                label: attr,
+                                value: '<a class="ms-Link" href="mailto:' + userProfile[attr] + '">' + userProfile[attr] + "</a>"
+                            };
+                            return null;
+                        }).filter(function(item) {
+                            return !!item;
+                        })
+                    } ]);
+                }
+                var detailWidgets = inst.detailWidgets;
+                var actionsWdg = inst.actionsWdg = opt.PersonaCardActionsWidget.create({
+                    actions: opt.actions
+                });
+                actionsWdg.appendTo(uiFind(".spwidgets-PersonaCard-actions"));
+                actionsWdg.on("click", function(data) {
+                    inst.activeDetails && inst.activeDetails.detach();
+                    var id = data.id;
+                    var actionSetup = void 0;
+                    opt.actions.some(function(action) {
+                        if (action.id === id) {
+                            actionSetup = action;
+                            return true;
+                        }
+                    });
+                    if (actionSetup && actionSetup.details) {
+                        actionSetup.details.appendTo && (detailWidgets[id] = actionSetup.details);
+                        detailWidgets[id] || (detailWidgets[id] = opt.PersonaCardDetailsWidget.create({
+                            details: actionSetup.details
+                        }));
+                        detailWidgets[id].appendTo($actionDetailBox);
+                        inst.activeDetails = detailWidgets[id];
+                    }
+                });
+                var selectedAction = actionsWdg.getSelected();
+                selectedAction && actionsWdg.emit("click", selectedAction);
+                /**
+         * User clicked on an action
+         *
+         * @event PersonaCard#action-click
+         */
+                actionsWdg.pipe(this, "action-");
+                this.onDestroy(function() {
+                    // Destroy all Compose object
+                    Object.keys(inst).forEach(function(prop) {
+                        if (inst[prop]) {
+                            [ "destroy", // Compose
+                            "remove", // DOM Events Listeners
+                            "off" ].some(function(method) {
+                                if (inst[prop][method]) {
+                                    inst[prop][method]();
+                                    return true;
+                                }
+                            });
+                            inst[prop] = void 0;
+                        }
+                    });
+                    PRIVATE.delete(_this);
+                });
+            },
+            /**
+     * returns the widget's template
+     * @return {String}
+     */
+            getTemplate: function() {
+                return __WEBPACK_IMPORTED_MODULE_9__PersonaCard_html___default.a;
+            }
+        });
+        PersonaCard.defaults = {
+            // Same options as Persona Widget
+            userProfile: null,
+            presence: "offline",
+            variant: "circle",
+            size: "xl",
+            hideDetails: false,
+            hideAction: true,
+            hideInitials: true,
+            initialsColor: "blue",
+            // Specific to PersonaCard
+            PersonaWidget: __WEBPACK_IMPORTED_MODULE_6__Persona_Persona__.a,
+            PersonaCardActionsWidget: __WEBPACK_IMPORTED_MODULE_7__PersonaCardActions_PersonaCardActions__.a,
+            PersonaCardDetailsWidget: __WEBPACK_IMPORTED_MODULE_8__PersonaCardActionDetails_PersonaCardActionDetails__.a,
+            actions: null,
+            // Array<Object>
+            showDefaultActions: true
+        };
+        /* harmony default export */
+        __webpack_exports__.a = PersonaCard;
+    }, /* 132 */
+    /***/
+    function(module, __webpack_exports__, __webpack_require__) {
+        "use strict";
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_Widget__ = __webpack_require__(5);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_1_common_micro_libs_src_jsutils_EventEmitter__ = __webpack_require__(2);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_2_common_micro_libs_src_jsutils_dataStore__ = __webpack_require__(1);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_3_common_micro_libs_src_jsutils_objectExtend__ = __webpack_require__(0);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_jsutils_fillTemplate__ = __webpack_require__(3);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_5_common_micro_libs_src_jsutils_parseHTML__ = __webpack_require__(4);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_6_common_micro_libs_src_jsutils_uuid__ = __webpack_require__(28);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_7_common_micro_libs_src_domutils_domAddEventListener__ = __webpack_require__(9);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_8_common_micro_libs_src_domutils_domClosest__ = __webpack_require__(20);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_9_common_micro_libs_src_domutils_domToggleClass__ = __webpack_require__(22);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_10__PersonaCardActions_html__ = __webpack_require__(133);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_10__PersonaCardActions_html___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_10__PersonaCardActions_html__);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_11__action_html__ = __webpack_require__(134);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_11__action_html___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_11__action_html__);
+        //==========================================================================
+        var PRIVATE = __WEBPACK_IMPORTED_MODULE_2_common_micro_libs_src_jsutils_dataStore__.a.create();
+        /**
+ * PersonaCardActions Widget
+ *
+ * @class PersonaCardActions
+ * @extends Widget
+ * @extends EventEmitter
+ *
+ * @param {Object} options
+ * @param {Array<Object>} options.actions
+ *  An array of actions. Each action can have the following properties:
+ *
+ *  -   `icon`:     `{String}` - A CSS class. (ex. `ms-Icon--Mail`)
+ *  -   `title`:    `{String}` - The title for the item.
+ *  -   `id`:       `{String}` - the action's id
+ *  -   `selected`: `{Boolean}` - If true, then item will be selected
+ *
+ * @fires PersonaCardActions#click
+ */
+        var PersonaCardActions = __WEBPACK_IMPORTED_MODULE_1_common_micro_libs_src_jsutils_EventEmitter__.a.extend(__WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_Widget__.a).extend(/** @lends PersonaCardActions.prototype */ {
+            init: function(options) {
+                var _this = this;
+                var inst = {
+                    opt: Object(__WEBPACK_IMPORTED_MODULE_3_common_micro_libs_src_jsutils_objectExtend__.a)({}, this.getFactory().defaults, options),
+                    selected: null
+                };
+                PRIVATE.set(this, inst);
+                var $ui = this.$ui = this.getTemplate();
+                "string" === typeof $ui && ($ui = this.$ui = Object(__WEBPACK_IMPORTED_MODULE_5_common_micro_libs_src_jsutils_parseHTML__.a)(Object(__WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_jsutils_fillTemplate__.a)($ui, {
+                    _actionsHTML: Object(__WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_jsutils_fillTemplate__.a)(this.getActionTemplate(), inst.opt.actions.map(function(action) {
+                        action.id || (action.id = __WEBPACK_IMPORTED_MODULE_6_common_micro_libs_src_jsutils_uuid__.a.generate());
+                        action.selected && (inst.selected = action);
+                        return action;
+                    }))
+                })).firstChild);
+                inst.uiFind = $ui.querySelector.bind($ui);
+                inst.selected && this.setSelected(inst.selected);
+                inst.clickEv = Object(__WEBPACK_IMPORTED_MODULE_7_common_micro_libs_src_domutils_domAddEventListener__.a)($ui, "click", function(ev) {
+                    var $actionEle = Object(__WEBPACK_IMPORTED_MODULE_8_common_micro_libs_src_domutils_domClosest__.a)(ev.target, ".ms-PersonaCard-action");
+                    if ($actionEle) {
+                        var actionId = $actionEle.getAttribute("data-action-id");
+                        if (actionId) {
+                            _this.setSelected(actionId);
+                            _this.emit("click", {
+                                id: actionId
+                            });
+                        }
+                    }
+                });
+                this.onDestroy(function() {
+                    // Destroy all Compose object
+                    Object.keys(inst).forEach(function(prop) {
+                        if (inst[prop]) {
+                            [ "destroy", // Compose
+                            "remove", // DOM Events Listeners
+                            "off" ].some(function(method) {
+                                if (inst[prop][method]) {
+                                    inst[prop][method]();
+                                    return true;
+                                }
+                            });
+                            inst[prop] = void 0;
+                        }
+                    });
+                    PRIVATE.delete(_this);
+                });
+            },
+            /**
+     * returns the widget's template
+     * @return {String}
+     */
+            getTemplate: function() {
+                return __WEBPACK_IMPORTED_MODULE_10__PersonaCardActions_html___default.a;
+            },
+            /**
+     * Returns the HTML template for a single action
+     * @return {String}
+     */
+            getActionTemplate: function() {
+                return __WEBPACK_IMPORTED_MODULE_11__action_html___default.a;
+            },
+            /**
+     * Sets an action as Selected.
+     *
+     * @param {String|Object} selectAction
+     */
+            setSelected: function(selectAction) {
+                var inst = PRIVATE.get(this);
+                var uiFind = inst.uiFind;
+                var actions = inst.opt.actions;
+                var id = "string" === typeof selectAction ? selectAction : "";
+                id || actions.some(function(action) {
+                    if (action === selectAction || selectAction && selectAction.id && selectAction.id === action.id) {
+                        id = action.id;
+                        inst.selected = action;
+                        return true;
+                    }
+                });
+                if (id) {
+                    var $actionEle = uiFind('.ms-PersonaCard-action[data-action-id="' + id + '"]');
+                    var $active = uiFind(".is-active");
+                    if ($actionEle && $active !== $actionEle) {
+                        Object(__WEBPACK_IMPORTED_MODULE_9_common_micro_libs_src_domutils_domToggleClass__.a)($active, "is-active");
+                        Object(__WEBPACK_IMPORTED_MODULE_9_common_micro_libs_src_domutils_domToggleClass__.a)($actionEle, "is-active");
+                    }
+                }
+            },
+            /**
+     * Returns the object of the currently selected action.
+     *
+     * @return {Object|undefined}
+     */
+            getSelected: function() {
+                return PRIVATE.get(this).selected;
+            }
+        });
+        PersonaCardActions.defaults = {
+            actions: null
+        };
+        /* harmony default export */
+        __webpack_exports__.a = PersonaCardActions;
+    }, /* 133 */
+    /***/
+    function(module, exports) {
+        module.exports = '<ul class="ms-PersonaCard-actions">\r\n    {{_actionsHTML}}\r\n</ul>';
+    }, /* 134 */
+    /***/
+    function(module, exports) {
+        module.exports = '<li data-action-id="{{id}}" class="ms-PersonaCard-action" tabindex="1">\r\n    <i class="ms-Icon {{icon}}"></i>\r\n    <span>{{title}}</span>\r\n</li>';
+    }, /* 135 */
+    /***/
+    function(module, __webpack_exports__, __webpack_require__) {
+        "use strict";
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_Widget__ = __webpack_require__(5);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_1_common_micro_libs_src_jsutils_EventEmitter__ = __webpack_require__(2);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_2_common_micro_libs_src_jsutils_dataStore__ = __webpack_require__(1);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_3_common_micro_libs_src_jsutils_objectExtend__ = __webpack_require__(0);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_jsutils_fillTemplate__ = __webpack_require__(3);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_5_common_micro_libs_src_jsutils_parseHTML__ = __webpack_require__(4);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_6__PersonaCardActionDetails_html__ = __webpack_require__(136);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_6__PersonaCardActionDetails_html___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6__PersonaCardActionDetails_html__);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_7__detailLine_html__ = __webpack_require__(137);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_7__detailLine_html___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7__detailLine_html__);
+        //==========================================================================
+        var PRIVATE = __WEBPACK_IMPORTED_MODULE_2_common_micro_libs_src_jsutils_dataStore__.a.create();
+        /**
+ * PersonaCardActionDetails Widget Display the content of an action when the
+ * user clicks on it.
+ *
+ * @class PersonaCardActionDetails
+ * @extends Widget
+ * @extends EventEmitter
+ *
+ * @param {Object} options
+ * @param {Array<Object>} options.details
+ *  Each Detail object can have the following properties:
+ *
+ *  -   `label`: The label for the value
+ *  -   `value`: the value for detail item. Could be a string of HTML
+ *
+ */
+        var PersonaCardActionDetails = __WEBPACK_IMPORTED_MODULE_1_common_micro_libs_src_jsutils_EventEmitter__.a.extend(__WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_Widget__.a).extend(/** @lends PersonaCardActionDetails.prototype */ {
+            init: function(options) {
+                var _this = this;
+                var inst = {
+                    opt: Object(__WEBPACK_IMPORTED_MODULE_3_common_micro_libs_src_jsutils_objectExtend__.a)({}, this.getFactory().defaults, options)
+                };
+                PRIVATE.set(this, inst);
+                var $ui = this.$ui = this.getTemplate();
+                "string" === typeof $ui && ($ui = this.$ui = Object(__WEBPACK_IMPORTED_MODULE_5_common_micro_libs_src_jsutils_parseHTML__.a)(Object(__WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_jsutils_fillTemplate__.a)($ui, {
+                    detailsHTML: Object(__WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_jsutils_fillTemplate__.a)(this.getDetailLineTemplate(), inst.opt.details)
+                })).firstChild);
+                this.onDestroy(function() {
+                    // Destroy all Compose object
+                    Object.keys(inst).forEach(function(prop) {
+                        if (inst[prop]) {
+                            [ "destroy", // Compose
+                            "remove", // DOM Events Listeners
+                            "off" ].some(function(method) {
+                                if (inst[prop][method]) {
+                                    inst[prop][method]();
+                                    return true;
+                                }
+                            });
+                            inst[prop] = void 0;
+                        }
+                    });
+                    PRIVATE.delete(_this);
+                });
+            },
+            /**
+     * returns the widget's template
+     * @return {String}
+     */
+            getTemplate: function() {
+                return __WEBPACK_IMPORTED_MODULE_6__PersonaCardActionDetails_html___default.a;
+            },
+            /**
+     * Returns the HTML template for an insividual item
+     *
+     * @return {String}
+     */
+            getDetailLineTemplate: function() {
+                return __WEBPACK_IMPORTED_MODULE_7__detailLine_html___default.a;
+            }
+        });
+        PersonaCardActionDetails.defaults = {
+            details: null
+        };
+        /* harmony default export */
+        __webpack_exports__.a = PersonaCardActionDetails;
+    }, /* 136 */
+    /***/
+    function(module, exports) {
+        module.exports = '<div class="ms-PersonaCard-details is-active">\r\n    {{detailsHTML}}\r\n</div>';
+    }, /* 137 */
+    /***/
+    function(module, exports) {
+        module.exports = '<div class="ms-PersonaCard-detailLine">\r\n    <span class="ms-PersonaCard-detailLabel">{{label}}</span>\r\n    <span class="spwidgets-PersonaCardActionDetails-detailValue">{{value}}</span>\r\n</div>';
+    }, /* 138 */
+    /***/
+    function(module, exports) {
+        module.exports = '<div class="ms-PersonaCard spwidgets-PersonaCard">\r\n    <div class="ms-PersonaCard-persona"></div>\r\n    <div class="spwidgets-PersonaCard-actions"></div>\r\n    <div class="ms-PersonaCard-actionDetailBox"></div>\r\n</div>';
+    }, /* 139 */
+    /***/
+    function(module, exports, __webpack_require__) {
+        var content = __webpack_require__(140);
+        "string" === typeof content && (content = [ [ module.i, content, "" ] ]);
+        var options = {
+            hmr: true
+        };
+        options.transform = void 0;
+        options.insertInto = void 0;
+        __webpack_require__(7)(content, options);
+        content.locals && (module.exports = content.locals);
+    }, /* 140 */
+    /***/
+    function(module, exports, __webpack_require__) {
+        exports = module.exports = __webpack_require__(6)();
+        // imports
+        // module
+        exports.push([ module.i, "", "" ]);
+    }, /* 141 */
+    /***/
+    function(module, __webpack_exports__, __webpack_require__) {
+        "use strict";
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_0_common_micro_libs_src_jsutils_Widget__ = __webpack_require__(5);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_1_common_micro_libs_src_jsutils_EventEmitter__ = __webpack_require__(2);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_2_common_micro_libs_src_jsutils_dataStore__ = __webpack_require__(1);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_3_common_micro_libs_src_jsutils_objectExtend__ = __webpack_require__(0);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_4_common_micro_libs_src_jsutils_fillTemplate__ = __webpack_require__(3);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_5_common_micro_libs_src_jsutils_parseHTML__ = __webpack_require__(4);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_6_common_micro_libs_src_domutils_domAddClass__ = __webpack_require__(8);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_7_common_micro_libs_src_domutils_domAddEventListener__ = __webpack_require__(9);
+        /* harmony import */
+        var __WEBPACK_IMPORTED_MODULE_8__TextField_html__ = __webpack_require__(142);
         /* harmony import */
         var __WEBPACK_IMPORTED_MODULE_8__TextField_html___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8__TextField_html__);
         /* harmony import */
-        var __WEBPACK_IMPORTED_MODULE_9__TextField_less__ = __webpack_require__(133);
+        var __WEBPACK_IMPORTED_MODULE_9__TextField_less__ = __webpack_require__(143);
         /* harmony import */
         __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9__TextField_less__);
         var PRIVATE = __WEBPACK_IMPORTED_MODULE_2_common_micro_libs_src_jsutils_dataStore__.a.create(), /**
@@ -12306,26 +12758,26 @@
         };
         /* harmony default export */
         __webpack_exports__.a = TextField;
-    }, /* 132 */
+    }, /* 142 */
     /***/
     function(module, exports) {
         module.exports = '<div class="ms-TextField ms-font-m spwidgets-TextField">\r\n    <label class="ms-Label">{{column.DisplayName}}</label>\r\n    <input class="ms-TextField-field" type="text" placeholder="{{placeholder}}" pattern="{{validationPattern}}">\r\n    <span class="ms-TextField-description">{{column.Description}}</span>\r\n</div>';
-    }, /* 133 */
+    }, /* 143 */
     /***/
     function(module, exports, __webpack_require__) {
-        var content = __webpack_require__(134);
+        var content = __webpack_require__(144);
         "string" === typeof content && (content = [ [ module.i, content, "" ] ]);
         var options = {
             hmr: true
         };
         options.transform = void 0;
         options.insertInto = void 0;
-        __webpack_require__(6)(content, options);
+        __webpack_require__(7)(content, options);
         content.locals && (module.exports = content.locals);
-    }, /* 134 */
+    }, /* 144 */
     /***/
     function(module, exports, __webpack_require__) {
-        exports = module.exports = __webpack_require__(5)();
+        exports = module.exports = __webpack_require__(6)();
         // imports
         // module
         exports.push([ module.i, ".spwidgets-TextField input.ms-TextField-field {\n  min-width: 100%;\n}\n.spwidgets-TextField--noLabel .ms-Label {\n  display: none;\n}\n.spwidgets-TextField--noDescription .ms-TextField-description {\n  display: none;\n}\n", "" ]);
