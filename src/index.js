@@ -27,6 +27,7 @@ import LookupField              from './widgets/LookupField/LookupField'
 import Message                  from './widgets/Message/Message'
 import PeoplePicker             from './widgets/PeoplePicker/PeoplePicker'
 import Persona                  from './widgets/Persona/Persona'
+import PersonaCard              from './widgets/PersonaCard/PersonaCard'
 import TextField                from './widgets/TextField/TextField'
 
 export default {
@@ -59,5 +60,6 @@ export default {
     Message:                Message,
     PeoplePicker:           PeoplePicker,
     Persona:                Persona,
+    PersonaCard:            PersonaCard,
     TextField:              TextField
 };

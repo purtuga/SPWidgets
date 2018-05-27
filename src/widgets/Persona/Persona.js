@@ -34,7 +34,6 @@ var CSS_CLASS_MS_PERSONA_INITIALS   = `${CSS_CLASS_MS_PERSONA}-initials`;
  * @param {String} [options.size=null]
  * @param {Boolean} [options.hideDetails=false]
  * @param {Boolean} [options.hideAction=true]
- * @param {Boolean} [options.hideInitials=true]
  * @param {String} [options.initialsColor=nul]
  *
  * @fires Persona#click
@@ -365,7 +364,7 @@ Persona.defaults = {
     size:           null,
     hideDetails:    false,
     hideAction:     true,
-    hideInitials:   true,
+    showInitials:   false,
     initialsColor:  null
 };
 
