@@ -44,7 +44,8 @@ const ListItemModel = ObservableObject.extend(/** @lends ListItemModel.prototype
                 if (fieldName && !this.hasOwnProperty(fieldName)) {
                     this[fieldName] = "";
                 }
-            });                                                                              }
+            });
+        }
 
         PRIVATE.set(this, opt);
         this.onDestroy(() => PRIVATE["delete"](this));
