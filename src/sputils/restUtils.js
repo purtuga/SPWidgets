@@ -1,6 +1,6 @@
 import objectExtend from "common-micro-libs/src/jsutils/objectExtend"
 import {objectDefineProperty} from "common-micro-libs/src/jsutils/runtime-aliases"
-import { REST_HEADERS } from "./constants"
+import { REST_HEADERS, REST_HEADERS_NO_METADATA } from "./constants"
 import apiFetch from "./apiFetch";
 import getContextInfo from "../spapi/rest/getContextInfo";
 
@@ -10,11 +10,17 @@ import getContextInfo from "../spapi/rest/getContextInfo";
  * Returns an object with the standard JSON headers for a SharePoint REST call.
  *
  * @param {ContextWebInformation} [contextInfo]
+ * @param {Boolean} [noDataNoMetadata=false]
+ *  If set to `true`, then the REST headers that indicate `odata=nometadata` will be used.
  *
  * @return {Object}
  */
-export function getRestHeaders (contextInfo) {
-    return objectExtend({}, REST_HEADERS, contextInfo ? {"X-RequestDigest": contextInfo.FormDigestValue} : null);
+export function getRestHeaders (contextInfo, noDataNoMetadata = false) {
+    return objectExtend(
+        {},
+        noDataNoMetadata ? REST_HEADERS_NO_METADATA : REST_HEADERS,
+        contextInfo ? {"X-RequestDigest": contextInfo.FormDigestValue} : null
+    );
 }
 
 
@@ -49,7 +55,7 @@ export function processResults(results) {
                     objectDefineProperty(
                         results[x][attrName],
                         "load",
-                        { configurable: true, writable: true, value: fetchDeferredUri}
+                        { configurable: true, writable: true, value: fetchDeferredUri }
                     );
                 }
             }

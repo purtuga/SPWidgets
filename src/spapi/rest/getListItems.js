@@ -5,7 +5,6 @@ import { getRestHeaders, processResults }   from "../../sputils/restUtils"
 import ListItemModel from "../../models/ListItemModel"
 import ListItemsCollection from "../../collections/ListItemsCollection"
 import {IS_GUID_RE} from "../../sputils/constants";
-import {objectDefineProperty} from "common-micro-libs/src/jsutils/runtime-aliases"
 
 
 //==================================================================
@@ -13,8 +12,8 @@ const encodeURIComponent = window.encodeURIComponent;
 
 
 /**
- * Method to retrieve data from a SharePoint list using GetListItems or
- * GetListItemChangesSinceToken operations of the List.axps webservice.
+ * Method to retrieve data from a SharePoint lists
+ *
  * @function
  *
  * @param {Object} options
@@ -59,19 +58,19 @@ export function getListItems(options) {
             // FIXME: should encodeURIComponent() be used for below options?
 
             if (opt.filter) {
-                requestUrl+= `$filter=${opt.filter}`;
+                requestUrl+= `&$filter=${opt.filter}`;
             }
 
             if (opt.select) {
-                requestUrl+= `$select=${opt.select}`;
+                requestUrl+= `&$select=${opt.select}`;
             }
 
             if (opt.orderBy) {
-                requestUrl+= `$orderby=${opt.orderBy}`;
+                requestUrl+= `&$orderby=${opt.orderBy}`;
             }
 
             if (opt.expand) {
-                requestUrl+= `$expand=${opt.expand}`;
+                requestUrl+= `&$expand=${opt.expand}`;
             }
 
             opt.requestUrl = requestUrl;
@@ -81,9 +80,9 @@ export function getListItems(options) {
                     method:     "GET",
                     headers:    getRestHeaders(contextInfo)
                 })
-                .then(items => {
+                .then(fetchResponse => {
                     return ListItemsCollection.create(
-                        items.content.d.results.map(item => {
+                        fetchResponse.content.d.results.map(item => {
                             processResults(item);
                             return ListItemModel.create(item, opt);
                         })
