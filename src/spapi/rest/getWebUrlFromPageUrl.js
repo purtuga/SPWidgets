@@ -70,7 +70,7 @@ export default function getWebUrlFromPageUrl(pageUrl) {
                 headers: getRestHeaders()
             }
         )
-        .then(response => getFullUrl(response.content.d.GetWebUrlFromPageUrl));
+        .then(response => getFullUrl(response.content));
 
     cache.set(cacheKey, apiRequest);
     apiRequest.catch(e => {

@@ -25,8 +25,8 @@ export function getCurrentUser(options) {
     if (cache.get(currentUserCachekey)) {
         return cache.get(currentUserCachekey);
     }
-    const opt       = objectExtend({}, getCurrentUser.defaults, options);
-    const response  = getContextInfo(opt.webURL).then(contextInfo => {
+    const opt = objectExtend({}, getCurrentUser.defaults, options);
+    const response = getContextInfo(opt.webURL).then(contextInfo => {
         let webURL = contextInfo.WebFullUrl;
 
         // Because User Profile service is not available in Foundation, we ignore failures from that api call
@@ -77,7 +77,7 @@ getCurrentUser.defaults = {
 function getMyPropertiesFromUserProfile (webURL) {
     return apiFetch(`${ webURL }/_api/SP.UserProfiles.PeopleManager/GetMyProperties`, {
         method: "GET",
-        headers: getRestHeaders()
+        headers: getRestHeaders(null, true)
     }).then(response => {
         const user = response.content.d;
 
@@ -140,7 +140,7 @@ function getMyPropertiesFromUserProfile (webURL) {
 function getWebCurrentUser(webURL) {
     return apiFetch(`${ webURL }/_api/Web/CurrentUser`, {
         method: "GET",
-        headers: getRestHeaders()
+        headers: getRestHeaders(null, true)
     }).then(response => {
         return processUserInfo(response.content.d);
     });

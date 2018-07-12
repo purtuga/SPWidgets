@@ -46,7 +46,7 @@ export default function ensureUser (options) {
 
             const apiRequest = apiFetch(`${ contextInfo.WebFullUrl }/_api/web/ensureuser`, {
                 method:     "POST",
-                headers:    getRestHeaders(contextInfo),
+                headers:    getRestHeaders(contextInfo, true),
                 body:       JSON.stringify({ logonName: opt.logonName })
             });
 

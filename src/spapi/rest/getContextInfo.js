@@ -67,7 +67,7 @@ export default function getContextInfo (webURL, noCache) {
              * @property {String} WebFullUrl
              *  Specifies the URL of the site.
              */
-            const contextInfo = Object.freeze(response.content.d.GetContextWebInformation);
+            const contextInfo = Object.freeze(response.content);
 
             // Expire the cached version 1 minute before the set expiration on the form digest.
             apiResponse._settimeout = setTimeout(() => {

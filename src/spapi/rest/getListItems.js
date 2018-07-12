@@ -82,7 +82,7 @@ export function getListItems(options) {
                 })
                 .then(fetchResponse => {
                     return ListItemsCollection.create(
-                        fetchResponse.content.d.results.map(item => {
+                        fetchResponse.content.value.map(item => {
                             processResults(item);
                             return ListItemModel.create(item, opt);
                         })

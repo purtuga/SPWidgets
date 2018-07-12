@@ -65,7 +65,7 @@ export function searchPeoplePicker(options) {
 
         const apiRequest = apiFetch(`${ contextInfo.WebFullUrl }/_api/SP.UI.ApplicationPages.ClientPeoplePickerWebServiceInterface.ClientPeoplePickerSearchUser`, {
             method:     "POST",
-            headers:    getRestHeaders(contextInfo),
+            headers:    getRestHeaders(contextInfo, true),
             body:       JSON.stringify({
                 queryParams: {
                     QueryString:                opt.searchText,

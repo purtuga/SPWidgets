@@ -9,6 +9,9 @@ import {IS_GUID_RE} from "../../sputils/constants";
 //==================================================================
 const encodeURIComponent = window.encodeURIComponent;
 
+////// FIXME: support Array of updates
+////// FIXME: support updates defined as as string (pass it to `body` of request as is)
+
 
 /**
  * Makes updates to list items
@@ -70,8 +73,8 @@ export function updateListItems(options) {
             opt.isREST = true;
 
             return apiFetch(requestUrl, {
-                method: "POST",
-                headers: getRestHeaders(contextInfo, true),
+                method: opt.type.toLowerCase() === "create" ? "POST" : "PATCH",
+                headers: getRestHeaders(contextInfo),
                 body: JSON.stringify(opt.updates)
             }).then(fetchResponse => {
                 return opt.ListItemModel.create(fetchResponse.content, opt);
@@ -79,6 +82,8 @@ export function updateListItems(options) {
         });
 }
 export default updateListItems;
+
+
 
 /**
  * Default options for `updateListItems` REST method
@@ -88,7 +93,7 @@ export default updateListItems;
 updateListItems.defaults = {
     list: "",
     web: "",
-    type: "udpate",
-    udpates: null,
+    type: "update",
+    updates: null,
     ListItemModel
 };

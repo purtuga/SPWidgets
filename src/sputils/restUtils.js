@@ -10,15 +10,16 @@ import getContextInfo from "../spapi/rest/getContextInfo";
  * Returns an object with the standard JSON headers for a SharePoint REST call.
  *
  * @param {ContextWebInformation} [contextInfo]
- * @param {Boolean} [noDataNoMetadata=false]
- *  If set to `true`, then the REST headers that indicate `odata=nometadata` will be used.
+ * @param {Boolean} [oDataVerbose=false]
+ *  If set to `true`, then the REST headers that indicate `odata=verbose` will be used.
+ *  Default is to use `odata=nometadata`.
  *
  * @return {Object}
  */
-export function getRestHeaders (contextInfo, noDataNoMetadata = false) {
+export function getRestHeaders (contextInfo, oDataVerbose = false) {
     return objectExtend(
         {},
-        noDataNoMetadata ? REST_HEADERS_NO_METADATA : REST_HEADERS,
+        oDataVerbose ? REST_HEADERS : REST_HEADERS_NO_METADATA,
         contextInfo ? {"X-RequestDigest": contextInfo.FormDigestValue} : null
     );
 }
@@ -69,7 +70,7 @@ function fetchDeferredUri () {
         .then(contextInfo => {
             return apiFetch(this.__deferred.uri, {
                 method:     "GET",
-                headers:    getRestHeaders(contextInfo)
+                headers:    getRestHeaders(contextInfo, true)
             });
         });
 }
