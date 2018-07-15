@@ -59,7 +59,7 @@ import objectExtend from "common-micro-libs/src/jsutils/objectExtend";
 
         var opt     = objectExtend({}, {
                         xDoc:               null,
-                        nodeName:           '',
+                        nodeName:           "",
                         cleanAttr:          true,
                         nodeModel:          null,
                         nodeModelOptions:   null,
@@ -69,11 +69,11 @@ import objectExtend from "common-micro-libs/src/jsutils/objectExtend";
             getNodeAsObj, nodeList, i, j;
 
         if (nodes.length === 0 && opt.nodeName === "z:row") {
-            nodes = opt.xDoc.getElementsByTagName('row');
+            nodes = opt.xDoc.getElementsByTagName("row");
         }
 
         if (nodes.length === 0 && opt.nodeName === "rs:data") {
-            nodes = opt.xDoc.getElementsByTagName('data');
+            nodes = opt.xDoc.getElementsByTagName("data");
         }
 
         nodeList = [];
@@ -106,7 +106,7 @@ import objectExtend from "common-micro-libs/src/jsutils/objectExtend";
             // Also store the original xml node
             // FIXME: remove ___xmlNode from object
             // row.___xmlNode = ele;
-            Object.defineProperty(row, '___xmlNode', {
+            Object.defineProperty(row, "___xmlNode", {
                 value:          ele,
                 configurable:   true
             });

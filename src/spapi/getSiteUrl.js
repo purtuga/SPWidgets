@@ -46,7 +46,7 @@ import $ from "jquery";
         // return caller function
         return function(pageUrl) {
 
-            var page        = '',
+            var page        = "",
                 isThisPage  = false,
                 errorMessage = "getSiteUrl(): Unable to determine site url from " + pageUrl;
 
@@ -130,7 +130,7 @@ import $ from "jquery";
                     dataType:       "xml",
                     success:        function(xDoc) {
 
-                        siteUrl[page] = $(xDoc).find("WebUrlFromPageUrlResult").text() || '';
+                        siteUrl[page] = $(xDoc).find("WebUrlFromPageUrlResult").text() || "";
 
 
                     } //end: success

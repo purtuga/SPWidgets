@@ -61,7 +61,7 @@ import objectExtend from "common-micro-libs/src/jsutils/objectExtend";
 
     FilterColumnTextField = FilterColumn.extend(FilterColumnTextField);
     FilterColumnTextField.defaults = {
-        delimiter:      ';',
+        delimiter:      ";",
         ignoreKeywords: new RegExp()
     };
 

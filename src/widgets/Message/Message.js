@@ -98,7 +98,7 @@ const Message = Widget.extend(/** @lends Message.prototype */{
                 }
             });
 
-            PRIVATE['delete'](this);
+            PRIVATE["delete"](this);
         });
     },
 
@@ -169,15 +169,12 @@ function getIconForMsgType(type) {
     switch (type.toLowerCase()){
         case "error":
             return CSS_CLASS_MS_ICON_ERROR;
-            break;
 
         case "alert":
             return CSS_CLASS_MS_ICON_ALERT;
-            break;
 
         case "success":
             return CSS_CLASS_MS_ICON_SUCCESS;
-            break;
 
         default:
             return CSS_CLASS_MS_ICON_INFO;
@@ -186,11 +183,11 @@ function getIconForMsgType(type) {
 
 
 Message.defaults = {
-    message:            '',
+    message:            "",
     extendedMessage:    "",
-    type:               'info',
-    iconClass:          '',
-    more:               '++'
+    type:               "info",
+    iconClass:          "",
+    more:               "++"
 };
 
 export default Message;

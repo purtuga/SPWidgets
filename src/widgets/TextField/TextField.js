@@ -12,7 +12,7 @@ import "./TextField.less";
 var
 PRIVATE = dataStore.create(),
 
-CSS_CLASS_BASE              = 'spwidgets-TextField',
+CSS_CLASS_BASE              = "spwidgets-TextField",
 CSS_CLASS_NO_LABEL          = CSS_CLASS_BASE + "--noLabel",
 CSS_CLASS_NO_DESCRIPTION    = CSS_CLASS_BASE + "--noDescription",
 
@@ -110,7 +110,7 @@ TextField = /** @lends TextField.prototype */{
                 }
             });
 
-            PRIVATE['delete'](this);
+            PRIVATE["delete"](this);
         });
     },
 

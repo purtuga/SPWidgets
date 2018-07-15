@@ -49,7 +49,7 @@ const getListContentTypes = function(options) {
         return apiFetch(webURL + "_vti_bin/Lists.asmx", {
             method: "POST",
             headers: {
-                'Content-Type': 'text/xml;charset=UTF-8'
+                "Content-Type": "text/xml;charset=UTF-8"
             },
             body: "<soap:Envelope xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>" +
             "<soap:Body><GetListContentTypes xmlns='http://schemas.microsoft.com/sharepoint/soap/'><listName>" +

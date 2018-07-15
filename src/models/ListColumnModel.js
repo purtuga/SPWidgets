@@ -71,7 +71,7 @@ const ListColumnModel = Compose.extend(/** @lends ListColumnModel.prototype */{
         }
 
         instData.set(this, opt);
-        this.onDestroy(() => instData['delete'](this));
+        this.onDestroy(() => instData["delete"](this));
     },
 
     /**
@@ -105,10 +105,10 @@ const ListColumnModel = Compose.extend(/** @lends ListColumnModel.prototype */{
                 case "LookupMulti":
                     getListItems(objectExtend(
                         {
-                            CAMLQuery:  '<Query><OrderBy><FieldRef Name="' +
-                                me.ShowField + '"/></OrderBy></Query>',
-                            CAMLViewFields: '<ViewFields><FieldRef Name="' +
-                                me.ShowField + '"/></ViewFields>'
+                            CAMLQuery:  "<Query><OrderBy><FieldRef Name=\"" +
+                                me.ShowField + "\"/></OrderBy></Query>",
+                            CAMLViewFields: "<ViewFields><FieldRef Name=\"" +
+                                me.ShowField + "\"/></ViewFields>"
                         },
                         lookupOptions,
                         {

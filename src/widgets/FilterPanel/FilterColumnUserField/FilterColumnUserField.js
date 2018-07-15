@@ -26,7 +26,7 @@ const FilterColumnUserField = FilterColumn.extend(/** @lends FilterColumnUserFie
             type: userSelectionMode && (userSelectionMode === "PeopleOnly" || String(userSelectionMode) === "0") ? "User" : "All"
         });
 
-        ['remove', 'select'].forEach(function(evName){
+        ["remove", "select"].forEach(function(evName){
             peoplePicker.on(evName, this.evalDirtyState.bind(this));
         }.bind(this));
 

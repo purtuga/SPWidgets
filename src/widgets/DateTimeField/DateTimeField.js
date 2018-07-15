@@ -15,8 +15,7 @@ import "./DateTimeField.less";
 
 //--------------------------------------------------------
 var PRIVATE = dataStore.create();
-var WINDOW_NAVIGATOR    = window.navigator;
-var CSS_BASE_CLASS      = 'spwidgets-DateTimeField';
+var CSS_BASE_CLASS      = "spwidgets-DateTimeField";
 
 /**
  * A SharePoint DateTime field.
@@ -79,8 +78,8 @@ var DateTimeField = /** @lends DateTimeField.prototype */{
             dateFormat: inst.isDateOnly ? opt.dateFormat : opt.dateTimeFormat,
             enableTime: !inst.isDateOnly,
             inline:     opt.inline,
-            prevArrow:  '<i class="ms-Icon ms-Icon--ChevronLeft" />',
-            nextArrow:  '<i class="ms-Icon ms-Icon--ChevronRight" />',
+            prevArrow:  "<i class=\"ms-Icon ms-Icon--ChevronLeft\" />",
+            nextArrow:  "<i class=\"ms-Icon ms-Icon--ChevronRight\" />",
             onChange:   function(dtObj, dtStr){
                 /**
                  * Date and/or time was changed

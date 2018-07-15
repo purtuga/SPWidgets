@@ -55,21 +55,21 @@ import domFind from "common-micro-libs/src/domutils/domFind";
             opt.webURL = webURL + "/_vti_bin/People.asmx";
 
             var principalXml = opt.principalKeys.map(function(principal){
-                return '<string>' + principal + '</string>';
+                return "<string>" + principal + "</string>";
             }).join("");
 
             return apiFetch(opt.webURL, {
                 method:     "POST",
                 headers:    {
-                    'Content-Type': 'text/xml;charset=UTF-8',
-                    'SOAPAction':   'http://schemas.microsoft.com/sharepoint/soap/ResolvePrincipals'
+                    "Content-Type": "text/xml;charset=UTF-8",
+                    "SOAPAction":   "http://schemas.microsoft.com/sharepoint/soap/ResolvePrincipals"
                 },
-                body: '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
-                    '<soap:Body><ResolvePrincipals xmlns="http://schemas.microsoft.com/sharepoint/soap/">' +
-                    '<principalKeys>' + principalXml + '</principalKeys>' +
-                    '<principalType>' + opt.principalType + '</principalType>' +
-                    '<addToUserInfoList>' + opt.addToUserInfoList + '</addToUserInfoList>' +
-                    '</ResolvePrincipals></soap:Body></soap:Envelope>'
+                body: "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+                    "<soap:Body><ResolvePrincipals xmlns=\"http://schemas.microsoft.com/sharepoint/soap/\">" +
+                    "<principalKeys>" + principalXml + "</principalKeys>" +
+                    "<principalType>" + opt.principalType + "</principalType>" +
+                    "<addToUserInfoList>" + opt.addToUserInfoList + "</addToUserInfoList>" +
+                    "</ResolvePrincipals></soap:Body></soap:Envelope>"
             })
             .then(function(response){
                 return domFind(response.content, "PrincipalInfo").map(function(principalInfo){
@@ -95,9 +95,9 @@ import domFind from "common-micro-libs/src/domutils/domFind";
     };
 
     resolvePrincipals.defaults = {
-        webURL:             '',
+        webURL:             "",
         principalKeys:      [],
-        principalType:      'All',
+        principalType:      "All",
         addToUserInfoList:  true,
         UserProfileModel:   UserProfileModel
     };

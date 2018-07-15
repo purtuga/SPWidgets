@@ -121,7 +121,7 @@ ListModel = /** @lends ListModel.prototype */{
 
         instData.set(me, opt);
 
-        if (opt.type === 'xml') {
+        if (opt.type === "xml") {
             listObj = getListDetailsFromXML.call(me, opt.source);
 
         } else if (opt.type === "json"){
@@ -129,7 +129,7 @@ ListModel = /** @lends ListModel.prototype */{
         }
 
         objectExtend(me, listObj);
-        this.onDestroy(() => instData['delete'](this));
+        this.onDestroy(() => instData["delete"](this));
     },
 
     /**

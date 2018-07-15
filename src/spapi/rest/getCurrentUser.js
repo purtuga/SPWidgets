@@ -52,7 +52,7 @@ export function getCurrentUser(options) {
     response
         .then(currentUser => {
             if (!currentUser.ID) {
-                logIt(`WARNING: currentUser.ID is not set!`);
+                logIt("WARNING: currentUser.ID is not set!");
             }
         })
         .catch(e => {

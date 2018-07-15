@@ -94,7 +94,7 @@ const ChoiceItem = EventEmitter.extend(Widget).extend(/** @lends ChoiceItem.prot
                 }
             });
 
-            PRIVATE['delete'](this);
+            PRIVATE["delete"](this);
         }.bind(this));
     },
 

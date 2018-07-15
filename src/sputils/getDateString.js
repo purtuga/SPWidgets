@@ -21,28 +21,28 @@
 
         function pad( n ) {
 
-            return n < 10 ? '0' + n : n;
+            return n < 10 ? "0" + n : n;
 
         }
 
-        var ret = '';
+        var ret = "";
 
-        if (formatType === 'utc') {
+        if (formatType === "utc") {
 
-            ret = dateObj.getUTCFullYear() + '-' +
-                    pad( dateObj.getUTCMonth() + 1 ) + '-' +
-                    pad( dateObj.getUTCDate() ) + 'T' +
-                    pad( dateObj.getUTCHours() ) + ':' +
-                    pad( dateObj.getUTCMinutes() )+ ':' +
-                    pad( dateObj.getUTCSeconds() )+ 'Z';
+            ret = dateObj.getUTCFullYear() + "-" +
+                    pad( dateObj.getUTCMonth() + 1 ) + "-" +
+                    pad( dateObj.getUTCDate() ) + "T" +
+                    pad( dateObj.getUTCHours() ) + ":" +
+                    pad( dateObj.getUTCMinutes() )+ ":" +
+                    pad( dateObj.getUTCSeconds() )+ "Z";
 
         } else {
 
-            ret = dateObj.getFullYear() + '-' +
-                    pad( dateObj.getMonth() + 1 ) + '-' +
-                    pad( dateObj.getDate() ) + 'T' +
-                    pad( dateObj.getHours() ) + ':' +
-                    pad( dateObj.getMinutes() )+ ':' +
+            ret = dateObj.getFullYear() + "-" +
+                    pad( dateObj.getMonth() + 1 ) + "-" +
+                    pad( dateObj.getDate() ) + "T" +
+                    pad( dateObj.getHours() ) + ":" +
+                    pad( dateObj.getMinutes() )+ ":" +
                     pad( dateObj.getSeconds() );
 
         }

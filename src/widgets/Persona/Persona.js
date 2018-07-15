@@ -15,8 +15,8 @@ import "./Persona.less";
 
 //----------------------------------------------------------------
 var PRIVATE                         = dataStore.create();
-var CSS_CLASS_BASE                  = 'spwidgets-Persona';
-var CSS_CLASS_MS_PERSONA            = 'ms-Persona';
+var CSS_CLASS_BASE                  = "spwidgets-Persona";
+var CSS_CLASS_MS_PERSONA            = "ms-Persona";
 var CSS_CLASS_SHOW_INITIALS         = `${CSS_CLASS_BASE}--showInitials`;
 var CSS_CLASS_NO_DETAILS            = `${CSS_CLASS_BASE}--noDetails`;
 var CSS_CLASS_MS_PERSONA_INITIALS   = `${CSS_CLASS_MS_PERSONA}-initials`;
@@ -146,7 +146,7 @@ var Persona = {
                 }
             });
 
-            PRIVATE['delete'](this);
+            PRIVATE["delete"](this);
         }.bind(this));
     },
 

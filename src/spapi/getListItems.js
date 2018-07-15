@@ -96,7 +96,7 @@ import objectExtend from "common-micro-libs/src/jsutils/objectExtend";
 
             reqPromise = apiFetch(opt.webURL + "_vti_bin/Lists.asmx", {
                 method:     "POST",
-                headers:    { 'Content-Type': 'text/xml;charset=UTF-8' },
+                headers:    { "Content-Type": "text/xml;charset=UTF-8" },
                 body:       "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
                             "<soap:Body>" +"<" + opt.operation + " xmlns=\"http://schemas.microsoft.com/sharepoint/soap/\"><listName>" +
                             opt.listName + "</listName><viewName>" +
@@ -141,17 +141,17 @@ import objectExtend from "common-micro-libs/src/jsutils/objectExtend";
     };
 
     getListItems.defaults = {
-        listName:       '',
-        webURL:         '',
-        viewName:       '',
-        CAMLViewFields: '',
-        CAMLQuery:      '',
-        CAMLRowLimit:   '',
-        CAMLQueryOptions:   '',
-        operation:      'GetListItems', // Optionally: set it to = GetListItemChangesSinceToken
+        listName:       "",
+        webURL:         "",
+        viewName:       "",
+        CAMLViewFields: "",
+        CAMLQuery:      "",
+        CAMLRowLimit:   "",
+        CAMLQueryOptions:   "",
+        operation:      "GetListItems", // Optionally: set it to = GetListItemChangesSinceToken
         cacheXML:       false,
         async:          true,
-        changeToken:    '', // GetListChangesSinceToken only
+        changeToken:    "", // GetListChangesSinceToken only
         ListItemModel:  ListItemModel,
         ListItemCollection: ListItemsCollection
     };

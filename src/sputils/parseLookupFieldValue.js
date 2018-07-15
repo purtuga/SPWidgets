@@ -26,7 +26,7 @@
  */
 const parseLookupFieldValue = function(lookupValue) {
     var response    = [],
-        valueTokens = String(lookupValue).split(';#'),
+        valueTokens = String(lookupValue).split(";#"),
         total       = valueTokens.length,
         i, vId, vTitle;
 

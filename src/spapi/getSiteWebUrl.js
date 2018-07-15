@@ -27,7 +27,7 @@ import getFullUrl   from "../sputils/getFullUrl";
  *
  */
 var getSiteUrl = function(pageUrl) {
-    var page            = '',
+    var page            = "",
         isThisPage      = false,
         errorMessage    = "getSiteUrl(): Unable to determine site url from " + pageUrl,
         cacheKey        = "getSiteWebUrl():",
@@ -76,8 +76,8 @@ var getSiteUrl = function(pageUrl) {
                 //_spPageContextInfo.webServerRelativeUrl
             ) {
                 [
-                    'webAbsoluteUrl',
-                    'webServerRelativeUrl'
+                    "webAbsoluteUrl",
+                    "webServerRelativeUrl"
                 ].some(function(attr){
                     if (_spPageContextInfo[attr]) {
                         siteUrl = _spPageContextInfo[attr];
@@ -102,7 +102,7 @@ var getSiteUrl = function(pageUrl) {
         // Works only if running inside of SharePoint (ex. in webpart)
         apiFetch(getFullUrl("/_vti_bin/Webs.asmx", true), {
             method:     "POST",
-            headers:    { 'Content-Type': 'text/xml;charset=UTF-8' },
+            headers:    { "Content-Type": "text/xml;charset=UTF-8" },
             body:       "<soap:Envelope xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'><soap:Body><WebUrlFromPageUrl xmlns='http://schemas.microsoft.com/sharepoint/soap/' >" +
             "<pageUrl>" + page + "</pageUrl></WebUrlFromPageUrl></soap:Body></soap:Envelope>"
         })

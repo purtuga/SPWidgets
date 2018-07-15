@@ -47,7 +47,7 @@ var parseDateString = function parseDateString(dateString) {
     numericKeys = [ 1, 4, 5, 6, 7, 10, 11 ];
 
     // Define regEx
-    re = /^(\d{4}|[+\-]\d{6})(?:-(\d{2})(?:-(\d{2}))?)?(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{3}))?)?(?:(Z)|([+\-])(\d{2})(?::(\d{2}))?)?)?$/;
+    re = /^(\d{4}|[+\-]\d{6})(?:-(\d{2})(?:-(\d{2}))?)?(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{3}))?)?(?:(Z)|([+\-])(\d{2})(?::(\d{2}))?)?)?$/; // eslint-disable-line
 
     // dtPieces:
     //    [0]
@@ -81,14 +81,14 @@ var parseDateString = function parseDateString(dateString) {
     --dtPieces[2];
 
     // Date specifed UTC Format?
-    if (dtPieces[8] === 'Z') {
+    if (dtPieces[8] === "Z") {
 
         // do we need to calculate offset to minutes?
         if (dtPieces[9] !== undefined) {
 
             minOffset = dtPieces[10] * 60 + dtPieces[11];
 
-            if (dtPieces[9] === '+') {
+            if (dtPieces[9] === "+") {
 
                 minOffset = (- minOffset);
 

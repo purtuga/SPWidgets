@@ -4,13 +4,6 @@ import dataStore            from "common-micro-libs/src/jsutils/dataStore"
 import objectExtend         from "common-micro-libs/src/jsutils/objectExtend"
 import fillTemplate         from "common-micro-libs/src/jsutils/fillTemplate"
 import parseHTML            from "common-micro-libs/src/jsutils/parseHTML"
-import domAddEventListener  from "common-micro-libs/src/domutils/domAddEventListener"
-import domClosest           from "common-micro-libs/src/domutils/domClosest"
-import domFind              from "common-micro-libs/src/domutils/domFind"
-import domHasClass          from "common-micro-libs/src/domutils/domHasClass"
-import domAddClass          from "common-micro-libs/src/domutils/domAddClass"
-import domRemoveClass       from "common-micro-libs/src/domutils/domRemoveClass"
-import domTriggerEvent      from "common-micro-libs/src/domutils/domTriggerEvent"
 
 import Result               from "../Result/Result"
 import ResultGroupTemplate  from "./ResultGroup.html"
@@ -65,7 +58,7 @@ let ResultGroup = /** @lends ResultGroup */{
             });
             inst.uiFind         = undefined;
             inst.$resultList    = undefined;
-            PRIVATE['delete'](this);
+            PRIVATE["delete"](this);
         }.bind(this));
     },
 

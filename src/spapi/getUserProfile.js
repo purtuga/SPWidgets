@@ -56,12 +56,12 @@ var getUserProfile = function(options){
         reqPromise = apiFetch(webURL + "_vti_bin/UserProfileService.asmx", {
                 method:     "POST",
                 headers:    {
-                    'Content-Type': 'text/xml;charset=UTF-8',
-                    'SOAPAction':   'http://microsoft.com/webservices/SharePointPortalServer/UserProfileService/GetUserProfileByName'
+                    "Content-Type": "text/xml;charset=UTF-8",
+                    "SOAPAction":   "http://microsoft.com/webservices/SharePointPortalServer/UserProfileService/GetUserProfileByName"
                 },
-                body: '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
-                    '<soap:Body><GetUserProfileByName xmlns="http://microsoft.com/webservices/SharePointPortalServer/UserProfileService">' +
-                    '<AccountName>' + opt.accountName + '</AccountName></GetUserProfileByName></soap:Body></soap:Envelope>'
+                body: "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+                    "<soap:Body><GetUserProfileByName xmlns=\"http://microsoft.com/webservices/SharePointPortalServer/UserProfileService\">" +
+                    "<AccountName>" + opt.accountName + "</AccountName></GetUserProfileByName></soap:Body></soap:Envelope>"
             })
             .then(function(response){
                 var profile = {};
@@ -100,9 +100,9 @@ var getUserProfile = function(options){
 };
 
 getUserProfile.defaults = {
-    accountName:        '',
-    otherAttr:          '',
-    webURL:             '',
+    accountName:        "",
+    otherAttr:          "",
+    webURL:             "",
     cache:              true,
     UserProfileModel:   UserProfileModel
 };

@@ -104,11 +104,11 @@ export default searchPeoplePicker;
  * @type {Object}
  */
 searchPeoplePicker.defaults = {
-    searchText:         '',
+    searchText:         "",
     maxResults:         50,
-    principalType:      'All',
-    principalSource:    'All',
-    webURL:             '',
+    principalType:      "All",
+    principalSource:    "All",
+    webURL:             "",
     cache:              true,
     UserProfileModel:   UserProfileModel
 };

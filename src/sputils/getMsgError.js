@@ -74,5 +74,5 @@ import parseXML from "common-micro-libs/src/jsutils/parseXML";
 
         error = count + " error(s) encountered! \n" + error;
         return error;
-    };
+    }
 

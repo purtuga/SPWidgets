@@ -49,5 +49,5 @@ import domFind from "common-micro-libs/src/domutils/domFind";
         });
 
         return response;
-    };
+    }
 

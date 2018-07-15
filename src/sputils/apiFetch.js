@@ -68,7 +68,7 @@ parseApiResponse = function(response){
     if (response.headers.map["content-type"].join("").toLowerCase().indexOf("application/json") !== -1) {
         return response.json().then(content => ({
             content,
-            msgType:    'json',
+            msgType:    "json",
             response:   response
         }));
     }
@@ -104,7 +104,7 @@ parseApiResponse = function(response){
  * @returns {*}
  */
 checkForSharePointErrors = function(response){
-    if (response.msgType === 'xml'){
+    if (response.msgType === "xml"){
         if (doesMsgHaveError(response.content)) {
             var error = new Error(getMsgError(response.content));
             error.response = response;

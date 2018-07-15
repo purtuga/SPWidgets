@@ -21,9 +21,9 @@
         // http://sharepoint.stackexchange.com/questions/74978/can-i-tell-what-version-of-sharepoint-is-being-used-from-javascript
 
         var versionMap = {
-                            12: '2007',
-                            14: '2010',
-                            15: '2013'
+                            12: "2007",
+                            14: "2010",
+                            15: "2013"
                         },
             version     = 12,
             foundIt     = false;

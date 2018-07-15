@@ -1,4 +1,3 @@
-import objectExtend             from "common-micro-libs/src/jsutils/objectExtend";
 import UserProfileModel         from "../models/UserProfileModel";
 import parseLookupFieldValue    from "./parseLookupFieldValue";
 
@@ -40,7 +39,7 @@ const parsePeopleField = function(peopleString, PersonModel) {
         //      "",  // Not using it now
         //      ""  // Not using it now
         // ]
-        if (personInfo.Name.indexOf(',#') > -1) {
+        if (personInfo.Name.indexOf(",#") > -1) {
             let additionalAttributes = [
                 "Name",
                 "AccountName",
@@ -51,9 +50,9 @@ const parsePeopleField = function(peopleString, PersonModel) {
                 //"UserPhoto"   // not adding it to the info object because this normally points to the "my site" which requires additional login
             ];
 
-            personInfo.Name.split(/\,#/g).forEach(function(expandedValue, index){
+            personInfo.Name.split(/,#/g).forEach(function(expandedValue, index){
                 if (additionalAttributes[index]) {
-                    personInfo[additionalAttributes[index]] = String(expandedValue || '').replace(/\,\,/g, ',')
+                    personInfo[additionalAttributes[index]] = String(expandedValue || "").replace(/,,/g, ",")
                 }
             });
         }

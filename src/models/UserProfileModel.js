@@ -133,7 +133,7 @@ const UserProfileModel = Compose.extend(/** @lends UserProfileModel.prototype */
             this.setRandomColor();
         }
 
-        this.onDestroy(() => PRIVATE['delete'](this));
+        this.onDestroy(() => PRIVATE["delete"](this));
     },
 
     /**

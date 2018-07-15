@@ -65,15 +65,11 @@ import domFind from "common-micro-libs/src/domutils/domFind";
 
             // Backward compatibility
             if (typeof opt.cacheXML !== "undefined") {
-                try {
-                    console.warn("getSiteListCollection(): cacheXML option deprecated"); // jshint ignore:line
-                } catch(e){}
+                console.warn("getSiteListCollection(): cacheXML option deprecated"); // jshint ignore:line
                 opt.cache = opt.cacheXML;
             }
             if (opt.filter || opt.completefunc) {
-                try {
-                    console.error("getSiteListCollection(): option.filter and option.completefunc not supported"); // jshint ignore:line
-                } catch(e){}
+                console.error("getSiteListCollection(): option.filter and option.completefunc not supported"); // jshint ignore:line
             }
 
             // If cache is true and we have a cached version, return it.
@@ -89,11 +85,11 @@ import domFind from "common-micro-libs/src/domutils/domFind";
 
             reqPromise = apiFetch(opt.webURL, {
                 method:     "POST",
-                headers:    {'Content-Type': 'text/xml;charset=UTF-8'},
-                body:       '<?xml version="1.0" encoding="utf-8"?>' +
-                '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
-                '<soap:Body><GetListCollection xmlns="http://schemas.microsoft.com/sharepoint/soap/">' +
-                '</GetListCollection></soap:Body></soap:Envelope>'
+                headers:    {"Content-Type": "text/xml;charset=UTF-8"},
+                body:       "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+                "<soap:Body><GetListCollection xmlns=\"http://schemas.microsoft.com/sharepoint/soap/\">" +
+                "</GetListCollection></soap:Body></soap:Envelope>"
             });
 
             //-------------------------------------------------------------------
@@ -135,7 +131,7 @@ import domFind from "common-micro-libs/src/domutils/domFind";
     };
 
     getSiteListCollection.defaults = {
-        webURL: '',
+        webURL: "",
         cache:  true
     };
 

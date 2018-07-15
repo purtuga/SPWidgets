@@ -9,9 +9,6 @@ import uuid                 from "common-micro-libs/src/jsutils/uuid"
 
 import domAddClass          from "common-micro-libs/src/domutils/domAddClass"
 import domRemoveClass       from "common-micro-libs/src/domutils/domRemoveClass"
-import domHasClass          from "common-micro-libs/src/domutils/domHasClass"
-import domFind              from "common-micro-libs/src/domutils/domFind"
-import domClosest           from "common-micro-libs/src/domutils/domClosest"
 
 import getListColumns       from "../../spapi/getListColumns"
 
@@ -23,7 +20,7 @@ import "./ChoiceField.less"
 
 var PRIVATE = dataStore.create();
 
-var CSS_CLASS_BASE              = 'spwidgets-ChoiceField';
+var CSS_CLASS_BASE              = "spwidgets-ChoiceField";
 var CSS_CLASS_CHOICES           = CSS_CLASS_BASE + "-choices";
 var CSS_CLASS_NO_LABEL          = CSS_CLASS_BASE + "--noLabel";
 var CSS_CLASS_NO_DESCRIPTION    = CSS_CLASS_BASE + "--noDescription";
@@ -149,7 +146,7 @@ var ChoiceField = /** @lends ChoiceField.prototype */{
         }
 
         if (opt.layout) {
-            domAddClass($ui, CSS_CLASS_BASE + '--' + opt.layout);
+            domAddClass($ui, CSS_CLASS_BASE + "--" + opt.layout);
         }
 
         if (opt.maxHeight) {

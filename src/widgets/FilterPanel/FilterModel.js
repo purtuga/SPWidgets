@@ -40,7 +40,7 @@ FilterModel = {
      *
      * @type {String}
      */
-    type: '',
+    type: "",
 
     /**
      * The type of comparison that should be used when querying SharePoint.
@@ -77,15 +77,15 @@ FilterModel = {
             this,
             {   // !!! ANY ATTRIBUTE ADDED HERE SHOULD
                 // ALSO BE ADDED TO THE JSDOCS ABOVE
-                column:             '',
+                column:             "",
                 type:               col.Type,
-                input:              '',
+                input:              "",
                 values:             [],
-                compareOperator:    '',
-                logicalOperator:    '',
-                sortOrder:          '',
+                compareOperator:    "",
+                logicalOperator:    "",
+                sortOrder:          "",
 
-                matchType:  ''  // backward compatibility
+                matchType:  ""  // backward compatibility
             },
             filterData
         );
@@ -113,7 +113,7 @@ FilterModel = {
         var me              = this;
         var columnSetup     = PRIVATE.get(this).opt.column || {};
         var columnType      = columnSetup.Type || this.type;
-        var compareOperator = me.compareOperator || 'Eq';
+        var compareOperator = me.compareOperator || "Eq";
         var colName         = xmlEscape.escape(me.column);
         var filterValues    = me.values;
         var fieldRefXml     = "<FieldRef Name='{{colName}}'/>";
@@ -198,7 +198,7 @@ FilterModel = {
             "<FieldRef Name='" + this.column + "' Ascending='" +
             (sortOrder === "Des" ? "FALSE" : "TRUE") +
             "'/>" :
-            '';
+            "";
     },
 
     /**

@@ -56,10 +56,10 @@ import domFind from "common-micro-libs/src/domutils/domFind";
 
             var responsePromise = apiFetch(endPoint, {
                 method:     "POST",
-                headers:    { 'Content-Type': 'text/xml;charset=UTF-8' },
-                body:       '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
-                            '<soap:Body><GetFormCollection xmlns="http://schemas.microsoft.com/sharepoint/soap/">' +
-                            '<listName>' + opt.listName + '</listName></GetFormCollection></soap:Body></soap:Envelope>'
+                headers:    { "Content-Type": "text/xml;charset=UTF-8" },
+                body:       "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+                            "<soap:Body><GetFormCollection xmlns=\"http://schemas.microsoft.com/sharepoint/soap/\">" +
+                            "<listName>" + opt.listName + "</listName></GetFormCollection></soap:Body></soap:Envelope>"
             })
             .then(function(response){
                 /**
@@ -111,8 +111,8 @@ import domFind from "common-micro-libs/src/domutils/domFind";
     };
 
     getListFormCollection.defaults = {
-        listName:   '',
-        webURL:     '',
+        listName:   "",
+        webURL:     "",
         cache:      true
     };
 

@@ -47,13 +47,13 @@ var searchPrincipals = function(options){
 
         reqPromise = apiFetch(opt.webURL, {
                 method:     "POST",
-                headers:    {'Content-Type': 'text/xml;charset=UTF-8'},
-                body:       '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
-                    '<soap:Body><SearchPrincipals xmlns="http://schemas.microsoft.com/sharepoint/soap/">' +
-                    '<searchText>' + opt.searchText + '</searchText>' +
-                    '<maxResults>' + opt.maxResults + '</maxResults>' +
-                    '<principalType>' + opt.principalType + '</principalType>' +
-                    '</SearchPrincipals></soap:Body></soap:Envelope>'
+                headers:    {"Content-Type": "text/xml;charset=UTF-8"},
+                body:       "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+                    "<soap:Body><SearchPrincipals xmlns=\"http://schemas.microsoft.com/sharepoint/soap/\">" +
+                    "<searchText>" + opt.searchText + "</searchText>" +
+                    "<maxResults>" + opt.maxResults + "</maxResults>" +
+                    "<principalType>" + opt.principalType + "</principalType>" +
+                    "</SearchPrincipals></soap:Body></soap:Envelope>"
             })
             .then(function(response){
                 return domFind(response.content, "PrincipalInfo").map(function(principalInfo){
@@ -102,10 +102,10 @@ var searchPrincipals = function(options){
 };
 
 searchPrincipals.defaults = {
-    searchText:         '',
+    searchText:         "",
     maxResults:         50,
-    principalType:      'All',
-    webURL:             '',
+    principalType:      "All",
+    webURL:             "",
     cache:              true,
     UserProfileModel:   UserProfileModel
 };

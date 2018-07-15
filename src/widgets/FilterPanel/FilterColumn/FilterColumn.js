@@ -17,7 +17,7 @@ import "./FilterColumn.less";
     var
     PRIVATE = dataStore.stash,
 
-    CSS_CLASS_BASE          = 'spwidgets-FilterPanel-FilterColumn',
+    CSS_CLASS_BASE          = "spwidgets-FilterPanel-FilterColumn",
     CSS_CLASS_SHOW_OPTIONS  = CSS_CLASS_BASE + "--showOptions",
     CSS_CLASS_HIDE_INPUT    = CSS_CLASS_BASE + "--hideInput",
     CSS_CLASS_IS_DIRTY      = CSS_CLASS_BASE + "--isDirty",
@@ -272,7 +272,7 @@ import "./FilterColumn.less";
         addCompareOperators: function(operators){
             var compareOperator     = PRIVATE.get(this).compareOperator,
                 newOperatorsHtml    = operators.reduce(function(html, operator){
-                html += '<option value="' + operator.value + '">' + operator.title + '</option>';
+                html += "<option value=\"" + operator.value + "\">" + operator.title + "</option>";
                 return html;
             }, "");
 
@@ -395,7 +395,7 @@ import "./FilterColumn.less";
     FilterColumn = EventEmitter.extend(Widget, FilterColumn);
     FilterColumn.defaults = {
         column:         {},
-        inputKeywords:  ''
+        inputKeywords:  ""
     };
 
     export default FilterColumn;

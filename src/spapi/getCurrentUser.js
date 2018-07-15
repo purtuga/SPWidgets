@@ -50,7 +50,7 @@ const getCurrentUser = function(options){
         return searchUsingSPPageInfo(opt);
 
     // if getting user principals fails, try scraping user display page
-    })[PROMISE_CATCH](function(e){
+    })[PROMISE_CATCH](function(/*e*/){
         return scrapeUserDisplayPage(opt).then(userInfo => {
             return getUserProfile({
                 accountName:        userInfo.AccountName || userInfo.UserName,
@@ -72,7 +72,7 @@ const getCurrentUser = function(options){
         });
 
     // Unable to get current user
-    })[PROMISE_CATCH](function(e){
+    })[PROMISE_CATCH](function(/*e*/){
         return Promise.reject(new Error("Unable to get current user info."));
     });
 
@@ -100,7 +100,7 @@ function searchUsingSPPageInfo(opt) {
             typeof _spPageContextInfo.userLoginName === "undefined" ||
             typeof _spPageContextInfo.userId        === "undefined"
         ) {
-            reject(new Error('Unable to searchPrincipals for user. Needed info not in _spPageContextInfo'));
+            reject(new Error("Unable to searchPrincipals for user. Needed info not in _spPageContextInfo"));
             return;
         }
 

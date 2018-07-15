@@ -4,7 +4,6 @@ import dataStore from "common-micro-libs/src/jsutils/dataStore";
 import objectExtend from "common-micro-libs/src/jsutils/objectExtend";
 import fillTemplate from "common-micro-libs/src/jsutils/fillTemplate";
 import parseHTML from "common-micro-libs/src/jsutils/parseHTML";
-import domMatches from "common-micro-libs/src/domutils/domMatches";
 import domAddEventListener from "common-micro-libs/src/domutils/domAddEventListener";
 import SelectedItemTemplate from "./SelectedItem.html";
 import "./SelectedItem.less";

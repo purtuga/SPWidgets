@@ -34,7 +34,6 @@ import "./FilterPanel.less"
 
 var
 PRIVATE             = dataStore.create(),
-WINDOW_NAVIGATOR    = window.navigator,
 
 CSS_CLASS_BASE              = "spwidgets-FilterPanel",
 CSS_CLASS_NO_HEADER         = CSS_CLASS_BASE + "--noHeader",
@@ -111,7 +110,7 @@ FilterPanel = /** @lends FilterPanel.prototype */{
 
 
         // Info widget
-        inst.infoMsg = Widget.extend({$ui: parseHTML('<div style="padding: 2em 5%;"/>').firstChild}).create();
+        inst.infoMsg = Widget.extend({$ui: parseHTML("<div style=\"padding: 2em 5%;\"/>").firstChild}).create();
         Message.create({ message: opt.labels.msg }).appendTo(inst.infoMsg.getEle());
         inst.infoMsg.appendTo(inst.body);
 
@@ -552,9 +551,9 @@ FilterPanel.defaults = {
     columns:            null,
     filters:            null,
     ignoreKeywords:     /^(of|and|a|an|to|by|the|or|from)$/i,
-    delimiter:          ';',
+    delimiter:          ";",
     zIndex:             15,
-    bodyHeight:         '',
+    bodyHeight:         "",
 
     FilterColumn:       FilterColumn,   // Base class. Use it to build other fields
     TextWidget:         FilterColumnTextField,
@@ -571,7 +570,7 @@ FilterPanel.defaults = {
 
     hideHeader:         false,
     hideFindButton:     false,
-    selectFieldsLayout: '3-col',    // 1, 2 or 3 -col
+    selectFieldsLayout: "3-col",    // 1, 2 or 3 -col
     labels: {                       // All possible labels used by all widgets
         title:          "Filter",
         find:           "Find",

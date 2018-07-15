@@ -67,7 +67,7 @@ const PersonaCardActions = EventEmitter.extend(Widget).extend(/** @lends Persona
             })).firstChild;
         }
 
-        let uiFind = inst.uiFind = $ui.querySelector.bind($ui);
+        inst.uiFind = $ui.querySelector.bind($ui);
 
         if (inst.selected) {
             this.setSelected(inst.selected);
@@ -106,7 +106,7 @@ const PersonaCardActions = EventEmitter.extend(Widget).extend(/** @lends Persona
                 }
             });
 
-            PRIVATE['delete'](this);
+            PRIVATE["delete"](this);
         });
     },
 

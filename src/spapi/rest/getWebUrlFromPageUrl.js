@@ -1,3 +1,4 @@
+/* global _spPageContextInfo */
 import Promise              from "common-micro-libs/src/jsutils/es6-promise"
 import getFullUrl           from "../../sputils/getFullUrl"
 import { getRestHeaders }   from "../../sputils/restUtils"
@@ -46,7 +47,7 @@ export default function getWebUrlFromPageUrl(pageUrl) {
     // one of several params. We'll then use that to query SP or resolve this request if
     // the current page URL is being used.
     if (typeof _spPageContextInfo !== "undefined") {
-        ['webAbsoluteUrl', 'webServerRelativeUrl'].some(function(attr){
+        ["webAbsoluteUrl", "webServerRelativeUrl"].some(function(attr){
             if (_spPageContextInfo[attr]) {
                 siteUrl = _spPageContextInfo[attr];
                 return true;

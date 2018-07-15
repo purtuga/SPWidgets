@@ -37,7 +37,7 @@ import objectExtend from "common-micro-libs/src/jsutils/objectExtend";
              reqPromise;
 
          // Backwards compatibility
-         if (typeof opt.cacheXML !== 'undefined') {
+         if (typeof opt.cacheXML !== "undefined") {
              opt.cache = opt.cacheXML;
          }
 
@@ -81,12 +81,12 @@ import objectExtend from "common-micro-libs/src/jsutils/objectExtend";
          reqPromise = apiFetch(opt.webURL + "_vti_bin/Lists.asmx", {
              method: "POST",
              headers: {
-                 'Content-Type': 'text/xml;charset=UTF-8'
+                 "Content-Type": "text/xml;charset=UTF-8"
              },
-             body: '<?xml version="1.0" encoding="utf-8"?>' +
-                 '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
-                 '<soap:Body><GetList xmlns="http://schemas.microsoft.com/sharepoint/soap/"><listName>' +
-                 opt.listName + '</listName></GetList></soap:Body></soap:Envelope>'
+             body: "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                 "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+                 "<soap:Body><GetList xmlns=\"http://schemas.microsoft.com/sharepoint/soap/\"><listName>" +
+                 opt.listName + "</listName></GetList></soap:Body></soap:Envelope>"
          });
 
          // If there is a failure, remove from cache
@@ -104,8 +104,8 @@ import objectExtend from "common-micro-libs/src/jsutils/objectExtend";
  };
 
 getList.defaults = {
-    listName:   '',
-    webURL:     '',
+    listName:   "",
+    webURL:     "",
     cache:      true,
     ListModel:  ListModel
 };

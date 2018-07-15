@@ -27,7 +27,7 @@ PRIVATE             = dataStore.create(),
 DOCUMENT            = document,
 BODY                = DOCUMENT.body,
 
-CSS_CLASS_BASE              = 'spwidgets-LookupField',
+CSS_CLASS_BASE              = "spwidgets-LookupField",
 CSS_CLASS_NO_LABEL          = CSS_CLASS_BASE + "--noLabel",
 CSS_CLASS_NO_DESCRIPTION    = CSS_CLASS_BASE + "--noDescription",
 
@@ -94,9 +94,9 @@ LookupField = /** @lends LookupField.prototype */{
         inst = {
             opt:                    objectExtend({}, this.getFactory().defaults, options),
             showChoicesListener:    null,
-            list:                   '',
-            webURL:                 '',
-            fields:                 '',
+            list:                   "",
+            webURL:                 "",
+            fields:                 "",
             listWdg:                null,
             selected:               new Map(), // Keeps ListItemRow->Widget associations
             allowMultiples:         false,
@@ -109,11 +109,11 @@ LookupField = /** @lends LookupField.prototype */{
 
 
         opt._selectedCountUI = fillTemplate(opt.labels.selectedCount, {
-            count: '<span class="' + CSS_CLASS_BASE + '-selectedCount-number"></span>'
+            count: "<span class=\"" + CSS_CLASS_BASE + "-selectedCount-number\"></span>"
         });
 
         if (!isArray(opt.searchColumns)) {
-            opt.searchColumns = [opt.column.ShowField || 'Title'];
+            opt.searchColumns = [opt.column.ShowField || "Title"];
         }
 
         // if we have a Column Model, the get the webURL from the List model
@@ -131,7 +131,7 @@ LookupField = /** @lends LookupField.prototype */{
         inst.$inputHolder       = uiFind(BASE_SELECTOR + "-input");
         inst.$selectedHolder    = uiFind(BASE_SELECTOR + "-selected");
         inst.$choicesHolder     = uiFind(BASE_SELECTOR + "-input-choices");
-        inst.$count             = uiFind(BASE_SELECTOR + '-selectedCount-number');
+        inst.$count             = uiFind(BASE_SELECTOR + "-selectedCount-number");
 
         if (opt.hideLabel) {
             domAddClass($ui, CSS_CLASS_NO_LABEL);
@@ -165,15 +165,15 @@ LookupField = /** @lends LookupField.prototype */{
 
         // Define the Query Fields
         if (!isArray(opt.fields)) {
-            opt.fields = [opt.column.ShowField || 'Title'];
+            opt.fields = [opt.column.ShowField || "Title"];
         }
 
-        inst.fields = '<ViewFields>' +
+        inst.fields = "<ViewFields>" +
             opt.fields.reduce(function(camlFields, fieldName){
-                camlFields += '<FieldRef Name="' + fieldName + '"/>';
+                camlFields += "<FieldRef Name=\"" + fieldName + "\"/>";
                 return camlFields;
             }, "") +
-            '</ViewFields>';
+            "</ViewFields>";
 
         // Add keyboard interaction to the CHoices from the input field
 
@@ -181,8 +181,8 @@ LookupField = /** @lends LookupField.prototype */{
         inst.keyboardInteraction = DomKeyboardInteraction.create({
             input:              $input,
             eleGroup:           inst.$choicesHolder,
-            focusClass:         'spwidgets-ListItem--hover',
-            eleSelector:        '.ms-ListItem'
+            focusClass:         "spwidgets-ListItem--hover",
+            eleSelector:        ".ms-ListItem"
         });
 
 
@@ -406,10 +406,10 @@ LookupField = /** @lends LookupField.prototype */{
                 queryOptions = getQueryOptions.call(me);
                 queryOptions.CAMLQuery = "<Query><Where>" +
                     getCamlLogical({
-                        type:   'OR',
+                        type:   "OR",
                         values: loadDataIDs.map(function(id){
-                            return '<Eq><FieldRef Name="ID"/><Value Type="Counter">' +
-                                id + '</Value></Eq>';
+                            return "<Eq><FieldRef Name=\"ID\"/><Value Type=\"Counter\">" +
+                                id + "</Value></Eq>";
                         })
                     }) +
                     "</Where></Query>";
@@ -444,12 +444,12 @@ function retrieveListData(query) {
     if (query) {
         queryCaml += "<Where>" +
             getCamlLogical({
-                type:   'OR',
+                type:   "OR",
                 values: inst.opt.searchColumns.map(function(colName){
-                    return '<Contains><FieldRef Name="' + colName +
-                        '"/><Value Type="Text">' +
+                    return "<Contains><FieldRef Name=\"" + colName +
+                        "\"/><Value Type=\"Text\">" +
                         xmlEscape.escape(query) +
-                        '</Value></Contains>';
+                        "</Value></Contains>";
                 })
             }) +
             "</Where>";

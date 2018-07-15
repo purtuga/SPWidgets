@@ -64,7 +64,7 @@ const PersonaCardActionDetails = EventEmitter.extend(Widget).extend(/** @lends P
                 }
             });
 
-            PRIVATE['delete'](this);
+            PRIVATE["delete"](this);
         });
     },
 

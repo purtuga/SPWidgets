@@ -31,13 +31,13 @@ import "./PeoplePicker.less"
 
 const PRIVATE                             = dataStore.create();
 const BODY                                = document.body;
-const CURRENT_USER_ID                     = '<UserID/>';
+const CURRENT_USER_ID                     = "<UserID/>";
 const CSS_CLASS_BASE                      = "spwidgets-PeoplePicker";
 const CSS_CLASS_SUGGESTIONS_RIGHT_ALIGN   = CSS_CLASS_BASE + "--suggestionsRight";
 const CSS_CLASS_IS_ACTIVE                 = "is-active";
 const CSS_CLASS_IS_SEARCHING              = "is-searching";
 const CSS_CLASS_MS_PICKER_BASE            = "ms-PeoplePicker";
-const CSS_CLASS_MS_PICKER_SEARCHBOX       = CSS_CLASS_MS_PICKER_BASE + '-searchBox';
+const CSS_CLASS_MS_PICKER_SEARCHBOX       = CSS_CLASS_MS_PICKER_BASE + "-searchBox";
 const SELECTOR_BASE                       = "." + CSS_CLASS_BASE;
 
 /**
@@ -351,7 +351,7 @@ const PeoplePicker = EventEmitter.extend(Widget).extend(/** @lends PeoplePicker.
                 }
             });
 
-            PRIVATE['delete'](this);
+            PRIVATE["delete"](this);
         }.bind(this));
     },
 
@@ -500,7 +500,7 @@ const PeoplePicker = EventEmitter.extend(Widget).extend(/** @lends PeoplePicker.
             // Widget's events are pipe'd to the PeoplePicker instance
             // as 'selected-remove' which is being listened to.
             if (wdgToRemove) {
-                wdgToRemove.emit('remove');
+                wdgToRemove.emit("remove");
             }
         });
     },
@@ -787,7 +787,7 @@ PeoplePicker.defaults = {
     allowMultiples:         true,
     maxSearchResults:       50,
     webURL:                 null,
-    type:                   'User',
+    type:                   "User",
     minLength:              2,
     resultsZIndex:          0,
     resultsMaxHeight:       "", // default: 20em

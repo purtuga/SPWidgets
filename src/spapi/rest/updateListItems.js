@@ -9,7 +9,7 @@ import {IS_GUID_RE} from "../../sputils/constants";
 //==================================================================
 const encodeURIComponent = window.encodeURIComponent;
 
-////// FIXME: support Array of updates
+////// FIXME: support Array of updates (bulk)
 ////// FIXME: support updates defined as as string (pass it to `body` of request as is)
 
 

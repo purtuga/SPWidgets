@@ -148,7 +148,7 @@ var FiltersCollection = {
             .join("");
 
         if (caml && wrapInOrderBy) {
-            caml = '<OrderBy>' + caml + '</OrderBy>';
+            caml = "<OrderBy>" + caml + "</OrderBy>";
         }
 
         return caml;
@@ -178,7 +178,7 @@ FiltersCollection = Collection.extend(FiltersCollection);
 
 FiltersCollection.defaults = {
     toUrlParamsOptions: {
-        propName:           'filter',
+        propName:           "filter",
         stringifyProperties:   [
             "column",
             "type",

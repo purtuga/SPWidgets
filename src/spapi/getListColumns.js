@@ -1,9 +1,8 @@
 import objectExtend from "common-micro-libs/src/jsutils/objectExtend";
-import getList from './getList';
-import cache from '../sputils/cache';
-import getNodesFromXml from '../sputils/getNodesFromXml';
-import ListColumnModel from '../models/ListColumnModel';
-import ListColumnsCollection from '../collections/ListColumnsCollection';
+import getList from "./getList";
+import getNodesFromXml from "../sputils/getNodesFromXml";
+import ListColumnModel from "../models/ListColumnModel";
+import ListColumnsCollection from "../collections/ListColumnsCollection";
 
 /**
  * Gets the list of columns names for the given list that are
@@ -158,8 +157,8 @@ function getListColumns(options){
  * @type {Object}
  */
 getListColumns.defaults = {
-    listName:               '',
-    columnName:             '',
+    listName:               "",
+    columnName:             "",
     cache:                  true,
     webURL:                 null,
     whiteList:              ["ParentID", "FileLeafRef"],

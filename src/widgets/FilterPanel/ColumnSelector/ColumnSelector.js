@@ -90,7 +90,7 @@ const ColumnSelector = EventEmitter.extend(Widget).extend(/** @lends ColumnSelec
 
         loadColumns.call(this)
             .then(showColumns.bind(this))
-            ["catch"](function(e){
+            .catch(function(e){
                 console.error(e); // jshint ignore:line
             });
 

@@ -105,7 +105,7 @@ import objectExtend from "common-micro-libs/src/jsutils/objectExtend";
         // the overall filter logical
         for ( i=0; i<total; i++){
 
-            newLogical = '';
+            newLogical = "";
 
             if (haveFn) {
 

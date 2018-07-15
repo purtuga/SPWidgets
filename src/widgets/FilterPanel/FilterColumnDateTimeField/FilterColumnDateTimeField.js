@@ -40,8 +40,8 @@ const FilterColumnDateTimeField = FilterColumn.extend(/** @lends FilterColumnDat
         this.setKeywordInfo("");
         this.removeCompareOperators("Contains");
         this.addCompareOperators([
-            {title: opt.labels.after,   value: 'Gt'},
-            {title: opt.labels.before,  value: 'Lt'}
+            {title: opt.labels.after,   value: "Gt"},
+            {title: opt.labels.before,  value: "Lt"}
         ]);
         this.setCompareOperatorDefault("Eq");
     },

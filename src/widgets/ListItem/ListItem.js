@@ -18,7 +18,7 @@ const CSS_CLASS_IS_SELECTABLE   = "is-selectable";
 const CSS_CLASS_IS_UNSEEN       = "is-unseen";
 const CSS_CLASS_IS_UNREAD       = "is-unread";
 const CSS_CLASS_SELECTED        = "is-selected";
-const NBSP                      = '&nbsp;';
+const NBSP                      = "&nbsp;";
 
 /**
  * A list item widget displayed in the `List`. The widget provides
@@ -67,7 +67,7 @@ let ListItem = /** @lends ListItem.prototype */{
         PRIVATE.set(this, inst);
 
         // Define the data values for the template
-        _ui.primary     = item[opt.primaryFrom || 'Title']  || NBSP;
+        _ui.primary     = item[opt.primaryFrom || "Title"]  || NBSP;
         _ui.secondary   = item[opt.secondaryFrom]           || NBSP;
         _ui.tertiary    = item[opt.tertiaryFrom]            || NBSP;
         _ui.meta        = item[opt.metaFrom]                || NBSP;
@@ -173,10 +173,10 @@ let ListItem = /** @lends ListItem.prototype */{
 ListItem = EventEmitter.extend(Widget, ListItem);
 ListItem.defaults = {
     item:       null,
-    primaryFrom:    'Title',
-    secondaryFrom:  'Editor',
-    tertiaryFrom:   '',
-    metaFrom:       'Modified',
+    primaryFrom:    "Title",
+    secondaryFrom:  "Editor",
+    tertiaryFrom:   "",
+    metaFrom:       "Modified",
     selectable:     true,
     unseen:         false,
     unread:         false

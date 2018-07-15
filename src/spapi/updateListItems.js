@@ -97,7 +97,7 @@ function updateListItems(options) {
                 }
 
                 if (!/<\/Batch>/.test(xmlUpdateString)) {
-                    xmlUpdateString = '<Batch OnError="Continue">' + xmlUpdateString + '</Batch>';
+                    xmlUpdateString = "<Batch OnError=\"Continue\">" + xmlUpdateString + "</Batch>";
                 }
 
                 if (!opt._updates.length) {
@@ -130,8 +130,8 @@ function updateListItems(options) {
                 updatePromise = apiFetch(opt.webURL + "_vti_bin/Lists.asmx", {
                     method: "POST",
                     headers: {
-                        'Content-Type': 'text/xml;charset=UTF-8',
-                        'SOAPAction':   'http://schemas.microsoft.com/sharepoint/soap/UpdateListItems'
+                        "Content-Type": "text/xml;charset=UTF-8",
+                        "SOAPAction":   "http://schemas.microsoft.com/sharepoint/soap/UpdateListItems"
 
                     },
                     body: "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
@@ -299,17 +299,17 @@ function getUpdateArray(options){
 
     function processArrayOfObjects(updArray) {
         var i,j, col,
-            thisUpd = '';
+            thisUpd = "";
 
         // Loop through the list of objects (updates)
         for(i=0,j=updArray.length; i<j; i++){
-            thisUpd = '';
+            thisUpd = "";
 
             // Build the fields to be updated for this update
             for (col in updArray[i]) {
                 if (updArray[i].hasOwnProperty(col)) {
-                    thisUpd += '<Field Name="' + col + '">' +
-                              updArray[i][col] + '</Field>';
+                    thisUpd += "<Field Name=\"" + col + "\">" +
+                              updArray[i][col] + "</Field>";
                 }
             }
 
@@ -317,8 +317,8 @@ function getUpdateArray(options){
             // the method agregate around it
             if (thisUpd) {
                 updates.push(
-                    '<Method ID="' + getUpdId() + '" Cmd="' +
-                    opt.updateType + '">' + thisUpd + '</Method>'
+                    "<Method ID=\"" + getUpdId() + "\" Cmd=\"" +
+                    opt.updateType + "\">" + thisUpd + "</Method>"
                 );
             }
         }
@@ -328,20 +328,20 @@ function getUpdateArray(options){
     // 1 single update (outer-array) with multiple fields to be
     // updated (inner-arrays's)
     function processArrayOfArrays(updArray) {
-        var thisUpd = '',
+        var thisUpd = "",
             i,j;
 
         for(i=0,j=updArray.length; i<j; i++){
             if (Array.isArray(updArray[i])) {
-                thisUpd += '<Field Name="' + updArray[i][0] + '">' +
-                          updArray[i][1] + '</Field>';
+                thisUpd += "<Field Name=\"" + updArray[i][0] + "\">" +
+                          updArray[i][1] + "</Field>";
             }
         }
 
         if (thisUpd) {
             updates.push(
-                '<Method ID="' + getUpdId() + '" Cmd="' +
-                opt.updateType + '">' + thisUpd + '</Method>'
+                "<Method ID=\"" + getUpdId() + "\" Cmd=\"" +
+                opt.updateType + "\">" + thisUpd + "</Method>"
             );
         }
     }
@@ -391,13 +391,13 @@ updateListItems.getUpdateArray = getUpdateArray;
 
 // Define defaults. User can change these on their function attachment.
 updateListItems.defaults = {
-    listName:       '',
-    webURL:         '',
+    listName:       "",
+    webURL:         "",
     async:          true,
     completefunc:   null,
-    updates:        '',
-    updateType:     'Update',
-    updateOnError:  'Continue',
+    updates:        "",
+    updateType:     "Update",
+    updateOnError:  "Continue",
     batchSize:      100,
     concurrency:    2
 };

@@ -14,7 +14,9 @@
         "build:apiDocs": "jsdoc -c node_modules/project-base/configs/jsdoc.conf.json",
         "dist": "npm run build:prod&&npm run build:prod:min",
         "setup:dev": "node node_modules/project-base/scripts/create-dev",
-        "test": "tape -r @std/esm test/**/*.js"
+        "test": "tape -r @std/esm test/**/*.js",
+        "lint": "eslint src/**/*.js",
+        "lint:fix": "eslint src/**/*.js --fix"
     },
     "repository": {
         "type": "git",
@@ -31,6 +33,6 @@
         "observable-data": "github:purtuga/observable-data#release/v2x",
         "opener": "^1.4.1",
         "page": "^1.7.1",
-        "project-base": "github:purtuga/project-base"
+        "project-base": "github:purtuga/project-base#beta/v2.0.0"
     }
 }
