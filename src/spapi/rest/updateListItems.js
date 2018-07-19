@@ -43,13 +43,25 @@ const encodeURIComponent = window.encodeURIComponent;
 export function updateListItems(options) {
     const opt = objectExtend({}, updateListItems.defaults, options);
 
+    if (Array.isArray(opt.update)) {
+        throw new Error("options.updates as an Array not yet supported!");
+    }
+
     return getContextInfo(opt.web)
         .then(contextInfo => {
+            const isCreate = opt.type.toLowerCase() === "create";
+
             let requestUrl = `${ contextInfo.WebFullUrl }/_api/web/lists${
                 IS_GUID_RE.test(opt.list) ?
                     `(guid'${opt.list.replace(/[{}]/g, "")}')` :
                     `/getbytitle('${encodeURIComponent(opt.list)}')`
-                }/items?`;
+                }/items`;
+
+            if (!isCreate) {
+                requestUrl += `(${opt.updates.ID})`
+            }
+
+            requestUrl += "?";
 
             // FIXME: should encodeURIComponent() be used for below options?
 
@@ -72,12 +84,19 @@ export function updateListItems(options) {
             opt.requestUrl = requestUrl;
             opt.isREST = true;
 
+            const headers = getRestHeaders(contextInfo);
+
+            if (!isCreate) {
+                headers["X-HTTP-Method"] = "MERGE"; // FIXME: these should be input options for greater flexibility
+                headers["If-Match"] = "*";
+            }
+
             return apiFetch(requestUrl, {
-                method: opt.type.toLowerCase() === "create" ? "POST" : "PATCH",
-                headers: getRestHeaders(contextInfo),
+                method: "POST",
+                headers,
                 body: JSON.stringify(opt.updates)
             }).then(fetchResponse => {
-                return opt.ListItemModel.create(fetchResponse.content, opt);
+                return new ListItemModel(fetchResponse.content, opt);
             });
         });
 }

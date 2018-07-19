@@ -81,10 +81,10 @@ export function getListItems(options) {
                     headers:    getRestHeaders(contextInfo)
                 })
                 .then(fetchResponse => {
-                    return ListItemsCollection.create(
+                    return ListItemsCollection.create( // FIXME: convert to Class
                         fetchResponse.content.value.map(item => {
                             processResults(item);
-                            return ListItemModel.create(item, opt);
+                            return new opt.ListItemModel(item, opt);
                         })
                     )
                 });
