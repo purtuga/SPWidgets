@@ -27,10 +27,12 @@
     },
     "homepage": "http://purtuga.github.io/SPWidgets",
     "license": "MIT",
-    "devDependencies": {
+    "dependencies": {
         "common-micro-libs": "purtuga/common-micro-libs#release/v2x",
         "flatpickr": "^1.9.1",
-        "observable-data": "github:purtuga/observable-data#release/v2x",
+        "observable-data": "github:purtuga/observable-data#release/v2x"
+    },
+    "devDependencies": {
         "opener": "^1.4.1",
         "page": "^1.7.1",
         "project-base": "github:purtuga/project-base#beta/v2.0.0"
