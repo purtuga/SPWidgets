@@ -96,7 +96,7 @@ export function updateListItems(options) {
                 headers,
                 body: JSON.stringify(opt.updates)
             }).then(fetchResponse => {
-                return new ListItemModel(fetchResponse.content, opt);
+                return new opt.ListItemModel(fetchResponse.content, opt);
             });
         });
 }
